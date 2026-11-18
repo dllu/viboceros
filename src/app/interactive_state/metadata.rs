@@ -95,7 +95,7 @@ impl InteractiveCommand {
             Self::Plane { .. } => "Plane",
             Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
-            Self::SubDTorus { .. } => "SubDTorus",
+            Self::Torus { kind, .. } => kind.name(),
             Self::SubDEllipsoid { .. } => "SubDEllipsoid",
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
@@ -108,7 +108,6 @@ impl InteractiveCommand {
             Self::MeshCone { .. } => "MeshCone",
             Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
-            Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
             Self::SurfacePointGrid { control, .. } => {
                 if control {
@@ -199,7 +198,7 @@ impl InteractiveCommand {
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
-            | Self::SubDTorus { anchor: base }
+            | Self::Torus { anchor: base, .. }
             | Self::SubDEllipsoid { anchor: base }
             | Self::SubDSphere { anchor: base }
             | Self::SubDTruncatedCone { anchor: base }
@@ -298,7 +297,6 @@ impl InteractiveCommand {
             | Self::MeshCone { center: None, .. }
             | Self::MeshTruncatedCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
-            | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -441,15 +439,6 @@ impl InteractiveCommand {
                 end_center: Some(end_center),
                 ..
             } => Some(end_center),
-            Self::MeshTorus {
-                center: Some(center),
-                major_point: None,
-                ..
-            } => Some(center),
-            Self::MeshTorus {
-                major_point: Some(major_point),
-                ..
-            } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
             Self::ArcExtension { anchor: center }
             | Self::ArcTilted { anchor: center }

@@ -74,7 +74,7 @@ impl VibocerosApp {
         if self.start_subd_ellipsoid(input) {
             return true;
         }
-        if self.start_subd_torus(input) {
+        if self.start_torus(input) {
             return true;
         }
         if self.start_subd_sphere(input) {
@@ -370,54 +370,6 @@ impl VibocerosApp {
                 third: None,
                 width: None,
                 options,
-            }
-        } else if normalized == "meshtorus" {
-            let mut vertical_count = DEFAULT_MESH_TORUS_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_TORUS_FACE_COUNT;
-            let mut seen = [false; 2];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            if vertical_count
-                .checked_mul(around_count)
-                .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: None,
-                vertical_count,
-                around_count,
             }
         } else if normalized == "meshtruncatedcone" {
             let mut vertical_count = DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT;

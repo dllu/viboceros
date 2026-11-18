@@ -174,7 +174,7 @@ impl VibocerosApp {
                 s.cursor = Some(point);
             }
             self.update_subd_sphere_hover(point);
-            self.update_subd_torus_hover(point);
+            self.update_torus_hover(point);
             self.update_subd_ellipsoid_hover(point);
             self.update_subd_axial_hover(point);
             self.update_subd_primitive_hover(point);
@@ -204,6 +204,7 @@ impl VibocerosApp {
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
+                        | "MeshTorus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -435,6 +436,7 @@ impl VibocerosApp {
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"
                             | "SubDTorus FitPoints"
+                            | "MeshTorus FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"

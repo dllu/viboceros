@@ -6,11 +6,20 @@ pub fn from_arguments(
     plane: Frame3,
     preferences: Preferences,
 ) -> Result<Input, CommandError> {
-    let mut input = Input::new(plane, preferences);
+    parse(doc, args, Input::new(plane, preferences), plane)
+}
+
+pub fn parse(
+    doc: &Document,
+    args: &[&str],
+    mut input: Input,
+    plane: Frame3,
+) -> Result<Input, CommandError> {
+    let usage = input.kind.usage();
     let mut i = 0;
     while i < args.len() {
         if input.definition.is_some() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(usage));
         }
         let word = args[i];
         if input.at_start()
@@ -52,19 +61,19 @@ pub fn from_arguments(
                 .eq_ignore_ascii_case("AroundCurve")
         {
             i += 1;
-            let word = args.get(i).ok_or(CommandError::Usage(USAGE))?;
+            let word = args.get(i).ok_or(CommandError::Usage(usage))?;
             let (key, value) = word
                 .trim_start_matches(['_', '-'])
                 .split_once('=')
-                .ok_or(CommandError::Usage(USAGE))?;
+                .ok_or(CommandError::Usage(usage))?;
             let (id, edge) = if key.eq_ignore_ascii_case("Curve") {
-                (value.parse().map_err(|_| CommandError::Usage(USAGE))?, None)
+                (value.parse().map_err(|_| CommandError::Usage(usage))?, None)
             } else if key.eq_ignore_ascii_case("Edge") {
                 let (id, edge) =
-                    crate::curve_reference::parse_edge(value).ok_or(CommandError::Usage(USAGE))?;
+                    crate::curve_reference::parse_edge(value).ok_or(CommandError::Usage(usage))?;
                 (id, Some(edge))
             } else {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(usage));
             };
             let source = crate::curve_reference::CapturedCurve::capture(doc, id, edge)?;
             i += 1;
@@ -99,7 +108,7 @@ pub fn from_arguments(
         }
     }
     if input.definition.is_none() {
-        return Err(CommandError::Usage(USAGE));
+        return Err(CommandError::Usage(usage));
     }
     Ok(input)
 }

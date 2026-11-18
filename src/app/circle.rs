@@ -351,16 +351,11 @@ impl VibocerosApp {
         if let Some(session) = &self.circle_deform_session {
             return session.input.getter().snap_projection_plane();
         }
-        if matches!(
-            self.active_command,
-            Some(InteractiveCommand::CircleAround { .. })
-        ) {
-            let input = self.circle_around_session.as_ref()?.input?;
-            return matches!(
-                input.size_mode(),
-                CircleSizeMode::Radius | CircleSizeMode::Diameter
-            )
-            .then(|| input.frame());
+        if let Some(session) = &self.circle_around_session {
+            return session.snap_projection_plane();
+        }
+        if let Some(session) = &self.torus_session {
+            return session.input.snap_projection_plane();
         }
         let (construction, plane) = self.circle_preview()?;
         match construction {

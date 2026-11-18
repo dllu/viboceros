@@ -497,7 +497,7 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
-            Self::SubDTorus { .. } => "SubDTorus: pick a base circle and tube size; Esc cancels",
+            Self::Torus { .. } => "Pick a base circle and tube size; Esc cancels",
             Self::SubDEllipsoid { .. } => {
                 "SubDEllipsoid: pick a base ellipse and third axis; Esc cancels"
             }
@@ -575,18 +575,6 @@ impl InteractiveCommand {
                 radius_point: Some(_),
                 ..
             } => "MeshCylinder: pick the height in the viewport (Esc to cancel)",
-            Self::MeshTorus { center: None, .. } => {
-                "MeshTorus: pick the center in the viewport (Esc to cancel)"
-            }
-            Self::MeshTorus {
-                center: Some(_),
-                major_point: None,
-                ..
-            } => "MeshTorus: pick the major-circle radius in the viewport (Esc to cancel)",
-            Self::MeshTorus {
-                major_point: Some(_),
-                ..
-            } => "MeshTorus: pick the tube radius in the viewport (Esc to cancel)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }

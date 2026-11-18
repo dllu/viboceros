@@ -1,6 +1,6 @@
 //! Circle, Arc and Splop share one read-only tangent-contact picker.
 use super::*;
-use viboceros_command::circle_tangent_input::Input;
+use viboceros_command::{circle_tangent_input::Input, torus_input::Kind as TorusKind};
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Circle,
@@ -11,7 +11,7 @@ enum Kind {
     SubDCone,
     SubDTruncatedCone,
     SubDSphere,
-    SubDTorus,
+    Torus(TorusKind),
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -24,7 +24,7 @@ impl Kind {
             Self::SubDCone => "SubDCone",
             Self::SubDTruncatedCone => "SubDTruncatedCone",
             Self::SubDSphere => "SubDSphere",
-            Self::SubDTorus => "SubDTorus",
+            Self::Torus(kind) => kind.name(),
         }
     }
 }
@@ -59,8 +59,8 @@ impl VibocerosApp {
     pub(super) fn start_tangent_sphere(&mut self, output: sphere::Output) {
         self.start_tangent(Kind::Sphere(output), None);
     }
-    pub(super) fn start_subd_torus_tangent(&mut self) {
-        self.start_tangent(Kind::SubDTorus, None);
+    pub(super) fn start_torus_tangent(&mut self, kind: TorusKind) {
+        self.start_tangent(Kind::Torus(kind), None);
     }
     pub(super) fn start_subd_sphere_tangent(&mut self) {
         self.start_tangent(Kind::SubDSphere, None);
@@ -99,12 +99,12 @@ impl VibocerosApp {
                 | Kind::SubDCone
                 | Kind::SubDTruncatedCone
                 | Kind::SubDSphere
-                | Kind::SubDTorus
+                | Kind::Torus(_)
         ) {
             self.cancel_interactive_command(false);
         }
-        let preferences = if kind == Kind::SubDTorus {
-            let p = self.commands.subd_torus_preferences();
+        let preferences = if let Kind::Torus(kind) = kind {
+            let p = self.torus_preferences(kind);
             viboceros_command::circle_around_input::Preferences {
                 radius: p.radius,
                 diameter: p.diameter,
@@ -192,7 +192,7 @@ impl VibocerosApp {
             Kind::SubDCone => InteractiveCommand::SubDCone { anchor },
             Kind::SubDTruncatedCone => InteractiveCommand::SubDTruncatedCone { anchor },
             Kind::SubDSphere => InteractiveCommand::SubDSphere { anchor },
-            Kind::SubDTorus => InteractiveCommand::SubDTorus { anchor },
+            Kind::Torus(kind) => InteractiveCommand::Torus { kind, anchor },
         });
         self.drafting_plane = s
             .support
@@ -218,8 +218,8 @@ impl VibocerosApp {
         if self
             .tangent_session
             .as_ref()
-            .is_some_and(|s| s.kind == Kind::SubDTorus)
-            && !self.valid_subd_torus()
+            .is_some_and(|s| matches!(s.kind, Kind::Torus(_)))
+            && !self.valid_torus()
         {
             return false;
         }
@@ -264,12 +264,12 @@ impl VibocerosApp {
     }
     fn finish_tangent(&mut self, choice: Option<Point3>) -> bool {
         let s = self.tangent_session.as_ref().unwrap();
-        if s.kind == Kind::SubDTorus {
+        if matches!(s.kind, Kind::Torus(_)) {
             return match s.input.finish().and_then(|c| {
                 viboceros_command::circle_input::CircleDefinition::from_circle(c)
                     .map_err(Into::into)
             }) {
-                Ok(d) => self.accept_subd_torus_reference(d, vec![]),
+                Ok(d) => self.accept_torus_reference(d, vec![]),
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
                     false

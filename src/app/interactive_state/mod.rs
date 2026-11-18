@@ -358,7 +358,8 @@ pub(super) enum InteractiveCommand {
     Plane {
         first: Option<Point3>,
     },
-    SubDTorus {
+    Torus {
+        kind: viboceros_command::torus_input::Kind,
         anchor: Option<Point3>,
     },
     SubDEllipsoid {
@@ -433,12 +434,6 @@ pub(super) enum InteractiveCommand {
         around_count: usize,
         solid: bool,
         cap_style: MeshCapFaceStyle,
-    },
-    MeshTorus {
-        center: Option<Point3>,
-        major_point: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
     },
     Polygon {
         side_count: usize,

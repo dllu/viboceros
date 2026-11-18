@@ -272,12 +272,12 @@ fn mesh_ellipsoid_rejects_invalid_options_and_dimensions_atomically() {
 fn mesh_torus_matches_default_and_oriented_rhino_topology() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed = parse_mesh_torus_options(&["0,0,0", "4", "1"]).unwrap();
-    assert_eq!(parsed.vertical_count, 10);
-    assert_eq!(parsed.around_count, 10);
+    let defaults = registry.mesh_torus_preferences();
+    assert_eq!(defaults.vertical_faces, 10);
+    assert_eq!(defaults.around_faces, 10);
 
     let message = registry
-        .execute(&mut document, "MeshTorus 0,0,0 4 1")
+        .execute(&mut document, "MeshTorus 0,0,0 4 Radius=1")
         .unwrap();
     assert!(message.ends_with("10 around × 10 vertical faces)"));
     assert_eq!(document.selected_object_count(), 0);
@@ -340,7 +340,7 @@ fn mesh_torus_rejects_invalid_options_and_radii_atomically() {
         "MeshTorus",
         "MeshTorus 0,0,0 0 1",
         "MeshTorus 0,0,0 4 0",
-        "MeshTorus 0,0,0 4 4",
+        "MeshTorus 0,0,0 4 Radius=4",
         "MeshTorus 0,0,0 1 2",
         "MeshTorus 0,0,0 4 1 VerticalFaces=2",
         "MeshTorus 0,0,0 4 1 AroundFaces=2",

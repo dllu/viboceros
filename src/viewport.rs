@@ -29,6 +29,7 @@ mod clipping;
 mod curve_line;
 pub(crate) mod direction;
 mod drafting;
+pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
 mod ellipsoid;
 pub(crate) use ellipsoid::EllipsoidPreview;
 mod named_view;
@@ -424,6 +425,11 @@ pub struct ViewportInput<'a> {
     pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
+    pub mesh_torus_fit_preview: Option<Circle3>,
+    pub mesh_torus_preview: Option<(
+        viboceros_command::torus_input::Definition,
+        viboceros_command::torus_input::Preferences,
+    )>,
     pub mesh_sphere_topology: Option<viboceros_command::mesh_sphere::Topology>,
     pub mesh_sphere_fit_preview: Option<(
         viboceros_command::mesh_sphere::Topology,
@@ -571,6 +577,8 @@ impl Default for ViewportInput<'_> {
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
+            mesh_torus_fit_preview: None,
+            mesh_torus_preview: None,
             mesh_sphere_topology: None,
             mesh_sphere_fit_preview: None,
             sphere_preview: None,
@@ -2843,6 +2851,14 @@ impl Viewport {
                     self.paint_curve_draft(&painter, rect, &curve);
                 }
             }
+        }
+        if let Some(circle) = input.mesh_torus_fit_preview {
+            self.paint_curve_draft(&painter, rect, &circle);
+        }
+        if let Some((definition, preferences)) = input.mesh_torus_preview
+            && let Ok(mesh) = definition.mesh(preferences, document.tolerance())
+        {
+            self.paint_mesh_draft(&painter, rect, &mesh);
         }
         if let Some((topology, definition)) = input.mesh_sphere_fit_preview {
             self.paint_sphere_output_draft(

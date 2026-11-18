@@ -882,7 +882,7 @@ impl VibocerosApp {
                     .as_ref()
                     .and(self.drafting_plane)
             })
-            .or_else(|| self.subd_torus_session.as_ref().and(self.drafting_plane))
+            .or_else(|| self.torus_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_sphere_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_axial_session.as_ref().and(self.drafting_plane))
             .or_else(|| {
@@ -995,6 +995,9 @@ impl VibocerosApp {
             .map(|s| s.input)
             .filter(|_| model_input_active);
         let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
+        let mesh_torus_fit_preview = model_input_active
+            .then(|| self.mesh_torus_fit_preview())
+            .flatten();
         let mesh_sphere_topology = self.mesh_sphere_preview_topology();
         let mesh_sphere_fit_preview = model_input_active
             .then(|| self.mesh_sphere_fit_preview())
@@ -1318,9 +1321,9 @@ impl VibocerosApp {
                                         .map(subd_ellipsoid::Session::preview_curves)
                                 })
                                 .or_else(|| {
-                                    self.subd_torus_session
+                                    self.torus_session
                                         .as_ref()
-                                        .map(subd_torus::Session::preview_curves)
+                                        .map(torus::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.subd_sphere_session
@@ -1397,6 +1400,12 @@ impl VibocerosApp {
                             arc_output,
                             arc_preview,
                             circle_around_input,
+                            mesh_torus_fit_preview,
+                            mesh_torus_preview: self
+                                .torus_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .and_then(torus::Session::mesh_preview),
                             mesh_sphere_topology,
                             mesh_sphere_fit_preview,
                             sphere_preview,

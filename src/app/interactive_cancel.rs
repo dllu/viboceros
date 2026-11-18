@@ -114,7 +114,7 @@ impl VibocerosApp {
         self.subd_primitive_session = None;
         self.subd_axial_session = None;
         self.subd_sphere_session = None;
-        self.subd_torus_session = None;
+        self.torus_session = None;
         self.subd_ellipsoid_session = None;
         self.ellipsoid_session = None;
         self.twist_session = None;

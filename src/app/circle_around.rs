@@ -4,13 +4,14 @@ use viboceros_command::{
     circle_around_input::{Input, Preferences},
     circle_input::CircleSizeMode as Mode,
     curve_reference::{CapturedCurve, perpendicular_frame},
+    torus_input::Kind as TorusKind,
 };
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Owner {
     Circle,
     Sphere(sphere::Output),
     SubDSphere,
-    SubDTorus,
+    Torus(TorusKind),
 }
 impl Owner {
     fn name(self) -> &'static str {
@@ -18,7 +19,7 @@ impl Owner {
             Self::Circle => "Circle",
             Self::Sphere(output) => output.name(),
             Self::SubDSphere => "SubDSphere",
-            Self::SubDTorus => "SubDTorus",
+            Self::Torus(kind) => kind.name(),
         }
     }
 }
@@ -34,6 +35,13 @@ pub(super) struct Session {
 impl Session {
     pub(super) fn sphere(&self) -> bool {
         matches!(self.owner, Owner::Sphere(_))
+    }
+
+    pub(super) fn snap_projection_plane(&self) -> Option<Frame3> {
+        let input = self.input?;
+        (matches!(self.owner, Owner::Circle | Owner::Torus(TorusKind::Mesh))
+            && matches!(input.size_mode(), Mode::Radius | Mode::Diameter))
+        .then(|| input.frame())
     }
 
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {
@@ -75,8 +83,8 @@ impl VibocerosApp {
     pub(super) fn start_sphere_around(&mut self, output: sphere::Output) {
         self.start_circle_around_for(Owner::Sphere(output), None);
     }
-    pub(super) fn start_subd_torus_around(&mut self) {
-        self.start_circle_around_for(Owner::SubDTorus, None);
+    pub(super) fn start_torus_around(&mut self, kind: TorusKind) {
+        self.start_circle_around_for(Owner::Torus(kind), None);
     }
     fn start_circle_around_for(
         &mut self,
@@ -90,8 +98,8 @@ impl VibocerosApp {
             self.commands.circle_preferences()
         } else if let Owner::Sphere(output) = owner {
             output.size_preferences(&self.commands).into()
-        } else if owner == Owner::SubDTorus {
-            let p = self.commands.subd_torus_preferences();
+        } else if let Owner::Torus(kind) = owner {
+            let p = self.torus_preferences(kind);
             Preferences {
                 radius: p.radius,
                 diameter: p.diameter,
@@ -145,12 +153,15 @@ impl VibocerosApp {
                 Mode::Diameter => format!(" <{}>", 2. * s.preferences.radius),
                 _ => String::new(),
             };
-            let snap_option =
-                if s.owner == Owner::Circle && matches!(s.mode, Mode::Radius | Mode::Diameter) {
-                    ", ProjectOsnap"
+            let snap_option = if s.snap_projection_plane().is_some() {
+                if self.circle_project_osnap {
+                    ", ProjectOsnap=Yes"
                 } else {
-                    ""
-                };
+                    ", ProjectOsnap=No"
+                }
+            } else {
+                ""
+            };
             format!(
                 "{}{}; Radius, Diameter, Circumference, Area{snap_option}",
                 input.size_mode().label(),
@@ -165,7 +176,10 @@ impl VibocerosApp {
                 anchor: center,
                 output,
             },
-            Owner::SubDTorus => InteractiveCommand::SubDTorus { anchor: center },
+            Owner::Torus(kind) => InteractiveCommand::Torus {
+                kind,
+                anchor: center,
+            },
             Owner::SubDSphere => InteractiveCommand::SubDSphere { anchor: center },
         });
         self.drafting_plane = s.input.map(Input::frame);
@@ -210,8 +224,8 @@ impl VibocerosApp {
         if self
             .circle_around_session
             .as_ref()
-            .is_some_and(|s| s.owner == Owner::SubDTorus)
-            && !self.valid_subd_torus()
+            .is_some_and(|s| matches!(s.owner, Owner::Torus(_)))
+            && !self.valid_torus()
         {
             return false;
         }
@@ -277,7 +291,7 @@ impl VibocerosApp {
     fn commit_circle_around(&mut self, circle: viboceros_geometry::Circle3) -> bool {
         let s = self.circle_around_session.as_ref().unwrap();
         let curve = s.curve.as_ref().unwrap();
-        if s.owner == Owner::SubDTorus {
+        if matches!(s.owner, Owner::Torus(_)) {
             let release = if s.postselected {
                 vec![curve.object_id()]
             } else {
@@ -285,7 +299,7 @@ impl VibocerosApp {
             };
             let diameter = s.input.unwrap().size_mode();
             let result = viboceros_command::circle_input::CircleDefinition::from_circle(circle);
-            if let Some(parent) = self.subd_torus_session.as_mut() {
+            if let Some(parent) = self.torus_session.as_mut() {
                 match diameter {
                     Mode::Radius => parent.input.preferences.diameter = false,
                     Mode::Diameter => parent.input.preferences.diameter = true,
@@ -293,7 +307,7 @@ impl VibocerosApp {
                 }
             }
             return match result {
-                Ok(d) => self.accept_subd_torus_reference(d, release),
+                Ok(d) => self.accept_torus_reference(d, release),
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
                     false
@@ -441,7 +455,10 @@ impl VibocerosApp {
         let s = self.circle_around_session.as_mut().unwrap();
         if let Some(input) = &mut s.input {
             if word.eq_ignore_ascii_case("Orientation") {
-                self.push_log("Error: Orientation is unavailable in Circle AroundCurve".into());
+                let name = s.owner.name();
+                self.push_log(format!(
+                    "Error: Orientation is unavailable in {name} AroundCurve"
+                ));
                 self.command_input.clear();
                 return true;
             }

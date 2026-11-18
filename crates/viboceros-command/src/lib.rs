@@ -74,6 +74,7 @@ mod surface_edge_reference;
 pub mod surface_flow;
 pub mod surface_reference;
 pub mod to_subd;
+pub mod torus_input;
 mod uv_inputs;
 mod uv_reference;
 use apply_curves::ApplyCurvesCommand;
@@ -165,6 +166,7 @@ pub mod hyperbola;
 mod hyperbola_tests;
 pub mod mesh_ellipsoid;
 pub mod mesh_sphere;
+mod mesh_torus;
 mod model_tolerance;
 pub mod named_view;
 pub mod parabola;
@@ -566,15 +568,14 @@ use viboceros_geometry::{
     GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
     MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshFaceExtraction, MeshTorusOptions, MeshTruncatedConeOptions, NurbsCurve,
-    NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
-    sort_and_cull_points, try_catenary,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction,
+    MeshTruncatedConeOptions, NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3,
+    PointCloud3, Polyline3, Real, RectangularSurfaceCorner, RectangularSurfaceCornerCut,
+    SurfaceBrepIntersectionEvent, SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph,
+    SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_curves, sort_and_cull_points, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -1034,6 +1035,7 @@ pub struct CommandRegistry {
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
+    mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
@@ -1411,7 +1413,9 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(MeshTorusCommand)
+            .register(mesh_torus::MeshTorusCommand(
+                registry.mesh_torus_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(MeshBoxCommand)
@@ -5704,7 +5708,6 @@ pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
 pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
-const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
@@ -5925,16 +5928,6 @@ struct EllipsoidPositionals {
     frame: Frame3,
     radii: [Real; 3],
     option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshTorusCommandOptions {
-    center: Point3,
-    major_radius: AxialPrimitiveRadius,
-    minor_radius: Real,
-    axis: UnitVector3,
-    vertical_count: usize,
-    around_count: usize,
 }
 
 fn parse_radial_radius_positionals(
@@ -6779,55 +6772,6 @@ fn parse_ellipsoid_positionals(
     })
 }
 
-fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOptions, CommandError> {
-    let positionals = parse_radial_primitive_positionals(arguments, MESH_TORUS_USAGE)?;
-    let mut options = MeshTorusCommandOptions {
-        center: positionals.center,
-        major_radius: positionals.radius,
-        minor_radius: positionals.value,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
-        vertical_count: DEFAULT_MESH_TORUS_FACE_COUNT,
-        around_count: DEFAULT_MESH_TORUS_FACE_COUNT,
-    };
-    let mut axis_seen = false;
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_TORUS_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_unit_axis_option(value, MESH_TORUS_USAGE)?;
-            axis_seen = true;
-        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            options.vertical_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| CommandError::InvalidMeshTorusVerticalFaceCount(value.to_owned()))?;
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            options.around_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| CommandError::InvalidMeshTorusAroundFaceCount(value.to_owned()))?;
-            around_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_TORUS_USAGE));
-        }
-    }
-    if options
-        .vertical_count
-        .checked_mul(options.around_count)
-        .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
-    {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
-}
-
 fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions, CommandError> {
     let positionals = parse_radial_primitive_positionals(arguments, MESH_CONE_USAGE)?;
     let mut options = MeshConeCommandOptions {
@@ -7268,40 +7212,6 @@ impl Command for MeshTruncatedConeCommand {
             if options.solid { "closed" } else { "open" },
             options.around_count,
             options.vertical_count
-        ))
-    }
-}
-
-struct MeshTorusCommand;
-
-impl Command for MeshTorusCommand {
-    fn name(&self) -> &'static str {
-        "MeshTorus"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_torus_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, major_radius) = axial_primitive_frame(
-            options.center,
-            options.major_radius,
-            options.axis,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_torus_grid(
-            frame,
-            major_radius,
-            options.minor_radius,
-            MeshTorusOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added closed mesh torus {id} (major radius {major_radius:.6}, minor radius {:.6}; {} around × {} vertical faces)",
-            options.minor_radius, options.around_count, options.vertical_count
         ))
     }
 }

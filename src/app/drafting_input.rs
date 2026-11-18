@@ -92,7 +92,7 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_torus_point(point) {
+        if let Some(accepted) = self.accept_torus_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
@@ -219,7 +219,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Conic { .. }
-            | InteractiveCommand::SubDTorus { .. }
+            | InteractiveCommand::Torus { .. }
             | InteractiveCommand::SubDEllipsoid { .. }
             | InteractiveCommand::Ellipsoid { .. }
             | InteractiveCommand::SubDSphere { .. }
@@ -1579,93 +1579,6 @@ impl VibocerosApp {
                 radius_point: Some(_),
                 ..
             } => unreachable!("mesh-cylinder radius requires a center"),
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: None,
-                vertical_count,
-                around_count,
-            } => {
-                let command = InteractiveCommand::MeshTorus {
-                    center: Some(point),
-                    major_point: None,
-                    vertical_count,
-                    around_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTorus {
-                center: Some(center),
-                major_point: None,
-                vertical_count,
-                around_count,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh-torus major radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(major_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-torus major-radius point is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshTorus {
-                    center: Some(center),
-                    major_point: Some(major_point),
-                    vertical_count,
-                    around_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Major-radius point: {}",
-                    format_model_point(major_point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTorus {
-                center: Some(center),
-                major_point: Some(major_point),
-                vertical_count,
-                around_count,
-            } => {
-                let Ok(major_radius) = center.distance_to(major_point) else {
-                    self.push_log("Error: mesh-torus major radius is not finite".to_owned());
-                    return false;
-                };
-                let Ok(minor_radius) = major_point.distance_to(point) else {
-                    self.push_log("Error: mesh-torus tube radius is not finite".to_owned());
-                    return false;
-                };
-                if minor_radius <= self.document.tolerance().absolute() {
-                    self.push_log(
-                        "Error: mesh-torus tube radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                if minor_radius >= major_radius {
-                    self.push_log(
-                        "Error: mesh-torus tube radius must be smaller than its major radius"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshTorus {} {} {} VerticalFaces={} AroundFaces={}",
-                    format_model_point(center),
-                    format_model_point(major_point),
-                    minor_radius,
-                    vertical_count,
-                    around_count
-                ));
-            }
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: Some(_),
-                ..
-            } => unreachable!("mesh-torus major radius requires a center"),
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,

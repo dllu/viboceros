@@ -7,6 +7,7 @@ enum Pending {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Input {
+    pub kind: Kind,
     pub preferences: Preferences,
     pub circle: Option<CircleDefinition>,
     pub definition: Option<Definition>,
@@ -17,7 +18,12 @@ pub struct Input {
 }
 impl Input {
     pub fn new(plane: Frame3, preferences: Preferences) -> Self {
+        Self::for_kind(Kind::SubD, plane, preferences)
+    }
+
+    pub fn for_kind(kind: Kind, plane: Frame3, preferences: Preferences) -> Self {
         Self {
+            kind,
             preferences,
             circle: None,
             definition: None,
@@ -34,6 +40,21 @@ impl Input {
     pub fn at_start(&self) -> bool {
         self.circle.is_none() && self.getter.at_start()
     }
+    fn at_center_prompt(&self) -> bool {
+        self.at_start()
+            || self.kind == Kind::Mesh
+                && self.circle.is_none()
+                && self.getter.has_size_mode()
+                && self.getter.anchor().is_none()
+    }
+
+    pub fn snap_projection_plane(&self) -> Option<Frame3> {
+        if self.kind != Kind::Mesh || self.circle.is_some() || self.pending.is_some() {
+            return None;
+        }
+        self.getter.snap_projection_plane()
+    }
+
     pub fn anchor(&self) -> Option<Point3> {
         self.circle
             .map(|c| c.frame.origin())
@@ -63,11 +84,10 @@ impl Input {
     pub fn prompt(&self) -> String {
         if let Some(p) = self.pending {
             return if p == Pending::Around {
-                "AroundFaces"
+                format!("AroundFaces <{}>", self.preferences.around_faces)
             } else {
-                "VerticalFaces"
-            }
-            .into();
+                format!("VerticalFaces <{}>", self.preferences.vertical_faces)
+            };
         }
         if self.circle.is_some() {
             return format!(
@@ -95,32 +115,63 @@ impl Input {
                 }
             );
         }
-        format!(
-            "{}; AroundFaces={} VerticalFaces={}; Tangent AroundCurve FitPoints",
-            self.getter.prompt(),
-            self.preferences.around_faces,
-            self.preferences.vertical_faces
-        )
+        if self.kind == Kind::SubD {
+            return format!(
+                "{}; AroundFaces={} VerticalFaces={}; Tangent AroundCurve FitPoints",
+                self.getter.prompt(),
+                self.preferences.around_faces,
+                self.preferences.vertical_faces,
+            );
+        }
+        let mut prompt = self
+            .getter
+            .prompt()
+            .replace("Center of circle", "Center of torus");
+        if self.at_center_prompt() {
+            prompt.push_str(&format!(
+                "; VerticalFaces={} AroundFaces={}",
+                self.preferences.vertical_faces, self.preferences.around_faces
+            ));
+        }
+        if self.at_start() {
+            prompt.push_str("; Tangent AroundCurve FitPoints");
+        }
+        if self.getter.requests_size() {
+            match self.getter.size_mode() {
+                CircleSizeMode::Radius => {
+                    prompt.push_str(&format!(" <{}>", self.preferences.radius))
+                }
+                CircleSizeMode::Diameter => {
+                    prompt.push_str(&format!(" <{}>", self.preferences.radius * 2.))
+                }
+                _ => (),
+            }
+        }
+        prompt
     }
     fn count(&mut self, key: Pending, value: &str) -> Result<(), CommandError> {
         let n = value
             .trim_start_matches('_')
             .parse::<usize>()
-            .map_err(|_| CommandError::Usage(USAGE))?;
+            .map_err(|_| CommandError::Usage(self.kind.usage()))?;
         let mut p = self.preferences;
         if key == Pending::Around {
             p.around_faces = n;
         } else {
             p.vertical_faces = n;
         }
-        p.validate()?;
+        p.validate_for(self.kind)?;
         self.preferences = p;
         self.pending = None;
         Ok(())
     }
     pub fn option(&mut self, word: &str) -> Result<bool, CommandError> {
         if let Some(p) = self.pending {
-            self.count(p, word)?;
+            if option_name_eq(word, "Enter") {
+                self.enter()?;
+            } else {
+                self.count(p, word)?;
+            }
             return Ok(true);
         }
         let word = word.trim_start_matches(['_', '-']);
@@ -135,8 +186,8 @@ impl Input {
             None
         };
         if let Some(p) = count {
-            if !self.at_start() {
-                return Err(CommandError::Usage(USAGE));
+            if !self.at_center_prompt() {
+                return Err(CommandError::Usage(self.kind.usage()));
             }
             if let Some(v) = value {
                 self.count(p, v)?;
@@ -152,7 +203,7 @@ impl Input {
                         None => !self.preferences.fix_inner_dimension,
                         Some(v) if v.eq_ignore_ascii_case("Yes") => true,
                         Some(v) if v.eq_ignore_ascii_case("No") => false,
-                        _ => return Err(CommandError::Usage(USAGE)),
+                        _ => return Err(CommandError::Usage(self.kind.usage())),
                     };
                 return Ok(true);
             }
@@ -164,12 +215,12 @@ impl Input {
                 return Ok(true);
             }
             if CircleSizeMode::parse(name).is_some() {
-                return Err(CommandError::Usage(USAGE));
+                return Err(CommandError::Usage(self.kind.usage()));
             }
             return Ok(false);
         }
         if name.eq_ignore_ascii_case("FixInnerDimension") {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         if self.getter.option(name) {
             if let Some(v) = value {
@@ -194,10 +245,10 @@ impl Input {
     }
     pub fn accept_reference(&mut self, circle: CircleDefinition) -> Result<(), CommandError> {
         if !self.at_start() || self.pending.is_some() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         if !circle.radius.is_finite() || circle.radius <= 0. {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         self.circle = Some(circle);
         self.preferences.radius = circle.radius;
@@ -208,10 +259,15 @@ impl Input {
     }
     pub fn fit_points(&mut self, doc: &Document) -> Result<(), CommandError> {
         if !self.at_start() || self.pending.is_some() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         if let Some(circle) = crate::circle_fit_points::selected_circle(doc)? {
-            self.reference_circle(circle)
+            let remembered_radius = self.preferences.radius;
+            self.reference_circle(circle)?;
+            if self.kind == Kind::Mesh {
+                self.preferences.radius = remembered_radius;
+            }
+            Ok(())
         } else {
             let mut sums: [viboceros_geometry::FiniteSum; 3] =
                 std::array::from_fn(|_| Default::default());
@@ -259,10 +315,10 @@ impl Input {
     }
     pub fn point(&mut self, mut point: Point3) -> Result<(), CommandError> {
         if self.pending.is_some() {
-            return Err(CommandError::Usage(USAGE));
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         if let Some(circle) = self.circle {
-            let d = super::tube::point(circle, point, self.preferences)?;
+            let d = super::tube::point(circle, point, self.preferences, self.kind)?;
             self.accepted_tube(d);
         } else {
             if self.project_base {
@@ -278,7 +334,11 @@ impl Input {
     }
     pub fn enter(&mut self) -> Result<(), CommandError> {
         if self.pending.is_some() {
-            return Err(CommandError::Usage(USAGE));
+            if self.kind == Kind::Mesh {
+                self.pending = None;
+                return Ok(());
+            }
+            return Err(CommandError::Usage(self.kind.usage()));
         }
         if self.circle.is_some() {
             self.number(
@@ -304,7 +364,7 @@ impl Input {
                     },
             )
         } else {
-            Err(CommandError::Usage(USAGE))
+            Err(CommandError::Usage(self.kind.usage()))
         }
     }
     pub fn preview(&self, point: Point3) -> Option<Definition> {

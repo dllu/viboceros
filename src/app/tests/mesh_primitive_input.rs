@@ -400,38 +400,26 @@ fn interactive_mesh_torus_retains_counts_and_validates_three_picks() {
     assert!(!app.try_start_interactive_command("MeshTorus VerticalFaces=2"));
     assert!(!app.try_start_interactive_command("MeshTorus VerticalFaces=1000001 AroundFaces=3"));
     assert!(app.try_start_interactive_command("MeshTorus VerticalFaces=4 AroundFaces=6"));
-    let center = point(1.0, 2.0, 1.0);
-    app.accept_drafting_point(center);
-    app.accept_drafting_point(point(1.0, 2.0, 9.0));
+    let center = point(1., 2., 1.);
+    let major = point(5., 2., 1.);
+    assert!(app.accept_drafting_point(center));
+    assert!(!app.accept_drafting_point(center));
+    assert!(app.accept_drafting_point(major));
+    assert_eq!(app.active_command.unwrap().name(), "MeshTorus");
     assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshTorus {
-            center: Some(center),
-            major_point: None,
-            vertical_count: 4,
-            around_count: 6,
-        })
+        app.torus_session
+            .as_ref()
+            .unwrap()
+            .input
+            .circle
+            .unwrap()
+            .radius,
+        4.
     );
+    assert!(!app.accept_drafting_point(major));
+    assert!(!app.accept_drafting_point(center));
     assert_eq!(app.document.objects().len(), 0);
-
-    let major_point = point(5.0, 2.0, 1.0);
-    app.accept_drafting_point(point(5.0, 2.0, 9.0));
-    let awaiting_minor = InteractiveCommand::MeshTorus {
-        center: Some(center),
-        major_point: Some(major_point),
-        vertical_count: 4,
-        around_count: 6,
-    };
-    assert_eq!(app.active_command, Some(awaiting_minor));
-    assert_eq!(awaiting_minor.anchor(), Some(major_point));
-
-    app.accept_drafting_point(major_point);
-    assert_eq!(app.active_command, Some(awaiting_minor));
-    app.accept_drafting_point(center);
-    assert_eq!(app.active_command, Some(awaiting_minor));
-    assert_eq!(app.document.objects().len(), 0);
-
-    app.accept_drafting_point(point(5.0, 3.0, 1.0));
+    assert!(app.accept_drafting_point(point(6., 2., 1.)));
     assert_eq!(app.active_command, None);
     let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
         panic!("expected an interactively created mesh torus")

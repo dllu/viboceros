@@ -27,7 +27,7 @@ pub(super) struct CursorConstraints {
     pub(super) translation: Option<viboceros_command::translation::DestinationConstraint>,
 }
 
-pub(super) const MAX_DRAFT_MESH_FACES: usize = 4096;
+pub(crate) const MAX_DRAFT_MESH_FACES: usize = 4096;
 
 impl Viewport {
     pub(super) fn paint_sphere_draft(

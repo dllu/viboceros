@@ -77,13 +77,19 @@ Vertices and faces preserve Rhino's NURBS-parameter sampling and welded index
 order. The four-pick toolbar workflow retains these options, and one ellipsoid
 is bounded to one million faces.
 
-`MeshTorus` creates a closed quadrilateral ring torus from a center, numeric or
-picked major radius, and a positive minor radius smaller than the major radius.
-`VerticalFaces` divides the tube circle, `AroundFaces` divides the major circle,
-and both default to 10. Vertices and seam-wrapped faces retain Rhino's periodic
-row-major ordering. `Axis=x,y,z` orients typed commands; the three-pick toolbar
-workflow uses World Z and measures the tube radius from the major-radius point.
-One torus is bounded to one million faces and invalid radii fail atomically.
+`MeshTorus` accepts a center and size, or a base circle from `Vertical`,
+`2Point`, `3Point`, `Tangent`, `AroundCurve` or `FitPoints`. The base size can
+be a radius, diameter, circumference or area. `Orientation` changes the base
+plane, and `ProjectOsnap` controls projection of snapped radius picks.
+
+Set `VerticalFaces` for the tube and `AroundFaces` for the ring at the center
+prompt. Both start at 10. At the second prompt, choose `Radius` or
+`Diameter`. A fresh session starts in diameter mode. `FixInnerDimension`
+uses the base circle as the inner rim. With this option, a picked point
+sets the total thickness in diameter mode or the tube radius in radius
+mode. Accepted settings carry over to the next invocation. The viewport
+previews mesh edges up to 4,096 faces and draws torus sections for denser
+meshes. Complete commands with `Axis=x,y,z` accept an explicit tube radius.
 
 [`MeshToNURB`](mesh-to-nurb.md) converts selected triangle/quad meshes to exact
 NURBS faces, splitting edge-disconnected components into separate unselected

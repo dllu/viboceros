@@ -4,7 +4,7 @@ use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_TORUS_FACE_COUNT,
+    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
     DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings, format_interp_curve_options,
     parse_curve_closure, parse_curve_degree, parse_interp_curve_options,
     update_interp_curve_options,
@@ -14,8 +14,8 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -308,7 +308,6 @@ mod subd_ellipsoid;
 mod subd_native_tests;
 mod subd_primitives;
 mod subd_sphere;
-mod subd_torus;
 #[cfg(test)]
 #[path = "../crates/viboceros-geometry/tests/support/subdivision_native.rs"]
 #[allow(dead_code)]
@@ -320,6 +319,7 @@ mod surface_point_grid;
 mod surface_rebuild;
 mod taper_prompt;
 mod toolbar;
+mod torus;
 mod transform_prompt;
 mod transform_sources;
 mod translation_prompt;
@@ -526,7 +526,7 @@ pub struct VibocerosApp {
     subd_primitive_session: Option<subd_primitives::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
-    subd_torus_session: Option<subd_torus::Session>,
+    torus_session: Option<torus::Session>,
     subd_ellipsoid_session: Option<subd_ellipsoid::Session>,
     ellipsoid_session: Option<ellipsoid::Session>,
     orient_points_session: Option<orient_points::Session>,
@@ -720,7 +720,7 @@ impl VibocerosApp {
             subd_primitive_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
-            subd_torus_session: None,
+            torus_session: None,
             subd_ellipsoid_session: None,
             ellipsoid_session: None,
             orient_points_session: None,
@@ -902,7 +902,7 @@ impl VibocerosApp {
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
-            || self.continue_subd_torus(&input)
+            || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
@@ -1154,7 +1154,7 @@ impl VibocerosApp {
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
             || self.start_subd_ellipsoid(&input)
-            || self.start_subd_torus(&input)
+            || self.start_torus(&input)
             || self.start_subd_sphere(&input)
             || self.start_subd_axial(&input)
             || self.try_start_object_prompt(&input)

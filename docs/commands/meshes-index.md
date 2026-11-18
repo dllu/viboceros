@@ -37,7 +37,7 @@
 - [TriangulateNonPlanarQuads: selective quad splitting](triangulate-nonplanar-quads.md)
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
-- [MeshSphere styles and construction modes](mesh-primitives.md)
+- [MeshSphere and MeshTorus construction modes](mesh-primitives.md)
 - [Polygon meshes](meshes.md)
 - [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
 - [MeshIntersect: transverse and coplanar intersection curves](mesh-intersect.md)
@@ -80,7 +80,7 @@ MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
 MeshSphere 0,0,0 3 Style=Quad Subdivisions=3
 MeshSphere 0,0,0 3 Style=Triangle Subdivisions=3
 MeshEllipsoid 0,0,0 5 3 2 VerticalFaces=12 AroundFaces=24 CapFaceStyle=Quad
-MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
+MeshTorus VerticalFaces=12 AroundFaces=24 0,0,0 5 Radius=1.5
 OffsetMesh 1 Solid=Yes DeleteInput=No
 AddNgonsToMesh PlanarTolerance=0.01
 DeleteMeshNgons
