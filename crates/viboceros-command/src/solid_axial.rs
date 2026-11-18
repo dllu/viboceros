@@ -9,6 +9,7 @@ mod end_circle;
 mod input;
 mod mesh;
 mod mesh_topology;
+mod tube_wall;
 pub(super) use command::run;
 pub(super) use command::{ConeCommand, TruncatedConeCommand};
 pub(super) use mesh::MeshCommand;
@@ -28,6 +29,7 @@ pub enum Shape {
 pub enum Kind {
     Cone,
     Cylinder,
+    Tube,
     TruncatedCone,
     MeshCone,
     MeshCylinder,
@@ -42,6 +44,7 @@ impl Kind {
         [
             Self::Cone,
             Self::Cylinder,
+            Self::Tube,
             Self::TruncatedCone,
             Self::MeshCone,
             Self::MeshCylinder,
@@ -55,6 +58,7 @@ impl Kind {
         match self {
             Self::Cone => "Cone",
             Self::Cylinder => "Cylinder",
+            Self::Tube => "Tube",
             Self::TruncatedCone => "TruncatedCone",
             Self::MeshCone => "MeshCone",
             Self::MeshCylinder => "MeshCylinder",
@@ -63,6 +67,9 @@ impl Kind {
     }
 
     pub const fn noun(self) -> &'static str {
+        if matches!(self, Self::Tube) {
+            return "tube";
+        }
         match self.shape() {
             Shape::Cone => "cone",
             Shape::Cylinder => "cylinder",
@@ -73,7 +80,7 @@ impl Kind {
     pub const fn shape(self) -> Shape {
         match self {
             Self::Cone | Self::MeshCone => Shape::Cone,
-            Self::Cylinder | Self::MeshCylinder => Shape::Cylinder,
+            Self::Cylinder | Self::Tube | Self::MeshCylinder => Shape::Cylinder,
             Self::TruncatedCone | Self::MeshTruncatedCone => Shape::TruncatedCone,
         }
     }
@@ -89,6 +96,7 @@ impl Kind {
         match self {
             Self::Cone => "Cone FitPoints",
             Self::Cylinder => "Cylinder FitPoints",
+            Self::Tube => "Tube FitPoints",
             Self::TruncatedCone => "TruncatedCone FitPoints",
             Self::MeshCone => "MeshCone FitPoints",
             Self::MeshCylinder => "MeshCylinder FitPoints",
@@ -104,6 +112,7 @@ impl Kind {
             Self::Cylinder => {
                 "Cylinder [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle [BothSides=Yes|No] height-or-end"
             }
+            Self::Tube => crate::TUBE_USAGE,
             Self::TruncatedCone => {
                 "TruncatedCone [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle height-or-end [Radius|Diameter] top-size"
             }
@@ -117,6 +126,7 @@ impl Kind {
         match self {
             Self::Cone => registry.solid_cone_preferences.get().0,
             Self::Cylinder => registry.solid_cylinder_preferences.get().0,
+            Self::Tube => registry.tube_preferences.get().0,
             Self::TruncatedCone => registry.truncated_cone_preferences.get().0,
             mesh => {
                 registry.mesh_axial_preferences[mesh.shape() as usize]
@@ -143,6 +153,7 @@ impl Kind {
             Self::Cylinder => registry
                 .solid_cylinder_preferences
                 .set(CylinderSettings(preferences)),
+            Self::Tube => registry.tube_preferences.set(TubeSettings(preferences)),
             Self::TruncatedCone => registry
                 .truncated_cone_preferences
                 .set(TruncatedConeSettings(preferences)),
@@ -185,6 +196,7 @@ pub struct Preferences {
     pub diameter: bool,
     pub height: f64,
     pub end_size: f64,
+    pub wall_thickness: f64,
     pub topology: MeshTopology,
 }
 
@@ -198,6 +210,7 @@ impl Default for Preferences {
             diameter: false,
             height: 1.,
             end_size: 0.,
+            wall_thickness: 1.,
             topology: MeshTopology::default(),
         }
     }
@@ -217,6 +230,8 @@ impl Preferences {
 pub(super) struct ConeSettings(pub(super) Preferences);
 #[derive(Clone, Copy)]
 pub(super) struct CylinderSettings(pub(super) Preferences);
+#[derive(Clone, Copy)]
+pub(super) struct TubeSettings(pub(super) Preferences);
 #[derive(Clone, Copy)]
 pub(super) struct TruncatedConeSettings(pub(super) Preferences);
 #[derive(Clone, Copy)]
@@ -251,6 +266,15 @@ impl Default for CylinderSettings {
 }
 
 impl Default for TruncatedConeSettings {
+    fn default() -> Self {
+        Self(Preferences {
+            height: 0.,
+            ..Default::default()
+        })
+    }
+}
+
+impl Default for TubeSettings {
     fn default() -> Self {
         Self(Preferences {
             height: 0.,
@@ -326,6 +350,18 @@ impl Definition {
         Ok((frame, (end - start).abs()))
     }
 
+    fn cylinder_wall(self, radius: f64) -> Result<NurbsSurface, viboceros_geometry::GeometryError> {
+        let (frame, height) = self.cylinder_path()?;
+        NurbsSurface::try_cylinder(frame, radius, 0., height)?
+            .try_reparameterized(0.0..=std::f64::consts::TAU * radius, 0.0..=height)
+    }
+
+    pub fn second_wall(self) -> Option<NurbsSurface> {
+        (self.kind == Kind::Tube)
+            .then(|| self.cylinder_wall(self.end_radius).ok())
+            .flatten()
+    }
+
     pub fn wall(self) -> Result<NurbsSurface, viboceros_geometry::GeometryError> {
         match self.kind.shape() {
             Shape::Cone => {
@@ -336,11 +372,7 @@ impl Definition {
                 [self.radius, self.end_radius],
                 self.height.abs(),
             ),
-            Shape::Cylinder => {
-                let (frame, height) = self.cylinder_path()?;
-                let wall = NurbsSurface::try_cylinder(frame, self.radius, 0., height)?;
-                wall.try_reparameterized(0.0..=std::f64::consts::TAU * self.radius, 0.0..=height)
-            }
+            Shape::Cylinder => self.cylinder_wall(self.radius),
         }
     }
 
@@ -354,13 +386,24 @@ impl Definition {
         }
         match self.kind.shape() {
             Shape::Cylinder => {
-                let brep = Brep::try_cylinder_extrusion(
-                    self.frame,
-                    self.radius,
-                    self.height_range(),
-                    self.solid,
-                    tolerance,
-                )?;
+                let brep = if self.kind == Kind::Tube {
+                    let (frame, height) = self.cylinder_path()?;
+                    Brep::try_tube_extrusion(
+                        frame,
+                        [self.radius, self.end_radius],
+                        height,
+                        self.solid,
+                        tolerance,
+                    )?
+                } else {
+                    Brep::try_cylinder_extrusion(
+                        self.frame,
+                        self.radius,
+                        self.height_range(),
+                        self.solid,
+                        tolerance,
+                    )?
+                };
                 Ok(Geometry::Brep(if use_extrusions {
                     brep
                 } else {
@@ -382,6 +425,43 @@ impl Definition {
                 tolerance,
             )?)),
         }
+    }
+
+    pub fn geometries(
+        self,
+        use_extrusions: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Geometry>, CommandError> {
+        if self.kind != Kind::Tube {
+            return Ok(vec![self.geometry(use_extrusions, tolerance)?]);
+        }
+        let (frame, height) = self.cylinder_path()?;
+        let breps = if self.radius == self.end_radius {
+            Brep::try_coincident_tube_faces(frame, self.radius, height, self.solid, tolerance)?
+        } else if self.solid {
+            let radii = [self.radius, self.end_radius];
+            vec![if use_extrusions {
+                Brep::try_tube_extrusion(frame, radii, height, true, tolerance)?
+            } else {
+                Brep::try_tube_polysurface(frame, radii, height, tolerance)?
+            }]
+        } else {
+            [
+                self.radius.max(self.end_radius),
+                self.radius.min(self.end_radius),
+            ]
+            .into_iter()
+            .enumerate()
+            .map(|(index, radius)| {
+                if use_extrusions {
+                    Brep::try_cylinder_extrusion(frame, radius, [0., height], false, tolerance)
+                } else {
+                    Brep::try_tube_wall_face(frame, radius, height, index == 1, tolerance)
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()?
+        };
+        Ok(breps.into_iter().map(Geometry::Brep).collect())
     }
 }
 

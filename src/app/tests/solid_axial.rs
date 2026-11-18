@@ -8,6 +8,7 @@ use viboceros_geometry::{Brep, NurbsSurface};
 
 mod mesh;
 mod truncated_cone;
+mod tube;
 
 fn brep(app: &VibocerosApp) -> &Brep {
     let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {

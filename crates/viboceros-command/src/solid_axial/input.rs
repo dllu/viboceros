@@ -1,6 +1,7 @@
 //! Base-circle, direction, signed-height and end-circle getters.
 use super::end_circle::EndCircle;
 use super::mesh_topology::Count;
+use super::tube_wall::TubeWall;
 use super::*;
 use crate::{
     circle_input::{CircleDefinition, CircleInput, CircleSizeMode},
@@ -17,6 +18,8 @@ pub struct Input {
     pub definition: Option<Definition>,
     base: CircleInput,
     end_circle: Option<EndCircle>,
+    tube_wall: Option<TubeWall>,
+    tube_height: Option<f64>,
     guide_selected: bool,
     direction_menu: bool,
     mesh_count: Option<Count>,
@@ -37,6 +40,8 @@ impl Input {
             definition: None,
             base: CircleInput::new(plane).with_size_mode(mode),
             end_circle: None,
+            tube_wall: None,
+            tube_height: None,
             guide_selected: false,
             direction_menu: false,
             mesh_count: None,
@@ -112,20 +117,34 @@ impl Input {
     pub fn height_constraint(self) -> Option<DestinationConstraint> {
         let circle = self.circle?;
         if self.end_circle.is_some()
+            || self.tube_wall.is_some_and(TubeWall::pending)
             || self.direction_menu
-            || self.preferences.direction == Direction::None
         {
             return None;
         }
+        let (direction, distance) = if self.preferences.direction == Direction::None {
+            (None, Some(self.tube_height?.abs()))
+        } else {
+            (Some(circle.frame.z_axis()), None)
+        };
         Some(DestinationConstraint {
             anchor: circle.frame.origin(),
-            direction: Some(circle.frame.z_axis()),
-            distance: None,
+            direction,
+            distance,
         })
     }
 
     pub fn end_plane(self) -> Option<Frame3> {
         self.end_circle.map(|end| end.frame)
+    }
+
+    pub fn mouse_plane(self) -> Option<Frame3> {
+        self.end_plane()
+            .or_else(|| (self.tube_wall == Some(TubeWall::Radius)).then_some(self.circle?.frame))
+    }
+
+    pub fn zero_is_point(self) -> bool {
+        matches!(self.tube_wall, Some(TubeWall::Radius | TubeWall::Ready(_)))
     }
 
     fn end_mode(self) -> CircleSizeMode {
@@ -155,6 +174,17 @@ impl Input {
             return format!("Direction constraint <{direction}> ({choices})");
         }
         if self.circle.is_some() {
+            if let Some(wall) = self.tube_wall.filter(|wall| wall.pending()) {
+                let thickness = self.preferences.wall_thickness;
+                return match wall {
+                    TubeWall::Thickness => format!("WallThickness <{thickness}>"),
+                    _ => {
+                        let mode = self.end_mode();
+                        let size = self.preferences.end_size / mode.radius(1.);
+                        format!("{} <{size}>; WallThickness={thickness}", mode.label())
+                    }
+                };
+            }
             if self.kind.shape() == Shape::TruncatedCone {
                 return if self.end_circle.is_some() {
                     let (mode, option) = if self.preferences.diameter {
@@ -168,7 +198,7 @@ impl Input {
                 };
             }
             let mut prompt = format!("End of {name} <{}>", self.preferences.height);
-            if self.preferences.direction != Direction::AroundCurve {
+            if self.kind != Kind::Tube && self.preferences.direction != Direction::AroundCurve {
                 prompt.push_str(&format!("; DirectionConstraint={direction}"));
             }
             if self.kind.shape() == Shape::Cylinder {
@@ -240,6 +270,17 @@ impl Input {
             .split_once('=')
             .or_else(|| word.split_once(char::is_whitespace))
             .map_or((word, None), |(k, v)| (k, Some(v.trim())));
+        if self.tube_wall.is_some_and(TubeWall::pending) {
+            if self.tube_wall == Some(TubeWall::Radius) && option_name_eq(name, "WallThickness") {
+                if let Some(value) = value {
+                    self.accept_tube_thickness(crate::parse_finite_real(value)?)?;
+                } else {
+                    self.tube_wall = Some(TubeWall::Thickness);
+                }
+                return Ok(true);
+            }
+            return Ok(false);
+        }
         if self.end_circle.is_some() {
             if let Some(mode @ (CircleSizeMode::Radius | CircleSizeMode::Diameter)) =
                 CircleSizeMode::parse(name)
@@ -254,7 +295,9 @@ impl Input {
             return Ok(false);
         }
         let can_toggle_direction = (self.base.is_two_point() && self.circle.is_none()
-            || self.circle.is_some() && self.kind.shape() != Shape::TruncatedCone)
+            || self.circle.is_some()
+                && !matches!(self.kind, Kind::Tube)
+                && self.kind.shape() != Shape::TruncatedCone)
             && self.preferences.direction != Direction::AroundCurve;
         if option_name_eq(name, "DirectionConstraint") && (self.at_start() || can_toggle_direction)
         {
@@ -355,8 +398,33 @@ impl Input {
         if self.base.remembers_radius() {
             self.preferences.radius = circle.radius;
         }
+        self.set_circle(circle);
+    }
+
+    fn set_circle(&mut self, circle: CircleDefinition) {
         self.circle = Some(circle);
+        self.tube_wall = (self.kind == Kind::Tube).then_some(TubeWall::Radius);
         self.cursor = None;
+    }
+
+    fn accept_tube_radius(&mut self, radius: f64) -> Result<(), CommandError> {
+        let radius = TubeWall::check_radius(radius)?;
+        self.tube_wall = Some(TubeWall::Ready(radius));
+        self.preferences.end_size = radius;
+        self.cursor = None;
+        Ok(())
+    }
+
+    fn accept_tube_thickness(&mut self, thickness: f64) -> Result<(), CommandError> {
+        let base = self.circle.ok_or(CommandError::Usage(self.kind.usage()))?;
+        let thickness = if thickness == 0.0 {
+            self.preferences.wall_thickness
+        } else {
+            thickness
+        };
+        self.accept_tube_radius(TubeWall::from_thickness(base.radius, thickness)?)?;
+        self.preferences.wall_thickness = thickness;
+        Ok(())
     }
 
     pub fn reference_circle(
@@ -371,7 +439,7 @@ impl Input {
         if remember {
             self.accept_circle(definition);
         } else {
-            self.circle = Some(definition);
+            self.set_circle(definition);
         }
         Ok(())
     }
@@ -383,7 +451,8 @@ impl Input {
     }
 
     pub fn observe_cursor(&mut self, point: Point3) {
-        if self.end_circle.is_none()
+        if self.kind != Kind::Tube
+            && self.end_circle.is_none()
             && let Some(circle) = self.circle
             && !self.direction_menu
         {
@@ -400,9 +469,16 @@ impl Input {
             self.preferences.end_size = definition.end_radius;
             self.definition = Some(definition);
         } else if let Some(circle) = self.circle {
+            match self.tube_wall {
+                Some(TubeWall::Radius) => {
+                    return self.accept_tube_radius(TubeWall::projected_radius(circle, point)?);
+                }
+                Some(TubeWall::Thickness) => return Err(CommandError::Usage(self.kind.usage())),
+                _ => {}
+            }
             let offset = circle.frame.origin().vector_to(point)?;
             let height = if self.preferences.direction == Direction::None {
-                offset.length()?
+                self.tube_height.map_or_else(|| offset.length(), Ok)?
             } else {
                 offset.dot(circle.frame.z_axis().as_vector())?
             };
@@ -413,7 +489,9 @@ impl Input {
             } else {
                 height
             };
-            self.preferences.height = measured_height.abs();
+            if self.tube_height.is_none() {
+                self.preferences.height = measured_height.abs();
+            }
         } else {
             if self.preferences.direction == Direction::AroundCurve && self.base.has_size_mode() {
                 let frame = self.base.construction_plane();
@@ -435,6 +513,14 @@ impl Input {
             let definition = end.size(self.end_mode(), value)?;
             self.preferences.end_size = value.max(0.);
             self.definition = Some(definition);
+        } else if self.tube_wall == Some(TubeWall::Radius) {
+            self.accept_tube_radius(self.end_mode().radius(value).abs())?;
+        } else if self.tube_wall == Some(TubeWall::Thickness) {
+            self.accept_tube_thickness(value)?;
+        } else if self.tube_wall.is_some() && self.preferences.direction == Direction::None {
+            validate_height(value)?;
+            self.tube_height = Some(value);
+            self.preferences.height = value;
         } else if self.circle.is_some() {
             self.end(value, None)?;
         } else if let Some(circle) = self.base.number(value)? {
@@ -453,6 +539,13 @@ impl Input {
         }
         if self.end_circle.is_some() {
             return self.number(self.preferences.end_size);
+        }
+        match self.tube_wall {
+            Some(TubeWall::Radius) => return self.accept_tube_radius(self.preferences.end_size),
+            Some(TubeWall::Thickness) => {
+                return self.accept_tube_thickness(self.preferences.wall_thickness);
+            }
+            _ => {}
         }
         if self.circle.is_some() {
             return self.number(self.preferences.height);
@@ -476,12 +569,7 @@ impl Input {
     }
 
     fn end(&mut self, height: f64, point: Option<Point3>) -> Result<(), CommandError> {
-        if !height.is_finite() || height.abs() <= Tolerance::NUMERICAL_VALIDATION.absolute() {
-            return Err(GeometryError::Degenerate {
-                context: "axial primitive height",
-            }
-            .into());
-        }
+        validate_height(height)?;
         let circle = self.circle.ok_or(CommandError::Usage(self.kind.usage()))?;
         let mut frame = circle.frame;
         let target = if self.preferences.direction == Direction::None {
@@ -508,13 +596,17 @@ impl Input {
             }
         } else if let Some(target) = target {
             let normal = frame.origin().vector_to(target)?.normalized_nonzero()?;
-            let basis = Frame3::try_from_unit_normal(frame.origin(), normal.opposite())?;
-            frame = Frame3::try_from_unit_directions(
-                basis.origin(),
-                basis.x_axis(),
-                basis.y_axis().opposite(),
-                Tolerance::NUMERICAL_VALIDATION,
-            )?;
+            if self.kind == Kind::Tube && height < 0. {
+                frame = Frame3::try_from_unit_normal(frame.origin(), normal)?;
+            } else {
+                let basis = Frame3::try_from_unit_normal(frame.origin(), normal.opposite())?;
+                frame = Frame3::try_from_unit_directions(
+                    basis.origin(),
+                    basis.x_axis(),
+                    basis.y_axis().opposite(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                )?;
+            }
         }
         let definition = Definition {
             kind: self.kind,
@@ -523,7 +615,7 @@ impl Input {
             height,
             solid: self.preferences.solid,
             both_sides: self.kind.shape() == Shape::Cylinder && self.preferences.both_sides,
-            end_radius: 0.,
+            end_radius: self.tube_wall.and_then(TubeWall::radius).unwrap_or(0.),
             topology: self.preferences.topology,
         };
         if self.kind.shape() == Shape::TruncatedCone {
@@ -551,6 +643,32 @@ impl Input {
     pub fn preview_circle(self, cursor: Point3) -> Option<CircleDefinition> {
         self.circle.or_else(|| self.base.preview(cursor))
     }
+
+    pub fn preview_tube_circle(self, cursor: Option<Point3>) -> Option<CircleDefinition> {
+        let base = self.circle?;
+        let radius = match self.tube_wall? {
+            TubeWall::Radius => cursor.map_or(Some(self.preferences.end_size), |point| {
+                TubeWall::projected_radius(base, point).ok()
+            })?,
+            TubeWall::Thickness => {
+                TubeWall::from_thickness(base.radius, self.preferences.wall_thickness).ok()?
+            }
+            TubeWall::Ready(radius) => radius,
+        };
+        Some(CircleDefinition {
+            radius: TubeWall::check_radius(radius).ok()?,
+            ..base
+        })
+    }
+}
+
+fn validate_height(height: f64) -> Result<(), GeometryError> {
+    if !height.is_finite() || height.abs() <= Tolerance::NUMERICAL_VALIDATION.absolute() {
+        return Err(GeometryError::Degenerate {
+            context: "axial primitive height",
+        });
+    }
+    Ok(())
 }
 
 fn toggle(value: Option<&str>, previous: bool, kind: Kind) -> Result<bool, CommandError> {

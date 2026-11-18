@@ -8,6 +8,7 @@ B-rep output for eligible creators.
 - [Torus construction modes and live previews](torus.md)
 - [Cone and Cylinder bases, direction constraints and live previews](cone-cylinder.md)
 - [TruncatedCone base and top-circle input](truncated-cone.md)
+- [Tube base, second wall and height input](tube.md)
 - [Paraboloid focus, vertex and direction input](paraboloid.md)
 - [Pyramid modes, guides and live previews](pyramid.md)
 - [TruncatedPyramid base, direction and live top sizing](truncated-pyramid.md)

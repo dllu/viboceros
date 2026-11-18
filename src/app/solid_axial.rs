@@ -116,27 +116,31 @@ impl VibocerosApp {
             self.solid_axial_prompt();
             return true;
         };
-        let geometry = match definition.geometry(self.commands.use_extrusions(), session.tolerance)
-        {
-            Ok(geometry) => geometry,
-            Err(error) => {
-                let settings = definition.kind.preferences(&self.commands);
-                let input = &mut self.solid_axial_session.as_mut().unwrap().input;
-                input.definition = None;
-                input.preferences.height = settings.height;
-                input.preferences.end_size = settings.end_size;
-                self.command_file.fail_dispatch();
-                self.push_log(format!("Error: {error}"));
-                return false;
-            }
-        };
+        let geometries =
+            match definition.geometries(self.commands.use_extrusions(), session.tolerance) {
+                Ok(geometries) => geometries,
+                Err(error) => {
+                    let settings = definition.kind.preferences(&self.commands);
+                    let input = &mut self.solid_axial_session.as_mut().unwrap().input;
+                    input.definition = None;
+                    input.preferences.height = settings.height;
+                    input.preferences.end_size = settings.end_size;
+                    self.command_file.fail_dispatch();
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            };
         let mut session = self.solid_axial_session.take().unwrap();
         let result = (|| -> Result<(), DocumentError> {
             self.document.begin_group_transaction(&session.group)?;
             let result = self
                 .document
                 .release_command_selection_on_history_replay(session.guide_picks)
-                .and_then(|()| self.document.add_geometry(geometry));
+                .and_then(|()| {
+                    geometries
+                        .into_iter()
+                        .try_for_each(|geometry| self.document.add_geometry(geometry).map(|_| ()))
+                });
             if let Err(error) = result {
                 self.document.rollback_transaction()?;
                 return Err(error);
@@ -220,11 +224,17 @@ impl VibocerosApp {
             .split_once('=')
             .or_else(|| text.split_once(char::is_whitespace))
             .and_then(|(name, value)| {
-                let mode = CircleSizeMode::parse(name)?;
-                let units = if mode == CircleSizeMode::Area {
-                    &scalar
-                } else {
-                    units
+                let units = match CircleSizeMode::parse(name) {
+                    Some(CircleSizeMode::Area) => &scalar,
+                    Some(_) => units,
+                    None if input.kind == Kind::Tube
+                        && name
+                            .trim_start_matches(['_', '-'])
+                            .eq_ignore_ascii_case("WallThickness") =>
+                    {
+                        units
+                    }
+                    None => return None,
                 };
                 viboceros_drafting::PointInput::parse_length_with_units(value.trim(), units)
                     .and_then(Result::ok)
@@ -233,6 +243,12 @@ impl VibocerosApp {
         let result = match input.option(assigned.as_deref().unwrap_or(text)) {
             Ok(true) => Ok(()),
             Err(error) => Err(error),
+            Ok(false) if word == "0" && (input.zero_is_point() || !input.wants_number()) => {
+                let point = self.viewports[self.active_viewport]
+                    .construction_plane()
+                    .origin();
+                return self.accept_solid_axial_point(point).unwrap_or(false);
+            }
             Ok(false) if input.wants_number() => {
                 let Some(value) =
                     viboceros_drafting::PointInput::parse_length_with_units(text, units)
@@ -242,12 +258,6 @@ impl VibocerosApp {
                 value
                     .map_err(|_| viboceros_command::CommandError::InvalidNumber(text.into()))
                     .and_then(|v| input.number(v))
-            }
-            Ok(false) if word == "0" => {
-                let point = self.viewports[self.active_viewport]
-                    .construction_plane()
-                    .origin();
-                return self.accept_solid_axial_point(point).unwrap_or(false);
             }
             Ok(false) => return false,
         };

@@ -1,6 +1,7 @@
 //! Circular solid drafts from the current point getter.
 use super::*;
 use viboceros_command::solid_axial::{Input, Shape};
+use viboceros_geometry::NurbsSurface;
 
 impl Viewport {
     pub(super) fn paint_solid_axial_preview(
@@ -26,36 +27,58 @@ impl Viewport {
         if let Some(definition) = definition
             && let Ok(wall) = definition.wall()
         {
-            let u = wall.domain_u();
-            let v = wall.domain_v();
             let shape = definition.kind.shape();
-            let bands = [
-                (shape != Shape::Cone).then_some(*v.start()),
-                (shape != Shape::TruncatedCone || definition.end_radius > 0.).then_some(*v.end()),
-            ];
-            for v in bands.into_iter().flatten() {
-                if let Ok(rim) = wall.isocurve_u(v) {
-                    self.paint_curve_draft(painter, rect, &rim);
+            for wall in std::iter::once(wall).chain(definition.second_wall()) {
+                self.paint_axial_wall(
+                    painter,
+                    rect,
+                    &wall,
+                    shape != Shape::Cone,
+                    shape != Shape::TruncatedCone || definition.end_radius > 0.,
+                );
+            }
+        } else {
+            let base = cursor
+                .and_then(|point| input.preview_circle(point))
+                .or(input.circle);
+            for rim in base.into_iter().chain(input.preview_tube_circle(cursor)) {
+                if let Ok(circle) = Circle3::try_from_frame(
+                    rim.frame.origin(),
+                    rim.radius,
+                    rim.frame.x_axis(),
+                    rim.frame.z_axis(),
+                    Tolerance::NUMERICAL_VALIDATION,
+                ) {
+                    self.paint_curve_draft(painter, rect, &circle);
                 }
             }
-            for fraction in [0., 0.25, 0.5, 0.75] {
-                let u = (u.end() - u.start()).mul_add(fraction, *u.start());
-                if let Ok(line) = wall.isocurve_v(u) {
-                    self.paint_curve_draft(painter, rect, &line);
-                }
+        }
+    }
+
+    fn paint_axial_wall(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        wall: &NurbsSurface,
+        draw_start: bool,
+        draw_end: bool,
+    ) {
+        let u = wall.domain_u();
+        let v = wall.domain_v();
+        let bands = [
+            draw_start.then_some(*v.start()),
+            draw_end.then_some(*v.end()),
+        ];
+        for v in bands.into_iter().flatten() {
+            if let Ok(rim) = wall.isocurve_u(v) {
+                self.paint_curve_draft(painter, rect, &rim);
             }
-        } else if let Some(base) = cursor
-            .and_then(|point| input.preview_circle(point))
-            .or(input.circle)
-            && let Ok(circle) = Circle3::try_from_frame(
-                base.frame.origin(),
-                base.radius,
-                base.frame.x_axis(),
-                base.frame.z_axis(),
-                Tolerance::NUMERICAL_VALIDATION,
-            )
-        {
-            self.paint_curve_draft(painter, rect, &circle);
+        }
+        for fraction in [0., 0.25, 0.5, 0.75] {
+            let u = (u.end() - u.start()).mul_add(fraction, *u.start());
+            if let Ok(line) = wall.isocurve_v(u) {
+                self.paint_curve_draft(painter, rect, &line);
+            }
         }
     }
 }

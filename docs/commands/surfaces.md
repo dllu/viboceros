@@ -204,10 +204,10 @@ edge-defined, or star base. [TruncatedPyramid](truncated-pyramid.md) uses
 the same base modes and adds a live top-size getter. The positional forms
 accept `Axis=` and `Solid=Yes`.
 
-`Tube` creates a closed typed extrusion with concentric rational cylinder walls and
-annular planar caps. The two radii may be entered in either order;
-`WallThickness=` expands outward from the first radius, and `BothSides=Yes`
-centers the full doubled height on the starting point.
+[Tube](tube.md) creates concentric cylindrical walls with a live preview and
+optional annular caps. Enter either radius first or set a signed
+`WallThickness=`. `BothSides=Yes` centers the full doubled height on the
+starting point.
 
 `Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
 major radius (or point on the major circle), and minor radius. `Axis=` orients

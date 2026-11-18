@@ -5,6 +5,7 @@ use viboceros_document::{Document, SelectionMode};
 use viboceros_geometry::{BrepLoopType, Point3, Vector3};
 
 const AXIAL_FIXTURES: &str = include_str!("tests/rhino_primitives.json");
+mod tube;
 
 #[test]
 fn solid_axial_numeric_height_uses_the_base_normal_at_a_coincident_cursor() {

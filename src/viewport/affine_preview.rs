@@ -358,9 +358,9 @@ impl Viewport {
         let ellipsoid_plane = input
             .ellipsoid_preview
             .and_then(EllipsoidPreview::base_mouse_plane);
-        let axial_end_plane = input
+        let axial_mouse_plane = input
             .solid_axial_input
-            .and_then(viboceros_command::solid_axial::Input::end_plane);
+            .and_then(viboceros_command::solid_axial::Input::mouse_plane);
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
             .or_else(|| {
@@ -377,7 +377,7 @@ impl Viewport {
             })
             .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| ellipsoid_plane.map(|p| (p.origin(), p.z_axis())))
-            .or_else(|| axial_end_plane.map(|p| (p.origin(), p.z_axis())))
+            .or_else(|| axial_mouse_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| input.taper_preview.and_then(|p| p.mouse_plane()))
         else {
             return cursor;
@@ -399,7 +399,7 @@ impl Viewport {
                 cursor.source_point = cursor.point;
                 return Some(cursor);
             }
-            return if ellipsoid_plane.is_some() || axial_end_plane.is_some() {
+            return if ellipsoid_plane.is_some() || axial_mouse_plane.is_some() {
                 cursor
             } else {
                 input.taper_preview.and(cursor)

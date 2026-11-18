@@ -1052,6 +1052,7 @@ pub struct CommandRegistry {
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
     solid_cylinder_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
+    tube_preferences: std::sync::Arc<remembered::Remembered<solid_axial::TubeSettings>>,
     solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
     truncated_cone_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::TruncatedConeSettings>>,
@@ -1575,7 +1576,10 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(TubeCommand(registry.use_extrusions.clone()))
+            .register(TubeCommand {
+                extrusions: registry.use_extrusions.clone(),
+                settings: registry.tube_preferences.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(torus::TorusCommand(registry.torus_preferences.clone()))
@@ -5777,7 +5781,7 @@ const CATENARY_USAGE: &str = "Catenary start end axis-direction-point constraint
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
-const TUBE_USAGE: &str = "Tube center first-radius second-radius height | Tube center point-on-first-wall second-radius height | Tube center first-radius height WallThickness=positive-distance [Axis=x,y,z] [BothSides=Yes|No]";
+const TUBE_USAGE: &str = "Tube [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle (second-radius-or-point|WallThickness=distance) [BothSides=Yes|No] height-or-end | Tube center first-radius second-radius height [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum AxialPrimitiveRadius {

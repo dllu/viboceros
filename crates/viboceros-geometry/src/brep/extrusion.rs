@@ -2,6 +2,7 @@
 use super::*;
 use std::sync::Arc;
 mod caps;
+mod tube;
 
 /// Immutable extrusion data retained alongside its exact B-rep view. Only
 /// constructors that decode both views together can attach this representation.

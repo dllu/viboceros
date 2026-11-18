@@ -136,6 +136,12 @@ impl VibocerosApp {
                             .and_then(|s| s.input.anchor())
                     })
                     .or_else(|| self.pyramid_session.as_ref()?.input.anchor())
+                    .or_else(|| {
+                        let input = self.solid_axial_session.as_ref()?.input;
+                        (input.kind == viboceros_command::solid_axial::Kind::Tube)
+                            .then(|| input.anchor())
+                            .flatten()
+                    })
                     .or(self.last_point),
             )
         });

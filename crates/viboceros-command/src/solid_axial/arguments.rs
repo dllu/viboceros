@@ -6,6 +6,7 @@ use crate::{
     parse_finite_real, parse_point,
 };
 use viboceros_document::Document;
+use viboceros_drafting::PointInput;
 
 pub fn from_arguments(
     doc: &Document,
@@ -78,6 +79,11 @@ pub fn from_arguments(
             rest = tail;
             continue;
         }
+        if word == "0" && input.zero_is_point() {
+            input.point(plane.origin())?;
+            rest = tail;
+            continue;
+        }
         if let Some(value) = input
             .wants_number()
             .then(|| parse_finite_real(word).ok())
@@ -88,6 +94,13 @@ pub fn from_arguments(
         } else {
             let (point, count) = if word == "0" && !input.wants_number() {
                 (plane.origin(), 1)
+            } else if kind == Kind::Tube
+                && let Some(point) = PointInput::parse_with_units(word, doc.units())
+            {
+                let point = point
+                    .and_then(|point| point.resolve(plane, input.anchor()))
+                    .map_err(|_| CommandError::InvalidNumber(word.into()))?;
+                (point, 1)
             } else {
                 parse_point(rest)?
             };
