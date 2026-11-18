@@ -92,6 +92,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_paraboloid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_polygon_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_pyramid_point(point) {
             return accepted;
         }
@@ -231,6 +234,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Paraboloid { .. }
+            | InteractiveCommand::Polygon { .. }
             | InteractiveCommand::Pyramid { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Torus { .. }
@@ -1067,34 +1071,6 @@ impl VibocerosApp {
             }
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);
-            }
-            InteractiveCommand::Polygon {
-                side_count,
-                center: None,
-            } => {
-                let command = InteractiveCommand::Polygon {
-                    side_count,
-                    center: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Polygon {
-                side_count,
-                center: Some(center),
-            } => {
-                if !plane_radius_exceeds_tolerance(plane, center, point, self.document.tolerance())
-                {
-                    self.push_log("Error: polygon vertex must differ from its center".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Polygon {side_count} {} {}",
-                    format_model_point(center),
-                    format_model_point(point)
-                ));
             }
             InteractiveCommand::SurfacePointGrid { .. } => {
                 return self.accept_surface_point_grid(point);

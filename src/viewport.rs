@@ -453,6 +453,7 @@ pub struct ViewportInput<'a> {
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
+    pub polygon_input: Option<viboceros_command::polygon::Input>,
     pub pyramid_input: Option<viboceros_command::pyramid::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
@@ -586,6 +587,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             paraboloid_input: None,
+            polygon_input: None,
             pyramid_input: None,
             ellipse_input: None,
             ellipsoid_preview: None,
@@ -3004,6 +3006,21 @@ impl Viewport {
                     painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
                 }
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
+            }
+        }
+        if let Some(getter) = input.polygon_input
+            && let Some(cursor) = drafting_cursor.filter(|_| {
+                input
+                    .point_filter
+                    .is_none_or(|filter| !filter.awaiting_source())
+            })
+            && let Some(points) = getter.preview(cursor.point, 256)
+        {
+            let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+            for edge in points.windows(2) {
+                if let Some(segment) = self.project_segment(edge[0], edge[1], rect) {
+                    painter.line_segment(segment, stroke);
+                }
             }
         }
         if let Some(getter) = input.pyramid_input {

@@ -40,8 +40,7 @@ fn interactive_ellipse_and_polygon_validate_each_pick() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::Polygon {
-            side_count: 6,
-            center: Some(polygon_center),
+            anchor: Some(polygon_center),
         })
     );
     app.accept_drafting_point(point(12.0, 10.0, 5.0));
@@ -57,11 +56,9 @@ fn interactive_ellipse_and_polygon_validate_each_pick() {
     assert!(app.try_start_interactive_command("Polygon"));
     assert_eq!(
         app.active_command,
-        Some(InteractiveCommand::Polygon {
-            side_count: 4,
-            center: None,
-        })
+        Some(InteractiveCommand::Polygon { anchor: None })
     );
+    assert_eq!(app.polygon_session.as_ref().unwrap().input.sides(), 6);
 }
 
 #[test]

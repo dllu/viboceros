@@ -15,6 +15,7 @@ enum Owner {
     SubDSphere,
     Torus(TorusKind),
     SolidAxial(AxialKind),
+    Polygon,
     Pyramid(PyramidKind),
 }
 impl Owner {
@@ -25,6 +26,7 @@ impl Owner {
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
             Self::SolidAxial(kind) => kind.name(),
+            Self::Polygon => "Polygon",
             Self::Pyramid(kind) => kind.name(),
         }
     }
@@ -111,6 +113,10 @@ impl VibocerosApp {
         self.start_circle_around_for(Owner::Pyramid(kind), None);
     }
 
+    pub(super) fn start_polygon_around(&mut self) {
+        self.start_circle_around_for(Owner::Polygon, None);
+    }
+
     fn start_circle_around_for(
         &mut self,
         owner: Owner,
@@ -177,7 +183,16 @@ impl VibocerosApp {
             return;
         };
         let center = s.input.map(Input::center);
-        let prompt = if s.curve.is_none() {
+        let polygon_prompt = self
+            .polygon_session
+            .as_ref()
+            .filter(|_| s.owner == Owner::Polygon)
+            .map(|session| session.input)
+            .filter(|input| input.pending_count() || s.curve.is_some())
+            .map(viboceros_command::polygon::Input::prompt);
+        let prompt = if let Some(prompt) = polygon_prompt {
+            prompt
+        } else if s.curve.is_none() {
             "select curve or surface edge".into()
         } else if let Some(input) = s.input {
             let default = match s.mode {
@@ -228,6 +243,7 @@ impl VibocerosApp {
                 kind,
                 anchor: center,
             },
+            Owner::Polygon => InteractiveCommand::Polygon { anchor: center },
         });
         self.drafting_plane = s.input.map(Input::frame);
         let name = s.owner.name();
@@ -306,6 +322,15 @@ impl VibocerosApp {
             .as_ref()
             .is_some_and(|s| matches!(s.owner, Owner::Pyramid(_)))
             && !self.valid_pyramid()
+        {
+            return false;
+        }
+
+        if self
+            .circle_around_session
+            .as_ref()
+            .is_some_and(|s| s.owner == Owner::Polygon)
+            && !self.valid_polygon()
         {
             return false;
         }
@@ -443,6 +468,14 @@ impl VibocerosApp {
             return Some(false);
         }
         let s = self.circle_around_session.as_mut().unwrap();
+        if s.owner == Owner::Polygon
+            && self
+                .polygon_session
+                .as_ref()
+                .is_some_and(|session| session.input.pending_count())
+        {
+            return Some(false);
+        }
         if let Some(input) = &mut s.input {
             Some(match input.point(point) {
                 Ok(circle) => self.commit_circle_around(circle),
@@ -455,6 +488,10 @@ impl VibocerosApp {
             Some(
                 match perpendicular_frame(s.curve.as_ref().unwrap().curve_ref(), point) {
                     Ok(frame) => {
+                        if s.owner == Owner::Polygon {
+                            let release = s.postselected_object();
+                            return Some(self.accept_polygon_guide(frame, release));
+                        }
                         if matches!(s.owner, Owner::Pyramid(_)) {
                             let release = s.postselected_object();
                             return Some(self.accept_pyramid_guide(frame, release));
@@ -489,6 +526,16 @@ impl VibocerosApp {
             return true;
         }
         if matches!(owner, Owner::Pyramid(_)) && self.try_edit_pyramid_guide(text) {
+            return true;
+        }
+        if owner == Owner::Polygon && self.try_polygon_option(text) {
+            return true;
+        }
+        if owner == Owner::Polygon && text == "0" && !self.picking_circle_around_curve() {
+            let point = self.viewports[self.active_viewport]
+                .construction_plane()
+                .origin();
+            self.accept_filtered_drafting_point(point, true);
             return true;
         }
         if self.try_continue_circle_snap_projection(text) {

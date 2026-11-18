@@ -254,6 +254,7 @@ use mesh_edit::{
     SwapMeshEdgeCommand, TriangulateMeshCommand, UnifyMeshNormalsCommand,
 };
 mod mesh_ngon_commands;
+pub mod polygon;
 mod polygon_count;
 use geometric_continuity::GeometricContinuityCommand;
 use match_curve::MatchCurveCommand;
@@ -439,9 +440,7 @@ use set_point::SetPointCommand;
 #[cfg(test)]
 mod plane_transform_tests;
 pub use context::CommandContext;
-use plane_primitives::{
-    BoxCommand, CircleCommand, MeshBoxCommand, PolygonCommand, RectangleCommand,
-};
+use plane_primitives::{BoxCommand, CircleCommand, MeshBoxCommand, RectangleCommand};
 mod blend;
 pub mod blend_surface;
 mod boolean_difference;
@@ -1050,6 +1049,7 @@ pub struct CommandRegistry {
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
+    polygon_preferences: std::sync::Arc<remembered::Remembered<polygon::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
@@ -1296,7 +1296,9 @@ impl CommandRegistry {
             .register(RectangleCommand::default())
             .expect("unique built-in command");
         registry
-            .register(PolygonCommand)
+            .register(polygon::PolygonCommand(
+                registry.polygon_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(CurveCommand)

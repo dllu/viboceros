@@ -515,12 +515,9 @@ impl InteractiveCommand {
                 opposite: Some(_), ..
             } => "SelBox: pick a height point (Esc to cancel)",
             Self::Pyramid { .. } => "Follow the base and end prompts (Esc cancels)",
-            Self::Polygon { center: None, .. } => {
-                "Polygon: pick the center in the viewport (Esc to cancel)"
+            Self::Polygon { .. } => {
+                "Polygon: follow the current point or size prompt (Esc cancels)"
             }
-            Self::Polygon {
-                center: Some(_), ..
-            } => "Polygon: pick the first vertex in the viewport (Esc to cancel)",
             Self::SurfacePointGrid { .. } => {
                 "Point-grid: enter counts, then ordered points (Undo removes the last point; Esc cancels)"
             }

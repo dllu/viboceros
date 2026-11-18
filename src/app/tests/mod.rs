@@ -223,6 +223,7 @@ mod point_grid;
 mod point_input;
 mod point_selection;
 mod points;
+mod polygon_modes;
 mod polyline_closure;
 #[path = "../../../crates/viboceros-geometry/tests/support/polyline_closure.rs"]
 mod polyline_closure_reference;

@@ -291,7 +291,7 @@ impl InteractiveCommand {
             | Self::Plane { first: None }
             | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
-            | Self::Polygon { center: None, .. }
+            | Self::Polygon { anchor: None }
             | Self::SrfPt {
                 corners: [None, _, _],
             }
@@ -429,7 +429,7 @@ impl InteractiveCommand {
             | Self::CircleDeform { anchor: center }
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
-            | Self::Polygon { center, .. }
+            | Self::Polygon { anchor: center }
             | Self::Ellipsoid { anchor: center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],

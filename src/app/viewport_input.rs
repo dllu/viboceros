@@ -177,6 +177,7 @@ impl VibocerosApp {
             self.update_torus_hover(point);
             self.update_subd_ellipsoid_hover(point);
             self.observe_solid_axial_cursor(point);
+            self.observe_polygon_cursor(point);
             if self.plane_prompt.is_none()
                 && let Some(session) = self.pyramid_session.as_mut()
             {

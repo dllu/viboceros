@@ -10,8 +10,7 @@ use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
-    Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Frame3, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -267,6 +266,7 @@ mod point_deviation;
 mod point_grid;
 mod point_input;
 mod points;
+mod polygon;
 mod polyline_on_mesh;
 mod preferences;
 mod project;
@@ -518,6 +518,7 @@ pub struct VibocerosApp {
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
     paraboloid_session: Option<paraboloid::Session>,
+    polygon_session: Option<polygon::Session>,
     pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
@@ -717,6 +718,7 @@ impl VibocerosApp {
             hyperbola_session: None,
             parabola_session: None,
             paraboloid_session: None,
+            polygon_session: None,
             pyramid_session: None,
             conic_session: None,
             rectangle_session: None,
@@ -912,6 +914,7 @@ impl VibocerosApp {
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
             || self.try_continue_paraboloid(&input)
+            || self.try_continue_polygon(&input)
             || self.try_continue_pyramid(&input)
             || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)

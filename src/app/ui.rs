@@ -893,6 +893,7 @@ impl VibocerosApp {
                     .map(viboceros_command::circle_around_input::Input::frame)
             })
             .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
+            .or_else(|| self.polygon_session.as_ref()?.input.mouse_plane())
             .or_else(|| self.pyramid_session.as_ref()?.input.mouse_plane())
             .or_else(|| self.rectangle_mouse_plane())
             .or_else(|| {
@@ -908,6 +909,15 @@ impl VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active && self.plane_prompt.is_none())
             .and_then(pipe::Session::preview);
+        let polygon_input = self
+            .polygon_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.circle_around_session.is_none()
+            })
+            .map(|session| session.input);
         let pyramid_input = self
             .pyramid_session
             .as_ref()
@@ -1430,6 +1440,7 @@ impl VibocerosApp {
                             circle_around_input,
                             solid_axial_input,
                             pipe_preview,
+                            polygon_input,
                             pyramid_input,
                             solid_axial_fit,
                             torus_preview_curves: self
