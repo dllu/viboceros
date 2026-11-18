@@ -8,16 +8,22 @@ excluded from source selection, matching the recorded native command.
 
 Bare `Section` uses object selection and the shared two-point drafting getter.
 After creating a section, pick another plane or press Enter to finish. Esc
-cancels the pending plane. Inputs stay in the model. Outputs and an optional
-output group form one Undo step per accepted plane.
+cancels the pending plane and keeps earlier cuts. The run is one Undo step.
+Inputs stay in the model and the accepted outputs are selected on exit.
+
+The viewport shows the cutting plane while you pick its end. It computes the
+intersection preview using the same geometry routine as the finished cut.
 
 Options are `ExtendSection=Yes|No`,
 `AssignProperties=ByCurrentLayer|ByInputObject`, `Output=All|CurvesOnly`, and
-`GroupObjectsBySectionPlane=Yes|No`. ExtendSection=No limits output to the picked
-span; the plane extends along CPlane Z. ByInputObject copies source attributes;
-ByCurrentLayer uses fresh current-layer attributes. Grouping collects all output
-from the plane. Section styles/hatches are not implemented, so All currently
-uses the same curve/point output as CurvesOnly.
+`GroupObjectsBySectionPlane=Yes|No`. `ExtendSection=No` limits output to the
+picked span along the trace. The plane extends along CPlane Z. The first
+interactive run starts with `ExtendSection=No`. The positional command defaults
+to extending across the sources. Edit options at either point or between
+planes. The next interactive run recalls those settings, including edits made
+before Esc. `ByInputObject` copies source attributes. `ByCurrentLayer` uses
+fresh current-layer attributes. Grouping collects all output from the plane.
+Current output consists of curves and points for both `All` and `CurvesOnly`.
 
 The surface/B-rep path reuses the validated intersection kernel and stages every
 output before admission. Its existing surface-family limits still apply;
@@ -36,7 +42,7 @@ report is deliberately not a complete compatibility pass. See
 [provenance](../section-command-provenance.json).
 
 Broader B-rep/curved input qualification, nonmanifold mesh junction policy,
-closed-mesh seam fidelity, section styles/hatches, remembered options and
+closed-mesh seam fidelity, section styles/hatches and
 performance remain open. Full Rhino compatibility is still in progress.
 
 Reference: [Section and Contour](https://docs.mcneel.com/rhino/8/help/en-us/commands/contour.htm#Section).

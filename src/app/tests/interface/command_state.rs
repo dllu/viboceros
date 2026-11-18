@@ -63,7 +63,7 @@ fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
     }
     let pending = app.active_command;
     let plane = app.drafting_plane;
-    let points = app.curve_points.clone();
+    let points = crate::app::tests::draft_curve_points(&app);
     let last = app.last_point;
     let selected = app.document.selected_object_ids().collect::<Vec<_>>();
     for command in [
@@ -82,7 +82,7 @@ fn interface_commands_preserve_a_front_view_polyline_and_one_model_undo_step() {
         assert_eq!(app.active_command, pending, "{command}");
         assert_eq!(app.drafting_plane, plane);
         assert_eq!(app.last_point, last);
-        assert_eq!(app.curve_points, points);
+        assert_eq!(crate::app::tests::draft_curve_points(&app), points);
         assert_eq!(
             app.document.selected_object_ids().collect::<Vec<_>>(),
             selected

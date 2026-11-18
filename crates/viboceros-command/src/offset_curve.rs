@@ -1,6 +1,13 @@
 //! Analytic, smooth, and planar polyline offsets with corner and layer choices.
 
 use super::*;
+use viboceros_geometry::{RibbonCornerStyle, UnitVector3};
+mod getter;
+mod multiple;
+mod staged;
+pub use getter::{Cap, Kind, OptionName, Settings, parse_length, parse_settings};
+use multiple::MultipleOptions;
+pub use staged::{Draft, Plan, Target};
 
 #[cfg(test)]
 mod multiple_tests;
@@ -20,8 +27,8 @@ pub(super) fn offset_operations() -> Option<viboceros_geometry::CurveOffsetOpera
     }
 }
 
-pub(super) struct OffsetCommand;
-pub(super) struct OffsetMultipleCommand;
+pub(super) struct OffsetCommand(pub std::sync::Arc<remembered::Remembered<Settings>>);
+pub(super) struct OffsetMultipleCommand(pub std::sync::Arc<remembered::Remembered<Settings>>);
 
 const MULTIPLE_USAGE: &str = "OffsetMultiple distance side-point [OffsetCount=2] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 const MAX_OFFSET_OUTPUTS: usize = 100_000;
@@ -29,6 +36,16 @@ const MAX_OFFSET_OUTPUTS: usize = 100_000;
 impl Command for OffsetMultipleCommand {
     fn name(&self) -> &'static str {
         "OffsetMultiple"
+    }
+
+    fn object_selection_prompt(
+        &self,
+        args: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if parse_multiple(args).is_ok() {
+            return Ok(None);
+        }
+        staged::selection_prompt(Kind::Multiple, args)
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -42,175 +59,31 @@ impl Command for OffsetMultipleCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let options = parse_multiple(arguments)?;
-        let selected_count = document.selected_object_count();
-        if selected_count == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        if selected_count
-            .checked_mul(options.count)
-            .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
-        {
-            return Err(CommandError::Usage(MULTIPLE_USAGE));
-        }
-        let normal = context.construction_plane.z_axis();
-        let tolerance = document.tolerance();
-        let sources = document
-            .selected_objects()
-            .map(|object| {
-                let curve = match object.geometry() {
-                    Geometry::Line(line) => Curve3::Line(*line),
-                    Geometry::Circle(circle) => Curve3::Circle(*circle),
-                    Geometry::Arc(arc) => Curve3::Arc(*arc),
-                    Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
-                    Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
-                    Geometry::NurbsCurve(curve) => Curve3::NurbsCurve(curve.clone()),
-                    Geometry::PolyCurve(curve) => Curve3::PolyCurve(curve.clone()),
-                    _ => return Err(CommandError::UnsupportedOffsetGeometry),
-                };
-                let attributes = ObjectAttributes::on_layer(if options.input_layer {
-                    object.attributes().layer_id()
-                } else {
-                    document.current_layer_id()
-                });
-                Ok((curve, attributes))
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        let inward = sources
-            .iter()
-            .map(|(curve, _)| {
-                curve
-                    .offset_region_inward_sign_with_operations(
-                        normal,
-                        tolerance,
-                        offset_operations(),
-                    )
-                    .map_err(map_offset_error)
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let closed = inward
-            .iter()
-            .enumerate()
-            .filter_map(|(i, sign)| sign.map(|_| i))
-            .collect::<Vec<_>>();
-        // Region nesting has an unambiguous depth only when selected boundaries
-        // do not cross or touch. Check this before creating any document objects.
-        let mut nurbs: Vec<Option<NurbsCurve>> = vec![None; closed.len()];
-        for i in 0..closed.len() {
-            for j in i + 1..closed.len() {
-                let first = &sources[closed[i]].0;
-                let second = &sources[closed[j]].0;
-                let intersects = if let Some(intersects) =
-                    first.offset_region_boundary_relation(second, tolerance)?
-                {
-                    intersects
-                } else {
-                    if nurbs[i].is_none() {
-                        nurbs[i] = Some(first.as_ref().to_nurbs().map_err(map_offset_error)?);
-                    }
-                    if nurbs[j].is_none() {
-                        nurbs[j] = Some(second.as_ref().to_nurbs().map_err(map_offset_error)?);
-                    }
-                    !nurbs[i]
-                        .as_ref()
-                        .expect("cached first curve")
-                        .intersection_events_with_curve(
-                            nurbs[j].as_ref().expect("cached second curve"),
-                            tolerance,
-                        )?
-                        .is_empty()
-                };
-                if intersects {
-                    return Err(GeometryError::IntersectingOffsetRegions.into());
-                }
-            }
-        }
-        let mut inside_any = false;
-        for &i in &closed {
-            inside_any |= sources[i]
-                .0
-                .offset_region_contains_with_operations(
-                    options.side,
-                    normal,
-                    tolerance,
-                    offset_operations(),
-                )?
-                .unwrap_or(false);
-        }
-        let mut depths = vec![0_usize; sources.len()];
-        for &i in &closed {
-            let witness = sources[i]
-                .0
-                .offset_region_boundary_point()?
-                .expect("closed region witness");
-            for &j in &closed {
-                if i != j
-                    && sources[j]
-                        .0
-                        .offset_region_contains_with_operations(
-                            witness,
-                            normal,
-                            tolerance,
-                            offset_operations(),
-                        )?
-                        .unwrap_or(false)
-                {
-                    depths[i] += 1;
-                }
-            }
-        }
-        let mut outputs = Vec::with_capacity(selected_count * options.count);
-        for (i, (curve, attributes)) in sources.iter().enumerate() {
-            let sign = if let Some(inward_sign) = inward[i] {
-                inward_sign
-                    * if inside_any { 1.0 } else { -1.0 }
-                    * if depths[i] % 2 == 0 { 1.0 } else { -1.0 }
-            } else {
-                curve
-                    .offset_side(options.side, normal, tolerance)
-                    .map_err(map_offset_error)?
-            };
-            for step in 1..=options.count {
-                let distance = sign * options.distance * step as Real;
-                let parts = curve
-                    .try_offset_parts_with_operations(
-                        distance,
-                        normal,
-                        tolerance,
-                        options.corner,
-                        offset_operations(),
-                    )
-                    .map_err(map_offset_error)?;
-                if outputs
-                    .len()
-                    .checked_add(parts.len())
-                    .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
-                {
-                    return Err(CommandError::Usage(MULTIPLE_USAGE));
-                }
-                outputs.extend(
-                    parts
-                        .into_iter()
-                        .map(|part| (Geometry::from(part), attributes.clone())),
-                );
-            }
-        }
-        let count = outputs.len();
-        let mut ids = Vec::with_capacity(count);
-        for (geometry, attributes) in outputs {
-            ids.push(document.add_geometry_with_attributes(geometry, attributes)?);
-        }
-        document.select_objects_direct(ids, SelectionMode::Replace)?;
+        let sources = selected_curves(document)?;
+        let curves = multiple::solve(
+            &sources,
+            options,
+            context.construction_plane.z_axis(),
+            document.tolerance(),
+            false,
+        )?;
+        let count = admit(document, curves, options.input_layer)?;
+        self.0.set(Settings {
+            distance: options.distance,
+            count: options.count,
+            corner: options.corner,
+            input_layer: options.input_layer,
+            ..self.0.get()
+        });
         Ok(format!("Created {count} offset curve(s)"))
     }
 }
 
-#[derive(Clone, Copy)]
-struct MultipleOptions {
-    distance: Real,
-    side: Point3,
-    count: usize,
-    corner: CurveOffsetCornerStyle,
-    input_layer: bool,
+pub fn is_positional(kind: Kind, args: &[&str]) -> bool {
+    match kind {
+        Kind::Offset => parse(args).is_ok(),
+        Kind::Multiple => parse_multiple(args).is_ok(),
+    }
 }
 
 fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
@@ -231,7 +104,8 @@ fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
         distance,
         side,
         count: 2,
-        corner: CurveOffsetCornerStyle::Sharp,
+        loose: false,
+        corner: RibbonCornerStyle::Sharp,
         input_layer: false,
     };
     let mut seen = [false; 3];
@@ -271,26 +145,13 @@ fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
                     .ok_or(CommandError::Usage(MULTIPLE_USAGE))?
             }
             1 => {
-                options.corner = if value.eq_ignore_ascii_case("Sharp") {
-                    CurveOffsetCornerStyle::Sharp
-                } else if value.eq_ignore_ascii_case("Chamfer") {
-                    CurveOffsetCornerStyle::Chamfer
-                } else if value.eq_ignore_ascii_case("Round") {
-                    CurveOffsetCornerStyle::Round
-                } else if value.eq_ignore_ascii_case("None") {
-                    CurveOffsetCornerStyle::None
-                } else {
-                    return Err(CommandError::Usage(MULTIPLE_USAGE));
-                }
+                options.corner = getter::corner(value)
+                    .ok_or(CommandError::Usage(MULTIPLE_USAGE))?
+                    .into()
             }
             _ => {
-                options.input_layer = if value.eq_ignore_ascii_case("Input") {
-                    true
-                } else if value.eq_ignore_ascii_case("Current") {
-                    false
-                } else {
-                    return Err(CommandError::Usage(MULTIPLE_USAGE));
-                }
+                options.input_layer =
+                    getter::layer(value).ok_or(CommandError::Usage(MULTIPLE_USAGE))?
             }
         }
         index += consumed;
@@ -301,6 +162,27 @@ fn parse_multiple(arguments: &[&str]) -> Result<MultipleOptions, CommandError> {
 impl Command for OffsetCommand {
     fn name(&self) -> &'static str {
         "Offset"
+    }
+
+    fn object_selection_prompt(
+        &self,
+        args: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if parse(args).is_ok() {
+            return Ok(None);
+        }
+        staged::selection_prompt(Kind::Offset, args)
+    }
+
+    fn object_selection_complete(
+        &self,
+        document: &Document,
+        _args: &[&str],
+    ) -> Result<bool, CommandError> {
+        Ok(document.selected_object_count() == 1
+            && document
+                .selected_objects()
+                .all(|o| o.geometry().curve_ref().is_some()))
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -314,101 +196,39 @@ impl Command for OffsetCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let options = parse(arguments)?;
-        let selected_count = document.selected_object_count();
-        if selected_count == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let normal = context.construction_plane.z_axis();
-        let mut outputs =
-            Vec::with_capacity(selected_count.saturating_mul(1 + usize::from(options.both_sides)));
-        for object in document.selected_objects() {
-            let curve = match object.geometry() {
-                Geometry::Line(line) => Curve3::Line(*line),
-                Geometry::Circle(circle) => Curve3::Circle(*circle),
-                Geometry::Arc(arc) => Curve3::Arc(*arc),
-                Geometry::Ellipse(ellipse) => Curve3::Ellipse(*ellipse),
-                Geometry::Polyline(polyline) => Curve3::Polyline(polyline.clone()),
-                Geometry::NurbsCurve(curve) => Curve3::NurbsCurve(curve.clone()),
-                Geometry::PolyCurve(curve) => Curve3::PolyCurve(curve.clone()),
-                _ => return Err(CommandError::UnsupportedOffsetGeometry),
-            };
-            let output_attributes = if options.input_layer {
-                ObjectAttributes::on_layer(object.attributes().layer_id())
-            } else {
-                ObjectAttributes::on_layer(document.current_layer_id())
-            };
-            // Offset creates fresh objects. A source's name and overrides are
-            // not silently propagated along with its layer.
-            match options.mode {
-                OffsetMode::Distance(distance) => {
-                    let sign = if options.both_sides {
-                        1.0
-                    } else {
-                        curve
-                            .offset_side(
-                                options.side.expect("validated side point"),
-                                normal,
-                                document.tolerance(),
-                            )
-                            .map_err(map_offset_error)?
-                    };
-                    let distances = [sign * distance, -distance];
-                    let count = 1 + usize::from(options.both_sides);
-                    for &signed_distance in &distances[..count] {
-                        let parts = curve
-                            .try_offset_parts_with_operations(
-                                signed_distance,
-                                normal,
-                                document.tolerance(),
-                                options.corner,
-                                offset_operations(),
-                            )
-                            .map_err(map_offset_error)?;
-                        if outputs
-                            .len()
-                            .checked_add(parts.len())
-                            .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
-                        {
-                            return Err(CommandError::Usage(USAGE));
-                        }
-                        outputs.extend(
-                            parts
-                                .into_iter()
-                                .map(|part| (Geometry::from(part), output_attributes.clone())),
-                        );
-                    }
-                }
-                OffsetMode::ThroughPoint(point) => {
-                    let (_, parts) = curve
-                        .try_offset_through_point_with_operations(
-                            point,
-                            normal,
-                            document.tolerance(),
-                            options.corner,
-                            offset_operations(),
-                        )
-                        .map_err(map_offset_error)?;
-                    if outputs
-                        .len()
-                        .checked_add(parts.len())
-                        .is_none_or(|total| total > MAX_OFFSET_OUTPUTS)
-                    {
-                        return Err(CommandError::Usage(USAGE));
-                    }
-                    outputs.extend(
-                        parts
-                            .into_iter()
-                            .map(|part| (Geometry::from(part), output_attributes.clone())),
-                    );
-                }
+        let sources = selected_curves(document)?;
+        let (target, parsed_distance) = match options.mode {
+            OffsetMode::Distance(distance) if options.both_sides => {
+                (Target::BothSides, Some(distance))
             }
-        }
-        let count = outputs.len();
-        let mut ids = Vec::with_capacity(count);
-        for (geometry, attributes) in outputs {
-            ids.push(document.add_geometry_with_attributes(geometry, attributes)?);
-        }
-        document.select_objects_direct(ids, SelectionMode::Replace)?;
+            OffsetMode::Distance(distance) => (
+                Target::Side(options.side.expect("validated side point")),
+                Some(distance),
+            ),
+            OffsetMode::ThroughPoint(point) => (Target::Through(point), None),
+        };
+        let settings = Settings {
+            distance: parsed_distance.unwrap_or_else(|| self.0.get().distance),
+            corner: options.corner.into(),
+            both_sides: options.both_sides,
+            input_layer: options.input_layer,
+            ..Settings::default()
+        };
+        let draft = Draft {
+            kind: Kind::Offset,
+            settings,
+            normal: context.construction_plane.z_axis(),
+            tolerance: document.tolerance(),
+            target,
+        };
+        let plan = draft.solve(&sources)?;
+        let count = admit(document, plan.curves, options.input_layer)?;
+        self.0.set(Settings {
+            distance: plan.distance.unwrap_or(settings.distance),
+            corner: options.corner.into(),
+            input_layer: options.input_layer,
+            ..self.0.get()
+        });
         Ok(match options.mode {
             OffsetMode::Distance(distance) => {
                 format!("Created {count} offset curve(s) at distance {distance}",)
@@ -419,6 +239,45 @@ impl Command for OffsetCommand {
             ),
         })
     }
+}
+
+fn selected_curves(document: &Document) -> Result<Vec<Curve3>, CommandError> {
+    document
+        .selected_objects()
+        .map(|object| {
+            object
+                .geometry()
+                .curve_ref()
+                .map(viboceros_geometry::CurveRef::to_owned)
+                .ok_or(CommandError::UnsupportedOffsetGeometry)
+        })
+        .collect()
+}
+
+fn admit(
+    document: &mut Document,
+    curves: Vec<(usize, Curve3)>,
+    input_layer: bool,
+) -> Result<usize, CommandError> {
+    let layers = document
+        .selected_objects()
+        .map(|object| {
+            ObjectAttributes::on_layer(if input_layer {
+                object.attributes().layer_id()
+            } else {
+                document.current_layer_id()
+            })
+        })
+        .collect::<Vec<_>>();
+    let mut ids = Vec::with_capacity(curves.len());
+    for (index, curve) in curves {
+        ids.push(
+            document.add_geometry_with_attributes(Geometry::from(curve), layers[index].clone())?,
+        );
+    }
+    let count = ids.len();
+    document.select_objects_direct(ids, SelectionMode::Replace)?;
+    Ok(count)
 }
 
 fn map_offset_error(error: GeometryError) -> CommandError {
@@ -499,26 +358,10 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
             options.both_sides = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
             both_seen = true;
         } else if name.eq_ignore_ascii_case("OutputLayer") && !layer_seen {
-            options.input_layer = if value.eq_ignore_ascii_case("Input") {
-                true
-            } else if value.eq_ignore_ascii_case("Current") {
-                false
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            };
+            options.input_layer = getter::layer(value).ok_or(CommandError::Usage(USAGE))?;
             layer_seen = true;
         } else if name.eq_ignore_ascii_case("Corner") && !corner_seen {
-            options.corner = if value.eq_ignore_ascii_case("Sharp") {
-                CurveOffsetCornerStyle::Sharp
-            } else if value.eq_ignore_ascii_case("Chamfer") {
-                CurveOffsetCornerStyle::Chamfer
-            } else if value.eq_ignore_ascii_case("Round") {
-                CurveOffsetCornerStyle::Round
-            } else if value.eq_ignore_ascii_case("None") {
-                CurveOffsetCornerStyle::None
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            };
+            options.corner = getter::corner(value).ok_or(CommandError::Usage(USAGE))?;
             corner_seen = true;
         } else {
             return Err(CommandError::Usage(USAGE));

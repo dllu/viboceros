@@ -30,6 +30,7 @@ impl InteractiveCommand {
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
             Self::ProjectPlane { command, .. } => command,
+            Self::CurveOffset { kind, .. } => kind.name(),
             Self::Section { .. } => "Section",
             Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
@@ -212,6 +213,7 @@ impl InteractiveCommand {
             | Self::OrientOnSurface { last }
             | Self::Splop { last } => last,
             Self::SurfacePointGrid { anchor, .. } | Self::ProjectPlane { anchor, .. } => anchor,
+            Self::CurveOffset { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
                 base,
@@ -291,7 +293,7 @@ impl InteractiveCommand {
             | Self::Plane { first: None }
             | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
-            | Self::Polygon { center: None, .. }
+            | Self::Polygon { anchor: None }
             | Self::SrfPt {
                 corners: [None, _, _],
             }
@@ -429,7 +431,7 @@ impl InteractiveCommand {
             | Self::CircleDeform { anchor: center }
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
-            | Self::Polygon { center, .. }
+            | Self::Polygon { anchor: center }
             | Self::Ellipsoid { anchor: center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
@@ -569,11 +571,7 @@ impl InteractiveCommand {
     pub(in crate::app) const fn collects_curve_points(self) -> bool {
         matches!(
             self,
-            Self::Lines
-                | Self::Polyline
-                | Self::Curve { .. }
-                | Self::InterpCrv { .. }
-                | Self::SplitCurve
+            Self::Lines | Self::Curve { .. } | Self::InterpCrv { .. } | Self::SplitCurve
         )
     }
 }

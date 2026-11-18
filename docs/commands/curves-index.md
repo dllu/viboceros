@@ -17,6 +17,8 @@
 - [ArcBlend, tangent biarcs from open curve ends with Trim and Join](arc-blend.md)
 - [Conic curves, endpoint constraints and temporary portions](conic.md)
 - [Rectangle construction modes and numeric dimensions](rectangle.md)
+- [Polygon and Star modes, size locks and live outlines](polygon.md)
+- [Polyline line and arc modes, tracking, and closure](polyline.md)
 - [Curve creation and editing](curves.md)
 - [Line BothSides, Vertical, FourPoint, Bisector and Angled](line.md)
 - [Line Tangent with sliding/fixed contacts and common tangents](line-tangent.md)

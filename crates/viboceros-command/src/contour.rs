@@ -3,56 +3,109 @@ use super::*;
 use num_bigint::BigInt;
 use num_rational::BigRational;
 use num_traits::{ToPrimitive, Zero};
-use viboceros_geometry::Frame3;
+use viboceros_geometry::{BoundingBox3, Frame3};
 mod brep;
 mod geometry;
+pub use geometry::cut as contour_geometry;
 #[cfg(test)]
 mod tests;
 
-pub(super) struct ContourCommand;
+use crate::cutting_options::{self, Output};
+
+pub(super) struct ContourCommand(pub std::sync::Arc<remembered::Remembered<Preferences>>);
 pub const CONTOUR_USAGE: &str = "Contour base-point direction-point spacing [Range=Yes|No] [AssignProperties=ByCurrentLayer|ByInputObject] [Output=All|CurvesOnly] [GroupObjectsByContourPlane=Yes|No]";
 /// A resource limit rejects an excessive job before any model change.
 pub const MAX_CONTOUR_PLANES: usize = 100_000;
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct ContourOptions {
     pub range: bool,
     pub input_properties: bool,
     pub group: bool,
+    pub output: Output,
 }
-pub fn parse_options(words: &[&str]) -> Result<ContourOptions, CommandError> {
-    let mut options = ContourOptions::default();
-    let mut seen = BTreeSet::new();
-    for word in words {
+
+impl ContourOptions {
+    pub fn update(&mut self, word: &str, allow_range: bool) -> Result<bool, CommandError> {
         let (key, value) = word
-            .trim_start_matches('_')
             .split_once('=')
-            .ok_or(CommandError::Usage(CONTOUR_USAGE))?;
-        let key = key.to_ascii_lowercase();
-        let value = value.trim_start_matches('_').to_ascii_lowercase();
-        if !seen.insert(key.clone()) {
-            return Err(CommandError::Usage(CONTOUR_USAGE));
-        }
-        let boolean = || match value.as_str() {
-            "yes" => Ok(true),
-            "no" => Ok(false),
-            _ => Err(CommandError::Usage(CONTOUR_USAGE)),
-        };
-        match key.as_str() {
-            "range" => options.range = boolean()?,
-            "groupobjectsbycontourplane" => options.group = boolean()?,
-            "assignproperties" => {
-                options.input_properties = match value.as_str() {
-                    "bycurrentlayer" => false,
-                    "byinputobject" => true,
-                    _ => return Err(CommandError::Usage(CONTOUR_USAGE)),
-                }
+            .map_or((word, None), |(k, v)| (k, Some(v)));
+        if option_name_eq(key, "Range") {
+            if !allow_range {
+                return Err(CommandError::Usage(
+                    "Range is available at the contour base point",
+                ));
             }
-            "output" if matches!(value.as_str(), "all" | "curvesonly") => {}
-            _ => return Err(CommandError::Usage(CONTOUR_USAGE)),
+            self.range = match value {
+                None => true,
+                Some(_) => cutting_options::toggle(self.range, value, CONTOUR_USAGE)?,
+            };
+        } else if option_name_eq(key, "GroupObjectsByContourPlane") {
+            self.group = cutting_options::toggle(self.group, value, CONTOUR_USAGE)?;
+        } else {
+            return cutting_options::update(
+                &mut self.input_properties,
+                &mut self.output,
+                key,
+                value,
+                CONTOUR_USAGE,
+            );
+        }
+        Ok(true)
+    }
+
+    pub fn with_arguments(self, words: &[&str]) -> Result<Self, CommandError> {
+        cutting_options::apply_words(self, words, CONTOUR_USAGE, |options, word| {
+            options.update(word, true)
+        })
+    }
+
+    pub fn arguments(self) -> String {
+        format!(
+            "Range={} AssignProperties={} Output={} GroupObjectsByContourPlane={}",
+            cutting_options::yes_no(self.range),
+            cutting_options::properties_label(self.input_properties),
+            self.output.label(),
+            cutting_options::yes_no(self.group),
+        )
+    }
+}
+
+pub fn parse_options(words: &[&str]) -> Result<ContourOptions, CommandError> {
+    if words.iter().any(|word| !word.contains('=')) {
+        return Err(CommandError::Usage(CONTOUR_USAGE));
+    }
+    ContourOptions::default().with_arguments(words)
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Preferences {
+    pub options: ContourOptions,
+    pub spacing: f64,
+}
+
+impl Default for Preferences {
+    fn default() -> Self {
+        Self {
+            options: ContourOptions::default(),
+            spacing: 1.,
         }
     }
-    Ok(options)
 }
+
+impl Preferences {
+    fn for_next_run(mut self) -> Self {
+        self.options.range = false;
+        self
+    }
+}
+
+impl CommandRegistry {
+    pub fn contour_preferences(&self) -> Preferences {
+        self.contour_preferences.get()
+    }
+}
+
 fn exact(value: f64) -> BigRational {
     BigRational::from_float(value).expect("validated finite geometry")
 }
@@ -70,23 +123,21 @@ fn projected(point: Point3, base: Point3, normal: Vector3) -> BigRational {
 /// outside the source bounds. Rational indices avoid accumulated spacing drift
 /// and retain grids whose integer index exceeds f64's exact integer range.
 fn plane_origins(
-    inputs: &[&viboceros_document::Object],
+    bounds: impl IntoIterator<Item = BoundingBox3>,
     base: Point3,
     normal: Vector3,
     length: f64,
     spacing: f64,
     range: bool,
     tolerance: Tolerance,
+    sample_limit: usize,
 ) -> Result<Vec<Point3>, CommandError> {
     if !spacing.is_finite() || spacing <= 0. {
         return Err(CommandError::InvalidNumber(spacing.to_string()));
     }
     let mut low: Option<BigRational> = None;
     let mut high: Option<BigRational> = None;
-    for object in inputs {
-        let Some(bounds) = object.geometry().bounds() else {
-            continue;
-        };
+    for bounds in bounds {
         let a = bounds.min().to_array();
         let b = bounds.max().to_array();
         for mask in 0..8 {
@@ -124,8 +175,10 @@ fn plane_origins(
         .ok_or(CommandError::ContourPlaneLimit)?;
     let base = base.to_array().map(exact);
     let normal = normal.to_array().map(exact);
-    let mut points = Vec::with_capacity(count);
-    for i in 0..count {
+    let stride = count.div_ceil(sample_limit.max(1));
+    let samples = (0..count).step_by(stride);
+    let mut points = Vec::with_capacity(samples.len());
+    for i in samples {
         let offset = BigRational::from_integer(&first + BigInt::from(i)) * &spacing;
         let mut point = [0.; 3];
         for axis in 0..3 {
@@ -142,6 +195,34 @@ fn plane_origins(
     }
     Ok(points)
 }
+/// Sample the accepted contour grid for drafting. Output still uses all planes.
+pub fn preview_frames(
+    bounds: &[BoundingBox3],
+    base: Point3,
+    direction: Point3,
+    spacing: f64,
+    range: bool,
+    tolerance: Tolerance,
+    limit: usize,
+) -> Result<Vec<Frame3>, CommandError> {
+    let delta = base.vector_to(direction)?;
+    let frame = Frame3::try_from_normal(base, delta, tolerance)?;
+    let points = plane_origins(
+        bounds.iter().copied(),
+        base,
+        frame.z_axis().as_vector(),
+        delta.length()?,
+        spacing,
+        range,
+        tolerance,
+        limit,
+    )?;
+    Ok(points
+        .into_iter()
+        .map(|point| frame.with_origin(point))
+        .collect())
+}
+
 impl Command for ContourCommand {
     fn name(&self) -> &'static str {
         "Contour"
@@ -150,7 +231,7 @@ impl Command for ContourCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let Ok(options) = parse_options(args) else {
+        let Ok(options) = self.0.get().options.with_arguments(args) else {
             return Ok(None);
         };
         Ok(Some(ObjectSelectionPrompt {
@@ -169,16 +250,7 @@ impl Command for ContourCommand {
                 },
             ],
             menus: Vec::new(),
-            choices: vec![ChoiceSelectionOption {
-                name: "AssignProperties",
-                value: if options.input_properties {
-                    "ByInputObject"
-                } else {
-                    "ByCurrentLayer"
-                },
-                choices: &["ByCurrentLayer", "ByInputObject"],
-                toggle: None,
-            }],
+            choices: cutting_options::choices(options.input_properties, options.output),
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
         }))
     }
@@ -197,13 +269,16 @@ impl Command for ContourCommand {
             .filter(|o| ObjectSelectionFilter::Section.accepts_object(o))
             .collect::<Vec<_>>();
         let planes = plane_origins(
-            &inputs,
+            inputs
+                .iter()
+                .filter_map(|object| object.geometry().bounds()),
             base,
             frame.z_axis().as_vector(),
             length,
             spacing,
             options.range,
             doc.tolerance(),
+            MAX_CONTOUR_PLANES,
         )?;
         let mut staged = Vec::new();
         for origin in planes {
@@ -242,6 +317,13 @@ impl Command for ContourCommand {
         }
         let count = outputs.len();
         doc.select_command_results(outputs)?;
+        self.0.set(
+            Preferences {
+                options: self.0.get().options.with_arguments(&rest[1..])?,
+                spacing,
+            }
+            .for_next_run(),
+        );
         Ok(format!("Created {count} contour objects"))
     }
 }

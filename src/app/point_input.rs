@@ -47,6 +47,7 @@ impl VibocerosApp {
             self.arc_length_session
                 .and_then(|s| s.first)
                 .or_else(|| self.maelstrom_circle_anchor())
+                .or_else(|| self.polyline_session.as_ref()?.input.anchor())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
                 .or(self.last_point.filter(|_| {
                     self.refinement_prompt.is_some() || self.select_uv_prompt.is_some()
@@ -66,6 +67,7 @@ impl VibocerosApp {
                     self.pyramid_session
                         .as_ref()
                         .and_then(|session| session.input.mouse_plane())
+                        .or_else(|| self.polygon_session.as_ref()?.input.mouse_plane())
                         .map_or(state, |base| state.with_distance_plane(base.z_axis()))
                 })
         });
@@ -135,6 +137,8 @@ impl VibocerosApp {
                             .as_ref()
                             .and_then(|s| s.input.anchor())
                     })
+                    .or_else(|| self.polyline_session.as_ref()?.input.anchor())
+                    .or_else(|| self.polygon_session.as_ref()?.input.anchor())
                     .or_else(|| self.pyramid_session.as_ref()?.input.anchor())
                     .or_else(|| {
                         let input = self.solid_axial_session.as_ref()?.input;
@@ -216,6 +220,22 @@ impl VibocerosApp {
                     return false;
                 }
             }
+        } else {
+            point
+        };
+        let point = if typed && self.point_filter.is_none() && self.point_constraint.is_none() {
+            self.polyline_session
+                .as_ref()
+                .and_then(|session| {
+                    self.viewports[self.active_viewport].resolve_polyline_point(
+                        crate::viewport::PolylinePreview {
+                            input: &session.input,
+                            direction_lock: session.direction_lock,
+                        },
+                        point,
+                    )
+                })
+                .unwrap_or(point)
         } else {
             point
         };
@@ -325,7 +345,12 @@ impl VibocerosApp {
             {
                 self.drafting_plane.get_or_insert(plane);
             }
-            self.last_point = Some(self.line_accepted_point.take().unwrap_or(point));
+            self.last_point = Some(
+                self.line_accepted_point
+                    .take()
+                    .or_else(|| self.polyline_session.as_ref()?.input.anchor())
+                    .unwrap_or(point),
+            );
             self.point_filter = None;
             self.point_constraint = None;
             self.command_input.clear();

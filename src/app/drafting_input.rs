@@ -92,6 +92,12 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_paraboloid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_polyline_point(point) {
+            return accepted;
+        }
+        if let Some(accepted) = self.accept_polygon_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_pyramid_point(point) {
             return accepted;
         }
@@ -164,6 +170,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_orient_curve_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_curve_offset_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_contour_point(point) {
             return accepted;
         }
@@ -211,6 +220,7 @@ impl VibocerosApp {
             | InteractiveCommand::OffsetCurveOnSurface
             | InteractiveCommand::ShortPath { .. }
             | InteractiveCommand::FaceCreate { .. }
+            | InteractiveCommand::Polyline
             | InteractiveCommand::PolylineOnMesh { .. }
             | InteractiveCommand::InterpolateCurveOnSurface { .. }
             | InteractiveCommand::OrientOnCurve
@@ -231,6 +241,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Paraboloid { .. }
+            | InteractiveCommand::Polygon { .. }
             | InteractiveCommand::Pyramid { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Torus { .. }
@@ -248,6 +259,7 @@ impl VibocerosApp {
             | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
             | InteractiveCommand::Splop { .. }
+            | InteractiveCommand::CurveOffset { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
                 return false;
@@ -996,26 +1008,6 @@ impl VibocerosApp {
                 }
                 self.push_log(command.prompt().to_owned());
             }
-            InteractiveCommand::Polyline => {
-                if let Some(previous) = self.curve_points.last()
-                    && !previous
-                        .distance_to(point)
-                        .is_ok_and(|length| length > self.document.tolerance().absolute())
-                {
-                    self.push_log(
-                        "Error: polyline segment length must be finite and greater than tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.curve_points.push(point);
-                self.push_log(format!(
-                    "Vertex {}: {}",
-                    self.curve_points.len(),
-                    format_model_point(point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
             InteractiveCommand::Curve { .. } => {
                 if let Some(previous) = self.curve_points.last()
                     && point_input::coincident_curve_controls(*previous, point)
@@ -1067,34 +1059,6 @@ impl VibocerosApp {
             }
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);
-            }
-            InteractiveCommand::Polygon {
-                side_count,
-                center: None,
-            } => {
-                let command = InteractiveCommand::Polygon {
-                    side_count,
-                    center: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Polygon {
-                side_count,
-                center: Some(center),
-            } => {
-                if !plane_radius_exceeds_tolerance(plane, center, point, self.document.tolerance())
-                {
-                    self.push_log("Error: polygon vertex must differ from its center".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Polygon {side_count} {} {}",
-                    format_model_point(center),
-                    format_model_point(point)
-                ));
             }
             InteractiveCommand::SurfacePointGrid { .. } => {
                 return self.accept_surface_point_grid(point);

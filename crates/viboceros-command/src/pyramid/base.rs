@@ -1,7 +1,8 @@
 //! Polygon sizing, phase and winding for the four Pyramid base getters.
 use super::{BaseMode, Kind};
+use crate::polygon::rim::{self, rotated_frame};
 use std::f64::consts::{PI, TAU};
-use viboceros_geometry::{Frame3, GeometryError, Point3, Tolerance, UnitVector3, Vector3};
+use viboceros_geometry::{Frame3, GeometryError, Point3, Tolerance, UnitVector3};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Base {
@@ -35,14 +36,13 @@ impl Base {
         let radial =
             Frame3::try_from_unit_x_and_normal(center, direction, plane.z_axis(), tolerance)?;
         let size = center.distance_to(point)?;
-        let (frame, radius) = if mode == BaseMode::Circumscribed {
-            (
-                rotated_frame(radial, PI / sides as f64, tolerance)?,
-                size / (PI / sides as f64).cos(),
-            )
-        } else {
-            (radial, size)
-        };
+        let (frame, radius) = rim::radial(
+            radial,
+            size,
+            sides,
+            mode == BaseMode::Circumscribed,
+            tolerance,
+        )?;
         Ok(Self {
             frame,
             sides,
@@ -65,24 +65,18 @@ impl Base {
     ) -> Result<Self, GeometryError> {
         let along = start.direction_to(end)?;
         let edge = Frame3::try_from_unit_x_and_normal(start, along, plane.z_axis(), tolerance)?;
-        let half = start.distance_to(end)? * 0.5;
-        let apothem = half / (PI / sides as f64).tan();
-        let center = edge.point_at([half, if flipped { -apothem } else { apothem }, 0.])?;
-        let normal = if flipped {
-            edge.z_axis().opposite()
-        } else {
-            edge.z_axis()
-        };
-        let frame = Frame3::try_from_unit_x_and_normal(
-            center,
-            center.direction_to(end)?,
-            normal,
+        let (frame, radius) = rim::edge(
+            edge,
+            end,
+            start.distance_to(end)?,
+            sides,
+            flipped,
             tolerance,
         )?;
         Ok(Self {
             frame,
             sides,
-            radius: half.hypot(apothem),
+            radius,
             inner_radius: None,
             height_normal: edge.z_axis(),
             mode: BaseMode::Edge,
@@ -114,13 +108,7 @@ impl Base {
     }
 
     pub(super) fn automatic_inner_radius(self) -> f64 {
-        let step = PI / self.sides as f64;
-        let ratio = if self.sides < 5 {
-            0.25
-        } else {
-            (2. * step).cos() / step.cos()
-        };
-        self.radius * ratio
+        rim::automatic_inner_radius(self.radius, self.sides)
     }
 
     pub(super) fn perpendicular_to_apex(
@@ -181,41 +169,16 @@ impl Base {
     }
 
     pub fn rim(self) -> Result<Vec<Point3>, GeometryError> {
-        self.sampled_rim(self.sides)
+        self.preview_rim(self.sides)
     }
 
     pub fn preview_rim(self, side_limit: usize) -> Result<Vec<Point3>, GeometryError> {
-        self.sampled_rim(self.sides.min(side_limit.max(3)))
+        rim::sampled(
+            self.frame,
+            self.radius,
+            self.inner_radius,
+            self.sides,
+            side_limit,
+        )
     }
-
-    fn sampled_rim(self, sampled_sides: usize) -> Result<Vec<Point3>, GeometryError> {
-        let step = TAU / self.sides as f64;
-        let mut points =
-            Vec::with_capacity(sampled_sides * (1 + usize::from(self.inner_radius.is_some())));
-        for sample in 0..sampled_sides {
-            let angle = (sample * self.sides / sampled_sides) as f64 * step;
-            points.push(self.rim_point(self.radius, angle)?);
-            if let Some(radius) = self.inner_radius {
-                points.push(self.rim_point(radius, angle + 0.5 * step)?);
-            }
-        }
-        Ok(points)
-    }
-
-    fn rim_point(self, radius: f64, angle: f64) -> Result<Point3, GeometryError> {
-        let (sin, cos) = angle.sin_cos();
-        self.frame.point_at([radius * cos, radius * sin, 0.0])
-    }
-}
-
-fn rotated_frame(frame: Frame3, angle: f64, tolerance: Tolerance) -> Result<Frame3, GeometryError> {
-    if angle == 0. {
-        return Ok(frame);
-    }
-    let (sin, cos) = angle.sin_cos();
-    let x = frame.x_axis().as_vector().to_array();
-    let y = frame.y_axis().as_vector().to_array();
-    let direction = Vector3::try_from(std::array::from_fn(|i| cos.mul_add(x[i], sin * y[i])))?
-        .normalized_nonzero()?;
-    Frame3::try_from_unit_x_and_normal(frame.origin(), direction, frame.z_axis(), tolerance)
 }

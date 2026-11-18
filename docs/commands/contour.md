@@ -8,14 +8,19 @@ bounds, including when the base lies outside the objects. Sources stay intact.
 
 Bare `Contour` accepts source selection, a base point, a direction point and
 spacing. Spacing accepts a positive scalar, calculator expression with units,
-or two snapped spacing points. Typed point coordinates use the shared CPlane,
+or two snapped spacing points. Enter uses the last successful spacing. The
+first run starts at one model unit. Typed point coordinates use the shared CPlane,
 world/relative syntax, filters and constraints. Esc cancels pending input without
 geometry changes. Outputs and their groups form one Undo step.
 
-Options:
+The viewport previews up to 12 planes while you choose a direction or spacing.
+Intersection curves and points appear as they finish computing for the current
+guide. The completed command uses the full grid.
 
-- `Range=Yes|No` (default No). Range uses the picked interval: for length L and
-  spacing D, native captures emit indices 0 through floor(L/D)-1. A range shorter
+Options
+
+- `Range=Yes|No` (default No). For a picked interval of length L and spacing D,
+  native captures emit indices 0 through floor(L/D)-1. A range shorter
   than one spacing emits nothing. The far-end plane is excluded even when the
   spacing divides the range exactly. Type `Range` before the first point to
   enable this in the getter.
@@ -25,8 +30,10 @@ Options:
 - `GroupObjectsByContourPlane=Yes|No` (default No). Planes with at least two outputs get one
   group; single point, curve and closed-loop outputs remain ungrouped. Captured group indices increase along the direction; output object
   records run in the opposite order.
-- `Output=All|CurvesOnly`. Section styles and hatches are not implemented, so
-  both currently emit curves and points.
+- `Output=All|CurvesOnly`. Both settings currently emit curves and points.
+
+AssignProperties, Output, and grouping can be edited at any point or spacing
+prompt. Completing the command remembers those options. Range applies to one run.
 
 Grid bounds and indices use exact rationals of binary64 coordinates. Each plane
 origin is computed independently and rounded once; remote integer indices above
@@ -52,8 +59,8 @@ is unchanged. See [parameterization](../contour-domain-parameterization.md).
 An ineligible-source macro produced an invalid native curve with unset values.
 Its raw result is retained separately, excluded from geometry evidence, and the
 native helper now rejects all-ineligible inputs before launching a command.
-Further surface/B-rep qualification, broader native domain/seam qualification, hatches, remembered
-options and performance remain open. See [expanded comparison](../contour-domains-comparison.json),
+Further surface/B-rep qualification, broader native domain/seam qualification,
+hatches and performance remain open. See [expanded comparison](../contour-domains-comparison.json),
 [current provenance](../contour-domains-provenance.json), and the
 [ineligible-source diagnostic](../contour-ineligible-native-diagnostic.json).
 

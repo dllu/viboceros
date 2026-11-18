@@ -65,13 +65,16 @@ fn far_base_grid_retains_indices_above_f64_integer_precision() {
     .unwrap();
     let inputs = doc.objects().collect::<Vec<_>>();
     let planes = plane_origins(
-        &inputs,
+        inputs
+            .iter()
+            .filter_map(|object| object.geometry().bounds()),
         p(1e16, 0., 0.),
         Vector3::try_new(1., 0., 0.).unwrap(),
         1.,
         1.,
         false,
         doc.tolerance(),
+        MAX_CONTOUR_PLANES,
     )
     .unwrap();
     assert_eq!(

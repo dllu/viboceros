@@ -27,10 +27,16 @@ const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod clipping;
 mod curve_line;
+mod curve_offset;
+pub(crate) use curve_offset::OffsetDraft;
+mod cutting;
 pub(crate) mod direction;
+pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
 mod pipe;
+mod polyline;
+pub(crate) use polyline::PolylinePreview;
 mod pyramid;
 mod rectangle_grid;
 mod solid_axial;
@@ -453,6 +459,10 @@ pub struct ViewportInput<'a> {
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
+    pub(crate) cutting_preview: Option<CuttingPreview<'a>>,
+    pub(crate) offset_preview: Option<OffsetDraft<'a>>,
+    pub polyline_input: Option<PolylinePreview<'a>>,
+    pub polygon_input: Option<viboceros_command::polygon::Input>,
     pub pyramid_input: Option<viboceros_command::pyramid::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
@@ -586,6 +596,10 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             paraboloid_input: None,
+            cutting_preview: None,
+            offset_preview: None,
+            polyline_input: None,
+            polygon_input: None,
             pyramid_input: None,
             ellipse_input: None,
             ellipsoid_preview: None,
@@ -724,6 +738,8 @@ pub struct ViewportOutput {
     pub lasso_point: Option<(Pos2, usize, SelectionMode)>,
     pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
+    pub(crate) cutting_plan: Option<CutPlan>,
+    pub(crate) offset_draft: Option<viboceros_command::offset_curve::Draft>,
     pub enter_pressed: bool,
     pub source_viewport_click: bool,
     pub activated: bool,
@@ -1964,6 +1980,19 @@ impl Viewport {
         } else {
             None
         };
+        if let Some(draft) = input.polyline_input
+            && input.point_filter.is_none()
+            && input.point_constraint.is_none()
+            && let Some(cursor) = drafting_cursor.as_mut()
+            && (cursor.object_snap.is_none() || draft.direction_lock.is_some())
+            && let Some(point) = self.resolve_polyline_point(draft, cursor.point)
+        {
+            cursor.point = point;
+            cursor.source_point = point;
+            if draft.direction_lock.is_some() {
+                cursor.object_snap = None;
+            }
+        }
         let mut square_box = false;
         if modifiers.shift
             && let Some(plane) = input.box_square_plane
@@ -2728,7 +2757,8 @@ impl Viewport {
                     && input.taper_preview.is_none()
                     && input.maelstrom_preview.is_none()
                     && input.line_input.is_none()
-                    && input.curve_line_input.is_none(),
+                    && input.curve_line_input.is_none()
+                    && input.polyline_input.is_none(),
             );
         }
         let perpendicular_hit = input.curve_line_input.and_then(|getter| {
@@ -3034,6 +3064,46 @@ impl Viewport {
                     painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
                 }
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
+            }
+        }
+        let offset_draft = input.offset_preview.and_then(|preview| {
+            let point = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_curve_offset(&painter, rect, preview, point)
+        });
+        let cutting_plan = input.cutting_preview.and_then(|preview| {
+            let cursor = drafting_cursor
+                .filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()))?;
+            self.paint_cutting_preview(&painter, rect, preview, cursor.point, document.tolerance())
+        });
+        if let Some(draft) = input.polyline_input {
+            let cursor = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_active_polyline(&painter, rect, draft, cursor, document.tolerance());
+        }
+        if let Some(getter) = input.polygon_input
+            && let Some(cursor) = drafting_cursor.filter(|_| {
+                input
+                    .point_filter
+                    .is_none_or(|filter| !filter.awaiting_source())
+            })
+            && let Some(points) = getter.preview(cursor.point, 256)
+        {
+            let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+            for edge in points.windows(2) {
+                if let Some(segment) = self.project_segment(edge[0], edge[1], rect) {
+                    painter.line_segment(segment, stroke);
+                }
             }
         }
         if let Some(getter) = input.pyramid_input {
@@ -3565,6 +3635,8 @@ impl Viewport {
             lasso_point,
             lasso_stroke,
             point_cloud_selection,
+            cutting_plan,
+            offset_draft,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Secondary),

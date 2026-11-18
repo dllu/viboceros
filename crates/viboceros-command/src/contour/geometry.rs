@@ -1,6 +1,6 @@
 //! Exact source-edge/isocurve domains and contour-axis line parameters.
 use super::*;
-pub(super) fn cut(
+pub fn cut(
     source: &Geometry,
     frame: Frame3,
     tolerance: Tolerance,

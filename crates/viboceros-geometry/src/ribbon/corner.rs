@@ -23,7 +23,7 @@ impl From<CurveOffsetCornerStyle> for RibbonCornerStyle {
 }
 
 impl RibbonCornerStyle {
-    pub(super) fn layout_style(self) -> CurveOffsetCornerStyle {
+    pub(crate) fn layout_style(self) -> CurveOffsetCornerStyle {
         match self {
             Self::Sharp => CurveOffsetCornerStyle::Sharp,
             Self::Round => CurveOffsetCornerStyle::Round,
@@ -36,7 +36,7 @@ impl RibbonCornerStyle {
 /// A cubic tangent blend with chord*(3-dot(incoming,outgoing))/6 handles.
 /// The surrounding strips provide oriented unit tangents; no source lengths
 /// enter this local fan.
-pub(super) fn smooth_corner(
+pub(crate) fn smooth_corner(
     start: Point3,
     end: Point3,
     incoming: UnitVector3,

@@ -10,8 +10,7 @@ use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
-    Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Frame3, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -185,9 +184,11 @@ mod curve_chamfer;
 mod curve_deviation;
 mod curve_extrusion;
 mod curve_fillet;
+mod curve_offset;
 mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
+mod cutting_preview;
 mod direction;
 mod direction_analysis;
 mod distance;
@@ -267,6 +268,8 @@ mod point_deviation;
 mod point_grid;
 mod point_input;
 mod points;
+mod polygon;
+mod polyline;
 mod polyline_on_mesh;
 mod preferences;
 mod project;
@@ -518,6 +521,11 @@ pub struct VibocerosApp {
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
     paraboloid_session: Option<paraboloid::Session>,
+    polygon_session: Option<polygon::Session>,
+    section_session: Option<section::Session>,
+    curve_offset_session: Option<curve_offset::Session>,
+    cutting_preview: cutting_preview::Preview,
+    polyline_session: Option<polyline::Session>,
     pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
@@ -717,6 +725,11 @@ impl VibocerosApp {
             hyperbola_session: None,
             parabola_session: None,
             paraboloid_session: None,
+            polygon_session: None,
+            section_session: None,
+            curve_offset_session: None,
+            cutting_preview: cutting_preview::Preview::default(),
+            polyline_session: None,
             pyramid_session: None,
             conic_session: None,
             rectangle_session: None,
@@ -912,6 +925,8 @@ impl VibocerosApp {
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
             || self.try_continue_paraboloid(&input)
+            || self.continue_polyline(&input)
+            || self.try_continue_polygon(&input)
             || self.try_continue_pyramid(&input)
             || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
@@ -1013,6 +1028,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_rail_revolve_input(&input) {
+            return;
+        }
+        if self.continue_curve_offset(&input) {
             return;
         }
         if self.continue_contour_input(&input) {

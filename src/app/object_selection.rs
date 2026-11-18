@@ -1107,6 +1107,8 @@ impl VibocerosApp {
                     | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
+                    | "Offset"
+                    | "OffsetMultiple"
                     | "Ribbon"
                     | "OffsetSubD"
                     | "Rebuild"
@@ -1587,6 +1589,13 @@ impl VibocerosApp {
                 self.object_prompt = None;
                 self.try_start_interactive_command(&command);
                 return true;
+            }
+            if matches!(pending.description.command, "Offset" | "OffsetMultiple") {
+                self.object_prompt = None;
+                if self.start_curve_offset(&command, pending.postselected) {
+                    return true;
+                }
+                self.object_prompt = Some(pending.clone());
             }
             if pending.description.command == "OffsetSrf" {
                 self.object_prompt = None;

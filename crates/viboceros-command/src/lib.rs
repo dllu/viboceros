@@ -16,6 +16,7 @@ pub mod blocks;
 pub mod component_seams;
 pub mod contour;
 pub mod crease;
+pub mod cutting_options;
 pub mod extract_control_polygon;
 mod extract_points;
 mod pack_subd_faces;
@@ -254,6 +255,7 @@ use mesh_edit::{
     SwapMeshEdgeCommand, TriangulateMeshCommand, UnifyMeshNormalsCommand,
 };
 mod mesh_ngon_commands;
+pub mod polygon;
 mod polygon_count;
 use geometric_continuity::GeometricContinuityCommand;
 use match_curve::MatchCurveCommand;
@@ -439,9 +441,7 @@ use set_point::SetPointCommand;
 #[cfg(test)]
 mod plane_transform_tests;
 pub use context::CommandContext;
-use plane_primitives::{
-    BoxCommand, CircleCommand, MeshBoxCommand, PolygonCommand, RectangleCommand,
-};
+use plane_primitives::{BoxCommand, CircleCommand, MeshBoxCommand, RectangleCommand};
 mod blend;
 pub mod blend_surface;
 mod boolean_difference;
@@ -507,7 +507,7 @@ pub mod geometry_check;
 pub mod merge_coplanar_face;
 mod merge_edge;
 mod merge_edges;
-mod offset_curve;
+pub mod offset_curve;
 pub mod ribbon;
 mod split_edge;
 use cap::CapCommand;
@@ -547,6 +547,7 @@ pub mod point_grid;
 mod point_matrix;
 mod points;
 mod polyline_command;
+pub mod polyline_input;
 mod visibility_selection;
 pub use point_matrix::{PointGridOptions, point_grid_vertical_frame};
 pub mod rail_revolve;
@@ -1050,6 +1051,12 @@ pub struct CommandRegistry {
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
+    polygon_preferences: std::sync::Arc<remembered::Remembered<polygon::Preferences>>,
+    polyline_preferences: std::sync::Arc<remembered::Remembered<polyline_input::Preferences>>,
+    offset_settings: std::sync::Arc<remembered::Remembered<offset_curve::Settings>>,
+    offset_multiple_settings: std::sync::Arc<remembered::Remembered<offset_curve::Settings>>,
+    section_options: std::sync::Arc<remembered::Remembered<section::SectionOptions>>,
+    contour_preferences: std::sync::Arc<remembered::Remembered<contour::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
@@ -1205,13 +1212,15 @@ impl CommandRegistry {
                 .expect("unique built-in command");
         }
         registry
-            .register(contour::ContourCommand)
+            .register(contour::ContourCommand(
+                registry.contour_preferences.clone(),
+            ))
             .expect("built-in command names are unique");
         registry
             .register(iplane::IPlaneCommand)
             .expect("unique built-in command");
         registry
-            .register(section::SectionCommand)
+            .register(section::SectionCommand(registry.section_options.clone()))
             .expect("unique built-in command");
         registry
             .register(explode_block::ExplodeBlockCommand)
@@ -1287,7 +1296,9 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(polyline_command::PolylineCommand)
+            .register(polyline_command::PolylineCommand(
+                registry.polyline_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(conic::ConicCommand::default())
@@ -1296,7 +1307,9 @@ impl CommandRegistry {
             .register(RectangleCommand::default())
             .expect("unique built-in command");
         registry
-            .register(PolygonCommand)
+            .register(polygon::PolygonCommand(
+                registry.polygon_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(CurveCommand)
@@ -1958,7 +1971,7 @@ impl CommandRegistry {
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
-            .register(OffsetCommand)
+            .register(OffsetCommand(registry.offset_settings.clone()))
             .expect("unique built-in command");
         registry
             .register(ribbon::RibbonCommand(registry.ribbon_options.clone()))
@@ -1997,7 +2010,9 @@ impl CommandRegistry {
             .register(FilletEdgeCommand)
             .expect("unique built-in command");
         registry
-            .register(OffsetMultipleCommand)
+            .register(OffsetMultipleCommand(
+                registry.offset_multiple_settings.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(CapCommand::default())

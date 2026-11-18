@@ -3,6 +3,8 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn cancel_interactive_command(&mut self, announce: bool) {
+        self.release_curve_offset();
+        self.finish_section_run();
         self.finish_chain(false);
         self.finish_edge_pattern(false);
         self.finish_direction(false);
@@ -107,6 +109,8 @@ impl VibocerosApp {
         self.hyperbola_session = None;
         self.parabola_session = None;
         self.paraboloid_session = None;
+        self.polygon_session = None;
+        self.polyline_session = None;
         self.pyramid_session = None;
         self.conic_session = None;
         self.rectangle_session = None;

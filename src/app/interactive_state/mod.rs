@@ -150,6 +150,10 @@ pub(super) enum InteractiveCommand {
     ProjectDirection {
         start: Option<Point3>,
     },
+    CurveOffset {
+        kind: viboceros_command::offset_curve::Kind,
+        anchor: Option<Point3>,
+    },
     Contour {
         base: Option<Point3>,
         direction: Option<Point3>,
@@ -399,8 +403,7 @@ pub(super) enum InteractiveCommand {
         anchor: Option<Point3>,
     },
     Polygon {
-        side_count: usize,
-        center: Option<Point3>,
+        anchor: Option<Point3>,
     },
     SurfacePointGrid {
         control: bool,

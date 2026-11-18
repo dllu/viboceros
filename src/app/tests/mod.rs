@@ -80,10 +80,12 @@ mod curve_boolean_corpus;
 mod curve_completion;
 mod curve_deviation;
 mod curve_input;
+mod curve_offset;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/curve_path.rs"]
 mod curve_path_support;
 mod curve_rebuild_preview;
+mod cutting_modes;
 mod delete_grips;
 mod delete_subcurve;
 #[path = "../../../crates/viboceros-oracle/tests/support/compare.rs"]
@@ -223,9 +225,11 @@ mod point_grid;
 mod point_input;
 mod point_selection;
 mod points;
+mod polygon_modes;
 mod polyline_closure;
 #[path = "../../../crates/viboceros-geometry/tests/support/polyline_closure.rs"]
 mod polyline_closure_reference;
+mod polyline_modes;
 mod polyline_on_mesh;
 mod primitive_input;
 mod pyramid;
@@ -328,6 +332,25 @@ use super::*;
 use std::collections::BTreeSet;
 use viboceros_document::{ColorRgb, Geometry};
 use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
+
+fn draft_curve_points(app: &VibocerosApp) -> Vec<Point3> {
+    if let Some(session) = &app.polyline_session {
+        session
+            .input
+            .first()
+            .into_iter()
+            .chain(
+                session
+                    .input
+                    .segments()
+                    .iter()
+                    .map(|segment| segment.end().unwrap()),
+            )
+            .collect()
+    } else {
+        app.curve_points.clone()
+    }
+}
 
 pub(super) fn test_app() -> VibocerosApp {
     VibocerosApp::with_storage(None, Default::default())

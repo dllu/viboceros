@@ -1174,6 +1174,7 @@ impl VibocerosApp {
 
     pub(super) fn handle_interface_shortcuts(&mut self, ui: &mut egui::Ui) {
         self.handle_plane_shortcuts(ui);
+        self.handle_polyline_tab(ui);
         if !ui.ctx().egui_wants_keyboard_input()
             && self.command_input.is_empty()
             && self.command_line.file_path.is_none()

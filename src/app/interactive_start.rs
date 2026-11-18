@@ -83,6 +83,8 @@ impl VibocerosApp {
         if self.try_start_pipe(input)
             || self.start_solid_axial(input)
             || self.start_subd_axial(input)
+            || self.try_start_polyline(input)
+            || self.try_start_polygon(input)
             || self.try_start_pyramid(input)
         {
             return true;
@@ -102,6 +104,9 @@ impl VibocerosApp {
             || self.try_start_surface_path_input(input)
             || self.try_start_surface_extrusion_input(input)
         {
+            return true;
+        }
+        if self.start_curve_offset(input, false) {
             return true;
         }
         if self.try_start_contour_input(input) {
@@ -1006,21 +1011,6 @@ impl VibocerosApp {
                 direction,
                 ignore_trims,
             }
-        } else if matches!(normalized.as_str(), "polygon" | "poly") {
-            let side_count = match arguments.as_slice() {
-                [] => 4,
-                [text] => match text.parse::<usize>() {
-                    Ok(side_count) if (3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) => {
-                        side_count
-                    }
-                    _ => return false,
-                },
-                _ => return false,
-            };
-            InteractiveCommand::Polygon {
-                side_count,
-                center: None,
-            }
         } else if matches!(normalized.as_str(), "array" | "arrayrectangular") {
             if arguments.len() < 2 {
                 return false;
@@ -1334,7 +1324,6 @@ impl VibocerosApp {
                     start: None,
                     clockwise: true,
                 },
-                "polyline" | "pline" => InteractiveCommand::Polyline,
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,
