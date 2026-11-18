@@ -328,7 +328,7 @@ pub fn read_3dm_file(
 ) -> Result<ThreeDmModel, ThreeDmError> {
     let handle = read_handle(path.as_ref())?;
     let units = decode_units(&handle)?;
-    decode_model(&handle, tolerance, units, 1.0)
+    decode_model(&handle, tolerance, units, 1.0, false)
 }
 
 /// Reads a file using its stored model tolerance for B-rep topology matching.
@@ -339,7 +339,7 @@ pub fn read_3dm_file_with_model_tolerance(
     let handle = read_handle(path.as_ref())?;
     let units = decode_units(&handle)?;
     let tolerance = model_tolerance(&handle)?;
-    decode_model(&handle, tolerance, units, 1.0)
+    decode_model(&handle, tolerance, units, 1.0, false)
 }
 
 /// Reads saved model viewports without decoding objects, layers, or named views.
@@ -394,7 +394,8 @@ pub fn read_3dm_named_cplanes_file_in_units(
 }
 
 /// Reads coordinates into target units. The supplied tolerance is expressed
-/// in target units; B-rep topology matching uses a converted source tolerance.
+/// in target units. B-rep topology matching honors the archive tolerance
+/// when it is larger than the converted destination tolerance.
 /// Defined primitives use numerical validation, not a minimum feature size.
 /// The returned model's tolerance is the supplied destination policy, rather
 /// than a rescaled copy of the archive's stored tolerance metadata.
@@ -414,10 +415,10 @@ fn read_in_units_mode(
     tolerance: Tolerance,
     structural: bool,
 ) -> Result<ThreeDmModel, ThreeDmError> {
-    let handle = read_handle_mode(path, structural)?;
+    let handle = read_handle_options(path, structural, structural)?;
     let source_units = decode_units(&handle)?;
     let scale = source_units.scale_to(target_units)?;
-    let mut model = decode_model(&handle, tolerance, source_units, scale)?;
+    let mut model = decode_model(&handle, tolerance, source_units, scale, true)?;
     if scale != 1.0 {
         let transform = viboceros_geometry::AffineTransform3::try_uniform_scale(
             Point3::try_new(0.0, 0.0, 0.0)?,
@@ -429,8 +430,13 @@ fn read_in_units_mode(
                 .iter_mut()
                 .flat_map(|definition| &mut definition.members),
         ) {
-            object.geometry =
-                blocks::rescale_geometry(&object.geometry, transform, scale, tolerance)?;
+            object.geometry = blocks::rescale_geometry(
+                &object.geometry,
+                transform,
+                scale,
+                tolerance,
+                model.tolerance,
+            )?;
         }
         for view in model.named_views.iter_mut().chain(
             model
@@ -931,8 +937,14 @@ fn decode_model(
     tolerance: Tolerance,
     units: LengthUnitSystem,
     coordinate_scale: f64,
+    honor_archive_tolerance: bool,
 ) -> Result<ThreeDmModel, ThreeDmError> {
     let stored_tolerance = model_tolerance(handle)?;
+    let archive_floor = if honor_archive_tolerance {
+        stored_tolerance.absolute()
+    } else {
+        0.0
+    };
     // SAFETY: the handle owns a live bridge model.
     let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
     let source_current_layer_index =
@@ -1019,11 +1031,12 @@ fn decode_model(
             &layer_positions,
             &group_positions,
             tolerance,
+            archive_floor,
             coordinate_scale,
         ) {
             Ok(object) => {
                 if let ThreeDmGeometry::Brep(brep) = &object.geometry
-                    && let Some(mesh) = render_mesh::decode(handle, index, brep)
+                    && let Some(mesh) = render_mesh::decode(handle, index, brep, coordinate_scale)
                 {
                     render_meshes.insert(object.id, mesh);
                 }
@@ -1031,11 +1044,20 @@ fn decode_model(
             }
             Err(ThreeDmError::Geometry(error)) => {
                 // SAFETY: the decoded model and object index remain live.
-                if unsafe { ffi::vibo_3dm_object_placement_count(handle.0.as_ptr(), index) } > 0
-                    || unsafe { ffi::vibo_3dm_is_structural(handle.0.as_ptr()) } != 0
-                {
+                let context = unsafe {
+                    if ffi::vibo_3dm_object_placement_count(handle.0.as_ptr(), index) > 0
+                        || index < ffi::vibo_3dm_top_level_start(handle.0.as_ptr())
+                    {
+                        Some("block member")
+                    } else if ffi::vibo_3dm_is_structural(handle.0.as_ptr()) != 0 {
+                        Some("object")
+                    } else {
+                        None
+                    }
+                };
+                if let Some(context) = context {
                     return Err(ThreeDmError::InvalidModel(format!(
-                        "block member geometry cannot be decoded: {error}"
+                        "{context} geometry cannot be decoded: {error}"
                     )));
                 }
                 unsupported += 1;
@@ -1150,12 +1172,29 @@ fn decode_viewports(handle: &ModelHandle) -> Result<Vec<ThreeDmViewport>, ThreeD
     Ok(viewports)
 }
 
+fn archive_matching_tolerance(
+    tolerance: Tolerance,
+    archive_floor: f64,
+    coordinate_scale: f64,
+) -> Result<Tolerance, ThreeDmError> {
+    let absolute = tolerance.absolute() / coordinate_scale;
+    if !absolute.is_finite() || absolute <= 0.0 {
+        return Err(ThreeDmError::UnrepresentableSourceTolerance);
+    }
+    Ok(Tolerance::try_new(
+        absolute.max(archive_floor),
+        tolerance.relative(),
+        tolerance.angular(),
+    )?)
+}
+
 fn decode_object(
     handle: &ModelHandle,
     index: usize,
     layer_positions: &BTreeMap<i32, usize>,
     group_positions: &BTreeMap<i32, usize>,
     tolerance: Tolerance,
+    archive_floor: f64,
     coordinate_scale: f64,
 ) -> Result<ThreeDmObject, ThreeDmError> {
     let mut info = ffi::ViboObjectInfo::default();
@@ -1495,12 +1534,8 @@ fn decode_object(
                 // Only B-rep topology matching uses model tolerance. Computing
                 // this before inspecting the object can reject exact primitives
                 // because an entirely unused source tolerance over/underflows.
-                let source_tolerance = Tolerance::try_new(
-                    tolerance.absolute() / coordinate_scale,
-                    tolerance.relative(),
-                    tolerance.angular(),
-                )
-                .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?;
+                let source_tolerance =
+                    archive_matching_tolerance(tolerance, archive_floor, coordinate_scale)?;
                 three_dm_geometry::decode_archive_brep(geometry_data, source_tolerance)
                     .map(ThreeDmGeometry::Brep)
             } else if info.object_type == OBJECT_ARC {
@@ -1520,7 +1555,14 @@ fn decode_object(
         }
         _ => return Err(ThreeDmError::MalformedBridge("inconsistent object payload")),
     };
-    let geometry = instances::apply(handle, index, geometry, tolerance, coordinate_scale)?;
+    let geometry = instances::apply(
+        handle,
+        index,
+        geometry,
+        tolerance,
+        archive_floor,
+        coordinate_scale,
+    )?;
     Ok(ThreeDmObject {
         id: uuid::Uuid::parse_str(&c_text(info.id)?)
             .map_err(|_| ThreeDmError::MalformedBridge("invalid object UUID"))?,

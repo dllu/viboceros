@@ -7,6 +7,7 @@ pub(super) fn apply(
     index: usize,
     geometry: ThreeDmGeometry,
     tolerance: Tolerance,
+    archive_floor: f64,
     coordinate_scale: f64,
 ) -> Result<ThreeDmGeometry, ThreeDmError> {
     // SAFETY: the live model handle and validated object index belong to this decode.
@@ -34,12 +35,7 @@ pub(super) fn apply(
         })?;
     }
     let matching = if matches!(geometry, ThreeDmGeometry::Brep(_)) {
-        Tolerance::try_new(
-            tolerance.absolute() / coordinate_scale,
-            tolerance.relative(),
-            tolerance.angular(),
-        )
-        .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?
+        archive_matching_tolerance(tolerance, archive_floor, coordinate_scale)?
     } else {
         Tolerance::NUMERICAL_VALIDATION
     };

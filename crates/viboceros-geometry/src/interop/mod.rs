@@ -199,6 +199,15 @@ pub fn decode_archive_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, G
     decode_brep_impl(bytes, tolerance, false)
 }
 
+/// Transform an archive B-rep using the same validation as archive decoding.
+pub fn transform_archive_brep(
+    brep: &Brep,
+    transform: crate::AffineTransform3,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    brep.transformed_with_validation(transform, tolerance, false)
+}
+
 fn decode_brep_impl(
     bytes: &[u8],
     tolerance: Tolerance,

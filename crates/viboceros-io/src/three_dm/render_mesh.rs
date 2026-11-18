@@ -6,6 +6,7 @@ pub(super) fn decode(
     handle: &ModelHandle,
     index: usize,
     brep: &Brep,
+    scale: f64,
 ) -> Option<(TriangleMesh, Vec<usize>)> {
     let mut raw = ffi::ViboRenderMesh::default();
     // SAFETY: the handle owns the returned arrays and outlives this copy.
@@ -31,7 +32,7 @@ pub(super) fn decode(
     };
     let vertices = vertices
         .chunks_exact(3)
-        .map(|p| Point3::try_new(p[0], p[1], p[2]))
+        .map(|p| Point3::try_new(p[0] * scale, p[1] * scale, p[2] * scale))
         .collect::<Result<Vec<_>, _>>()
         .ok()?;
     let normals = if normals.is_empty() {

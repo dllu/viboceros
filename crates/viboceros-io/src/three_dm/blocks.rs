@@ -11,7 +11,7 @@ pub fn read_3dm_file_with_blocks(
 ) -> Result<ThreeDmModel, ThreeDmError> {
     let handle = read_handle_mode(path.as_ref(), true)?;
     let units = decode_units(&handle)?;
-    decode_model(&handle, tolerance, units, 1.)
+    decode_model(&handle, tolerance, units, 1., false)
 }
 pub fn read_3dm_file_with_blocks_model_tolerance(
     path: impl AsRef<Path>,
@@ -19,7 +19,7 @@ pub fn read_3dm_file_with_blocks_model_tolerance(
     let handle = read_handle_mode(path.as_ref(), true)?;
     let units = decode_units(&handle)?;
     let tolerance = model_tolerance(&handle)?;
-    decode_model(&handle, tolerance, units, 1.)
+    decode_model(&handle, tolerance, units, 1., false)
 }
 pub fn read_3dm_file_with_blocks_in_units(
     path: impl AsRef<Path>,
@@ -60,6 +60,7 @@ pub(super) fn rescale_geometry(
     scale_map: AffineTransform3,
     scale: f64,
     tolerance: Tolerance,
+    stored_tolerance: Tolerance,
 ) -> Result<ThreeDmGeometry, ThreeDmError> {
     if let ThreeDmGeometry::InstanceReference {
         definition_index,
@@ -74,6 +75,15 @@ pub(super) fn rescale_geometry(
             )?,
         })
     } else {
+        let tolerance = if matches!(geometry, ThreeDmGeometry::Brep(_)) {
+            Tolerance::try_new(
+                tolerance.absolute().max(stored_tolerance.absolute() * scale),
+                tolerance.relative(),
+                tolerance.angular(),
+            )?
+        } else {
+            tolerance
+        };
         Ok(crate::three_dm_units::transform_geometry(
             geometry, scale_map, tolerance,
         )?)

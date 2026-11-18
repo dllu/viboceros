@@ -2970,6 +2970,15 @@ impl Brep {
         transform: AffineTransform3,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.transformed_with_validation(transform, tolerance, true)
+    }
+
+    pub(crate) fn transformed_with_validation(
+        &self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+        check_correspondence: bool,
+    ) -> Result<Self, GeometryError> {
         if let Some(extrusion) = &self.extrusion {
             let rows = transform.linear_rows();
             let offset = transform.translation().to_array();
@@ -3023,7 +3032,7 @@ impl Brep {
                 )
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        Self::try_new(vertices, edges, faces, tolerance)
+        Self::from_parts(vertices, edges, faces, tolerance, check_correspondence)
     }
 
     fn trim_uses(&self) -> Vec<TrimUse<'_>> {

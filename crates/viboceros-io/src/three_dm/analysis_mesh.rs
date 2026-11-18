@@ -43,7 +43,7 @@ pub fn read_3dm_file_for_document(path: impl AsRef<Path>) -> Result<ThreeDmModel
     let handle = read_handle_options(path.as_ref(), true, true)?;
     let units = decode_units(&handle)?;
     let tolerance = model_tolerance(&handle)?;
-    let mut model = decode_model(&handle, tolerance, units, 1.)?;
+    let mut model = decode_model(&handle, tolerance, units, 1., false)?;
     apply(&handle, &mut model, true)?;
     Ok(model)
 }
