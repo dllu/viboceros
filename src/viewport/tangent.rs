@@ -114,11 +114,7 @@ impl Viewport {
                 .unwrap_or_default()
         };
         for curve in curves {
-            let mut projected = ProjectedPrimitives::default();
-            self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-            for segment in projected.segments {
-                painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-            }
+            self.paint_curve_draft(painter, rect, &curve);
         }
     }
 }

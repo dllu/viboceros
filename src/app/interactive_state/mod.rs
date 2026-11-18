@@ -266,7 +266,10 @@ pub(super) enum InteractiveCommand {
         radius: Option<f64>,
     },
     Sphere {
-        center: Option<Point3>,
+        input: viboceros_command::sphere_input::SphereInput,
+    },
+    SphereGuide {
+        anchor: Option<Point3>,
     },
     SelVolumeSphere {
         center: Option<Point3>,

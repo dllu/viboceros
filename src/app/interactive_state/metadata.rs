@@ -69,7 +69,7 @@ impl InteractiveCommand {
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::CircleThreePointRadius { .. } => "Circle",
-            Self::Sphere { .. } => "Sphere",
+            Self::Sphere { .. } | Self::SphereGuide { .. } => "Sphere",
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::SelVolumeObject { .. } => "SelVolumeObject",
@@ -185,6 +185,8 @@ impl InteractiveCommand {
 
     pub(in crate::app) const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::Sphere { input } => input.anchor(),
+            Self::SphereGuide { anchor } => anchor,
             Self::DraftPullPoints { start } => start,
             Self::DraftPullCurve => None,
             Self::SurfaceArray { base }
@@ -267,7 +269,6 @@ impl InteractiveCommand {
             | Self::CircleVertical { center: None, .. }
             | Self::CircleTwoPoint { first: None, .. }
             | Self::CircleThreePoint { points: [None, _] }
-            | Self::Sphere { center: None }
             | Self::SelVolumeSphere { center: None, .. }
             | Self::SelVolumePipe { .. }
             | Self::SelVolumeObject { .. }
@@ -392,7 +393,6 @@ impl InteractiveCommand {
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
             | Self::CircleTwoPoint { first: start, .. }
-            | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
             | Self::Catenary { anchor: start }
             | Self::Spiral { anchor: start, .. }

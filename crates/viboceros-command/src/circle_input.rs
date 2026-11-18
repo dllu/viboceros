@@ -174,16 +174,19 @@ impl CircleInput {
             self.plane = plane;
         }
     }
-    pub fn anchor(self) -> Option<Point3> {
+    pub const fn anchor(self) -> Option<Point3> {
         match self.state {
             State::Center { center, .. } | State::Vertical { center, .. } => center,
             State::TwoPoint { first, .. } => first,
-            State::ThreePoint { first, second } => second.or(first),
+            State::ThreePoint { first, second } => match second {
+                Some(point) => Some(point),
+                None => first,
+            },
             State::ThreePointRadius { second, .. } => Some(second),
             State::Orientation { center, .. } => Some(center),
         }
     }
-    pub fn at_start(self) -> bool {
+    pub const fn at_start(self) -> bool {
         matches!(self.state, State::Center { center: None, .. })
     }
     pub fn remembers_radius(self) -> bool {

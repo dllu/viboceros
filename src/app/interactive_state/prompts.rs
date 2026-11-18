@@ -276,12 +276,11 @@ impl InteractiveCommand {
             Self::CircleThreePointRadius {
                 radius: Some(_), ..
             } => "Circle 3Point Radius: pick the center direction (Esc cancels)",
-            Self::Sphere { center: None } => {
-                "Sphere: pick the center or choose FitPoints (Esc to cancel)"
+            Self::Sphere { input } if input.at_start() => {
+                "Sphere: pick the center or choose 2Point, 3Point, 4Point, Tangent, AroundCurve, or FitPoints (Esc cancels)"
             }
-            Self::Sphere { center: Some(_) } => {
-                "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
-            }
+            Self::Sphere { .. } => "Sphere: specify a point or size (Esc cancels)",
+            Self::SphereGuide { .. } => "Sphere: pick a guide or specify the size (Esc cancels)",
             Self::SelVolumeSphere { center: None, .. } => {
                 "SelVolumeSphere: pick the center in the viewport (Esc to cancel)"
             }

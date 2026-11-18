@@ -4,6 +4,7 @@ use viboceros_command::circle_tangent_input::Input;
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Circle,
+    Sphere,
     Arc,
     Splop,
     SubDCylinder,
@@ -16,6 +17,7 @@ impl Kind {
     fn name(self) -> &'static str {
         match self {
             Self::Circle => "Circle",
+            Self::Sphere => "Sphere",
             Self::Arc => "Arc",
             Self::Splop => "Splop",
             Self::SubDCylinder => "SubDCylinder",
@@ -36,7 +38,7 @@ pub(super) struct Session {
 }
 impl Session {
     pub(super) fn sphere(&self) -> bool {
-        self.kind == Kind::Splop
+        matches!(self.kind, Kind::Sphere | Kind::Splop)
     }
     pub(super) fn wants_point(&self) -> bool {
         self.support.is_some() || self.input.wants_point()
@@ -53,6 +55,9 @@ impl VibocerosApp {
         output: Option<viboceros_command::circle_deform_input::Output>,
     ) {
         self.start_tangent(Kind::Circle, output);
+    }
+    pub(super) fn start_tangent_sphere(&mut self) {
+        self.start_tangent(Kind::Sphere, None);
     }
     pub(super) fn start_subd_torus_tangent(&mut self) {
         self.start_tangent(Kind::SubDTorus, None);
@@ -75,7 +80,9 @@ impl VibocerosApp {
         self.start_tangent(Kind::Splop, None);
     }
     pub(super) fn picking_splop_tangent(&self) -> bool {
-        self.tangent_session.as_ref().is_some_and(Session::sphere)
+        self.tangent_session
+            .as_ref()
+            .is_some_and(|s| s.kind == Kind::Splop)
     }
     fn start_tangent(
         &mut self,
@@ -103,6 +110,8 @@ impl VibocerosApp {
                 diameter: p.diameter,
                 ..Default::default()
             }
+        } else if kind == Kind::Sphere {
+            self.commands.sphere_preferences().into()
         } else if kind == Kind::Arc {
             viboceros_command::circle_around_input::Preferences {
                 radius: self.commands.arc_tangent_radius(),
@@ -130,8 +139,12 @@ impl VibocerosApp {
         self.tangent_session = Some(Session {
             kind,
             support: None,
-            input: if kind == Kind::Splop {
-                Input::reference_sphere(plane, self.document.tolerance())
+            input: if matches!(kind, Kind::Sphere | Kind::Splop) {
+                Input::reference_sphere_with_preferences(
+                    plane,
+                    self.document.tolerance(),
+                    preferences,
+                )
             } else {
                 Input::new(plane, self.document.tolerance(), preferences)
             },
@@ -173,6 +186,7 @@ impl VibocerosApp {
         self.active_command = Some(match s.kind {
             Kind::Arc => InteractiveCommand::ArcTangent { anchor },
             Kind::Circle => InteractiveCommand::CircleTangent { anchor },
+            Kind::Sphere => InteractiveCommand::SphereGuide { anchor },
             Kind::Splop => InteractiveCommand::Splop { last: anchor },
             Kind::SubDCylinder => InteractiveCommand::SubDCylinder { anchor },
             Kind::SubDCone => InteractiveCommand::SubDCone { anchor },
@@ -235,7 +249,7 @@ impl VibocerosApp {
             let session = self.tangent_session.as_mut().unwrap();
             session.input.reset_sources(self.document.tolerance());
             session.support = None;
-            if session.sphere() {
+            if session.kind == Kind::Splop {
                 self.refresh_splop_reference_history();
             }
             self.point_filter = None;
@@ -288,7 +302,21 @@ impl VibocerosApp {
                 }
             };
         }
-        if s.sphere() {
+        if s.kind == Kind::Sphere {
+            let result = s.input.finish().and_then(|circle| {
+                let definition =
+                    viboceros_command::circle_input::CircleDefinition::from_circle(circle)?;
+                Ok((definition, s.input.preferences(circle).into()))
+            });
+            return match result {
+                Ok((definition, preferences)) => self.finish_sphere(definition, preferences, None),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
+        if s.kind == Kind::Splop {
             let result = s.input.finish();
             return match result {
                 Ok(circle) => self.accept_splop_tangent_circle(circle),

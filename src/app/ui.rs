@@ -995,6 +995,9 @@ impl VibocerosApp {
             .map(|s| s.input)
             .filter(|_| model_input_active);
         let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
+        let sphere_preview = model_input_active
+            .then(|| self.sphere_preview_input())
+            .flatten();
         let circle_deform_input = self
             .circle_deform_session
             .as_ref()
@@ -1044,7 +1047,7 @@ impl VibocerosApp {
         let circle_around_input = self
             .circle_around_session
             .as_ref()
-            .and_then(|s| s.input)
+            .and_then(|s| Some((s.input?, s.sphere())))
             .filter(|_| model_input_active);
         let ellipse_input = self
             .ellipse_session
@@ -1384,6 +1387,7 @@ impl VibocerosApp {
                             arc_output,
                             arc_preview,
                             circle_around_input,
+                            sphere_preview,
                             circle_around_output,
                             circle_preview,
                             circle_deform_input,

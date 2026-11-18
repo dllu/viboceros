@@ -28,6 +28,26 @@ pub(super) struct CursorConstraints {
 }
 
 impl Viewport {
+    pub(super) fn paint_sphere_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        definition: viboceros_command::circle_input::CircleDefinition,
+    ) {
+        let [x, y, z] = definition.frame.axes();
+        for (seam, normal) in [(x, z), (x, y), (y, x)] {
+            if let Ok(circle) = Circle3::try_from_frame(
+                definition.frame.origin(),
+                definition.radius,
+                seam,
+                normal,
+                Tolerance::NUMERICAL_VALIDATION,
+            ) {
+                self.paint_curve_draft(painter, rect, &circle);
+            }
+        }
+    }
+
     pub(super) fn paint_curve_draft(
         &self,
         painter: &egui::Painter,

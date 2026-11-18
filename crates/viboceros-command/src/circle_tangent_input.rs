@@ -45,9 +45,16 @@ impl Input {
     /// and a disjoint coplanar line when two unconstrained contacts are accepted.
     /// Consume this getter through `finish` rather than a standalone Circle command.
     pub fn reference_sphere(plane: Frame3, tolerance: Tolerance) -> Self {
+        Self::reference_sphere_with_preferences(plane, tolerance, Preferences::default())
+    }
+    pub fn reference_sphere_with_preferences(
+        plane: Frame3,
+        tolerance: Tolerance,
+        preferences: Preferences,
+    ) -> Self {
         Self {
             sphere: true,
-            ..Self::new(plane, tolerance, Preferences::default())
+            ..Self::new(plane, tolerance, preferences)
         }
     }
     /// Native cone height menus distinguish curve contacts from free points.
@@ -469,7 +476,23 @@ pub fn from_arguments(
     plane: Frame3,
     preferences: Preferences,
 ) -> Result<Definition, CommandError> {
-    let mut input = Input::new(plane, doc.tolerance(), preferences);
+    from_input(doc, args, Input::new(plane, doc.tolerance(), preferences))
+}
+
+pub(crate) fn sphere_from_arguments(
+    doc: &Document,
+    args: &[&str],
+    plane: Frame3,
+    preferences: Preferences,
+) -> Result<Definition, CommandError> {
+    from_input(
+        doc,
+        args,
+        Input::reference_sphere_with_preferences(plane, doc.tolerance(), preferences),
+    )
+}
+
+fn from_input(doc: &Document, args: &[&str], mut input: Input) -> Result<Definition, CommandError> {
     let mut i = 0;
     let mut result = None;
     while i < args.len() {

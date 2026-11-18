@@ -209,6 +209,7 @@ impl VibocerosApp {
             | InteractiveCommand::ArcDeform { .. }
             | InteractiveCommand::CircleTangent { .. }
             | InteractiveCommand::CircleAround { .. }
+            | InteractiveCommand::SphereGuide { .. }
             | InteractiveCommand::Ellipse { .. }
             | InteractiveCommand::Catenary { .. }
             | InteractiveCommand::Spiral { .. }
@@ -515,32 +516,8 @@ impl VibocerosApp {
                     point,
                 );
             }
-            InteractiveCommand::Sphere { center: None } => {
-                let command = InteractiveCommand::Sphere {
-                    center: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Sphere {
-                center: Some(center),
-            } => {
-                if !center
-                    .distance_to(point)
-                    .is_ok_and(|radius| radius > self.document.tolerance().absolute())
-                {
-                    self.push_log(
-                        "Error: sphere radius must be finite and greater than tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Sphere {} {}",
-                    format_model_point(center),
-                    format_model_point(point)
-                ));
+            InteractiveCommand::Sphere { input } => {
+                return self.accept_sphere_point(input, point);
             }
             InteractiveCommand::SelVolumeSphere { center: None, mode } => {
                 let command = InteractiveCommand::SelVolumeSphere {

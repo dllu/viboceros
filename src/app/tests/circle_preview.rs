@@ -95,7 +95,7 @@ fn circle_remembers_radius_and_diameter_and_accepts_typed_units() {
     }
 }
 
-fn viewport_frame(
+pub(super) fn viewport_frame(
     app: &mut VibocerosApp,
     context: &egui::Context,
     events: Vec<egui::Event>,
@@ -127,12 +127,12 @@ fn viewport_frame(
     preview
 }
 
-fn screen_point(app: &VibocerosApp, point: Point3) -> egui::Pos2 {
+pub(super) fn screen_point(app: &VibocerosApp, point: Point3) -> egui::Pos2 {
     let view = &app.viewports[0];
     view.project(point, view.screen_rect().unwrap()).unwrap()
 }
 
-fn viewport_click(app: &mut VibocerosApp, context: &egui::Context, pos: egui::Pos2) {
+pub(super) fn viewport_click(app: &mut VibocerosApp, context: &egui::Context, pos: egui::Pos2) {
     for pressed in [true, false] {
         viewport_frame(
             app,

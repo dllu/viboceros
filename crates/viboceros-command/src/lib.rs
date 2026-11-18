@@ -57,6 +57,7 @@ pub mod replace_block;
 pub mod rigid_groups;
 pub mod section;
 pub mod soft_crease;
+pub mod sphere_command;
 pub mod sphere_input;
 pub mod subd_axial;
 pub mod subd_box;
@@ -1028,6 +1029,7 @@ pub struct CommandRegistry {
     curve_extrusion_split: extrude_curve::SplitPreference,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
+    sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
     draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
@@ -1485,7 +1487,9 @@ impl CommandRegistry {
             .register(DuplicateFaceBorderCommand)
             .expect("unique built-in command");
         registry
-            .register(SphereCommand)
+            .register(sphere_command::SphereCommand(
+                registry.sphere_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(CylinderCommand(registry.use_extrusions.clone()))
@@ -5703,65 +5707,6 @@ fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions,
 }
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
-
-struct SphereCommand;
-
-impl Command for SphereCommand {
-    fn name(&self) -> &'static str {
-        "Sphere"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Sph"]
-    }
-
-    fn object_selection_prompt(
-        &self,
-        args: &[&str],
-    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok(matches!(args,[option]if option_name_eq(option,"FitPoints"))
-            .then(|| point_fitting::selection_prompt(point_fitting::PointFitKind::Sphere)))
-    }
-    fn run_postselected(
-        &self,
-        document: &mut Document,
-        args: &[&str],
-        _context: CommandContext,
-    ) -> Result<String, CommandError> {
-        if args.first().is_some_and(|s| option_name_eq(s, "FitPoints")) {
-            require_consumed(args, 1, "Sphere FitPoints (select points or grips)")?;
-            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], true);
-        }
-        self.run(document, args)
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        if arguments
-            .first()
-            .is_some_and(|s| option_name_eq(s, "FitPoints"))
-        {
-            require_consumed(arguments, 1, "Sphere FitPoints (select points or grips)")?;
-            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], false);
-        }
-        const USAGE: &str = "Sphere center radius | Sphere center point-on-sphere";
-        let (center, center_consumed) = parse_point(arguments)?;
-        let remaining = &arguments[center_consumed..];
-        let radius = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?
-        } else {
-            let (point_on_sphere, point_consumed) = parse_point(remaining)?;
-            require_consumed(remaining, point_consumed, USAGE)?;
-            center.distance_to(point_on_sphere)?
-        };
-        let frame = Frame3::try_from_unit_normal(
-            center,
-            Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
-        )?;
-        let surface = NurbsSurface::try_sphere(frame, radius)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!("Added NURBS sphere {id} (radius {radius:.6})"))
-    }
-}
 
 pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
 pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 3;

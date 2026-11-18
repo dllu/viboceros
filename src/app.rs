@@ -296,6 +296,7 @@ mod short_path;
 mod silhouette;
 mod smooth;
 mod snapping;
+mod sphere;
 mod spiral;
 mod srf_pt;
 mod stretch_prompt;
@@ -1069,6 +1070,7 @@ impl VibocerosApp {
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_circle(&input)
+            || self.try_continue_sphere(&input)
             || self.try_continue_pipe(&input)
             || self.try_continue_evaluate_uv(&input)
             || self.try_continue_align(&input)

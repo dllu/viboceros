@@ -21,10 +21,19 @@ planner in both builds. See [region grouping, source deletion and qualification]
 `Cap` fills planar openings on existing surfaces and B-reps in place, including
 nested annular caps. See [capping behavior, evidence, and limits](cap.md).
 
-`Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
-a center and numeric radius or point on the sphere. Its longitude domain is
-`[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
-arguments starts the two-pick viewport workflow.
+`Sphere` creates an exact 9-by-5 rational quadratic surface. Pick or type a
+center, then pick a radius point or enter a size. The size getter accepts
+`Diameter`, `Circumference`, `Area`, and `Orientation`. Enter at a Radius or
+Diameter prompt reuses the last size. `2Point` uses opposite points,
+`3Point` uses a base circle, and `4Point` adds a point off the section plane.
+Choose `Radius` after the first two 3Point picks or after the second or third
+4Point pick to constrain the sphere. The viewport previews the section or
+sphere as the cursor moves. The surface domains are `[0, 2π]` and
+`[-π/2, π/2]`.
+
+`Sphere Tangent` uses point or curve contacts for its base circle.
+`Sphere AroundCurve` takes a curve or surface edge, a center on that guide,
+and a size perpendicular to the tangent. Both show a live sphere preview.
 
 `Sphere FitPoints` fits a sphere through selected point objects or grips.
 See [point fitting and its retained Rhino difference](sphere-fit-points.md).

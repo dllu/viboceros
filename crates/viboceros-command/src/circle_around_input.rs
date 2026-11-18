@@ -48,7 +48,7 @@ impl Input {
             preferences,
         }
     }
-    pub fn center(self) -> Point3 {
+    pub const fn center(self) -> Point3 {
         self.frame.origin()
     }
     pub fn frame(self) -> Frame3 {

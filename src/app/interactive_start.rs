@@ -47,6 +47,9 @@ impl VibocerosApp {
         if self.try_start_circle_around(input) {
             return true;
         }
+        if self.try_start_sphere(input) {
+            return true;
+        }
         if self.try_start_ellipse(input) {
             return true;
         }
@@ -2033,7 +2036,6 @@ impl VibocerosApp {
                 "lines" => InteractiveCommand::Lines,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
-                "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
                 "arc" | "a" => InteractiveCommand::ArcCenter {
                     center: None,

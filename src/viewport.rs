@@ -420,7 +420,8 @@ pub struct ViewportInput<'a> {
     pub arc_preview: Option<(viboceros_command::arc_input::Preview, Frame3)>,
     pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
-    pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
+    pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
+    pub sphere_preview: Option<viboceros_command::sphere_input::SphereInput>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
     pub circle_preview: Option<(viboceros_command::circle_input::PointConstruction, Frame3)>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
@@ -561,6 +562,7 @@ impl Default for ViewportInput<'_> {
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
+            sphere_preview: None,
             circle_around_output: None,
             circle_preview: None,
             circle_deform_input: None,
@@ -2808,14 +2810,33 @@ impl Viewport {
         {
             self.paint_curve_draft(&painter, rect, &circle);
         }
-        if let Some(getter) = input.circle_around_input {
+        if let Some((getter, sphere)) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);
-            if let Some(circle) = drafting_cursor.and_then(|c| getter.preview(c.point))
-                && let Ok(curve) = input
+            if let Some(circle) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                if sphere {
+                    if let Ok(definition) =
+                        viboceros_command::circle_input::CircleDefinition::from_circle(circle)
+                    {
+                        self.paint_sphere_draft(&painter, rect, definition);
+                    }
+                } else if let Ok(curve) = input
                     .circle_around_output
                     .map_or_else(|| circle.to_nurbs(), |o| o.curve(circle))
-            {
-                self.paint_curve_draft(&painter, rect, &curve);
+                {
+                    self.paint_curve_draft(&painter, rect, &curve);
+                }
+            }
+        }
+        if let Some(getter) = input.sphere_preview
+            && let Some(cursor) = drafting_cursor
+            && input
+                .point_filter
+                .is_none_or(|filter| !filter.awaiting_source())
+        {
+            if let Some(definition) = getter.preview(cursor.point, document.tolerance()) {
+                self.paint_sphere_draft(&painter, rect, definition);
+            } else if let Some(section) = getter.preview_section(cursor.point) {
+                self.paint_curve_draft(&painter, rect, &section);
             }
         }
         if let Some(getter) = input.circle_deform_input {

@@ -277,6 +277,7 @@ mod smooth;
 mod soft_edit_curve;
 mod soft_edit_surface;
 mod sphere_fit_points;
+mod sphere_getters;
 mod spiral;
 mod spiral_rail;
 mod split_edge;

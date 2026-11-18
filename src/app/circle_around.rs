@@ -8,8 +8,19 @@ use viboceros_command::{
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Owner {
     Circle,
+    Sphere,
     SubDSphere,
     SubDTorus,
+}
+impl Owner {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Circle => "Circle",
+            Self::Sphere => "Sphere",
+            Self::SubDSphere => "SubDSphere",
+            Self::SubDTorus => "SubDTorus",
+        }
+    }
 }
 pub(super) struct Session {
     owner: Owner,
@@ -21,6 +32,10 @@ pub(super) struct Session {
     mode: Mode,
 }
 impl Session {
+    pub(super) fn sphere(&self) -> bool {
+        self.owner == Owner::Sphere
+    }
+
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {
         self.curve
             .as_ref()
@@ -57,6 +72,9 @@ impl VibocerosApp {
     pub(super) fn start_subd_sphere_around(&mut self) {
         self.start_circle_around_for(Owner::SubDSphere, None);
     }
+    pub(super) fn start_sphere_around(&mut self) {
+        self.start_circle_around_for(Owner::Sphere, None);
+    }
     pub(super) fn start_subd_torus_around(&mut self) {
         self.start_circle_around_for(Owner::SubDTorus, None);
     }
@@ -65,11 +83,13 @@ impl VibocerosApp {
         owner: Owner,
         output: Option<viboceros_command::circle_deform_input::Output>,
     ) {
-        if owner == Owner::Circle {
+        if matches!(owner, Owner::Circle | Owner::Sphere) {
             self.cancel_interactive_command(false);
         }
         let mut preferences = if owner == Owner::Circle {
             self.commands.circle_preferences()
+        } else if owner == Owner::Sphere {
+            self.commands.sphere_preferences().into()
         } else if owner == Owner::SubDTorus {
             let p = self.commands.subd_torus_preferences();
             Preferences {
@@ -139,21 +159,14 @@ impl VibocerosApp {
         } else {
             "center on curve".into()
         };
-        self.active_command = Some(if s.owner == Owner::Circle {
-            InteractiveCommand::CircleAround { center }
-        } else if s.owner == Owner::SubDTorus {
-            InteractiveCommand::SubDTorus { anchor: center }
-        } else {
-            InteractiveCommand::SubDSphere { anchor: center }
+        self.active_command = Some(match s.owner {
+            Owner::Circle => InteractiveCommand::CircleAround { center },
+            Owner::Sphere => InteractiveCommand::SphereGuide { anchor: center },
+            Owner::SubDTorus => InteractiveCommand::SubDTorus { anchor: center },
+            Owner::SubDSphere => InteractiveCommand::SubDSphere { anchor: center },
         });
         self.drafting_plane = s.input.map(Input::frame);
-        let name = if s.owner == Owner::Circle {
-            "Circle"
-        } else if s.owner == Owner::SubDTorus {
-            "SubDTorus"
-        } else {
-            "SubDSphere"
-        };
+        let name = s.owner.name();
         self.push_log(format!("{name} AroundCurve: {prompt}; Esc cancels"));
     }
     pub(super) fn pick_circle_around_curve(
@@ -222,7 +235,10 @@ impl VibocerosApp {
             self.point_filter = None;
             self.point_constraint = None;
             self.component_selection.clear_choices();
-            self.push_log("Circle guide changed or became unavailable; select it again".into());
+            let name = s.owner.name();
+            self.push_log(format!(
+                "{name} guide changed or became unavailable; select it again"
+            ));
             self.circle_around_prompt();
         }
         true
@@ -289,6 +305,17 @@ impl VibocerosApp {
             };
             return match viboceros_command::circle_input::CircleDefinition::from_circle(circle) {
                 Ok(d) => self.accept_subd_sphere_reference(d, release),
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
+        if s.owner == Owner::Sphere {
+            let release = s.postselected.then(|| curve.object_id());
+            let preferences = s.input.unwrap().preferences(circle).into();
+            return match viboceros_command::circle_input::CircleDefinition::from_circle(circle) {
+                Ok(definition) => self.finish_sphere(definition, preferences, release),
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
                     false
