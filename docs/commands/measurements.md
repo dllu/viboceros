@@ -128,8 +128,9 @@ point so units or the second point can be corrected.
 
 At a numeric length prompt in `Fillet`, `Offset`, `OffsetSrf`, or `Circle`,
 enter `'Distance` and pick or type two points to supply their distance.
-Enter `'Length` to collect curves or edges, with `SubCrv` for temporary
-portions and `SelChain` for connected inputs. Press Enter to supply the total.
+Enter `'Length` to pick curves or edges. Drag a selection window to collect
+curves, use `SubCrv` for temporary portions, or use `SelChain` for connected
+inputs. Press Enter to supply the total.
 Both measurements return model-unit values, including when a unit option is
 set. Esc returns to the parent prompt. Measurements preserve the document's
 geometry and selection. [Rhino Distance](https://docs.mcneel.com/rhino/8/help/en-us/commands/distance.htm) · [Rhino Length](https://docs.mcneel.com/rhino/8/help/en-us/commands/length.htm)

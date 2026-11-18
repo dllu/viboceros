@@ -8,6 +8,20 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.run_command();
 }
 
+fn prepare_top_view(app: &mut VibocerosApp) -> egui::Context {
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    let context = egui::Context::default();
+    viewport_frame(app, &context, Vec::new());
+    viewport_frame(app, &context, Vec::new());
+    app.viewports[0]
+        .zoom_extents(&app.document, Default::default())
+        .unwrap();
+    viewport_frame(app, &context, Vec::new());
+    context
+}
+
 #[test]
 fn nested_distance_undo_and_escape_preserve_the_parent_point() {
     let mut app = test_app();
@@ -48,9 +62,6 @@ fn nested_distance_undo_and_escape_preserve_the_parent_point() {
 #[test]
 fn nested_length_combines_a_viewport_pick_with_a_temporary_portion() {
     let mut app = test_app();
-    app.viewports[0] = Viewport::new(ViewKind::Top);
-    app.maximized_viewport = Some(0);
-    app.osnap = false;
     app.execute_command("Line w-4,0,0 w4,0,0");
     let source = app.document.objects().next().unwrap().id();
     app.execute_command("Line w-2,2,0 w1,2,0");
@@ -69,13 +80,7 @@ fn nested_length_combines_a_viewport_pick_with_a_temporary_portion() {
         enter(&mut app, input);
     }
     let selected = app.document.selected_object_ids().collect::<Vec<_>>();
-    let context = egui::Context::default();
-    viewport_frame(&mut app, &context, Vec::new());
-    viewport_frame(&mut app, &context, Vec::new());
-    app.viewports[0]
-        .zoom_extents(&app.document, Default::default())
-        .unwrap();
-    viewport_frame(&mut app, &context, Vec::new());
+    let context = prepare_top_view(&mut app);
     let location = screen_point(&app, point(0., 2., 0.));
     viewport_click(&mut app, &context, location);
     assert_eq!(app.nested_length_highlights(), vec![Target::Curve(whole)]);
@@ -109,13 +114,14 @@ fn nested_length_chain_and_edge_stay_private_during_surface_offset() {
     app.execute_command("Line w0,0,0 w3,0,0");
     let first = app.document.objects().next().unwrap().id();
     app.execute_command("Line w3,0,0 w5,0,0");
+    let second = app.document.objects().last().unwrap().id();
     app.execute_command("Plane w10,10,0 w14,14,0");
     let plane = app.document.objects().last().unwrap().id();
     app.document
         .select_objects_direct([plane], SelectionMode::Replace)
         .unwrap();
     app.document.clear_history().unwrap();
-    for input in ["OffsetSrf", "Distance", "'Length", "SelChain"] {
+    for input in ["OffsetSrf", "Distance", "'Length"] {
         enter(&mut app, input);
     }
     let selected = app.document.selected_object_ids().collect::<Vec<_>>();
@@ -125,6 +131,25 @@ fn nested_length_chain_and_edge_stay_private_during_surface_offset() {
         "{:?}",
         app.command_log
     );
+    let context = prepare_top_view(&mut app);
+    let start = screen_point(&app, point(2.9, 0.8, 0.));
+    let end = screen_point(&app, point(5.5, -0.8, 0.));
+    let button = |pos, pressed| egui::Event::PointerButton {
+        pos,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    for events in [
+        vec![egui::Event::PointerMoved(start), button(start, true)],
+        vec![egui::Event::PointerMoved(end)],
+        vec![button(end, false)],
+    ] {
+        viewport_frame(&mut app, &context, events);
+    }
+    assert_eq!(app.nested_length_highlights(), vec![Target::Curve(second)]);
+
+    enter(&mut app, "SelChain");
     assert!(app.chain_prompt.is_some(), "{:?}", app.command_log);
     app.pick_chain(vec![Target::Curve(first)]);
     enter(&mut app, "All");

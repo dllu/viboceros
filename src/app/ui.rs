@@ -1038,6 +1038,7 @@ impl VibocerosApp {
         let selection_allowed_objects = self
             .offset_surface_session
             .as_ref()
+            .filter(|_| self.nested_measurement.is_none())
             .map(|s| s.ids())
             .or_else(|| {
                 self.offset_mesh_session
