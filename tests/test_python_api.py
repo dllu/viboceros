@@ -6,8 +6,8 @@ import unittest
 from pathlib import Path
 
 from viboceros import (
-    ActivateView, CommandError, ENTER, ESCAPE, Key, Pick, PickPoint, Session,
-    SessionError, TypeText, WidgetAction,
+    ActivateView, Camera, CommandError, ENTER, ESCAPE, Key, NurbsSurface, Pick,
+    PickPoint, Session, SessionError, SurfacePatch, SurfaceSample, TypeText, WidgetAction,
 )
 
 
@@ -143,6 +143,28 @@ class PythonApiTests(unittest.TestCase):
         self.assertEqual(model.object(restored).kind, "brep")
         self.assertEqual(model.object(restored).bounds, ((0, 0, 0), (8, 5, 3)))
 
+    def test_exact_surface_patches_and_jets(self):
+        model = self.model
+        knots = [0, 0, 0, 1, 1, 1]
+        # The tensor quadratic is S(u,v)=(u,v,u²+uv+v²).
+        net = [[(u/2, v/2, int(u == 2) + u*v/4 + int(v == 2)) for v in range(3)] for u in range(3)]
+        support = NurbsSurface(2, 2, knots, knots, net)
+        left, right = model.add_surface_patches(
+            support, SurfacePatch(((0, .5), (0, 1)), "Left", (70, 32, 120)),
+            SurfacePatch(((.5, 1), (0, 1)), "Right"),
+        )
+        self.assertEqual(model.surface_definition(left).domain, ((0, .5), (0, 1)))
+        a, = model.surface_jets(left, SurfaceSample((.5, .25), side_u="left"))
+        b, = model.surface_jets(right, (.5, .25))
+        self.assertEqual(a, b)
+        self.assertEqual(a.point, (.5, .25, .4375))
+        self.assertEqual(a.du, (1., 0., 1.25))
+        self.assertEqual((a.duu, a.duv, a.dvv), ((0., 0., 2.), (0., 0., 1.), (0., 0., 2.)))
+        with self.assertRaises(SessionError):
+            model.add_surface_patches(support, SurfacePatch(), SurfacePatch(((1, 2), (0, 1))))
+        self.assertEqual(len(model.objects()), 2)
+        self.assertEqual(model.run("Undo").deleted, (left, right))
+
     @unittest.skipUnless(os.environ.get("VIBOCEROS_TEST_GPU") == "1", "requires a wgpu adapter")
     def test_shaded_png_from_multiple_views(self):
         model = self.model
@@ -162,6 +184,11 @@ class PythonApiTests(unittest.TestCase):
         model.run(ActivateView("Perspective"), "NamedView Save Inspection view")
         named = model.screenshot(self.folder / "named.png", view="Inspection view", size=size)
         self.assertIn(named.read_bytes(), captures)
+        camera = Camera(eye=(-9, -18, 11), target=(4, 2, 1), vertical_fov_degrees=31)
+        clean = model.screenshot(self.folder / "camera.png", camera=camera, show_edges=False, size=size)
+        edges = model.screenshot(self.folder / "camera-edges.png", camera=camera, size=size)
+        self.assertNotEqual(clean.read_bytes(), blank)
+        self.assertNotEqual(clean.read_bytes(), edges.read_bytes())
 
 
 if __name__ == "__main__":

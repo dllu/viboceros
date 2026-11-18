@@ -1,6 +1,8 @@
 //! Persistent, windowless host for the same document, getters and views as the desktop app.
+mod capture;
 mod input;
 mod model;
+mod surfaces;
 mod widgets;
 
 use super::*;
@@ -10,7 +12,6 @@ use model::{ComponentRef, GripRef};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::io::{self, BufRead, Write};
-use std::path::PathBuf;
 
 const PROTOCOL: u32 = 1;
 const SCREEN_SIZE: egui::Vec2 = egui::vec2(1200.0, 800.0);
@@ -55,17 +56,26 @@ enum Request {
     },
     Viewports,
     Widgets,
+    AddSurfacePatches {
+        surface: surfaces::Definition,
+        patches: Vec<surfaces::Patch>,
+    },
+    SurfaceDefinition {
+        id: String,
+        face: Option<usize>,
+    },
+    SurfaceJets {
+        id: String,
+        face: Option<usize>,
+        samples: Vec<surfaces::Sample>,
+    },
     Project {
         point: [f64; 3],
         view: Option<ViewRef>,
     },
     Screenshot {
-        path: PathBuf,
-        view: Option<ViewRef>,
-        mode: String,
-        size: [u32; 2],
-        fit: bool,
-        background: [u8; 4],
+        #[serde(flatten)]
+        capture: capture::Screenshot,
     },
 }
 
@@ -169,19 +179,22 @@ impl Session {
             }
             Request::Viewports => self.viewports(),
             Request::Widgets => self.widgets(),
+            Request::AddSurfacePatches { surface, patches } => {
+                if self.pending() {
+                    return Err("finish the active command before adding surfaces".into());
+                }
+                surfaces::add_patches(&mut self.app.document, surface, patches)?
+            }
+            Request::SurfaceDefinition { id, face } => surfaces::definition(document, &id, face)?,
+            Request::SurfaceJets { id, face, samples } => {
+                surfaces::jets(document, &id, face, samples)?
+            }
             Request::Project { point, view } => {
                 let position = self.project_point(point, view.as_ref())?;
                 json!([position.x, position.y])
             }
-            Request::Screenshot {
-                path,
-                view,
-                mode,
-                size,
-                fit,
-                background,
-            } => {
-                self.screenshot(path, view, &mode, size, fit, background)?;
+            Request::Screenshot { capture } => {
+                self.screenshot(capture)?;
                 Value::Null
             }
         })
@@ -242,37 +255,5 @@ impl Session {
             "selected": model::selected_ids(&self.app.document),
             "changes": changes,
         }))
-    }
-
-    fn screenshot(
-        &mut self,
-        path: PathBuf,
-        view: Option<ViewRef>,
-        mode: &str,
-        size: [u32; 2],
-        fit: bool,
-        background: [u8; 4],
-    ) -> Result<()> {
-        let mut viewport = self.capture_view(view.as_ref())?;
-        viewport.display_mode = DisplayMode::parse(mode).ok_or("unknown display mode")?;
-        let rect =
-            egui::Rect::from_min_size(egui::Pos2::ZERO, egui::vec2(size[0] as f32, size[1] as f32));
-        let scene =
-            viewport.capture_scene(rect, &self.app.document, fit, self.app.zoom_extents_borders)?;
-        if self.renderer.is_none() {
-            self.renderer = Some(OffscreenRenderer::try_new()?);
-        }
-        let rgba = self
-            .renderer
-            .as_mut()
-            .unwrap()
-            .capture(&scene, size, background)?;
-        let file = io::BufWriter::new(std::fs::File::create(path)?);
-        let mut encoder = png::Encoder::new(file, size[0], size[1]);
-        encoder.set_color(png::ColorType::Rgba);
-        let mut writer = encoder.write_header()?;
-        writer.write_image_data(&rgba)?;
-        writer.finish()?;
-        Ok(())
     }
 }

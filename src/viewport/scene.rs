@@ -176,6 +176,7 @@ fn push_display_object(
 struct SceneKey {
     camera: CameraSnapshot,
     mode: DisplayMode,
+    draw_surface_edges: bool,
     rect: Rect,
     objects: Vec<DisplayObject>,
 }
@@ -652,6 +653,7 @@ impl Viewport {
         let key = SceneKey {
             camera: self.camera_snapshot(),
             mode: self.display_mode,
+            draw_surface_edges: self.draw_surface_edges,
             rect,
             objects,
         };
@@ -661,6 +663,7 @@ impl Viewport {
                 return Arc::clone(&previous.scene);
             }
             if previous.key.mode == key.mode
+                && previous.key.draw_surface_edges == key.draw_surface_edges
                 && previous.key.objects == key.objects
                 && let Some(uniform) = previous
                     .reprojection
@@ -780,7 +783,11 @@ impl Viewport {
                             );
                         }
                     }
-                    if object.draft.is_some_and(|s| !s.show_isocurves) {
+                    if (!self.draw_surface_edges
+                        && self.display_mode != DisplayMode::Wireframe
+                        && display.mesh().is_some())
+                        || object.draft.is_some_and(|s| !s.show_isocurves)
+                    {
                         continue;
                     }
                     if object

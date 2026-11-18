@@ -9,8 +9,9 @@ from pathlib import Path
 from threading import Event, Lock, Timer
 from typing import Any
 
+from ._surfaces import Domain, NurbsSurface, RGB, SurfaceJet, SurfacePatch, SurfaceSample, UV
 from ._types import (
-    CommandArgument, CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
+    Camera, CommandArgument, CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
     SessionError, Step, View, Viewport, Widget, XYZ, command_token, encode_step, object_id,
 )
 
@@ -259,6 +260,35 @@ class Session:
             raise CommandError(result)
         return result
 
+    def add_surface_patches(self, surface: NurbsSurface, *patches: SurfacePatch) -> tuple[str, ...]:
+        """Add exact restrictions of one surface in a single undoable edit."""
+        return tuple(self._request(
+            "add_surface_patches", surface=surface._payload(),
+            patches=[patch._payload() for patch in patches],
+        ))
+
+    def add_nurbs_surface(
+        self, surface: NurbsSurface, *, domain: Domain | None = None,
+        name: str | None = None, color: RGB | None = None,
+    ) -> str:
+        """Add a NURBS surface using explicit knots and control points."""
+        return self.add_surface_patches(surface, SurfacePatch(domain, name, color))[0]
+
+    def surface_definition(self, obj: ObjectLike, *, face: int | None = None) -> NurbsSurface:
+        """Read the tensor-product definition of a surface or B-rep face."""
+        return NurbsSurface(**self._request("surface_definition", id=object_id(obj), face=face))
+
+    def surface_jets(
+        self, obj: ObjectLike, *samples: SurfaceSample | UV, face: int | None = None,
+    ) -> tuple[SurfaceJet, ...]:
+        """Evaluate position and first and second partials at native UV coordinates."""
+        records = self._request(
+            "surface_jets", id=object_id(obj), face=face,
+            samples=[(sample if isinstance(sample, SurfaceSample) else SurfaceSample(sample))._payload()
+                     for sample in samples],
+        )
+        return tuple(SurfaceJet(**{name: tuple(value) for name, value in jet.items()}) for jet in records)
+
     def viewports(self) -> tuple[Viewport, ...]:
         return tuple(map(Viewport._read, self._request("viewports")))
 
@@ -275,8 +305,13 @@ class Session:
         self, path: PathLike, *, view: View | None = None, mode: str = "Shaded",
         size: tuple[int, int] = (1200, 800), fit: bool = True,
         background: tuple[int, int, int, int] = (255, 255, 255, 255),
+        camera: Camera | None = None, show_edges: bool = True,
     ) -> Path:
         """Write a PNG using a viewport, named view, or standard view direction."""
         path = _path(path)
-        self._request("screenshot", path=str(path), view=view, mode=mode, size=size, fit=fit, background=background)
+        self._request(
+            "screenshot", path=str(path), view=view, mode=mode, size=size,
+            fit=fit, background=background, camera=None if camera is None else camera._payload(),
+            show_edges=show_edges,
+        )
         return path

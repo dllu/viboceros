@@ -61,6 +61,19 @@ run the application's `ReadCommandFile` command.
   the partial result on the exception's `result` attribute. Pass `check=False`
   to keep submitting steps after errors. Earlier edits remain available to Undo.
 
+## Exact surfaces
+
+`NurbsSurface` takes degrees, full knot vectors, and a control net indexed
+as `control_net[u][v]`. Supply optional weights with the same layout. Add a
+surface with `add_nurbs_surface()` or use `add_surface_patches()` to extract
+several exact rectangular UV subdomains in a single undo step. Each patch
+keeps the parent's parameterization and can have its own name and color.
+
+Read controls and knots from an object with `surface_definition()`. Use
+`surface_jets(obj, (u, v), ...)` to inspect the point and all partials through
+order two in native UV. `SurfaceSample` specifies left or right limits at
+knots. Pass `face=` to query the supporting surface of a B-rep face.
+
 ## Files and images
 
 Use `save()` for the current project or `save(path)` for Save As. `open(path)`
@@ -75,6 +88,10 @@ shaded mode and fits visible geometry by default. Set `mode="Wireframe"` or
 `mode="Ghosted"`, `fit=False` to keep the camera, or supply `size=(width, height)`
 and an RGBA `background`. Rendering requires a wgpu adapter. A software Vulkan
 adapter works without a desktop session.
+
+Pass `camera=Camera(eye=(...), target=(...))` for a custom perspective and
+`show_edges=False` to hide tessellated object wires in shaded captures.
+Standalone model curves remain visible.
 
 Use `model.run("NamedView Save Front detail")` to save the active camera and
 pass `view="Front detail"` to capture it.

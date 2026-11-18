@@ -776,6 +776,7 @@ pub struct Viewport {
     grid_undo: std::collections::VecDeque<GridMetrics>,
     grid_redo: Vec<GridMetrics>,
     pub display_mode: DisplayMode,
+    pub(crate) draw_surface_edges: bool,
     pixels_per_unit: Real,
     grid: GridSettings,
     pan: Vec2,
@@ -828,6 +829,34 @@ impl Viewport {
         Ok(self.object_scene_with_analyses(rect, document, None, &[], None, Default::default()))
     }
 
+    pub(crate) fn capture_camera(
+        &mut self,
+        eye: Point3,
+        target: Point3,
+        up: Vector3,
+        fov: Real,
+    ) -> Result<(), GeometryError> {
+        if self.kind != ViewKind::Perspective || !fov.is_finite() || fov <= 0.0 || fov >= 180.0 {
+            return Err(GeometryError::Degenerate {
+                context: "capture camera field of view",
+            });
+        }
+        let direction = Vector3::try_from(std::array::from_fn(|i| {
+            target.to_array()[i] - eye.to_array()[i]
+        }))?;
+        let right = direction.cross(up)?;
+        self.perspective_frame = Some(Frame3::try_from_directions(
+            target,
+            right,
+            up,
+            Tolerance::DEFAULT,
+        )?);
+        self.target = NaVector3::from(target.to_array());
+        self.perspective_camera_distance = direction.length()?;
+        self.perspective_fov_radians = fov.to_radians();
+        Ok(())
+    }
+
     pub(crate) fn parallel_view_direction(&self) -> Option<Vector3> {
         (self.kind != ViewKind::Perspective).then(|| self.viewward_direction())
     }
@@ -860,6 +889,7 @@ impl Viewport {
             grid_undo: Default::default(),
             grid_redo: Vec::new(),
             display_mode: DisplayMode::Wireframe,
+            draw_surface_edges: true,
             pixels_per_unit: 40.0,
             grid: GridSettings::default(),
             pan: Vec2::ZERO,

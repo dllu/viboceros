@@ -1,8 +1,10 @@
 """Script the Viboceros CAD engine with a persistent, headless document."""
 
 from ._session import Session
+from ._surfaces import NurbsSurface, SurfaceJet, SurfacePatch, SurfaceSample
 from ._types import (
     ActivateView,
+    Camera,
     CommandError,
     CommandResult,
     Component,
@@ -24,7 +26,7 @@ from ._types import (
 )
 
 __all__ = [
-    "ActivateView", "CommandError", "CommandResult", "Component", "ENTER", "ESCAPE",
-    "Grip", "Key", "Object", "Pick", "PickPoint", "Point", "Pointer", "Selection",
-    "Session", "SessionError", "TypeText", "Viewport", "Widget", "WidgetAction",
+    "ActivateView", "Camera", "CommandError", "CommandResult", "Component", "ENTER", "ESCAPE",
+    "Grip", "Key", "NurbsSurface", "Object", "Pick", "PickPoint", "Point", "Pointer", "Selection",
+    "Session", "SessionError", "SurfaceJet", "SurfacePatch", "SurfaceSample", "TypeText", "Viewport", "Widget", "WidgetAction",
 ]

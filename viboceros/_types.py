@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from math import isfinite
 from numbers import Real
 from typing import Any, Literal
@@ -129,6 +129,19 @@ class Selection:
             tuple(map(Component._read, record["components"])),
             tuple(map(Grip._read, record["grips"])),
         )
+
+
+@dataclass(frozen=True)
+class Camera:
+    """A perspective capture camera in world coordinates."""
+
+    eye: XYZ
+    target: XYZ
+    up: XYZ = (0.0, 0.0, 1.0)
+    vertical_fov_degrees: float = 34.0
+
+    def _payload(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass(frozen=True)
