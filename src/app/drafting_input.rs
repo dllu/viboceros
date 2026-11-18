@@ -323,8 +323,14 @@ impl VibocerosApp {
                 return self.finish_distance(start, point, display_units, plane);
             }
             InteractiveCommand::Circle { center: None } => {
-                let command = InteractiveCommand::Circle {
-                    center: Some(point),
+                let command = match self.commands.circle_preferences().mode() {
+                    CircleSizeMode::Radius => InteractiveCommand::Circle {
+                        center: Some(point),
+                    },
+                    mode => InteractiveCommand::CircleSize {
+                        center: point,
+                        mode,
+                    },
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Center: {}", format_model_point(point)));
@@ -387,7 +393,14 @@ impl VibocerosApp {
                     radius,
                     mode,
                 };
-                return self.finish_circle_vertical(state, point);
+                let argument = if let Some(radius) = radius {
+                    format!("{radius} {}", format_model_point(point))
+                } else if matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area) {
+                    format!("{} {}", mode.label(), format_model_point(point))
+                } else {
+                    format_model_point(point)
+                };
+                return self.finish_circle_vertical(state, &argument);
             }
             InteractiveCommand::CircleOrientation {
                 center,
@@ -429,27 +442,28 @@ impl VibocerosApp {
                     point,
                 );
             }
-            InteractiveCommand::CircleTwoPoint { first: None } => {
-                let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };
+            InteractiveCommand::CircleTwoPoint {
+                first: None,
+                vertical,
+            } => {
+                let next = InteractiveCommand::CircleTwoPoint {
+                    first: Some(point),
+                    vertical,
+                };
                 self.active_command = Some(next);
                 self.push_log(next.prompt().to_owned());
             }
-            InteractiveCommand::CircleTwoPoint { first: Some(first) } => {
-                if let Err(error) = viboceros_geometry::Circle3::try_from_diameter_on_plane(
-                    first,
-                    point,
-                    plane,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(format!("Error: {error}"));
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Circle 2Point {} {}",
+            InteractiveCommand::CircleTwoPoint {
+                first: Some(first),
+                vertical,
+            } => {
+                let vertical = if vertical { " Vertical" } else { "" };
+                let input = format!(
+                    "Circle 2Point{vertical} {} {}",
                     format_model_point(first),
                     format_model_point(point)
-                ));
+                );
+                return self.finish_circle_command(command, &input);
             }
             InteractiveCommand::CircleThreePoint { mut points } => {
                 let index = points.iter().position(Option::is_none).unwrap_or(2);

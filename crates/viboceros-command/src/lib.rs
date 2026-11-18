@@ -664,6 +664,7 @@ pub trait Command: Send + Sync {
     fn circle_preferences(&self) -> Option<circle_around_input::Preferences> {
         None
     }
+    fn remember_circle_diameter(&self, _diameter: bool) {}
     fn catenary_options(&self) -> Option<catenary_input::Options> {
         None
     }
@@ -2929,6 +2930,11 @@ impl CommandRegistry {
             .get(&normalize_command_name("Circle"))
             .and_then(|i| self.commands[*i].circle_preferences())
             .unwrap_or_default()
+    }
+    pub fn remember_circle_diameter(&self, diameter: bool) {
+        if let Some(index) = self.lookup.get("circle") {
+            self.commands[*index].remember_circle_diameter(diameter);
+        }
     }
     pub fn catenary_options(&self) -> catenary_input::Options {
         self.lookup

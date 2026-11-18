@@ -1,6 +1,7 @@
 //! Primitives whose default orientation comes from the command context.
 
 use super::*;
+use crate::circle_input::{CircleSizeMode, PointConstruction, diameter_prefix, vertical_size};
 
 #[cfg(test)]
 mod tests;
@@ -57,55 +58,105 @@ impl CircleCommand {
     }
 }
 
-#[derive(Clone, Copy)]
-enum CircleSizeMode {
-    Radius,
-    Diameter,
-    Circumference,
-    Area,
-}
-
-impl CircleSizeMode {
-    fn parse(name: &str) -> Option<Self> {
-        if option_name_eq(name, "Radius") {
-            Some(Self::Radius)
-        } else if option_name_eq(name, "Diameter") {
-            Some(Self::Diameter)
-        } else if option_name_eq(name, "Circumference") {
-            Some(Self::Circumference)
-        } else if option_name_eq(name, "Area") {
-            Some(Self::Area)
-        } else {
-            None
-        }
-    }
-
-    fn radius(self, value: f64) -> f64 {
-        match self {
-            Self::Radius => value,
-            Self::Diameter => value * 0.5,
-            Self::Circumference => value / std::f64::consts::TAU,
-            Self::Area => (value / std::f64::consts::PI).sqrt(),
-        }
-    }
-}
-
-fn circle_numeric_radius(arguments: &[&str]) -> Result<Option<f64>, CommandError> {
-    let size = match arguments {
+fn circle_size_argument<'a>(arguments: &[&'a str]) -> Option<(CircleSizeMode, &'a str)> {
+    match arguments {
         [single] if let Some((name, value)) = single.split_once('=') => {
             CircleSizeMode::parse(name).map(|mode| (mode, value))
         }
         [name, value] => CircleSizeMode::parse(name).map(|mode| (mode, *value)),
         [single] if !single.contains(',') => Some((CircleSizeMode::Radius, *single)),
         _ => None,
-    };
-    size.map(|(mode, value)| parse_finite_real(value).map(|value| mode.radius(value)))
+    }
+}
+
+fn circle_numeric_radius(arguments: &[&str], remembered: f64) -> Result<Option<f64>, CommandError> {
+    circle_size_argument(arguments)
+        .map(|(mode, value)| {
+            if option_name_eq(value, "Enter")
+                && matches!(mode, CircleSizeMode::Radius | CircleSizeMode::Diameter)
+            {
+                Ok(remembered)
+            } else {
+                parse_finite_real(value).map(|value| mode.radius(value))
+            }
+        })
         .transpose()
+}
+
+fn vertical_circle(
+    arguments: &[&str],
+    plane: Frame3,
+    tolerance: Tolerance,
+    remembered: f64,
+) -> Result<Circle3, CommandError> {
+    let (center, count) = parse_point(arguments)?;
+    let remaining = &arguments[count..];
+    let measured = |mode| matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area);
+    if let Some((mode, value)) = circle_size_argument(remaining)
+        && measured(mode)
+        && !value.contains(',')
+    {
+        return Ok(vertical_size(
+            center,
+            mode.radius(parse_finite_real(value)?),
+            plane,
+            tolerance,
+        )?);
+    }
+    if let Some((mode, point)) = remaining.split_first().and_then(|(token, rest)| {
+        let mode = CircleSizeMode::parse(token).filter(|mode| measured(*mode))?;
+        let (point, count) = parse_point(rest).ok()?;
+        (count == rest.len()).then_some((mode, point))
+    }) {
+        return Ok(PointConstruction::Vertical {
+            center,
+            radius: None,
+            mode,
+        }
+        .circle(point, plane, tolerance)?);
+    }
+    if let Ok((point, count)) = parse_point(remaining)
+        && count == remaining.len()
+    {
+        return Ok(PointConstruction::Vertical {
+            center,
+            radius: None,
+            mode: CircleSizeMode::Radius,
+        }
+        .circle(point, plane, tolerance)?);
+    }
+    for size_tokens in [1, 2] {
+        if remaining.len() <= size_tokens
+            || size_tokens == 1 && CircleSizeMode::parse(remaining[0]).is_some()
+        {
+            continue;
+        }
+        if let Some(radius) = circle_numeric_radius(&remaining[..size_tokens], remembered)?
+            && let Ok((point, count)) = parse_point(&remaining[size_tokens..])
+            && size_tokens + count == remaining.len()
+        {
+            return Ok(PointConstruction::Vertical {
+                center,
+                radius: Some(radius),
+                mode: CircleSizeMode::Radius,
+            }
+            .circle(point, plane, tolerance)?);
+        }
+    }
+    Err(CommandError::Usage(
+        "Circle Vertical center point | center radius direction-point | center Circumference=value | center Area=value",
+    ))
 }
 
 impl Command for CircleCommand {
     fn circle_preferences(&self) -> Option<crate::circle_around_input::Preferences> {
         Some(self.0.get())
+    }
+    fn remember_circle_diameter(&self, diameter: bool) {
+        self.0.set(crate::circle_around_input::Preferences {
+            diameter,
+            ..self.0.get()
+        });
     }
     fn name(&self) -> &'static str {
         "Circle"
@@ -222,46 +273,27 @@ impl Command for CircleCommand {
             return circle_fit_points::run(document, false);
         }
         let plane = context.construction_plane;
-        let circle = if arguments
-            .first()
-            .is_some_and(|option| option_name_eq(option, "Vertical"))
-        {
-            let arguments = &arguments[1..];
-            let (center, consumed) = parse_point(arguments)?;
-            let remaining = &arguments[consumed..];
-            let direction_point = parse_point(remaining)
-                .ok()
-                .filter(|(_, count)| *count == remaining.len());
-            let (radius, point) = if let Some((point, _)) = direction_point {
-                (center.distance_to(point)?, point)
-            } else {
-                let mut parsed = None;
-                for size_tokens in [1, 2] {
-                    if remaining.len() <= size_tokens {
-                        continue;
-                    }
-                    if size_tokens == 1 && CircleSizeMode::parse(remaining[0]).is_some() {
-                        continue;
-                    }
-                    if let Some(radius) = circle_numeric_radius(&remaining[..size_tokens])?
-                        && let Ok((point, count)) = parse_point(&remaining[size_tokens..])
-                        && size_tokens + count == remaining.len()
-                    {
-                        parsed = Some((radius, point));
-                        break;
-                    }
-                }
-                parsed.ok_or(CommandError::Usage(
-                    "Circle Vertical center point | center radius direction-point",
-                ))?
-            };
-            Circle3::try_from_vertical_direction(
-                center,
-                radius,
-                point,
+        let remembered = self.0.get().radius;
+        let diameter = diameter_prefix(arguments);
+        let circle = if let Some((vertical, count)) = diameter {
+            let points = &arguments[count..];
+            let (first, first_count) = parse_point(points)?;
+            let (second, second_count) = parse_point(&points[first_count..])?;
+            require_consumed(
+                points,
+                first_count + second_count,
+                "Circle 2Point [Vertical] diameter_start diameter_end",
+            )?;
+            PointConstruction::Diameter { first, vertical }.circle(
+                second,
                 plane,
                 document.tolerance(),
             )?
+        } else if arguments
+            .first()
+            .is_some_and(|option| option_name_eq(option, "Vertical"))
+        {
+            vertical_circle(&arguments[1..], plane, document.tolerance(), remembered)?
         } else if arguments
             .first()
             .is_some_and(|option| option_name_eq(option, "Orientation"))
@@ -270,12 +302,12 @@ impl Command for CircleCommand {
             let (center, center_count) = parse_point(arguments)?;
             let (normal_point, normal_count) = parse_point(&arguments[center_count..])?;
             let remaining = &arguments[center_count + normal_count..];
-            let frame = Frame3::try_from_normal(
-                center,
-                center.vector_to(normal_point)?,
-                document.tolerance(),
-            )?;
-            if let Some(radius) = circle_numeric_radius(remaining)? {
+            if let Some(radius) = circle_numeric_radius(remaining, remembered)? {
+                let frame = Frame3::try_from_normal(
+                    center,
+                    center.vector_to(normal_point)?,
+                    document.tolerance(),
+                )?;
                 Circle3::try_from_frame(
                     center,
                     radius,
@@ -290,21 +322,13 @@ impl Command for CircleCommand {
                     count,
                     "Circle Orientation center normal-point radius | radius-point",
                 )?;
-                Circle3::try_from_center_point(center, point, frame.z_axis(), document.tolerance())?
+                PointConstruction::Oriented {
+                    center,
+                    normal_point,
+                    mode: CircleSizeMode::Radius,
+                }
+                .circle(point, plane, document.tolerance())?
             }
-        } else if arguments
-            .first()
-            .is_some_and(|option| option_name_eq(option, "2Point"))
-        {
-            let arguments = &arguments[1..];
-            let (first, first_count) = parse_point(arguments)?;
-            let (second, second_count) = parse_point(&arguments[first_count..])?;
-            require_consumed(
-                arguments,
-                first_count + second_count,
-                "Circle 2Point diameter_start diameter_end",
-            )?;
-            Circle3::try_from_diameter_on_plane(first, second, plane, document.tolerance())?
         } else if arguments
             .first()
             .is_some_and(|option| option_name_eq(option, "3Point"))
@@ -329,17 +353,21 @@ impl Command for CircleCommand {
                     && let Ok((radius_point, count)) = parse_point(&remaining[1..])
                     && count + 1 == remaining.len()
                 {
-                    Circle3::try_from_two_points_radius_direction(
+                    PointConstruction::ThreePointRadius {
                         first,
                         second,
-                        first.distance_to(radius_point)?,
-                        radius_point,
-                        document.tolerance(),
-                    )?
+                        radius: None,
+                    }
+                    .circle(radius_point, plane, document.tolerance())?
                 } else {
-                    let radius = parse_finite_real(value.ok_or(CommandError::Usage(
+                    let value = value.ok_or(CommandError::Usage(
                         "Circle 3Point first second Radius radius direction-point",
-                    ))?)?;
+                    ))?;
+                    let radius = if option_name_eq(value, "Enter") {
+                        remembered
+                    } else {
+                        parse_finite_real(value)?
+                    };
                     let direction_arguments = &remaining[1 + extra..];
                     let (direction_point, count) = parse_point(direction_arguments)?;
                     require_consumed(
@@ -347,24 +375,27 @@ impl Command for CircleCommand {
                         count,
                         "Circle 3Point first second Radius radius direction-point",
                     )?;
-                    Circle3::try_from_two_points_radius_direction(
+                    PointConstruction::ThreePointRadius {
                         first,
                         second,
-                        radius,
-                        direction_point,
-                        document.tolerance(),
-                    )?
+                        radius: Some(radius),
+                    }
+                    .circle(direction_point, plane, document.tolerance())?
                 }
             } else {
                 let (third, third_count) = parse_point(remaining)?;
                 require_consumed(remaining, third_count, "Circle 3Point first second third")?;
-                Circle3::try_from_three_points(first, second, third, document.tolerance())?
+                PointConstruction::ThreePoint { first, second }.circle(
+                    third,
+                    plane,
+                    document.tolerance(),
+                )?
             }
         } else {
             let (center, consumed) = parse_point(arguments)?;
             let remaining = &arguments[consumed..];
             let normal = plane.z_axis();
-            if let Some(radius) = circle_numeric_radius(remaining)? {
+            if let Some(radius) = circle_numeric_radius(remaining, remembered)? {
                 Circle3::try_from_frame(
                     center,
                     radius,
@@ -379,36 +410,20 @@ impl Command for CircleCommand {
                     point_consumed,
                     "Circle center radius | center point-on-circle",
                 )?;
-                let delta = center.vector_to(point_on_circle)?;
-                let frame = Frame3::try_from_x_and_normal(
+                PointConstruction::Center {
                     center,
-                    delta,
-                    normal.as_vector(),
-                    document.tolerance(),
-                )
-                .or_else(|_| {
-                    Frame3::try_from_directions(
-                        center,
-                        delta,
-                        plane.y_axis().as_vector(),
-                        document.tolerance(),
-                    )
-                })?;
-                Circle3::try_from_frame(
-                    center,
-                    delta.length()?,
-                    frame.x_axis(),
-                    frame.z_axis(),
-                    document.tolerance(),
-                )?
+                    mode: CircleSizeMode::Radius,
+                }
+                .circle(point_on_circle, plane, document.tolerance())?
             }
         };
         let radius = circle.radius();
         let id = document.add_geometry(Geometry::Circle(circle))?;
         let mut preferences = self.0.get();
-        let point_construction = arguments
-            .first()
-            .is_some_and(|w| option_name_eq(w, "3Point") || option_name_eq(w, "2Point"));
+        let point_construction = diameter.is_some()
+            || arguments
+                .first()
+                .is_some_and(|w| option_name_eq(w, "3Point"));
         let radius_option = arguments
             .iter()
             .any(|w| option_name_eq(w.split_once('=').map_or(*w, |(k, _)| k), "Radius"));
@@ -417,11 +432,13 @@ impl Command for CircleCommand {
         if !point_construction || radius_option {
             preferences.radius = radius;
         }
-        for word in arguments {
-            match CircleSizeMode::parse(word.split_once('=').map_or(*word, |(k, _)| k)) {
-                Some(CircleSizeMode::Radius) => preferences.diameter = false,
-                Some(CircleSizeMode::Diameter) => preferences.diameter = true,
-                _ => {}
+        if !point_construction {
+            for word in arguments {
+                match CircleSizeMode::parse(word.split_once('=').map_or(*word, |(k, _)| k)) {
+                    Some(CircleSizeMode::Radius) => preferences.diameter = false,
+                    Some(CircleSizeMode::Diameter) => preferences.diameter = true,
+                    _ => {}
+                }
             }
         }
         self.0.set(preferences);

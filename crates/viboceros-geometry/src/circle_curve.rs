@@ -126,6 +126,25 @@ impl Circle3 {
         let frame = Frame3::try_from_unit_normal(center, normal)?;
         Self::try_from_frame(center, radius, frame.x_axis(), normal, tolerance)
     }
+    /// Constructs a diameter circle in a plane containing the construction
+    /// plane's normal. A diameter parallel to that normal leaves the plane
+    /// undetermined.
+    pub fn try_from_vertical_diameter(
+        first: Point3,
+        second: Point3,
+        construction_plane: Frame3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let center = first.midpoint(second)?;
+        let radial = center.vector_to(second)?;
+        let up = construction_plane.z_axis().as_vector();
+        let normal = crate::circular::normalized_direction(
+            up.cross(radial.normalized(tolerance)?.as_vector())?,
+            tolerance,
+        )?;
+        let frame = Frame3::try_from_unit_normal(center, normal)?;
+        Self::try_from_frame(center, radial.length()?, frame.x_axis(), normal, tolerance)
+    }
     /// Constructs a circle in a plane perpendicular to the construction plane.
     /// The direction point sets the seam; `radius` may independently constrain
     /// its size. A direction parallel to the construction-plane normal is

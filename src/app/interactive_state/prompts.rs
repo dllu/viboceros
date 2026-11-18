@@ -203,7 +203,7 @@ impl InteractiveCommand {
                 "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/Tangent/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
-                "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
+                "Circle: pick a radius point, type a size, or choose Diameter, Orientation, Circumference or Area. Enter keeps the radius."
             }
             Self::ArcTangent { .. } => {
                 "Arc Tangent: specify contacts and choose an arc (Esc cancels)"
@@ -232,7 +232,7 @@ impl InteractiveCommand {
             }
             Self::CircleSize { mode, .. } => mode.prompt(),
             Self::CircleVertical { center: None, .. } => {
-                "Circle Vertical: pick the center (Esc cancels)"
+                "Circle Vertical: pick the center or choose Deformable or 2Point (Esc cancels)"
             }
             Self::CircleVertical {
                 center: Some(_),
@@ -251,10 +251,15 @@ impl InteractiveCommand {
                 normal_point: Some(_),
                 ..
             } => "Circle Orientation: pick a radius point or enter a size (Esc cancels)",
-            Self::CircleTwoPoint { first: None } => {
-                "Circle 2Point: pick the first diameter end (Esc cancels)"
-            }
-            Self::CircleTwoPoint { first: Some(_) } => {
+            Self::CircleTwoPoint {
+                first: None,
+                vertical: false,
+            } => "Circle 2Point: pick the first diameter end or choose Vertical (Esc cancels)",
+            Self::CircleTwoPoint {
+                first: None,
+                vertical: true,
+            } => "Circle Vertical 2Point: pick the first diameter end (Esc cancels)",
+            Self::CircleTwoPoint { first: Some(_), .. } => {
                 "Circle 2Point: pick the second diameter end (Esc cancels)"
             }
             Self::CircleThreePoint { points: [None, _] } => {

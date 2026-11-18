@@ -265,7 +265,7 @@ impl InteractiveCommand {
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
             | Self::CircleVertical { center: None, .. }
-            | Self::CircleTwoPoint { first: None }
+            | Self::CircleTwoPoint { first: None, .. }
             | Self::CircleThreePoint { points: [None, _] }
             | Self::Sphere { center: None }
             | Self::SelVolumeSphere { center: None, .. }
@@ -391,7 +391,7 @@ impl InteractiveCommand {
             | Self::LengthSubCrv { start, .. }
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
-            | Self::CircleTwoPoint { first: start }
+            | Self::CircleTwoPoint { first: start, .. }
             | Self::Sphere { center: start }
             | Self::SelVolumeSphere { center: start, .. }
             | Self::Catenary { anchor: start }

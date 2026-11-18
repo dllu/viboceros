@@ -282,11 +282,7 @@ impl DisplayGeometry {
                 }
                 Geometry::Point(_) | Geometry::PointCloud(_) => {}
                 Geometry::Line(line) => visit(line.start(), line.end()),
-                Geometry::Circle(circle) => curve_sampling::visit_parametric_segments(
-                    CIRCLE_SAMPLES,
-                    |t| circle.point_at_angle(std::f64::consts::TAU * t),
-                    &mut visit,
-                ),
+                Geometry::Circle(circle) => circle.visit_segments(&mut visit),
                 Geometry::Arc(arc) => curve_sampling::visit_parametric_segments(
                     circular_arc_samples(*arc),
                     |t| arc.point_at(t),

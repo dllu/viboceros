@@ -3,6 +3,36 @@ fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
+
+#[test]
+fn deformable_vertical_diameter_can_be_selected_before_or_after_deformable() {
+    for input in ["Circle Deformable Vertical", "Circle Vertical"] {
+        let mut app = test_app();
+        enter(&mut app, input);
+        if app.circle_deform_session.is_none() {
+            enter(&mut app, "Deformable");
+        }
+        enter(&mut app, "2Point");
+        enter(&mut app, "w1,2,3");
+        let preview = app
+            .circle_deform_session
+            .as_ref()
+            .unwrap()
+            .input
+            .preview(point(5., 6., 7.))
+            .unwrap();
+        assert!(!app.document.can_undo());
+        enter(&mut app, "w5,6,7");
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected the deformable circle");
+        };
+        assert_eq!(*curve, preview);
+        let expected = point(2.1642777539987987, 3.164277753998798, 1.3625174208441884);
+        let actual = curve.control_points()[0].point();
+        assert!(actual.distance_to(expected).unwrap() < 1e-10, "{actual:?}");
+    }
+}
+
 #[test]
 fn circle_deform_native_frontend_construction_and_history() {
     super::ellipse_around::assert_native_profiles_for(

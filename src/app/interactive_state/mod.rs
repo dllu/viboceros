@@ -255,6 +255,7 @@ pub(super) enum InteractiveCommand {
     },
     CircleTwoPoint {
         first: Option<Point3>,
+        vertical: bool,
     },
     CircleThreePoint {
         points: [Option<Point3>; 2],

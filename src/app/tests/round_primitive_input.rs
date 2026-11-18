@@ -42,7 +42,10 @@ fn interactive_two_point_circle_uses_diameter_and_retries_invalid_second_pick() 
     assert!(!app.accept_drafting_point(point(-4.0, 0.0, 4.0)));
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::CircleTwoPoint { first: Some(_) })
+        Some(InteractiveCommand::CircleTwoPoint {
+            first: Some(_),
+            vertical: false
+        })
     ));
     assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
     assert_eq!(app.active_command, None);
@@ -58,7 +61,10 @@ fn interactive_two_point_circle_uses_diameter_and_retries_invalid_second_pick() 
     app.run_command();
     assert_eq!(
         app.active_command,
-        Some(InteractiveCommand::CircleTwoPoint { first: None })
+        Some(InteractiveCommand::CircleTwoPoint {
+            first: None,
+            vertical: false
+        })
     );
     app.cancel_interactive_command(false);
     assert_eq!(app.document.objects().len(), 1);

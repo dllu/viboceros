@@ -57,6 +57,7 @@ mod circle_around;
 mod circle_deform;
 mod circle_fit_grips;
 mod circle_fit_points;
+mod circle_preview;
 mod circle_tangent;
 mod command_file;
 mod command_focus;

@@ -342,9 +342,14 @@ impl VibocerosApp {
             };
             InteractiveCommand::SetPoint { options }
         } else if matches!(normalized.as_str(), "circle" | "c")
-            && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("2Point"))
+            && let Some((vertical, count)) =
+                viboceros_command::circle_input::diameter_prefix(&arguments)
+            && arguments.len() == count
         {
-            InteractiveCommand::CircleTwoPoint { first: None }
+            InteractiveCommand::CircleTwoPoint {
+                first: None,
+                vertical,
+            }
         } else if matches!(normalized.as_str(), "circle" | "c")
             && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("3Point"))
         {
@@ -1937,7 +1942,7 @@ impl VibocerosApp {
             InteractiveCommand::CircleVertical {
                 center: None,
                 radius: None,
-                mode: CircleSizeMode::Radius,
+                mode: self.commands.circle_preferences().mode(),
             }
         } else if matches!(normalized.as_str(), "arc" | "a")
             && arguments.len() == 1

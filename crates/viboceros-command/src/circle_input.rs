@@ -1,6 +1,26 @@
 //! Circle construction getters that return a definition without document edits.
 use viboceros_geometry::{Circle3, Frame3, GeometryError, Point3, Real, Tolerance};
 
+mod point_construction;
+pub use point_construction::PointConstruction;
+pub(crate) use point_construction::vertical_size;
+
+/// Parse the initial diameter options in either of Rhino's supported orders.
+pub fn diameter_prefix(arguments: &[&str]) -> Option<(bool, usize)> {
+    let [first, rest @ ..] = arguments else {
+        return None;
+    };
+    let is = |word, mode| crate::option_name_eq(word, mode);
+    if is(first, "2Point") {
+        let vertical = rest.first().is_some_and(|word| is(word, "Vertical"));
+        Some((vertical, 1 + usize::from(vertical)))
+    } else if is(first, "Vertical") && rest.first().is_some_and(|word| is(word, "2Point")) {
+        Some((true, 2))
+    } else {
+        None
+    }
+}
+
 const ZERO: Real = 2.3283064365386963e-10;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Default)]
@@ -31,7 +51,7 @@ impl CircleSizeMode {
             Self::Area => "Area",
         }
     }
-    const fn prompt(self) -> &'static str {
+    pub const fn prompt(self) -> &'static str {
         match self {
             Self::Radius => {
                 "Circle radius; Diameter, Circumference, Area; Enter accepts the remembered radius"
@@ -93,6 +113,7 @@ enum State {
     },
     TwoPoint {
         first: Option<Point3>,
+        vertical: bool,
     },
     ThreePoint {
         first: Option<Point3>,
@@ -156,7 +177,7 @@ impl CircleInput {
     pub fn anchor(self) -> Option<Point3> {
         match self.state {
             State::Center { center, .. } | State::Vertical { center, .. } => center,
-            State::TwoPoint { first } => first,
+            State::TwoPoint { first, .. } => first,
             State::ThreePoint { first, second } => second.or(first),
             State::ThreePointRadius { second, .. } => Some(second),
             State::Orientation { center, .. } => Some(center),
@@ -215,14 +236,18 @@ impl CircleInput {
                 }
                 _ => mode.prompt(),
             },
-            State::TwoPoint { first: None } => "First end of diameter",
+            State::TwoPoint {
+                first: None,
+                vertical: false,
+            } => "First end of diameter; Vertical",
+            State::TwoPoint { first: None, .. } => "First end of diameter",
             State::TwoPoint { .. } => "Second end of diameter",
             State::ThreePoint { first: None, .. } => "First point on circle",
             State::ThreePoint { second: None, .. } => "Second point on circle",
             State::ThreePoint { .. } => "Third point on circle; Radius",
             State::ThreePointRadius { radius: None, .. } => "Radius of three-point circle",
             State::ThreePointRadius { .. } => "Center direction of circle",
-            State::Vertical { center: None, .. } => "Center of vertical circle",
+            State::Vertical { center: None, .. } => "Center of vertical circle; 2Point",
             State::Vertical {
                 radius: Some(_), ..
             } => "Direction of vertical circle",
@@ -241,7 +266,10 @@ impl CircleInput {
                     mode: self.size_mode(),
                 }
             } else if name.eq_ignore_ascii_case("2Point") {
-                State::TwoPoint { first: None }
+                State::TwoPoint {
+                    first: None,
+                    vertical: false,
+                }
             } else if name.eq_ignore_ascii_case("3Point") {
                 State::ThreePoint {
                     first: None,
@@ -253,8 +281,29 @@ impl CircleInput {
             self.state = state;
             return true;
         }
+        if matches!(self.state, State::Vertical { center: None, .. })
+            && name.eq_ignore_ascii_case("2Point")
+            || matches!(
+                self.state,
+                State::TwoPoint {
+                    first: None,
+                    vertical: false
+                }
+            ) && name.eq_ignore_ascii_case("Vertical")
+        {
+            self.state = State::TwoPoint {
+                first: None,
+                vertical: true,
+            };
+            return true;
+        }
         if let State::Center {
             center: Some(center),
+            mode,
+        }
+        | State::Vertical {
+            center: Some(center),
+            radius: None,
             mode,
         } = self.state
             && name.eq_ignore_ascii_case("Orientation")
@@ -403,44 +452,21 @@ impl CircleInput {
             State::Center {
                 center: Some(center),
                 mode,
+            } => PointConstruction::Center { center, mode }.circle(point, self.plane, tol)?,
+            State::TwoPoint {
+                first: None,
+                vertical,
             } => {
-                let direction = center.vector_to(point)?;
-                if matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area) {
-                    return Ok(Some(CircleDefinition {
-                        frame: self.plane_at(center)?,
-                        radius: valid_radius(mode.radius(direction.length()?))?,
-                    }));
-                }
-                let frame = Frame3::try_from_x_and_normal(
-                    center,
-                    direction,
-                    self.plane.z_axis().as_vector(),
-                    tol,
-                )
-                .or_else(|_| {
-                    Frame3::try_from_directions(
-                        center,
-                        direction,
-                        self.plane.y_axis().as_vector(),
-                        tol,
-                    )
-                })?;
-                let radius = valid_radius(
-                    if matches!(mode, CircleSizeMode::Radius | CircleSizeMode::Diameter) {
-                        direction.length()?
-                    } else {
-                        mode.radius(direction.length()?)
-                    },
-                )?;
-                return Ok(Some(CircleDefinition { frame, radius }));
-            }
-            State::TwoPoint { first: None } => {
-                self.state = State::TwoPoint { first: Some(point) };
+                self.state = State::TwoPoint {
+                    first: Some(point),
+                    vertical,
+                };
                 return Ok(None);
             }
-            State::TwoPoint { first: Some(first) } => {
-                Circle3::try_from_diameter_on_plane(first, point, self.plane, tol)?
-            }
+            State::TwoPoint {
+                first: Some(first),
+                vertical,
+            } => PointConstruction::Diameter { first, vertical }.circle(point, self.plane, tol)?,
             State::ThreePoint {
                 first: None,
                 second,
@@ -469,18 +495,17 @@ impl CircleInput {
             State::ThreePoint {
                 first: Some(first),
                 second: Some(second),
-            } => Circle3::try_from_three_points(first, second, point, tol)?,
+            } => PointConstruction::ThreePoint { first, second }.circle(point, self.plane, tol)?,
             State::ThreePointRadius {
                 first,
                 second,
                 radius,
-            } => Circle3::try_from_two_points_radius_direction(
+            } => PointConstruction::ThreePointRadius {
                 first,
                 second,
-                radius.map_or_else(|| first.distance_to(point), Ok)?,
-                point,
-                tol,
-            )?,
+                radius,
+            }
+            .circle(point, self.plane, tol)?,
             State::Vertical {
                 center: None,
                 radius,
@@ -497,33 +522,12 @@ impl CircleInput {
                 center: Some(center),
                 radius,
                 mode,
-            } => {
-                if radius.is_none()
-                    && matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area)
-                {
-                    return Ok(Some(CircleDefinition {
-                        frame: self.vertical_plane(center)?,
-                        radius: valid_radius(mode.radius(center.distance_to(point)?))?,
-                    }));
-                }
-                let radius = if let Some(r) = radius {
-                    r
-                } else {
-                    let d = center.distance_to(point)?;
-                    if matches!(mode, CircleSizeMode::Radius | CircleSizeMode::Diameter) {
-                        d
-                    } else {
-                        mode.radius(d)
-                    }
-                };
-                Circle3::try_from_vertical_direction(
-                    center,
-                    valid_radius(radius)?,
-                    point,
-                    self.plane,
-                    tol,
-                )?
+            } => PointConstruction::Vertical {
+                center,
+                radius,
+                mode,
             }
+            .circle(point, self.plane, tol)?,
             State::Orientation {
                 center,
                 normal: None,
@@ -541,16 +545,12 @@ impl CircleInput {
                 center,
                 normal: Some(normal),
                 mode,
-            } => {
-                let frame = Frame3::try_from_normal(center, center.vector_to(normal)?, tol)?;
-                if matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area) {
-                    return Ok(Some(CircleDefinition {
-                        frame,
-                        radius: valid_radius(mode.radius(center.distance_to(point)?))?,
-                    }));
-                }
-                Circle3::try_from_center_point(center, point, frame.z_axis(), tol)?
+            } => PointConstruction::Oriented {
+                center,
+                normal_point: normal,
+                mode,
             }
+            .circle(point, self.plane, tol)?,
         };
         Ok(Some(CircleDefinition::from_circle(circle)?))
     }

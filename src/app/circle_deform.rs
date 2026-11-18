@@ -10,7 +10,14 @@ pub(super) struct Session {
 impl VibocerosApp {
     pub(super) fn try_start_circle_deform(&mut self, text: &str) -> bool {
         let words = text.split_whitespace().collect::<Vec<_>>();
-        if !matches!(words.as_slice(),[command,rest @ ..] if rest.first().is_some_and(|w| w.trim_start_matches(['_','-']).eq_ignore_ascii_case("Deformable")) && ["Circle","C"].iter().any(|n|command.trim_start_matches(['_','-']).eq_ignore_ascii_case(n)))
+        let [command, arguments @ ..] = words.as_slice() else {
+            return false;
+        };
+        let command = command.trim_start_matches(['_', '-']);
+        if !["Circle", "C"]
+            .iter()
+            .any(|name| command.eq_ignore_ascii_case(name))
+            || !viboceros_command::circle_deform_input::is_deformable_start(arguments)
         {
             return false;
         }

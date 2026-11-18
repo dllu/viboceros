@@ -9,7 +9,7 @@ use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3,
+    Circle3, CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3,
     PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
 };
 
@@ -20,7 +20,7 @@ use crate::viewport_gpu::{
 };
 
 #[cfg(test)]
-use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
+use viboceros_geometry::{Brep, NurbsSurface, Polyline3};
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
@@ -420,6 +420,7 @@ pub struct ViewportInput<'a> {
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
+    pub circle_preview: Option<(viboceros_command::circle_input::PointConstruction, Frame3)>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
@@ -559,6 +560,7 @@ impl Default for ViewportInput<'_> {
             arc_preview: None,
             circle_around_input: None,
             circle_around_output: None,
+            circle_preview: None,
             circle_deform_input: None,
             conic_input: None,
             conic_reference: None,
@@ -2793,6 +2795,19 @@ impl Viewport {
             && let Ok(arc) = preview.arc(point, plane, document.tolerance())
         {
             self.paint_arc_preview(&painter, rect, arc, input.arc_output);
+        }
+        if let Some((construction, plane)) = input.circle_preview
+            && let Some(cursor) = drafting_cursor
+            && input
+                .point_filter
+                .is_none_or(|filter| !filter.awaiting_source())
+            && let Ok(circle) = construction.circle(cursor.point, plane, document.tolerance())
+        {
+            let mut projected = ProjectedPrimitives::default();
+            self.add_projected_nurbs_curve(&mut projected, rect, &circle);
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+            }
         }
         if let Some(getter) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);

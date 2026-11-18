@@ -1,5 +1,107 @@
 use super::*;
 
+#[test]
+fn vertical_diameter_circle_matches_native_axes_in_both_option_and_pick_orders() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for (input, sign) in [
+        ("Circle Vertical 2Point 1,2,3 5,6,7", -1.),
+        ("_C _2Point _Vertical 1,2,3 5,6,7", -1.),
+        ("Circle 2Point Vertical 5,6,7 1,2,3", 1.),
+    ] {
+        registry.execute(&mut document, input).unwrap();
+        let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+            panic!("expected an analytic circle");
+        };
+        let radius = 12.0_f64.sqrt();
+        let seam =
+            Point3::try_from([3. + sign * 6.0_f64.sqrt(), 4. + sign * 6.0_f64.sqrt(), 5.]).unwrap();
+        let top = Point3::try_from([3., 4., 5. + radius]).unwrap();
+        assert!((circle.radius() - radius).abs() < 1e-12);
+        assert!(
+            circle
+                .point_at_angle(0.)
+                .unwrap()
+                .distance_to(seam)
+                .unwrap()
+                < 1e-12
+        );
+        assert!(
+            circle
+                .point_at_angle(std::f64::consts::FRAC_PI_2)
+                .unwrap()
+                .distance_to(top)
+                .unwrap()
+                < 1e-12
+        );
+    }
+    assert!(
+        registry
+            .execute(&mut document, "Circle Vertical 2Point 1,2,3 1,2,7")
+            .is_err()
+    );
+    assert_eq!(document.objects().len(), 3);
+    assert_eq!(registry.circle_preferences().radius, 1.);
+
+    let plane = Frame3::try_from_directions(
+        Point3::try_from([10., 20., 30.]).unwrap(),
+        Vector3::try_from([0.6, 0.8, 0.]).unwrap(),
+        Vector3::try_from([0., 0., 1.]).unwrap(),
+        document.tolerance(),
+    )
+    .unwrap();
+    registry
+        .execute_in_context(
+            &mut document,
+            "Circle 2Point Vertical 11,22,33 15,26,37",
+            CommandContext {
+                construction_plane: plane,
+            },
+        )
+        .unwrap();
+    let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+        panic!("expected an analytic circle");
+    };
+    for (angle, expected) in [
+        (0., [13., 27.00768247096562, 36.718675697694636]),
+        (
+            std::f64::consts::FRAC_PI_2,
+            [9.753380136119945, 24.599375974870163, 33.95109204397721],
+        ),
+    ] {
+        let expected = Point3::try_from(expected).unwrap();
+        assert!(
+            circle
+                .point_at_angle(angle)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 1e-12
+        );
+    }
+}
+
+#[test]
+fn scripted_circle_enter_uses_the_remembered_radius_in_point_and_size_getters() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Circle 0,0,0 Diameter=8")
+        .unwrap();
+    for input in [
+        "Circle 10,0,0 Enter",
+        "Circle Orientation 20,0,0 20,1,1 Enter",
+        "Circle Vertical 30,0,0 Enter 35,1,2",
+        "Circle 3Point 1,0,0 0,1,0 Radius Enter 2,3,0",
+    ] {
+        registry.execute(&mut document, input).unwrap();
+        let Geometry::Circle(circle) = document.objects().last().unwrap().geometry() else {
+            panic!("expected an analytic circle");
+        };
+        assert!((circle.radius() - 4.).abs() < 1e-12, "{input}");
+    }
+}
+
 fn point(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

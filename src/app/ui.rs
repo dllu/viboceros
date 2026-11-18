@@ -994,6 +994,7 @@ impl VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
         let circle_deform_input = self
             .circle_deform_session
             .as_ref()
@@ -1384,6 +1385,7 @@ impl VibocerosApp {
                             arc_preview,
                             circle_around_input,
                             circle_around_output,
+                            circle_preview,
                             circle_deform_input,
                             conic_input,
                             conic_reference,
