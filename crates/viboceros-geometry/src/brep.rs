@@ -66,6 +66,7 @@ pub use loft::LoftOptions;
 mod mass_properties;
 mod mesh_conversion;
 mod morph;
+mod parameter_face;
 mod parameter_frame;
 mod parameter_normalization;
 mod parameter_orientation;

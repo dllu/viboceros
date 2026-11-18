@@ -69,6 +69,12 @@ surface with `add_nurbs_surface()` or use `add_surface_patches()` to extract
 several exact rectangular UV subdomains in a single undo step. Each patch
 keeps the parent's parameterization and can have its own name and color.
 
+Use `trim_loops` on a patch or in `add_nurbs_surface()` to create a B-rep face
+on that support. Supply a simple, counterclockwise outer loop of connected
+`TrimCurve` segments in native UV, followed by any disjoint clockwise holes.
+Each segment uses a full knot vector. `TrimCurve.line(start, end)` is a
+convenience for straight segments in UV.
+
 Read controls and knots from an object with `surface_definition()`. Use
 `surface_jets(obj, (u, v), ...)` to inspect the point and all partials through
 order two in native UV. `SurfaceSample` specifies left or right limits at

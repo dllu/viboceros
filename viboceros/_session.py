@@ -9,7 +9,7 @@ from pathlib import Path
 from threading import Event, Lock, Timer
 from typing import Any
 
-from ._surfaces import Domain, NurbsSurface, RGB, SurfaceJet, SurfacePatch, SurfaceSample, UV
+from ._surfaces import Domain, NurbsSurface, RGB, SurfaceJet, SurfacePatch, SurfaceSample, TrimCurve, UV
 from ._types import (
     Camera, CommandArgument, CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
     SessionError, Step, View, Viewport, Widget, XYZ, command_token, encode_step, object_id,
@@ -270,9 +270,10 @@ class Session:
     def add_nurbs_surface(
         self, surface: NurbsSurface, *, domain: Domain | None = None,
         name: str | None = None, color: RGB | None = None,
+        trim_loops: Sequence[Sequence[TrimCurve]] = (),
     ) -> str:
         """Add a NURBS surface using explicit knots and control points."""
-        return self.add_surface_patches(surface, SurfacePatch(domain, name, color))[0]
+        return self.add_surface_patches(surface, SurfacePatch(domain, name, color, trim_loops))[0]
 
     def surface_definition(self, obj: ObjectLike, *, face: int | None = None) -> NurbsSurface:
         """Read the tensor-product definition of a surface or B-rep face."""

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from viboceros import (
     ActivateView, Camera, CommandError, ENTER, ESCAPE, Key, NurbsSurface, Pick,
-    PickPoint, Session, SessionError, SurfacePatch, SurfaceSample, TypeText, WidgetAction,
+    PickPoint, Session, SessionError, SurfacePatch, SurfaceSample, TrimCurve, TypeText, WidgetAction,
 )
 
 
@@ -164,6 +164,31 @@ class PythonApiTests(unittest.TestCase):
             model.add_surface_patches(support, SurfacePatch(), SurfacePatch(((1, 2), (0, 1))))
         self.assertEqual(len(model.objects()), 2)
         self.assertEqual(model.run("Undo").deleted, (left, right))
+
+    def test_trimmed_surface_preserves_support_and_boundary_topology(self):
+        model = self.model
+        knots = [0, 0, 1, 1]
+        support = NurbsSurface(1, 1, knots, knots, [[(0, 0, 0), (0, 1, 0)], [(1, 0, 0), (1, 1, 1)]])
+        corners = [(0, 0), (1, 0), (1, 1), (0, 1)]
+        outer = [TrimCurve.line(a, b) for a, b in zip(corners, corners[1:] + corners[:1])]
+        hole = [
+            TrimCurve.line((.25, .25), (.25, .75)),
+            TrimCurve(2, [0, 0, 0, 1, 1, 1], [(.25, .75), (.5, .85), (.75, .75)]),
+            TrimCurve.line((.75, .75), (.75, .25)),
+            TrimCurve.line((.75, .25), (.25, .25)),
+        ]
+        face = model.add_nurbs_surface(support, name="Trimmed", trim_loops=[outer, hole])
+        path = self.folder / "trim.3dm"
+        for reopen in (False, True):
+            if reopen:
+                model.save(path)
+                model.open(path)
+            self.assertEqual(model.object(face).kind, "brep")
+            self.assertEqual(len([item for item in model.components(face) if item.kind == "brep_edge"]), 8)
+            self.assertEqual(model.surface_jets(face, (.9, .9))[0].duv, (0., 0., 1.))
+        with self.assertRaises(SessionError):
+            model.add_surface_patches(support, SurfacePatch(), SurfacePatch(trim_loops=[outer[:3]]))
+        self.assertEqual(len(model.objects()), 1)
 
     @unittest.skipUnless(os.environ.get("VIBOCEROS_TEST_GPU") == "1", "requires a wgpu adapter")
     def test_shaded_png_from_multiple_views(self):

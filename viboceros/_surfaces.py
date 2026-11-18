@@ -34,12 +34,27 @@ class NurbsSurface:
 
 
 @dataclass(frozen=True)
+class TrimCurve:
+    """A NURBS curve in native UV coordinates, with a full knot vector."""
+
+    degree: int
+    knots: Sequence[float]
+    control_points: Sequence[UV]
+    weights: Sequence[float] | None = None
+
+    @classmethod
+    def line(cls, start: UV, end: UV) -> TrimCurve:
+        return cls(1, (0., 0., 1., 1.), (start, end))
+
+
+@dataclass(frozen=True)
 class SurfacePatch:
     """An exact subdomain of a parent NURBS surface, in its native UV coordinates."""
 
     domain: Domain | None = None
     name: str | None = None
     color: RGB | None = None
+    trim_loops: Sequence[Sequence[TrimCurve]] = ()
 
     def _payload(self) -> dict:
         return asdict(self)

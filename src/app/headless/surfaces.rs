@@ -1,7 +1,9 @@
 //! Exact tensor-product surface admission, patch extraction, and native UV evaluation.
 use super::*;
 use viboceros_document::{ColorRgb, Geometry, ObjectAttributes};
-use viboceros_geometry::{NurbsSurface, ParameterSide, WeightedPoint3};
+use viboceros_geometry::{
+    Brep, NurbsCurve2, NurbsSurface, ParameterSide, Point2, WeightedPoint2, WeightedPoint3,
+};
 
 #[derive(Deserialize)]
 pub(super) struct Definition {
@@ -18,6 +20,38 @@ pub(super) struct Patch {
     domain: Option<[[f64; 2]; 2]>,
     name: Option<String>,
     color: Option<[u8; 3]>,
+    #[serde(default)]
+    trim_loops: Vec<Vec<TrimCurve>>,
+}
+
+#[derive(Deserialize)]
+struct TrimCurve {
+    degree: usize,
+    knots: Vec<f64>,
+    control_points: Vec<[f64; 2]>,
+    weights: Option<Vec<f64>>,
+}
+
+impl TrimCurve {
+    fn build(self) -> Result<NurbsCurve2> {
+        if self
+            .weights
+            .as_ref()
+            .is_some_and(|weights| weights.len() != self.control_points.len())
+        {
+            return Err("trim weights must match the trim controls".into());
+        }
+        let mut controls = Vec::with_capacity(self.control_points.len());
+        for (index, uv) in self.control_points.into_iter().enumerate() {
+            let weight = self.weights.as_ref().map_or(1., |weights| weights[index]);
+            controls.push(WeightedPoint2::try_new(Point2::try_from(uv)?, weight)?);
+        }
+        Ok(NurbsCurve2::try_new_rational(
+            self.degree,
+            controls,
+            self.knots,
+        )?)
+    }
 }
 
 #[derive(Deserialize)]
@@ -103,7 +137,26 @@ pub(super) fn add_patches(
         if let Some([r, g, b]) = patch.color {
             attributes = attributes.with_object_color(ColorRgb::new(r, g, b));
         }
-        staged.push((Geometry::NurbsSurface(surface), attributes));
+        let geometry = if patch.trim_loops.is_empty() {
+            Geometry::NurbsSurface(surface)
+        } else {
+            let loops = patch
+                .trim_loops
+                .into_iter()
+                .map(|boundary| {
+                    boundary
+                        .into_iter()
+                        .map(TrimCurve::build)
+                        .collect::<Result<Vec<_>>>()
+                })
+                .collect::<Result<Vec<_>>>()?;
+            Geometry::Brep(Brep::try_parameter_face(
+                surface,
+                loops,
+                document.tolerance(),
+            )?)
+        };
+        staged.push((geometry, attributes));
     }
     let ids = edit_document_transaction(document, "Add NURBS surface patches", |document| {
         staged
