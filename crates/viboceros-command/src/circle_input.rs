@@ -308,6 +308,11 @@ impl CircleInput {
             center: Some(center),
             radius: None,
             mode,
+        }
+        | State::Orientation {
+            center,
+            normal: Some(_),
+            mode,
         } = self.state
             && name.eq_ignore_ascii_case("Orientation")
         {

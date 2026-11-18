@@ -81,6 +81,9 @@ impl SphereInput {
             }
         }
     }
+    pub fn construction_plane(self) -> Frame3 {
+        self.plane
+    }
     pub const fn anchor(self) -> Option<Point3> {
         match self.state {
             State::Circle(c) => c.anchor(),
@@ -188,10 +191,16 @@ impl SphereInput {
             .filter(|definition| definition.radius > tolerance.absolute())
     }
     pub fn preview_section(self, point: Point3) -> Option<Circle3> {
-        let State::Four([Some(first), Some(second), None]) = self.state else {
+        let State::Four([Some(first), Some(second), third]) = self.state else {
             return None;
         };
-        Circle3::try_from_three_points(first, second, point, Tolerance::NUMERICAL_VALIDATION).ok()
+        Circle3::try_from_three_points(
+            first,
+            second,
+            third.unwrap_or(point),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .ok()
     }
     pub fn prompt(self) -> String {
         match self.state {

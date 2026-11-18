@@ -155,9 +155,37 @@ fn sphere_hover_paints_section_then_sphere_and_cancel_preserves_redo() {
     assert_eq!(section.len(), 64);
     viewport_click(&mut app, &context, third);
     assert!(app.sphere_preview_input().is_some());
+    let coplanar = screen_point(&app, point(2., 2., 0.));
+    let fixed_section = viewport_frame(
+        &mut app,
+        &context,
+        vec![egui::Event::PointerMoved(coplanar)],
+    );
+    assert_eq!(fixed_section.len(), 64);
     app.cancel_current_prompt_or_selection();
     assert!(viewport_frame(&mut app, &context, vec![]).is_empty());
     assert!(app.document.can_redo());
+}
+
+#[test]
+fn sphere_can_replace_its_orientation_after_a_normal_pick() {
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    let plane = app.viewports[0].construction_plane();
+    for text in ["Sphere", "0,0", "Orientation", "w0,1,1", "Orientation"] {
+        enter(&mut app, text);
+    }
+    assert_eq!(app.drafting_plane, Some(plane));
+    enter(&mut app, "w1,1,1");
+    enter(&mut app, "1");
+    let south = surface(&app).control_point(0, 0).unwrap().point();
+    let pole_coordinate = -1. / 3.0_f64.sqrt();
+    assert!(
+        south
+            .distance_to(point(pole_coordinate, pole_coordinate, pole_coordinate))
+            .unwrap()
+            < 1e-10
+    );
 }
 
 #[test]

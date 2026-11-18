@@ -199,10 +199,7 @@ pub fn size_argument(
         .map_err(|_| CommandError::InvalidNumber(word.into()))
 }
 
-pub fn validate_size(
-    definition: CircleDefinition,
-    tolerance: Tolerance,
-) -> Result<(), GeometryError> {
+fn validate_size(definition: CircleDefinition, tolerance: Tolerance) -> Result<(), GeometryError> {
     if definition.radius.is_finite() && definition.radius > tolerance.absolute() {
         Ok(())
     } else {

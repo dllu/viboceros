@@ -52,9 +52,9 @@ impl VibocerosApp {
 
     fn sphere_prompt(&mut self, input: SphereInput) {
         self.active_command = Some(InteractiveCommand::Sphere { input });
-        if let Some(plane) = input.mouse_plane() {
-            self.drafting_plane = Some(plane);
-        }
+        self.drafting_plane = input
+            .mouse_plane()
+            .or_else(|| input.anchor().map(|_| input.construction_plane()));
         self.command_input.clear();
         let prompt = input
             .prompt()
