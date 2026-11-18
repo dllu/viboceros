@@ -289,18 +289,23 @@ pub enum Construction {
     Tangent(crate::circle_tangent_input::Definition),
 }
 pub fn is_deformable_start(args: &[&str]) -> bool {
-    args.first().is_some_and(|w| {
-        w.trim_start_matches(['_', '-'])
-            .split('=')
-            .next()
-            .is_some_and(|k| k.eq_ignore_ascii_case("Deformable"))
-    })
+    match args {
+        [first, ..] if deformable_option(first) => true,
+        [first, second, ..] if crate::option_name_eq(first, "Vertical") => {
+            deformable_option(second)
+        }
+        _ => false,
+    }
+}
+
+fn deformable_option(word: &str) -> bool {
+    crate::option_name_eq(word.split('=').next().unwrap_or(""), "Deformable")
 }
 pub fn output_prefix(
     args: &[&str],
     preferences: Preferences,
 ) -> Result<Option<(Output, usize)>, CommandError> {
-    if !is_deformable_start(args) {
+    if !args.first().is_some_and(|word| deformable_option(word)) {
         return Ok(None);
     }
     let mut input = Input::new(

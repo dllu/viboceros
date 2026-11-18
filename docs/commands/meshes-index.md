@@ -37,6 +37,8 @@
 - [TriangulateNonPlanarQuads: selective quad splitting](triangulate-nonplanar-quads.md)
 - [QuadrangulateMesh: selection and triangle conversion](quadrangulate-mesh.md)
 - [CullDegenerateMeshFaces](cull-degenerate-mesh-faces.md)
+- [MeshSphere and MeshTorus construction modes](mesh-primitives.md)
+- [MeshCone, MeshCylinder, and MeshTruncatedCone inputs and previews](mesh-axial.md)
 - [Polygon meshes](meshes.md)
 - [MeshOutline: view-dependent outlines from meshes and surface display meshes](mesh-outline.md)
 - [MeshIntersect: transverse and coplanar intersection curves](mesh-intersect.md)
@@ -53,6 +55,15 @@
 
 - [Mesh projection and qualification](project-mesh.md)
 
+`MeshEllipsoid` shares the `Ellipsoid` base and normal-axis getters, including
+`Corner`, `Diameter` with `Vertical`, `FromFoci`, and `AroundCurve`. At the
+center prompt, set `VerticalFaces` and `AroundFaces` and use `CapFaceStyle` to
+toggle between triangular and quadrilateral caps. Odd around counts use
+triangular caps. Accepted settings carry over to the next mesh ellipsoid.
+The viewport previews the actual mesh wires up to 4,096 faces and uses
+ellipsoid sections for denser meshes. `MarkFoci` adds points in the same Undo
+step as the mesh.
+
 ## Examples
 
 These are independent snippets. Prepare the required sources and selection first;
@@ -67,10 +78,10 @@ MeshTruncatedCone 0,0,0 3 8 1.5 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFace
 MeshCylinder 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
-MeshSphere 0,0,0 3 Style=Quads Subdivisions=3
-MeshSphere 0,0,0 3 Style=Triangles Subdivisions=3
+MeshSphere 0,0,0 3 Style=Quad Subdivisions=3
+MeshSphere 0,0,0 3 Style=Triangle Subdivisions=3
 MeshEllipsoid 0,0,0 5 3 2 VerticalFaces=12 AroundFaces=24 CapFaceStyle=Quad
-MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
+MeshTorus VerticalFaces=12 AroundFaces=24 0,0,0 5 Radius=1.5
 OffsetMesh 1 Solid=Yes DeleteInput=No
 AddNgonsToMesh PlanarTolerance=0.01
 DeleteMeshNgons

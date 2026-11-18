@@ -1,8 +1,5 @@
 //! Shared, edit-free Parabola and Parabola3Pt input and construction.
-use crate::{
-    Command, CommandError, ParabolicConstruction, ParabolicPositionals,
-    parabolic_frame_and_dimensions, remembered::Remembered,
-};
+use crate::{Command, CommandError, parabolic_axis, remembered::Remembered};
 use viboceros_document::{Document, Geometry};
 use viboceros_geometry::{Frame3, GeometryError, NurbsCurve, Point3, Tolerance};
 
@@ -253,21 +250,24 @@ impl Input {
     }
     fn definition(self) -> Result<Definition, GeometryError> {
         let (curve, focus) = if self.kind == Kind::Axis {
-            let positionals = ParabolicPositionals {
-                construction: match self.options.construction {
-                    Construction::Focus => ParabolicConstruction::Focus,
-                    Construction::Vertex => ParabolicConstruction::Vertex,
-                },
-                first: self.points[0].unwrap(),
-                second: self.points[1].unwrap(),
-                end: self.points[2].unwrap(),
-                option_start: 0,
+            let construction = match self.options.construction {
+                Construction::Focus => parabolic_axis::Construction::Focus,
+                Construction::Vertex => parabolic_axis::Construction::VertexFocus,
             };
-            let (frame, radius, height, focus, _) =
-                parabolic_frame_and_dimensions(positionals, self.tolerance)?;
+            let dimensions = construction.dimensions(
+                self.points[0].unwrap(),
+                self.points[1].unwrap(),
+                self.points[2].unwrap(),
+                self.tolerance,
+            )?;
             (
-                NurbsCurve::try_parabola(frame, radius, height, self.options.half)?,
-                focus,
+                NurbsCurve::try_parabola(
+                    dimensions.frame,
+                    dimensions.radius,
+                    dimensions.height,
+                    self.options.half,
+                )?,
+                dimensions.focus,
             )
         } else {
             let [start, special, end] = self.ordered().map(|i| self.points[i].unwrap());

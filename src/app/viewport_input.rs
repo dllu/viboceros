@@ -174,8 +174,14 @@ impl VibocerosApp {
                 s.cursor = Some(point);
             }
             self.update_subd_sphere_hover(point);
-            self.update_subd_torus_hover(point);
+            self.update_torus_hover(point);
             self.update_subd_ellipsoid_hover(point);
+            self.observe_solid_axial_cursor(point);
+            if self.plane_prompt.is_none()
+                && let Some(session) = self.pyramid_session.as_mut()
+            {
+                session.input.observe_cursor(point);
+            }
             self.update_subd_axial_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
@@ -200,14 +206,24 @@ impl VibocerosApp {
                 matches!(
                     prompt.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
+                        | "Tube FitPoints"
+                        | "TruncatedCone FitPoints"
+                        | "MeshCone FitPoints"
+                        | "MeshCylinder FitPoints"
+                        | "MeshTruncatedCone FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
+                        | "MeshTorus FitPoints"
+                        | "Torus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
+                        | "MeshSphere FitPoints"
                         | "Smooth"
                         | "HidePt"
                         | "ExtractPt"
@@ -430,14 +446,24 @@ impl VibocerosApp {
                     (matches!(
                         prompt.description.command,
                         "Circle FitPoints"
+                            | "Cone FitPoints"
+                            | "Cylinder FitPoints"
+                            | "Tube FitPoints"
+                            | "TruncatedCone FitPoints"
+                            | "MeshCone FitPoints"
+                            | "MeshCylinder FitPoints"
+                            | "MeshTruncatedCone FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"
                             | "SubDTorus FitPoints"
+                            | "MeshTorus FitPoints"
+                            | "Torus FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"
+                            | "MeshSphere FitPoints"
                             | "Smooth"
                             | "HidePt"
                             | "ExtractPt"

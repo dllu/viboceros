@@ -19,6 +19,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_curve_fillet_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_fillet_corners_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_blend_curve_point(point) {
             return accepted;
         }
@@ -68,6 +71,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_ellipsoid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_ellipsoid_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_ellipse_point(point) {
             return accepted;
         }
@@ -83,13 +89,22 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_parabola_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_paraboloid_point(point) {
+            return accepted;
+        }
+        if let Some(accepted) = self.accept_pyramid_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_torus_point(point) {
+        if let Some(accepted) = self.accept_torus_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
+            return accepted;
+        }
+        if let Some(accepted) = self.accept_solid_axial_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_subd_axial_point(point) {
@@ -176,6 +191,7 @@ impl VibocerosApp {
             | InteractiveCommand::BlendCurve
             | InteractiveCommand::Chamfer { .. }
             | InteractiveCommand::Fillet { .. }
+            | InteractiveCommand::FilletCorners { .. }
             | InteractiveCommand::OffsetSurface { .. } => return false,
             InteractiveCommand::Ribbon { .. } => return false,
             InteractiveCommand::ProjectPlane { .. } => {
@@ -205,17 +221,22 @@ impl VibocerosApp {
             | InteractiveCommand::ArcDeform { .. }
             | InteractiveCommand::CircleTangent { .. }
             | InteractiveCommand::CircleAround { .. }
+            | InteractiveCommand::SphereGuide { .. }
             | InteractiveCommand::Ellipse { .. }
             | InteractiveCommand::Catenary { .. }
             | InteractiveCommand::Spiral { .. }
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
+            | InteractiveCommand::Paraboloid { .. }
+            | InteractiveCommand::Pyramid { .. }
             | InteractiveCommand::Conic { .. }
-            | InteractiveCommand::SubDTorus { .. }
+            | InteractiveCommand::Torus { .. }
             | InteractiveCommand::SubDEllipsoid { .. }
+            | InteractiveCommand::Ellipsoid { .. }
             | InteractiveCommand::SubDSphere { .. }
             | InteractiveCommand::SubDTruncatedCone { .. }
             | InteractiveCommand::SubDCone { .. }
+            | InteractiveCommand::SolidAxial { .. }
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
@@ -319,8 +340,14 @@ impl VibocerosApp {
                 return self.finish_distance(start, point, display_units, plane);
             }
             InteractiveCommand::Circle { center: None } => {
-                let command = InteractiveCommand::Circle {
-                    center: Some(point),
+                let command = match self.commands.circle_preferences().mode() {
+                    CircleSizeMode::Radius => InteractiveCommand::Circle {
+                        center: Some(point),
+                    },
+                    mode => InteractiveCommand::CircleSize {
+                        center: point,
+                        mode,
+                    },
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Center: {}", format_model_point(point)));
@@ -383,7 +410,14 @@ impl VibocerosApp {
                     radius,
                     mode,
                 };
-                return self.finish_circle_vertical(state, point);
+                let argument = if let Some(radius) = radius {
+                    format!("{radius} {}", format_model_point(point))
+                } else if matches!(mode, CircleSizeMode::Circumference | CircleSizeMode::Area) {
+                    format!("{} {}", mode.label(), format_model_point(point))
+                } else {
+                    format_model_point(point)
+                };
+                return self.finish_circle_vertical(state, &argument);
             }
             InteractiveCommand::CircleOrientation {
                 center,
@@ -425,27 +459,28 @@ impl VibocerosApp {
                     point,
                 );
             }
-            InteractiveCommand::CircleTwoPoint { first: None } => {
-                let next = InteractiveCommand::CircleTwoPoint { first: Some(point) };
+            InteractiveCommand::CircleTwoPoint {
+                first: None,
+                vertical,
+            } => {
+                let next = InteractiveCommand::CircleTwoPoint {
+                    first: Some(point),
+                    vertical,
+                };
                 self.active_command = Some(next);
                 self.push_log(next.prompt().to_owned());
             }
-            InteractiveCommand::CircleTwoPoint { first: Some(first) } => {
-                if let Err(error) = viboceros_geometry::Circle3::try_from_diameter_on_plane(
-                    first,
-                    point,
-                    plane,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(format!("Error: {error}"));
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Circle 2Point {} {}",
+            InteractiveCommand::CircleTwoPoint {
+                first: Some(first),
+                vertical,
+            } => {
+                let vertical = if vertical { " Vertical" } else { "" };
+                let input = format!(
+                    "Circle 2Point{vertical} {} {}",
                     format_model_point(first),
                     format_model_point(point)
-                ));
+                );
+                return self.finish_circle_command(command, &input);
             }
             InteractiveCommand::CircleThreePoint { mut points } => {
                 let index = points.iter().position(Option::is_none).unwrap_or(2);
@@ -497,32 +532,8 @@ impl VibocerosApp {
                     point,
                 );
             }
-            InteractiveCommand::Sphere { center: None } => {
-                let command = InteractiveCommand::Sphere {
-                    center: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Sphere {
-                center: Some(center),
-            } => {
-                if !center
-                    .distance_to(point)
-                    .is_ok_and(|radius| radius > self.document.tolerance().absolute())
-                {
-                    self.push_log(
-                        "Error: sphere radius must be finite and greater than tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Sphere {} {}",
-                    format_model_point(center),
-                    format_model_point(point)
-                ));
+            InteractiveCommand::Sphere { input, output } => {
+                return self.accept_sphere_point(input, output, point);
             }
             InteractiveCommand::SelVolumeSphere { center: None, mode } => {
                 let command = InteractiveCommand::SelVolumeSphere {
@@ -673,162 +684,6 @@ impl VibocerosApp {
                         format!(" WallThickness={thickness}")
                     })
                 ));
-            }
-            InteractiveCommand::Ellipsoid { mut points } => {
-                let point_count = points.iter().flatten().count();
-                if point_count == 1 {
-                    let Some(center) = points[0] else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if center.is_near(point, self.document.tolerance()) {
-                        self.push_log(
-                            "Error: ellipsoid axis point must differ from its center".to_owned(),
-                        );
-                        return false;
-                    }
-                } else if point_count == 2 {
-                    let [Some(center), Some(first_axis), _] = points else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if let Err(error) = Frame3::try_from_points(
-                        center,
-                        first_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(format!("Error: {error}"));
-                        return false;
-                    }
-                }
-
-                if point_count < points.len() {
-                    points[point_count] = Some(point);
-                    let command = InteractiveCommand::Ellipsoid { points };
-                    self.active_command = Some(command);
-                    let label = ["Center", "First axis", "Second axis"][point_count];
-                    self.push_log(format!("{label}: {}", format_model_point(point)));
-                    self.push_log(command.prompt().to_owned());
-                } else {
-                    let [Some(center), Some(first_axis), Some(second_axis)] = points else {
-                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
-                        self.active_command = None;
-                        return false;
-                    };
-                    if !ellipsoid_third_radius_exceeds_tolerance(
-                        center,
-                        first_axis,
-                        second_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(
-                            "Error: ellipsoid third-axis radius must be positive".to_owned(),
-                        );
-                        return false;
-                    }
-                    self.active_command = None;
-                    self.execute_command(&format!(
-                        "Ellipsoid {} {} {} {}",
-                        format_model_point(center),
-                        format_model_point(first_axis),
-                        format_model_point(second_axis),
-                        format_model_point(point)
-                    ));
-                }
-            }
-            InteractiveCommand::MeshEllipsoid {
-                mut points,
-                vertical_count,
-                around_count,
-                cap_style,
-            } => {
-                let point_count = points.iter().flatten().count();
-                if point_count == 1 {
-                    let Some(center) = points[0] else {
-                        self.push_log(
-                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
-                        );
-                        self.active_command = None;
-                        return false;
-                    };
-                    if center.is_near(point, self.document.tolerance()) {
-                        self.push_log(
-                            "Error: mesh-ellipsoid axis point must differ from its center"
-                                .to_owned(),
-                        );
-                        return false;
-                    }
-                } else if point_count == 2 {
-                    let [Some(center), Some(first_axis), _] = points else {
-                        self.push_log(
-                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
-                        );
-                        self.active_command = None;
-                        return false;
-                    };
-                    if let Err(error) = Frame3::try_from_points(
-                        center,
-                        first_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(format!("Error: {error}"));
-                        return false;
-                    }
-                }
-
-                if point_count < points.len() {
-                    points[point_count] = Some(point);
-                    let command = InteractiveCommand::MeshEllipsoid {
-                        points,
-                        vertical_count,
-                        around_count,
-                        cap_style,
-                    };
-                    self.active_command = Some(command);
-                    let label = ["Center", "First axis", "Second axis"][point_count];
-                    self.push_log(format!("{label}: {}", format_model_point(point)));
-                    self.push_log(command.prompt().to_owned());
-                } else {
-                    let [Some(center), Some(first_axis), Some(second_axis)] = points else {
-                        self.push_log(
-                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
-                        );
-                        self.active_command = None;
-                        return false;
-                    };
-                    if !ellipsoid_third_radius_exceeds_tolerance(
-                        center,
-                        first_axis,
-                        second_axis,
-                        point,
-                        self.document.tolerance(),
-                    ) {
-                        self.push_log(
-                            "Error: mesh-ellipsoid third-axis radius must be positive".to_owned(),
-                        );
-                        return false;
-                    }
-                    self.active_command = None;
-                    let cap_style = match cap_style {
-                        MeshCapFaceStyle::Triangles => "Tri",
-                        MeshCapFaceStyle::Quadrilaterals => "Quad",
-                    };
-                    self.execute_command(&format!(
-                        "MeshEllipsoid {} {} {} {} VerticalFaces={} AroundFaces={} CapFaceStyle={}",
-                        format_model_point(center),
-                        format_model_point(first_axis),
-                        format_model_point(second_axis),
-                        format_model_point(point),
-                        vertical_count,
-                        around_count,
-                        cap_style
-                    ));
-                }
             }
             InteractiveCommand::ArcCenter {
                 center: None,
@@ -1413,464 +1268,6 @@ impl VibocerosApp {
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);
             }
-            InteractiveCommand::MeshCone {
-                center: None,
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                let command = InteractiveCommand::MeshCone {
-                    center: Some(point),
-                    radius_point: None,
-                    vertical_count,
-                    around_count,
-                    solid,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Base center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshCone {
-                center: Some(center),
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log("Error: mesh-cone radius must exceed model tolerance".to_owned());
-                    return false;
-                }
-                let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-cone radius point is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshCone {
-                    center: Some(center),
-                    radius_point: Some(radius_point),
-                    vertical_count,
-                    around_count,
-                    solid,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Radius point: {}",
-                    format_model_point(radius_point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshCone {
-                center: Some(center),
-                radius_point: Some(radius_point),
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                let height = point.z() - center.z();
-                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
-                    self.push_log("Error: mesh-cone height must exceed model tolerance".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                let cap_style = match cap_style {
-                    MeshCapFaceStyle::Triangles => "Tri",
-                    MeshCapFaceStyle::Quadrilaterals => "Quad",
-                };
-                self.execute_command(&format!(
-                    "MeshCone {} {} {height:.6} VerticalFaces={} AroundFaces={} Solid={} CapFaceStyle={}",
-                    format_model_point(center),
-                    format_model_point(radius_point),
-                    vertical_count,
-                    around_count,
-                    if solid { "Yes" } else { "No" },
-                    cap_style
-                ));
-            }
-            InteractiveCommand::MeshCone {
-                center: None,
-                radius_point: Some(_),
-                ..
-            } => unreachable!("mesh-cone radius requires a center"),
-            InteractiveCommand::MeshTruncatedCone {
-                center: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-                ..
-            } => {
-                let command = InteractiveCommand::MeshTruncatedCone {
-                    center: Some(point),
-                    base_radius_point: None,
-                    end_center: None,
-                    vertical_count,
-                    around_count,
-                    solid,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Base center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTruncatedCone {
-                center: Some(center),
-                base_radius_point: None,
-                end_center: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh truncated-cone base radius must exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(base_radius_point) = Point3::try_new(point.x(), point.y(), center.z())
-                else {
-                    self.push_log(
-                        "Error: mesh truncated-cone base-radius point is not finite".to_owned(),
-                    );
-                    return false;
-                };
-                let command = InteractiveCommand::MeshTruncatedCone {
-                    center: Some(center),
-                    base_radius_point: Some(base_radius_point),
-                    end_center: None,
-                    vertical_count,
-                    around_count,
-                    solid,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Base-radius point: {}",
-                    format_model_point(base_radius_point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTruncatedCone {
-                center: Some(center),
-                base_radius_point: Some(base_radius_point),
-                end_center: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                let height = point.z() - center.z();
-                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
-                    self.push_log(
-                        "Error: mesh truncated-cone height must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(end_center) = Point3::try_new(center.x(), center.y(), point.z()) else {
-                    self.push_log("Error: mesh truncated-cone end center is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshTruncatedCone {
-                    center: Some(center),
-                    base_radius_point: Some(base_radius_point),
-                    end_center: Some(end_center),
-                    vertical_count,
-                    around_count,
-                    solid,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "End-circle center: {}",
-                    format_model_point(end_center)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTruncatedCone {
-                center: Some(center),
-                base_radius_point: Some(base_radius_point),
-                end_center: Some(end_center),
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            } => {
-                if same_top_point(end_center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh truncated-cone end radius must exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(end_radius_point) = Point3::try_new(point.x(), point.y(), end_center.z())
-                else {
-                    self.push_log(
-                        "Error: mesh truncated-cone end-radius point is not finite".to_owned(),
-                    );
-                    return false;
-                };
-                let Ok(end_radius) = end_center.distance_to(end_radius_point) else {
-                    self.push_log("Error: mesh truncated-cone end radius is not finite".to_owned());
-                    return false;
-                };
-                let height = end_center.z() - center.z();
-                self.active_command = None;
-                let cap_style = match cap_style {
-                    MeshCapFaceStyle::Triangles => "Tri",
-                    MeshCapFaceStyle::Quadrilaterals => "Quad",
-                };
-                self.execute_command(&format!(
-                    "MeshTruncatedCone {} {} {height} {end_radius} VerticalFaces={} AroundFaces={} Solid={} CapFaceStyle={}",
-                    format_model_point(center),
-                    format_model_point(base_radius_point),
-                    vertical_count,
-                    around_count,
-                    if solid { "Yes" } else { "No" },
-                    cap_style
-                ));
-            }
-            InteractiveCommand::MeshTruncatedCone {
-                center: Some(_),
-                base_radius_point: None,
-                end_center: Some(_),
-                ..
-            } => unreachable!("mesh truncated-cone end center requires a base radius"),
-            InteractiveCommand::MeshCylinder {
-                center: None,
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                both_sides,
-                cap_style,
-            } => {
-                let command = InteractiveCommand::MeshCylinder {
-                    center: Some(point),
-                    radius_point: None,
-                    vertical_count,
-                    around_count,
-                    solid,
-                    both_sides,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Base center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshCylinder {
-                center: Some(center),
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                both_sides,
-                cap_style,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh-cylinder radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-cylinder radius point is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshCylinder {
-                    center: Some(center),
-                    radius_point: Some(radius_point),
-                    vertical_count,
-                    around_count,
-                    solid,
-                    both_sides,
-                    cap_style,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Radius point: {}",
-                    format_model_point(radius_point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshCylinder {
-                center: Some(center),
-                radius_point: Some(radius_point),
-                vertical_count,
-                around_count,
-                solid,
-                both_sides,
-                cap_style,
-            } => {
-                let height = point.z() - center.z();
-                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
-                    self.push_log(
-                        "Error: mesh-cylinder height must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                let cap_style = match cap_style {
-                    MeshCapFaceStyle::Triangles => "Tri",
-                    MeshCapFaceStyle::Quadrilaterals => "Quad",
-                };
-                self.execute_command(&format!(
-                    "MeshCylinder {} {} {height:.6} VerticalFaces={} AroundFaces={} Solid={} BothSides={} CapFaceStyle={}",
-                    format_model_point(center),
-                    format_model_point(radius_point),
-                    vertical_count,
-                    around_count,
-                    if solid { "Yes" } else { "No" },
-                    if both_sides { "Yes" } else { "No" },
-                    cap_style
-                ));
-            }
-            InteractiveCommand::MeshCylinder {
-                center: None,
-                radius_point: Some(_),
-                ..
-            } => unreachable!("mesh-cylinder radius requires a center"),
-            InteractiveCommand::MeshSphere {
-                center: None,
-                topology,
-            } => {
-                let command = InteractiveCommand::MeshSphere {
-                    center: Some(point),
-                    topology,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshSphere {
-                center: Some(center),
-                topology,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh-sphere radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-sphere radius point is not finite".to_owned());
-                    return false;
-                };
-                self.active_command = None;
-                let topology_options = match topology {
-                    InteractiveMeshSphereTopology::Uv {
-                        vertical_count,
-                        around_count,
-                    } => format!(
-                        "Style=UV VerticalFaces={vertical_count} AroundFaces={around_count}"
-                    ),
-                    InteractiveMeshSphereTopology::Quads { subdivisions } => {
-                        format!("Style=Quads Subdivisions={subdivisions}")
-                    }
-                    InteractiveMeshSphereTopology::Triangles { subdivisions } => {
-                        format!("Style=Triangles Subdivisions={subdivisions}")
-                    }
-                };
-                self.execute_command(&format!(
-                    "MeshSphere {} {} {}",
-                    format_model_point(center),
-                    format_model_point(radius_point),
-                    topology_options
-                ));
-            }
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: None,
-                vertical_count,
-                around_count,
-            } => {
-                let command = InteractiveCommand::MeshTorus {
-                    center: Some(point),
-                    major_point: None,
-                    vertical_count,
-                    around_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTorus {
-                center: Some(center),
-                major_point: None,
-                vertical_count,
-                around_count,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh-torus major radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(major_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-torus major-radius point is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshTorus {
-                    center: Some(center),
-                    major_point: Some(major_point),
-                    vertical_count,
-                    around_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Major-radius point: {}",
-                    format_model_point(major_point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshTorus {
-                center: Some(center),
-                major_point: Some(major_point),
-                vertical_count,
-                around_count,
-            } => {
-                let Ok(major_radius) = center.distance_to(major_point) else {
-                    self.push_log("Error: mesh-torus major radius is not finite".to_owned());
-                    return false;
-                };
-                let Ok(minor_radius) = major_point.distance_to(point) else {
-                    self.push_log("Error: mesh-torus tube radius is not finite".to_owned());
-                    return false;
-                };
-                if minor_radius <= self.document.tolerance().absolute() {
-                    self.push_log(
-                        "Error: mesh-torus tube radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                if minor_radius >= major_radius {
-                    self.push_log(
-                        "Error: mesh-torus tube radius must be smaller than its major radius"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshTorus {} {} {} VerticalFaces={} AroundFaces={}",
-                    format_model_point(center),
-                    format_model_point(major_point),
-                    minor_radius,
-                    vertical_count,
-                    around_count
-                ));
-            }
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: Some(_),
-                ..
-            } => unreachable!("mesh-torus major radius requires a center"),
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,

@@ -24,7 +24,7 @@ fn torus_getters_match_native_frames_sizes_and_inner_dimensions() {
                 action
             };
             enter(&mut app, if word == "Enter" { "" } else { &word });
-            if app.subd_torus_session.is_some() {
+            if app.torus_session.is_some() {
                 assert_eq!(app.active_command.unwrap().name(), "SubDTorus");
                 assert_eq!(
                     app.document.objects().count(),
@@ -34,7 +34,7 @@ fn torus_getters_match_native_frames_sizes_and_inner_dimensions() {
             }
         }
         assert!(
-            app.subd_torus_session.is_none(),
+            app.torus_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -92,13 +92,13 @@ fn torus_reference_getters_match_tangent_fitted_and_guided_native_workflows() {
                 };
                 enter(&mut app, if word == "Enter" { "" } else { &word });
             }
-            if app.subd_torus_session.is_some() {
+            if app.torus_session.is_some() {
                 assert_eq!(app.document.objects().count(), scene.sources.len());
                 assert_eq!(app.document.undo_label(), None);
             }
         }
         assert!(
-            app.subd_torus_session.is_none(),
+            app.torus_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -131,16 +131,16 @@ fn tube_retry_assigned_units_and_independent_settings_preserve_pending_redo() {
     for action in ["SubDTorus AroundFaces=8 VerticalFaces=6", "w0,0,0", "3"] {
         enter(&mut app, action);
     }
-    assert_eq!(app.subd_torus_session.as_ref().unwrap().preview.len(), 4);
+    assert_eq!(app.torus_session.as_ref().unwrap().preview.len(), 4);
     let plane = app.drafting_plane;
     for action in ["4", "AroundFaces=12", "Area=9"] {
         enter(&mut app, action);
-        assert!(app.subd_torus_session.is_some());
+        assert!(app.torus_session.is_some());
     }
     assert_eq!(app.drafting_plane, plane);
     assert_eq!(app.document.objects().count(), 0);
     assert_eq!(app.document.redo_label(), Some("Point"));
-    app.update_subd_torus_hover(Point3::try_new(4., 0., 9.).unwrap());
+    app.update_torus_hover(Point3::try_new(4., 0., 9.).unwrap());
     assert_eq!(app.document.objects().count(), 0);
     enter(&mut app, "Cancel");
     assert_eq!(app.document.redo_label(), Some("Point"));
@@ -153,7 +153,7 @@ fn tube_retry_assigned_units_and_independent_settings_preserve_pending_redo() {
     ] {
         enter(&mut app, action);
     }
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     assert_eq!(app.document.undo_label(), Some("SubDTorus"));
     let prefs = app.commands.subd_torus_preferences();
     assert_eq!(prefs.radius, 3.);
@@ -185,7 +185,7 @@ fn stale_history_tolerance_and_tangent_sources_cancel_torus_drafts() {
     app.document
         .set_tolerance(Tolerance::try_new(1e-4, 1e-8, 1e-6).unwrap());
     enter(&mut app, "1");
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     assert_eq!(app.document.objects().count(), 0);
     enter(&mut app, "Line 0,0,0 12,0,0");
     let id = app.document.objects().next().unwrap().id();
@@ -193,7 +193,7 @@ fn stale_history_tolerance_and_tangent_sources_cancel_torus_drafts() {
     app.pick_tangent_at(id, None, Point3::try_new(3., 0., 0.).unwrap());
     app.document.delete_objects([id]).unwrap();
     app.pick_tangent_at(id, None, Point3::try_new(4., 0., 0.).unwrap());
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     assert!(app.tangent_session.is_none());
     for action in ["SubDTorus", "w0,0,0", "3"] {
         enter(&mut app, action);
@@ -202,7 +202,7 @@ fn stale_history_tolerance_and_tangent_sources_cancel_torus_drafts() {
         .add_geometry(Geometry::Point(Point3::try_new(1., 2., 3.).unwrap()))
         .unwrap();
     enter(&mut app, "1");
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     assert_eq!(app.document.objects().count(), 1);
 }
 #[test]
@@ -235,9 +235,9 @@ fn selected_grip_events_and_failed_zero_bases_preserve_sources_and_redo() {
     }
     enter(&mut app, "");
     assert!(app.object_prompt.is_none());
-    assert!(app.subd_torus_session.is_some());
+    assert!(app.torus_session.is_some());
     enter(&mut app, "1");
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     std::mem::swap(&mut scene.document, &mut app.document);
     references_native::check(&scene, value, "after_script");
     for row in references_native::rows()
@@ -254,12 +254,12 @@ fn selected_grip_events_and_failed_zero_bases_preserve_sources_and_redo() {
             &mut app,
             "SubDTorus AroundFaces=8 VerticalFaces=6 FitPoints",
         );
-        assert!(app.subd_torus_session.is_some());
+        assert!(app.torus_session.is_some());
         enter(&mut app, "1");
-        assert!(app.subd_torus_session.is_some());
+        assert!(app.torus_session.is_some());
         enter(&mut app, "FixInnerDimension=Yes");
         enter(&mut app, "1");
-        assert!(app.subd_torus_session.is_none());
+        assert!(app.torus_session.is_none());
         assert_eq!(app.document.redo_label(), Some("Point"));
         std::mem::swap(&mut scene.document, &mut app.document);
         references_native::check(&scene, value, "after_script");
@@ -330,7 +330,7 @@ fn torus_perspective_pointer_resolves_the_tube_plane_and_preserves_cplane() {
         picked_point: Some(received),
         ..Default::default()
     }));
-    assert!(app.subd_torus_session.is_none());
+    assert!(app.torus_session.is_none());
     assert_eq!(app.document.undo_label(), Some("SubDTorus"));
     assert_eq!(app.viewports[0].construction_plane(), cplane);
 }

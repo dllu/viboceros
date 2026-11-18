@@ -33,20 +33,6 @@ pub(super) enum InteractiveCurveExtensionJoin {
     No,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(super) enum InteractiveMeshSphereTopology {
-    Uv {
-        vertical_count: usize,
-        around_count: usize,
-    },
-    Quads {
-        subdivisions: usize,
-    },
-    Triangles {
-        subdivisions: usize,
-    },
-}
-
 impl InteractiveIsocurveDirection {
     pub(super) const fn option_value(self) -> &'static str {
         match self {
@@ -97,6 +83,9 @@ pub(super) enum InteractiveCommand {
         anchor: Option<Point3>,
     },
     Fillet {
+        anchor: Option<Point3>,
+    },
+    FilletCorners {
         anchor: Option<Point3>,
     },
     ArcBlend,
@@ -252,6 +241,7 @@ pub(super) enum InteractiveCommand {
     },
     CircleTwoPoint {
         first: Option<Point3>,
+        vertical: bool,
     },
     CircleThreePoint {
         points: [Option<Point3>; 2],
@@ -262,7 +252,12 @@ pub(super) enum InteractiveCommand {
         radius: Option<f64>,
     },
     Sphere {
-        center: Option<Point3>,
+        input: viboceros_command::sphere_input::SphereInput,
+        output: sphere::Output,
+    },
+    SphereGuide {
+        anchor: Option<Point3>,
+        output: sphere::Output,
     },
     SelVolumeSphere {
         center: Option<Point3>,
@@ -286,7 +281,9 @@ pub(super) enum InteractiveCommand {
         first_radius: Option<f64>,
     },
     Ellipsoid {
-        points: [Option<Point3>; 3],
+        anchor: Option<Point3>,
+        reference: Option<Point3>,
+        mesh: bool,
     },
     Arc {
         points: [Option<Point3>; 2],
@@ -348,6 +345,9 @@ pub(super) enum InteractiveCommand {
     Hyperbola {
         anchor: Option<Point3>,
     },
+    Paraboloid {
+        anchor: Option<Point3>,
+    },
     Parabola {
         kind: viboceros_command::parabola::Kind,
         anchor: Option<Point3>,
@@ -361,7 +361,8 @@ pub(super) enum InteractiveCommand {
     Plane {
         first: Option<Point3>,
     },
-    SubDTorus {
+    Torus {
+        kind: viboceros_command::torus_input::Kind,
         anchor: Option<Point3>,
     },
     SubDEllipsoid {
@@ -374,6 +375,10 @@ pub(super) enum InteractiveCommand {
         anchor: Option<Point3>,
     },
     SubDCone {
+        anchor: Option<Point3>,
+    },
+    SolidAxial {
+        kind: viboceros_command::solid_axial::Kind,
         anchor: Option<Point3>,
     },
     SubDCylinder {
@@ -411,47 +416,9 @@ pub(super) enum InteractiveCommand {
         y_count: usize,
         z_count: usize,
     },
-    MeshCylinder {
-        center: Option<Point3>,
-        radius_point: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
-        solid: bool,
-        both_sides: bool,
-        cap_style: MeshCapFaceStyle,
-    },
-    MeshCone {
-        center: Option<Point3>,
-        radius_point: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
-        solid: bool,
-        cap_style: MeshCapFaceStyle,
-    },
-    MeshTruncatedCone {
-        center: Option<Point3>,
-        base_radius_point: Option<Point3>,
-        end_center: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
-        solid: bool,
-        cap_style: MeshCapFaceStyle,
-    },
-    MeshSphere {
-        center: Option<Point3>,
-        topology: InteractiveMeshSphereTopology,
-    },
-    MeshEllipsoid {
-        points: [Option<Point3>; 3],
-        vertical_count: usize,
-        around_count: usize,
-        cap_style: MeshCapFaceStyle,
-    },
-    MeshTorus {
-        center: Option<Point3>,
-        major_point: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
+    Pyramid {
+        kind: viboceros_command::pyramid::Kind,
+        anchor: Option<Point3>,
     },
     Polygon {
         side_count: usize,

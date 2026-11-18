@@ -10,9 +10,8 @@ use crate::MeshFace;
 use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
     AffineTransform3, BoundingBox3, CurveCurveIntersectionEvent, CurveCurveOverlap, Frame3,
-    GeometryError, LineSegment, MAX_REGULAR_POLYGON_SIDES, NurbsCurve,
-    NurbsCurve2, NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint2, WeightedPoint3, require_finite,
+    GeometryError, LineSegment, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, Real,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint2, WeightedPoint3, require_finite,
 };
 
 mod extrusion;
@@ -72,6 +71,7 @@ mod parameter_normalization;
 mod parameter_orientation;
 mod planar_face;
 mod polygon_boundaries;
+mod pyramid;
 mod rectangular_surface;
 mod reorder;
 use parameter_normalization::{
@@ -1685,319 +1685,6 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
-    /// Constructs a regular pyramid as one joined B-rep.
-    ///
-    /// The base starts on the frame's positive X axis and proceeds
-    /// counterclockwise around its Z axis. A negative height places the apex
-    /// opposite frame Z while retaining that base ordering. The triangular
-    /// walls use Rhino's centroid-based planar parameterization rather than a
-    /// collapsed tensor-product edge.
-    pub fn try_pyramid(
-        frame: Frame3,
-        side_count: usize,
-        radius: Real,
-        height: Real,
-        solid: bool,
-        tolerance: Tolerance,
-    ) -> Result<Self, GeometryError> {
-        validate_pyramid_dimensions(side_count, [radius], height, "pyramid")?;
-        let base = regular_polygon_ring(frame, side_count, radius, 0.0)?;
-        let apex = frame_point(frame, 0.0, 0.0, height)?;
-
-        // Rhino creates the first wall before the remaining ring topology, so
-        // its apex is vertex 2 rather than the final vertex.
-        let mut vertices = Vec::with_capacity(side_count + 1);
-        vertices.push(BrepVertex::try_new(base[0], 0.0)?);
-        vertices.push(BrepVertex::try_new(base[1], 0.0)?);
-        vertices.push(BrepVertex::try_new(apex, 0.0)?);
-        for &point in &base[2..] {
-            vertices.push(BrepVertex::try_new(point, 0.0)?);
-        }
-        let apex_vertex = 2;
-        let base_vertex = |index: usize| if index < 2 { index } else { index + 1 };
-
-        let mut edges = Vec::with_capacity(2 * side_count);
-        let mut base_edges = vec![usize::MAX; side_count];
-        let mut side_edges = vec![usize::MAX; side_count];
-        base_edges[0] = push_line_edge(
-            &mut edges,
-            &vertices,
-            [base_vertex(0), base_vertex(1)],
-            [0.0, base[0].distance_to(base[1])?],
-        )?;
-        side_edges[1] = push_line_edge(
-            &mut edges,
-            &vertices,
-            [base_vertex(1), apex_vertex],
-            [0.0, base[1].distance_to(apex)?],
-        )?;
-        side_edges[0] = push_line_edge(
-            &mut edges,
-            &vertices,
-            [apex_vertex, base_vertex(0)],
-            [0.0, apex.distance_to(base[0])?],
-        )?;
-        for index in 1..side_count {
-            let next = (index + 1) % side_count;
-            base_edges[index] = push_line_edge(
-                &mut edges,
-                &vertices,
-                [base_vertex(index), base_vertex(next)],
-                [0.0, base[index].distance_to(base[next])?],
-            )?;
-            if next != 0 {
-                side_edges[next] = push_line_edge(
-                    &mut edges,
-                    &vertices,
-                    [base_vertex(next), apex_vertex],
-                    [0.0, base[next].distance_to(apex)?],
-                )?;
-            }
-        }
-
-        let base_trim_type = if solid {
-            BrepTrimType::Mated
-        } else {
-            BrepTrimType::Boundary
-        };
-        let mut faces = Vec::with_capacity(side_count + usize::from(solid));
-        for index in 0..side_count {
-            let next = (index + 1) % side_count;
-            let edge_vector = base[index].vector_to(base[next])?;
-            let half_edge = edge_vector.scaled(0.5)?;
-            let side_length = edge_vector.length()?;
-            let midpoint = base[index].translated(half_edge)?;
-            let face_height = midpoint.distance_to(apex)?;
-            let u = [-0.5 * side_length, 0.5 * side_length];
-            let v = [-face_height / 3.0, 2.0 * face_height / 3.0];
-            let surface = NurbsSurface::try_new(
-                1,
-                1,
-                2,
-                2,
-                vec![
-                    base[index],
-                    base[next],
-                    apex.translated(half_edge.scaled(-1.0)?)?,
-                    apex.translated(half_edge)?,
-                ],
-                vec![u[0], u[0], u[1], u[1]],
-                vec![v[0], v[0], v[1], v[1]],
-            )?;
-            let parameters = [
-                Point2::try_new(u[0], v[0])?,
-                Point2::try_new(u[1], v[0])?,
-                Point2::try_new(0.0, v[1])?,
-            ];
-            let loop_record = BrepLoop::try_new(
-                BrepLoopType::Outer,
-                vec![
-                    BrepTrim::try_new(
-                        [base_vertex(index), base_vertex(next)],
-                        Some(base_edges[index]),
-                        false,
-                        NurbsCurve2::try_line(parameters[0], parameters[1])?,
-                        base_trim_type,
-                        SurfaceIso::South,
-                        [0.0, 0.0],
-                    )?,
-                    BrepTrim::try_new(
-                        [base_vertex(next), apex_vertex],
-                        Some(side_edges[next]),
-                        next == 0,
-                        NurbsCurve2::try_line(parameters[1], parameters[2])?,
-                        BrepTrimType::Mated,
-                        SurfaceIso::NotIso,
-                        [0.0, 0.0],
-                    )?,
-                    BrepTrim::try_new(
-                        [apex_vertex, base_vertex(index)],
-                        Some(side_edges[index]),
-                        index != 0,
-                        NurbsCurve2::try_line(parameters[2], parameters[0])?,
-                        BrepTrimType::Mated,
-                        SurfaceIso::NotIso,
-                        [0.0, 0.0],
-                    )?,
-                ],
-            )?;
-            faces.push(BrepFace::try_new(surface, height < 0.0, vec![loop_record])?);
-        }
-        if solid {
-            let indices = (0..side_count).map(base_vertex).collect::<Vec<_>>();
-            faces.push(polygon_cap_face(
-                frame,
-                &base,
-                &indices,
-                &base_edges,
-                false,
-                height > 0.0,
-                tolerance,
-            )?);
-        }
-        Self::try_new(vertices, edges, faces, tolerance)
-    }
-
-    /// Constructs a regular truncated pyramid as one joined B-rep.
-    ///
-    /// Corresponding base and top corners share the same angular phase. Open
-    /// results retain joined wall faces and expose both polygon rims as naked
-    /// boundaries; solid results add exact trimmed planar caps.
-    pub fn try_truncated_pyramid(
-        frame: Frame3,
-        side_count: usize,
-        radii: [Real; 2],
-        height: Real,
-        solid: bool,
-        tolerance: Tolerance,
-    ) -> Result<Self, GeometryError> {
-        validate_pyramid_dimensions(side_count, radii, height, "truncated pyramid")?;
-        let base = regular_polygon_ring(frame, side_count, radii[0], 0.0)?;
-        let top = regular_polygon_ring(frame, side_count, radii[1], height)?;
-
-        // Rhino's lofted topology begins at the first top corner, crosses to
-        // the first base corner, then alternates base/top corners around the
-        // remaining ring.
-        let mut vertices = Vec::with_capacity(2 * side_count);
-        vertices.push(BrepVertex::try_new(top[0], 0.0)?);
-        vertices.push(BrepVertex::try_new(base[0], 0.0)?);
-        for index in 1..side_count {
-            vertices.push(BrepVertex::try_new(base[index], 0.0)?);
-            vertices.push(BrepVertex::try_new(top[index], 0.0)?);
-        }
-        let top_vertex = |index: usize| if index == 0 { 0 } else { 2 * index + 1 };
-        let base_vertex = |index: usize| if index == 0 { 1 } else { 2 * index };
-        let slant_length = top[0].distance_to(base[0])?;
-        let base_side_length = base[0].distance_to(base[1])?;
-        let top_side_length = top[0].distance_to(top[1])?;
-        let equal_radii = radii[0] == radii[1];
-        let wall_v = if equal_radii {
-            [0.0, base_side_length]
-        } else if radii[0] > radii[1] {
-            [-base_side_length, 0.0]
-        } else {
-            [0.0, top_side_length]
-        };
-        // The loft keeps one common V parameterization on both polygon
-        // boundaries. Consequently the shorter rim edge intentionally has a
-        // non-arc-length curve domain when the two radii differ.
-        let base_edge_domain = wall_v;
-        let top_edge_domain = [-wall_v[1], -wall_v[0]];
-
-        let mut edges = Vec::with_capacity(3 * side_count);
-        let mut slant_edges = vec![usize::MAX; side_count];
-        let mut base_edges = vec![usize::MAX; side_count];
-        let mut top_edges = vec![usize::MAX; side_count];
-        slant_edges[0] = push_line_edge(
-            &mut edges,
-            &vertices,
-            [top_vertex(0), base_vertex(0)],
-            [0.0, slant_length],
-        )?;
-        for index in 0..side_count {
-            let next = (index + 1) % side_count;
-            base_edges[index] = push_line_edge(
-                &mut edges,
-                &vertices,
-                [base_vertex(index), base_vertex(next)],
-                base_edge_domain,
-            )?;
-            if next != 0 {
-                slant_edges[next] = push_line_edge(
-                    &mut edges,
-                    &vertices,
-                    [base_vertex(next), top_vertex(next)],
-                    [-slant_length, 0.0],
-                )?;
-                top_edges[index] = push_line_edge(
-                    &mut edges,
-                    &vertices,
-                    [top_vertex(next), top_vertex(index)],
-                    top_edge_domain,
-                )?;
-            } else {
-                top_edges[index] = push_line_edge(
-                    &mut edges,
-                    &vertices,
-                    [top_vertex(0), top_vertex(index)],
-                    top_edge_domain,
-                )?;
-            }
-        }
-
-        let rim_trim_type = if solid {
-            BrepTrimType::Mated
-        } else {
-            BrepTrimType::Boundary
-        };
-        let mut faces = Vec::with_capacity(side_count + 2 * usize::from(solid));
-        for index in 0..side_count {
-            let next = (index + 1) % side_count;
-            let surface = NurbsSurface::try_new(
-                1,
-                1,
-                2,
-                2,
-                vec![top[index], base[index], top[next], base[next]],
-                vec![0.0, 0.0, slant_length, slant_length],
-                vec![wall_v[0], wall_v[0], wall_v[1], wall_v[1]],
-            )?;
-            let loop_record = rectangular_surface_loop(
-                &surface,
-                [
-                    RectangularTrimSpec::edge(
-                        [top_vertex(index), base_vertex(index)],
-                        slant_edges[index],
-                        index != 0,
-                        BrepTrimType::Mated,
-                    ),
-                    RectangularTrimSpec::edge(
-                        [base_vertex(index), base_vertex(next)],
-                        base_edges[index],
-                        false,
-                        rim_trim_type,
-                    ),
-                    RectangularTrimSpec::edge(
-                        [base_vertex(next), top_vertex(next)],
-                        slant_edges[next],
-                        next == 0,
-                        BrepTrimType::Mated,
-                    ),
-                    RectangularTrimSpec::edge(
-                        [top_vertex(next), top_vertex(index)],
-                        top_edges[index],
-                        false,
-                        rim_trim_type,
-                    ),
-                ],
-            )?;
-            faces.push(BrepFace::try_new(surface, height < 0.0, vec![loop_record])?);
-        }
-        if solid {
-            let base_indices = (0..side_count).map(base_vertex).collect::<Vec<_>>();
-            let top_indices = (0..side_count).map(top_vertex).collect::<Vec<_>>();
-            faces.push(polygon_cap_face(
-                fitted_polygon_cap_frame(&base, frame.z_axis(), tolerance)?,
-                &base,
-                &base_indices,
-                &base_edges,
-                false,
-                height > 0.0,
-                tolerance,
-            )?);
-            faces.push(polygon_cap_face(
-                fitted_polygon_cap_frame(&top, frame.z_axis(), tolerance)?,
-                &top,
-                &top_indices,
-                &top_edges,
-                true,
-                height < 0.0,
-                tolerance,
-            )?);
-        }
-        Self::try_new(vertices, edges, faces, tolerance)
-    }
-
     /// Constructs an exact capped right circular cylinder with one wall face
     /// and two polar disk faces. Periodic parameter seams are represented by
     /// shared radial/axial seam edges rather than duplicated boundary edges.
@@ -2281,75 +1968,93 @@ impl Brep {
         height: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        let wall = NurbsSurface::try_truncated_cone(frame, radii, height)?;
-        let end_frame = frame_at_height(frame, height)?;
-        let base_cap_frame = Frame3::try_from_unit_directions(
-            frame.origin(),
-            frame.x_axis(),
-            frame.y_axis().opposite(),
-            tolerance,
-        )?;
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let base_cap = planar_cap_surface(
-            base_cap_frame,
-            zero,
-            [[-radii[0], radii[0]], [-radii[0], radii[0]]],
-        )?;
-        let end_cap = planar_cap_surface(
-            end_frame,
-            zero,
-            [[-radii[1], radii[1]], [-radii[1], radii[1]]],
-        )?;
+        if radii[1] == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "truncated cone",
+            });
+        }
+        Self::try_truncated_cone_with_caps(frame, radii, height, true, tolerance)
+    }
+
+    /// Constructs a base-first frustum with optional caps and a singular top at zero radius.
+    pub fn try_truncated_cone_with_caps(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_truncated_cone_wall(frame, radii, height)?;
 
         let domain_u = wall.domain_u();
         let domain_v = wall.domain_v();
         let base_seam = wall.evaluate(*domain_u.start(), *domain_v.start())?;
         let end_seam = wall.evaluate(*domain_u.start(), *domain_v.end())?;
         let base_rim = surface_u_control_curve(&wall, 0)?;
-        let end_rim = surface_u_control_curve(&wall, 1)?.reversed()?;
         let seam = surface_v_control_curve(&wall, 0)?;
         let vertices = vec![
             BrepVertex::try_new(base_seam, 0.0)?,
             BrepVertex::try_new(end_seam, 0.0)?,
         ];
-        let edges = vec![
+        let mut edges = vec![
             BrepEdge::try_new([0, 0], base_rim, 0.0)?,
             BrepEdge::try_new([0, 1], seam, 0.0)?,
-            BrepEdge::try_new([1, 1], end_rim, 0.0)?,
         ];
+        let rim_type = if solid {
+            BrepTrimType::Mated
+        } else {
+            BrepTrimType::Boundary
+        };
+        let top_trim = if radii[1] > 0.0 {
+            let end_rim = surface_u_control_curve(&wall, 1)?.reversed()?;
+            edges.push(BrepEdge::try_new([1, 1], end_rim, 0.0)?);
+            RectangularTrimSpec::edge([1, 1], 2, false, rim_type)
+        } else {
+            RectangularTrimSpec::singular(1)
+        };
 
         let wall_loop = rectangular_surface_loop(
             &wall,
             [
-                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 0], 0, false, rim_type),
                 RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
-                RectangularTrimSpec::edge([1, 1], 2, false, BrepTrimType::Mated),
+                top_trim,
                 RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
             ],
         )?;
-        let base_loop = single_edge_loop(
-            0,
-            0,
-            BrepLoopType::Outer,
-            circular_parameter_curve(radii[0])?,
-            true,
-            BrepTrimType::Mated,
-            [0.0, 0.0],
-        )?;
-        let end_loop = single_edge_loop(
-            1,
-            2,
-            BrepLoopType::Outer,
-            circular_parameter_curve(radii[1])?,
-            true,
-            BrepTrimType::Mated,
-            [0.0, 0.0],
-        )?;
-        let faces = vec![
-            BrepFace::try_new(wall, false, vec![wall_loop])?,
-            BrepFace::try_new(base_cap, false, vec![base_loop])?,
-            BrepFace::try_new(end_cap, false, vec![end_loop])?,
-        ];
+        let mut faces = vec![BrepFace::try_new(wall, false, vec![wall_loop])?];
+        if solid {
+            let base_cap_frame = Frame3::try_from_unit_directions(
+                frame.origin(),
+                frame.x_axis(),
+                frame.y_axis().opposite(),
+                tolerance,
+            )?;
+            let caps = [
+                (base_cap_frame, radii[0], 0, 0),
+                (frame_at_height(frame, height)?, radii[1], 1, 2),
+            ];
+            for (frame, radius, vertex, edge) in caps {
+                if radius == 0.0 {
+                    continue;
+                }
+                let cap = planar_cap_surface(
+                    frame,
+                    Vector3::try_new(0.0, 0.0, 0.0)?,
+                    [[-radius, radius], [-radius, radius]],
+                )?;
+                let cap_loop = single_edge_loop(
+                    vertex,
+                    edge,
+                    BrepLoopType::Outer,
+                    circular_parameter_curve(radius)?,
+                    true,
+                    BrepTrimType::Mated,
+                    [0.0, 0.0],
+                )?;
+                faces.push(BrepFace::try_new(cap, false, vec![cap_loop])?);
+            }
+        }
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
@@ -2422,6 +2127,20 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs a cone with its apex at the frame origin and a planar
+    /// optional cap at positive height. The side retains one rim and a shared
+    /// meridian seam.
+    pub fn try_cone_from_apex(
+        apex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_cone_from_apex(apex_frame, radius, height)?;
+        Self::try_apex_surface(wall, apex_frame, radius, height, solid, tolerance)
+    }
+
     /// Constructs Rhino's exact finite paraboloid B-rep.
     ///
     /// The frame origin is the vertex, frame Z is the opening direction, and
@@ -2437,6 +2156,17 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let wall = NurbsSurface::try_paraboloid(vertex_frame, radius, height)?;
+        Self::try_apex_surface(wall, vertex_frame, radius, height, solid, tolerance)
+    }
+
+    fn try_apex_surface(
+        wall: NurbsSurface,
+        vertex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let domain_u = wall.domain_u();
         let domain_v = wall.domain_v();
         let vertex = vertex_frame.origin();
@@ -5813,39 +5543,6 @@ fn canonical_brep_coordinate_bits(coordinate: Real) -> u64 {
     }
 }
 
-fn validate_pyramid_dimensions<const N: usize>(
-    side_count: usize,
-    radii: [Real; N],
-    height: Real,
-    context: &'static str,
-) -> Result<(), GeometryError> {
-    require_finite(radii.into_iter().chain(std::iter::once(height)), context)?;
-    if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
-        return Err(GeometryError::InvalidRegularPolygonSides {
-            actual: side_count,
-            maximum: MAX_REGULAR_POLYGON_SIDES,
-        });
-    }
-    if radii.into_iter().any(|radius| radius <= 0.0) || height == 0.0 {
-        return Err(GeometryError::Degenerate { context });
-    }
-    Ok(())
-}
-
-fn regular_polygon_ring(
-    frame: Frame3,
-    side_count: usize,
-    radius: Real,
-    height: Real,
-) -> Result<Vec<Point3>, GeometryError> {
-    let mut points = Vec::with_capacity(side_count);
-    for index in 0..side_count {
-        let angle = std::f64::consts::TAU * index as Real / side_count as Real;
-        points.push(frame_point(frame, radius, angle, height)?);
-    }
-    Ok(points)
-}
-
 fn frame_point(
     frame: Frame3,
     radius: Real,
@@ -5873,72 +5570,6 @@ fn push_line_edge(
     let index = edges.len();
     edges.push(BrepEdge::try_new(indices, curve, 0.0)?);
     Ok(index)
-}
-
-fn fitted_polygon_cap_frame(
-    points: &[Point3],
-    normal: UnitVector3,
-    tolerance: Tolerance,
-) -> Result<Frame3, GeometryError> {
-    debug_assert!(points.len() >= 3);
-    let origin = Point3::try_new(
-        (points[0].x() + points[1].x() + points[2].x()) / 3.0,
-        (points[0].y() + points[1].y() + points[2].y()) / 3.0,
-        (points[0].z() + points[1].z() + points[2].z()) / 3.0,
-    )?;
-    Frame3::try_from_unit_x_and_normal(
-        origin,
-        points[0].vector_to(points[1])?.normalized(tolerance)?,
-        normal,
-        tolerance,
-    )
-}
-
-#[allow(clippy::too_many_arguments)]
-fn polygon_cap_face(
-    frame: Frame3,
-    points: &[Point3],
-    vertices: &[usize],
-    edges: &[usize],
-    edges_reversed: bool,
-    face_reversed: bool,
-    tolerance: Tolerance,
-) -> Result<BrepFace, GeometryError> {
-    debug_assert_eq!(points.len(), vertices.len());
-    debug_assert_eq!(points.len(), edges.len());
-    let mut parameters = Vec::with_capacity(points.len());
-    let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
-    for &point in points {
-        let relative = frame.origin().vector_to(point)?;
-        let parameter = Point2::try_new(
-            relative.dot(frame.x_axis().as_vector())?,
-            relative.dot(frame.y_axis().as_vector())?,
-        )?;
-        bounds[0][0] = bounds[0][0].min(parameter.x());
-        bounds[0][1] = bounds[0][1].max(parameter.x());
-        bounds[1][0] = bounds[1][0].min(parameter.y());
-        bounds[1][1] = bounds[1][1].max(parameter.y());
-        parameters.push(parameter);
-    }
-    let surface = planar_cap_surface(frame, Vector3::try_new(0.0, 0.0, 0.0)?, bounds)?;
-    let mut trims = Vec::with_capacity(points.len());
-    for index in 0..points.len() {
-        let next = (index + 1) % points.len();
-        trims.push(BrepTrim::try_new(
-            [vertices[index], vertices[next]],
-            Some(edges[index]),
-            edges_reversed,
-            NurbsCurve2::try_line(parameters[index], parameters[next])?,
-            BrepTrimType::Mated,
-            cap_trim_iso(parameters[index], parameters[next], bounds, tolerance),
-            [0.0, 0.0],
-        )?);
-    }
-    BrepFace::try_new(
-        surface,
-        face_reversed,
-        vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
-    )
 }
 
 fn cap_trim_iso(
@@ -11566,7 +11197,7 @@ mod tests {
 
         for (sides, radius, height) in [
             (2, 1.0, 1.0),
-            (MAX_REGULAR_POLYGON_SIDES + 1, 1.0, 1.0),
+            (crate::MAX_REGULAR_POLYGON_SIDES + 1, 1.0, 1.0),
             (4, 0.0, 1.0),
             (4, 1.0, 0.0),
             (4, Real::INFINITY, 1.0),

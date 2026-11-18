@@ -42,7 +42,10 @@ fn interactive_two_point_circle_uses_diameter_and_retries_invalid_second_pick() 
     assert!(!app.accept_drafting_point(point(-4.0, 0.0, 4.0)));
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::CircleTwoPoint { first: Some(_) })
+        Some(InteractiveCommand::CircleTwoPoint {
+            first: Some(_),
+            vertical: false
+        })
     ));
     assert!(app.accept_drafting_point(point(4.0, 0.0, 0.0)));
     assert_eq!(app.active_command, None);
@@ -58,7 +61,10 @@ fn interactive_two_point_circle_uses_diameter_and_retries_invalid_second_pick() 
     app.run_command();
     assert_eq!(
         app.active_command,
-        Some(InteractiveCommand::CircleTwoPoint { first: None })
+        Some(InteractiveCommand::CircleTwoPoint {
+            first: None,
+            vertical: false
+        })
     );
     app.cancel_interactive_command(false);
     assert_eq!(app.document.objects().len(), 1);
@@ -71,12 +77,10 @@ fn interactive_sphere_uses_center_and_radius_point_transactionally() {
     let center = point(1.0, 2.0, 3.0);
     app.accept_drafting_point(center);
     app.accept_drafting_point(center);
-    assert_eq!(
+    assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::Sphere {
-            center: Some(center)
-        })
-    );
+        Some(InteractiveCommand::Sphere { input, .. }) if input.anchor() == Some(center)
+    ));
     assert_eq!(app.document.objects().len(), 0);
     assert!(app.command_log.back().unwrap().contains("sphere radius"));
 
@@ -104,7 +108,9 @@ fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::Ellipsoid {
-            points: [Some(center), None, None]
+            anchor: Some(center),
+            reference: None,
+            mesh: false,
         })
     );
     assert_eq!(app.document.objects().len(), 0);
@@ -135,14 +141,14 @@ fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
     };
     assert_eq!(surface.control_point_count_u(), 9);
     assert_eq!(surface.control_point_count_v(), 5);
-    assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), first_axis);
+    assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), second_axis);
     assert_eq!(
         surface.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
-        second_axis
+        point(1.0, 2.0, 7.0)
     );
     assert_eq!(
         surface.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
-        point(1.0, 2.0, 7.0)
+        first_axis
     );
     assert_eq!(app.document.undo_label(), Some("Ellipsoid"));
 }

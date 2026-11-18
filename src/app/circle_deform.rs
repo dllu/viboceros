@@ -10,7 +10,14 @@ pub(super) struct Session {
 impl VibocerosApp {
     pub(super) fn try_start_circle_deform(&mut self, text: &str) -> bool {
         let words = text.split_whitespace().collect::<Vec<_>>();
-        if !matches!(words.as_slice(),[command,rest @ ..] if rest.first().is_some_and(|w| w.trim_start_matches(['_','-']).eq_ignore_ascii_case("Deformable")) && ["Circle","C"].iter().any(|n|command.trim_start_matches(['_','-']).eq_ignore_ascii_case(n)))
+        let [command, arguments @ ..] = words.as_slice() else {
+            return false;
+        };
+        let command = command.trim_start_matches(['_', '-']);
+        if !["Circle", "C"]
+            .iter()
+            .any(|name| command.eq_ignore_ascii_case(name))
+            || !viboceros_command::circle_deform_input::is_deformable_start(arguments)
         {
             return false;
         }
@@ -88,11 +95,18 @@ impl VibocerosApp {
         };
         let getter = s.input.getter();
         let prompt = s.input.prompt();
+        let snap_option = if getter.snap_projection_plane().is_some() {
+            ", ProjectOsnap"
+        } else {
+            ""
+        };
         self.active_command = Some(InteractiveCommand::CircleDeform {
             anchor: getter.anchor(),
         });
         self.drafting_plane = getter.mouse_plane().or(Some(s.plane));
-        self.push_log(format!("Circle Deformable: {prompt}; Esc cancels"));
+        self.push_log(format!(
+            "Circle Deformable: {prompt}{snap_option}; Esc cancels"
+        ));
     }
     fn finish_circle_deform(&mut self) -> bool {
         let s = self.circle_deform_session.as_ref().unwrap();
@@ -124,6 +138,9 @@ impl VibocerosApp {
         })
     }
     pub(super) fn try_continue_circle_deform(&mut self, text: &str) -> bool {
+        if self.circle_deform_session.is_some() && self.try_continue_circle_snap_projection(text) {
+            return true;
+        }
         let Some(s) = self.circle_deform_session.as_mut() else {
             return false;
         };

@@ -42,6 +42,7 @@ impl InteractiveCommand {
             Self::Point => "Point",
             Self::Chamfer { .. } => "Chamfer",
             Self::Fillet { .. } => "Fillet",
+            Self::FilletCorners { .. } => "FilletCorners",
             Self::ArcBlend => "ArcBlend",
             Self::BlendCurve => "BlendCrv",
             Self::EvaluatePoint => "EvaluatePt",
@@ -68,12 +69,13 @@ impl InteractiveCommand {
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::CircleThreePointRadius { .. } => "Circle",
-            Self::Sphere { .. } => "Sphere",
+            Self::Sphere { output, .. } | Self::SphereGuide { output, .. } => output.name(),
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::SelVolumeObject { .. } => "SelVolumeObject",
             Self::Pipe { .. } => "Pipe",
-            Self::Ellipsoid { .. } => "Ellipsoid",
+            Self::Ellipsoid { mesh: false, .. } => "Ellipsoid",
+            Self::Ellipsoid { mesh: true, .. } => "MeshEllipsoid",
             Self::Arc { .. } => "Arc",
             Self::ArcStartPoint { .. } | Self::ArcStartDirection { .. } => "Arc",
             Self::ArcStartCenter { .. } | Self::ArcStartCenterLength { .. } => "Arc",
@@ -88,13 +90,15 @@ impl InteractiveCommand {
             Self::Spiral { kind, .. } => kind.name(),
             Self::Hyperbola { .. } => "Hyperbola",
             Self::Parabola { kind, .. } => kind.name(),
+            Self::Paraboloid { .. } => "Paraboloid",
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Plane { .. } => "Plane",
             Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
-            Self::SubDTorus { .. } => "SubDTorus",
+            Self::Torus { kind, .. } => kind.name(),
             Self::SubDEllipsoid { .. } => "SubDEllipsoid",
+            Self::SolidAxial { kind, .. } => kind.name(),
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
             Self::SubDTruncatedCone { .. } => "SubDTruncatedCone",
@@ -103,13 +107,8 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
-            Self::MeshCone { .. } => "MeshCone",
-            Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
-            Self::MeshCylinder { .. } => "MeshCylinder",
-            Self::MeshSphere { .. } => "MeshSphere",
-            Self::MeshEllipsoid { .. } => "MeshEllipsoid",
-            Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
+            Self::Pyramid { kind, .. } => kind.name(),
             Self::SurfacePointGrid { control, .. } => {
                 if control {
                     "SrfControlPtGrid"
@@ -184,6 +183,8 @@ impl InteractiveCommand {
 
     pub(in crate::app) const fn anchor(self) -> Option<Point3> {
         match self {
+            Self::Sphere { input, .. } => input.anchor(),
+            Self::SphereGuide { anchor, .. } => anchor,
             Self::DraftPullPoints { start } => start,
             Self::DraftPullCurve => None,
             Self::SurfaceArray { base }
@@ -191,16 +192,18 @@ impl InteractiveCommand {
             | Self::CurveArray { base }
             | Self::Chamfer { anchor: base }
             | Self::Fillet { anchor: base }
+            | Self::FilletCorners { anchor: base }
             | Self::OffsetSurface { anchor: base }
             | Self::ShortPath { start: base }
             | Self::InterpolateCurveOnSurface { anchor: base }
             | Self::PolylineOnMesh { anchor: base }
             | Self::FaceCreate { anchor: base }
-            | Self::SubDTorus { anchor: base }
+            | Self::Torus { anchor: base, .. }
             | Self::SubDEllipsoid { anchor: base }
             | Self::SubDSphere { anchor: base }
             | Self::SubDTruncatedCone { anchor: base }
             | Self::SubDCone { anchor: base }
+            | Self::SolidAxial { anchor: base, .. }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,
@@ -263,16 +266,12 @@ impl InteractiveCommand {
             | Self::Distance { start: None, .. }
             | Self::Circle { center: None }
             | Self::CircleVertical { center: None, .. }
-            | Self::CircleTwoPoint { first: None }
+            | Self::CircleTwoPoint { first: None, .. }
             | Self::CircleThreePoint { points: [None, _] }
-            | Self::Sphere { center: None }
             | Self::SelVolumeSphere { center: None, .. }
             | Self::SelVolumePipe { .. }
             | Self::SelVolumeObject { .. }
             | Self::Pipe { .. }
-            | Self::Ellipsoid {
-                points: [None, _, _],
-            }
             | Self::Arc { points: [None, _] }
             | Self::ArcDeform { .. }
             | Self::ArcStartPoint { start: None, .. }
@@ -288,6 +287,8 @@ impl InteractiveCommand {
             | Self::Spiral { anchor: None, .. }
             | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
+            | Self::Paraboloid { anchor: None }
+            | Self::Pyramid { anchor: None, .. }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Plane { first: None }
@@ -296,15 +297,6 @@ impl InteractiveCommand {
             | Self::PointGrid { base: None, .. }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
-            | Self::MeshCone { center: None, .. }
-            | Self::MeshTruncatedCone { center: None, .. }
-            | Self::MeshCylinder { center: None, .. }
-            | Self::MeshSphere { center: None, .. }
-            | Self::MeshEllipsoid {
-                points: [None, _, _],
-                ..
-            }
-            | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -389,13 +381,14 @@ impl InteractiveCommand {
             | Self::LengthSubCrv { start, .. }
             | Self::Distance { start, .. }
             | Self::Circle { center: start }
-            | Self::CircleTwoPoint { first: start }
-            | Self::Sphere { center: start }
+            | Self::CircleTwoPoint { first: start, .. }
             | Self::SelVolumeSphere { center: start, .. }
             | Self::Catenary { anchor: start }
             | Self::Spiral { anchor: start, .. }
             | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
+            | Self::Paraboloid { anchor: start }
+            | Self::Pyramid { anchor: start, .. }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Plane { first: start }
@@ -404,9 +397,6 @@ impl InteractiveCommand {
             | Self::PointGrid { base: start, .. }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
-            | Self::MeshCone { center: start, .. }
-            | Self::MeshCylinder { center: start, .. }
-            | Self::MeshSphere { center: start, .. }
             | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }
@@ -440,24 +430,6 @@ impl InteractiveCommand {
                 normal_point: Some(normal_point),
                 ..
             } => Some(normal_point),
-            Self::MeshTruncatedCone {
-                center: Some(center),
-                end_center: None,
-                ..
-            } => Some(center),
-            Self::MeshTruncatedCone {
-                end_center: Some(end_center),
-                ..
-            } => Some(end_center),
-            Self::MeshTorus {
-                center: Some(center),
-                major_point: None,
-                ..
-            } => Some(center),
-            Self::MeshTorus {
-                major_point: Some(major_point),
-                ..
-            } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
             Self::ArcExtension { anchor: center }
             | Self::ArcTilted { anchor: center }
@@ -467,13 +439,7 @@ impl InteractiveCommand {
             | Self::CircleAround { center }
             | Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
-            | Self::Ellipsoid {
-                points: [center, _, _],
-            }
-            | Self::MeshEllipsoid {
-                points: [center, _, _],
-                ..
-            } => center,
+            | Self::Ellipsoid { anchor: center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
             }
@@ -604,16 +570,7 @@ impl InteractiveCommand {
                 ..
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
-            Self::Ellipsoid { points } => match points {
-                [_, _, Some(second_axis)] => Some(second_axis),
-                [_, Some(first_axis), None] => Some(first_axis),
-                _ => None,
-            },
-            Self::MeshEllipsoid { points, .. } => match points {
-                [_, _, Some(second_axis)] => Some(second_axis),
-                [_, Some(first_axis), None] => Some(first_axis),
-                _ => None,
-            },
+            Self::Ellipsoid { reference, .. } => reference,
             _ => None,
         }
     }

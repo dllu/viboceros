@@ -9,6 +9,7 @@ impl VibocerosApp {
         self.release_arc_extension_pick();
         self.release_circle_around_picks();
         self.release_ellipse_picks();
+        self.release_ellipsoid_pick();
         self.commands.clear_curve_deviation();
         self.set_point_sources = None;
         self.release_line_normal();
@@ -55,6 +56,7 @@ impl VibocerosApp {
         if self.curve_fillet_session.take().is_some() {
             self.document.clear_selection();
         }
+        self.release_fillet_corners();
         self.cancel_curve_boolean();
         self.finish_select_uv();
         self.refinement_prompt = None;
@@ -104,16 +106,20 @@ impl VibocerosApp {
         self.spiral_session = None;
         self.hyperbola_session = None;
         self.parabola_session = None;
+        self.paraboloid_session = None;
+        self.pyramid_session = None;
         self.conic_session = None;
         self.rectangle_session = None;
         self.plane_surface_session = None;
         self.srf_pt_session = None;
         self.surface_point_grid_session = None;
         self.subd_primitive_session = None;
+        self.solid_axial_session = None;
         self.subd_axial_session = None;
         self.subd_sphere_session = None;
-        self.subd_torus_session = None;
+        self.torus_session = None;
         self.subd_ellipsoid_session = None;
+        self.ellipsoid_session = None;
         self.twist_session = None;
         self.finish_bend_session(false);
         self.finish_stretch_session(false);

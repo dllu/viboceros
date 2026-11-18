@@ -3,23 +3,16 @@ use std::collections::VecDeque;
 use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
-    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-    DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
-    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
-    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
-    format_interp_curve_options, parse_curve_closure, parse_curve_degree,
+    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
+    DistributionSettings, format_interp_curve_options, parse_curve_closure, parse_curve_degree,
     parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MeshCapFaceStyle, Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_PLANE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -207,6 +200,7 @@ mod edge_analysis;
 mod edge_commands;
 mod edge_fillet;
 mod ellipse;
+mod ellipsoid;
 mod evaluate_point;
 mod evaluate_uv;
 mod extrude_surface;
@@ -215,6 +209,7 @@ mod extrude_surface_path;
 mod extrude_surface_tapered;
 mod extrude_tapered;
 mod face_create;
+mod fillet_corners;
 mod fillet_surface;
 mod flow;
 mod grid_settings;
@@ -235,7 +230,7 @@ mod ui;
 mod viewport_input;
 use interactive_state::{
     InteractiveCommand, InteractiveCurveExtensionJoin, InteractiveCurveExtensionStyle,
-    InteractiveIsocurveDirection, InteractiveMeshSphereTopology, InteractiveScaleKind,
+    InteractiveIsocurveDirection, InteractiveScaleKind,
 };
 mod arc_blend;
 mod blend_curve;
@@ -264,6 +259,7 @@ mod orient_edge;
 mod orient_points;
 mod orient_surface;
 mod parabola;
+mod paraboloid;
 mod pipe;
 mod planar_boolean;
 mod plane_primitives;
@@ -276,6 +272,7 @@ mod polyline_on_mesh;
 mod preferences;
 mod project;
 mod project_plane;
+mod pyramid;
 mod radius;
 mod rail_revolve;
 mod rectangle;
@@ -295,6 +292,8 @@ mod short_path;
 mod silhouette;
 mod smooth;
 mod snapping;
+mod solid_axial;
+mod sphere;
 mod spiral;
 mod srf_pt;
 mod stretch_prompt;
@@ -309,7 +308,6 @@ mod subd_ellipsoid;
 mod subd_native_tests;
 mod subd_primitives;
 mod subd_sphere;
-mod subd_torus;
 #[cfg(test)]
 #[path = "../crates/viboceros-geometry/tests/support/subdivision_native.rs"]
 #[allow(dead_code)]
@@ -321,6 +319,7 @@ mod surface_point_grid;
 mod surface_rebuild;
 mod taper_prompt;
 mod toolbar;
+mod torus;
 mod transform_prompt;
 mod transform_sources;
 mod translation_prompt;
@@ -394,6 +393,7 @@ pub struct VibocerosApp {
     viewport_tab_rename: Option<viewport_layout::ViewportTabRename>,
     osnap: bool,
     snaps: snapping::SnapControls,
+    circle_project_osnap: bool,
     smart_track: bool,
     grid_snap: bool,
     ortho: bool,
@@ -454,6 +454,7 @@ pub struct VibocerosApp {
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     curve_fillet_session: Option<curve_fillet::Session>,
+    fillet_corners_session: Option<fillet_corners::Session>,
     curve_chamfer_session: Option<curve_chamfer::Session>,
     curve_boolean_prompt: Option<curve_boolean::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
@@ -517,16 +518,20 @@ pub struct VibocerosApp {
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
+    paraboloid_session: Option<paraboloid::Session>,
+    pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     plane_surface_session: Option<plane_surface::Session>,
     srf_pt_session: Option<srf_pt::Session>,
     surface_point_grid_session: Option<surface_point_grid::Session>,
     subd_primitive_session: Option<subd_primitives::Session>,
+    solid_axial_session: Option<solid_axial::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
-    subd_torus_session: Option<subd_torus::Session>,
+    torus_session: Option<torus::Session>,
     subd_ellipsoid_session: Option<subd_ellipsoid::Session>,
+    ellipsoid_session: Option<ellipsoid::Session>,
     orient_points_session: Option<orient_points::Session>,
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
@@ -585,6 +590,7 @@ impl VibocerosApp {
             viewport_tab_rename: None,
             osnap: true,
             snaps: snapping::SnapControls::default(),
+            circle_project_osnap: true,
             smart_track: true,
             grid_snap: true,
             ortho: false,
@@ -645,6 +651,7 @@ impl VibocerosApp {
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             curve_fillet_session: None,
+            fillet_corners_session: None,
             curve_chamfer_session: None,
             curve_boolean_prompt: None,
             reparameterize_prompt: None,
@@ -708,16 +715,20 @@ impl VibocerosApp {
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
+            paraboloid_session: None,
+            pyramid_session: None,
             conic_session: None,
             rectangle_session: None,
             plane_surface_session: None,
             srf_pt_session: None,
             surface_point_grid_session: None,
             subd_primitive_session: None,
+            solid_axial_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
-            subd_torus_session: None,
+            torus_session: None,
             subd_ellipsoid_session: None,
+            ellipsoid_session: None,
             orient_points_session: None,
             remap_cplane_session: None,
             orient_surface_session: None,
@@ -888,15 +899,20 @@ impl VibocerosApp {
             || self.try_continue_arc_tilted(&input)
             || self.try_continue_tangent(&input)
             || self.try_continue_arc(&input)
+            || self.try_continue_sphere(&input)
             || self.try_continue_circle_around(&input)
             || self.continue_subd_ellipsoid(&input)
+            || self.continue_ellipsoid(&input)
             || self.try_continue_ellipse(&input)
             || self.try_continue_catenary(&input)
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
-            || self.continue_subd_torus(&input)
+            || self.try_continue_paraboloid(&input)
+            || self.try_continue_pyramid(&input)
+            || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
+            || self.continue_solid_axial(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
             || self.continue_surface_point_grid(&input)
@@ -960,7 +976,10 @@ impl VibocerosApp {
         if self.continue_curve_boolean(&input) {
             return;
         }
-        if self.continue_curve_chamfer(&input) || self.continue_curve_fillet(&input) {
+        if self.continue_curve_chamfer(&input)
+            || self.continue_curve_fillet(&input)
+            || self.continue_fillet_corners(&input)
+        {
             return;
         }
         if self.continue_fillet_surface(&input) {
@@ -1144,8 +1163,9 @@ impl VibocerosApp {
             || self.try_start_group_prompt(&input)
             || self.try_start_intersection_prompt(&input)
             || self.start_subd_ellipsoid(&input)
-            || self.start_subd_torus(&input)
+            || self.start_torus(&input)
             || self.start_subd_sphere(&input)
+            || self.start_solid_axial(&input)
             || self.start_subd_axial(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
@@ -1200,6 +1220,7 @@ impl VibocerosApp {
             || self.continue_surface_point_grid(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)
+            || self.continue_fillet_corners(input)
             || self.continue_blend_curve(input)
             || self.continue_arc_blend(input)
             || self.try_continue_line(input)
@@ -1366,26 +1387,6 @@ fn edit_document_transaction<T>(
 
 fn format_model_point(point: Point3) -> String {
     format!("{},{},{}", point.x(), point.y(), point.z())
-}
-
-fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
-    (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
-}
-
-fn ellipsoid_third_radius_exceeds_tolerance(
-    center: Point3,
-    first_axis: Point3,
-    second_axis: Point3,
-    third_axis: Point3,
-    tolerance: Tolerance,
-) -> bool {
-    Frame3::try_from_points(center, first_axis, second_axis, tolerance)
-        .and_then(|frame| {
-            center
-                .vector_to(third_axis)?
-                .dot(frame.z_axis().as_vector())
-        })
-        .is_ok_and(|radius| radius.abs() > tolerance.absolute())
 }
 
 fn point_is_near_axis(

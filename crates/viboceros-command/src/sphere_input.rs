@@ -1,6 +1,51 @@
 //! Reference spheres reuse the circle getters and sphere fitting kernel.
 use crate::circle_input::{CircleDefinition, CircleInput, CircleSizeMode};
 use viboceros_geometry::{Circle3, Frame3, GeometryError, Point3, Real, SphereFit, Tolerance};
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Preferences {
+    pub radius: Real,
+    pub diameter: bool,
+}
+
+impl Default for Preferences {
+    fn default() -> Self {
+        Self {
+            radius: 1.,
+            diameter: false,
+        }
+    }
+}
+
+impl Preferences {
+    pub fn mode(self) -> CircleSizeMode {
+        if self.diameter {
+            CircleSizeMode::Diameter
+        } else {
+            CircleSizeMode::Radius
+        }
+    }
+}
+
+impl From<Preferences> for crate::circle_around_input::Preferences {
+    fn from(value: Preferences) -> Self {
+        Self {
+            radius: value.radius,
+            diameter: value.diameter,
+            ..Self::default()
+        }
+    }
+}
+
+impl From<crate::circle_around_input::Preferences> for Preferences {
+    fn from(value: crate::circle_around_input::Preferences) -> Self {
+        Self {
+            radius: value.radius,
+            diameter: value.diameter,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum State {
     Circle(CircleInput),
@@ -19,8 +64,11 @@ pub struct SphereInput {
 }
 impl SphereInput {
     pub fn new(plane: Frame3) -> Self {
+        Self::with_preferences(plane, Preferences::default())
+    }
+    pub fn with_preferences(plane: Frame3, preferences: Preferences) -> Self {
         Self {
-            state: State::Circle(CircleInput::new(plane)),
+            state: State::Circle(CircleInput::new(plane).with_size_mode(preferences.mode())),
             plane,
         }
     }
@@ -33,16 +81,20 @@ impl SphereInput {
             }
         }
     }
-    pub fn anchor(self) -> Option<Point3> {
+    pub fn construction_plane(self) -> Frame3 {
+        self.plane
+    }
+    pub const fn anchor(self) -> Option<Point3> {
         match self.state {
             State::Circle(c) => c.anchor(),
             State::Diameter(p) => p,
-            State::Four(p) => p.into_iter().flatten().last(),
+            State::Four([_, _, Some(p)] | [_, Some(p), _] | [Some(p), _, _]) => Some(p),
+            State::Four(_) => None,
             State::FourRadius { section, .. } => Some(section.frame.origin()),
             State::Around(input) => Some(input.center()),
         }
     }
-    pub fn at_start(self) -> bool {
+    pub const fn at_start(self) -> bool {
         matches!(self.state, State::Circle(c) if c.at_start())
     }
     pub fn around_frame(frame: Frame3) -> Self {
@@ -105,6 +157,50 @@ impl SphereInput {
             CircleSizeMode::Circumference => std::f64::consts::TAU,
             CircleSizeMode::Area => std::f64::consts::PI,
         })
+    }
+    pub fn remembered_size(self, preferences: Preferences) -> Option<Real> {
+        if !self.requests_size() || matches!(self.state, State::FourRadius { .. }) {
+            return None;
+        }
+        match self.size_mode() {
+            CircleSizeMode::Radius => Some(preferences.radius),
+            CircleSizeMode::Diameter => Some(2. * preferences.radius),
+            _ => None,
+        }
+    }
+    pub fn update_size_mode(self, preferences: &mut Preferences) {
+        if matches!(self.state, State::Circle(c) if c.has_size_mode()) {
+            match self.size_mode() {
+                CircleSizeMode::Radius => preferences.diameter = false,
+                CircleSizeMode::Diameter => preferences.diameter = true,
+                _ => (),
+            }
+        }
+    }
+    pub fn update_radius(self, preferences: &mut Preferences, radius: Real) {
+        if matches!(self.state, State::Circle(c) if c.remembers_radius()) {
+            preferences.radius = radius;
+        }
+    }
+    pub fn preview(self, point: Point3, tolerance: Tolerance) -> Option<CircleDefinition> {
+        let mut input = self;
+        input
+            .point(point)
+            .ok()
+            .flatten()
+            .filter(|definition| definition.radius > tolerance.absolute())
+    }
+    pub fn preview_section(self, point: Point3) -> Option<Circle3> {
+        let State::Four([Some(first), Some(second), third]) = self.state else {
+            return None;
+        };
+        Circle3::try_from_three_points(
+            first,
+            second,
+            third.unwrap_or(point),
+            Tolerance::NUMERICAL_VALIDATION,
+        )
+        .ok()
     }
     pub fn prompt(self) -> String {
         match self.state {

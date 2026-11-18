@@ -14,6 +14,9 @@ impl VibocerosApp {
         if self.start_curve_chamfer(input) || self.start_curve_fillet(input) {
             return true;
         }
+        if self.start_fillet_corners(input) {
+            return true;
+        }
         if self.try_start_blend_curve(input) {
             return true;
         }
@@ -44,7 +47,13 @@ impl VibocerosApp {
         if self.try_start_circle_around(input) {
             return true;
         }
+        if self.try_start_sphere(input) {
+            return true;
+        }
         if self.try_start_ellipse(input) {
+            return true;
+        }
+        if self.try_start_ellipsoid(input) {
             return true;
         }
         if self.try_start_catenary(input) {
@@ -56,7 +65,7 @@ impl VibocerosApp {
         if self.try_start_hyperbola(input) {
             return true;
         }
-        if self.try_start_parabola(input) {
+        if self.try_start_parabola(input) || self.try_start_paraboloid(input) {
             return true;
         }
         if self.try_start_conic(input) {
@@ -65,13 +74,16 @@ impl VibocerosApp {
         if self.start_subd_ellipsoid(input) {
             return true;
         }
-        if self.start_subd_torus(input) {
+        if self.start_torus(input) {
             return true;
         }
         if self.start_subd_sphere(input) {
             return true;
         }
-        if self.start_subd_axial(input) {
+        if self.start_solid_axial(input)
+            || self.start_subd_axial(input)
+            || self.try_start_pyramid(input)
+        {
             return true;
         }
         if self.start_subd_primitive(input) {
@@ -339,9 +351,14 @@ impl VibocerosApp {
             };
             InteractiveCommand::SetPoint { options }
         } else if matches!(normalized.as_str(), "circle" | "c")
-            && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("2Point"))
+            && let Some((vertical, count)) =
+                viboceros_command::circle_input::diameter_prefix(&arguments)
+            && arguments.len() == count
         {
-            InteractiveCommand::CircleTwoPoint { first: None }
+            InteractiveCommand::CircleTwoPoint {
+                first: None,
+                vertical,
+            }
         } else if matches!(normalized.as_str(), "circle" | "c")
             && matches!(arguments.as_slice(), [option] if option.trim_start_matches('_').eq_ignore_ascii_case("3Point"))
         {
@@ -356,517 +373,6 @@ impl VibocerosApp {
                 third: None,
                 width: None,
                 options,
-            }
-        } else if normalized == "meshellipsoid" {
-            let mut vertical_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
-            let mut cap_style = MeshCapFaceStyle::Triangles;
-            let mut seen = [false; 3];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 2 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
-                    cap_style = if value.eq_ignore_ascii_case("Tri")
-                        || value.eq_ignore_ascii_case("Triangle")
-                        || value.eq_ignore_ascii_case("Triangles")
-                    {
-                        MeshCapFaceStyle::Triangles
-                    } else if value.eq_ignore_ascii_case("Quad")
-                        || value.eq_ignore_ascii_case("Quadrilateral")
-                        || value.eq_ignore_ascii_case("Quadrilaterals")
-                    {
-                        MeshCapFaceStyle::Quadrilaterals
-                    } else {
-                        return false;
-                    };
-                    2
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            let face_count = if cap_style == MeshCapFaceStyle::Quadrilaterals
-                && around_count.is_multiple_of(2)
-            {
-                vertical_count
-                    .checked_sub(1)
-                    .and_then(|bands| bands.checked_mul(around_count))
-            } else {
-                vertical_count.checked_mul(around_count)
-            };
-            if face_count.is_none_or(|count| count > MAX_MESH_ELLIPSOID_FACES) {
-                return false;
-            }
-            InteractiveCommand::MeshEllipsoid {
-                points: [None; 3],
-                vertical_count,
-                around_count,
-                cap_style,
-            }
-        } else if normalized == "meshsphere" {
-            let mut topology = InteractiveMeshSphereTopology::Uv {
-                vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-            };
-            let mut vertical_count = None;
-            let mut around_count = None;
-            let mut subdivisions = None;
-            let mut seen = [false; 4];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("Style") {
-                    topology = if value.eq_ignore_ascii_case("UV") {
-                        InteractiveMeshSphereTopology::Uv {
-                            vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                            around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                        }
-                    } else if value.eq_ignore_ascii_case("Quad")
-                        || value.eq_ignore_ascii_case("Quads")
-                    {
-                        InteractiveMeshSphereTopology::Quads {
-                            subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                        }
-                    } else if value.eq_ignore_ascii_case("Triangle")
-                        || value.eq_ignore_ascii_case("Triangles")
-                    {
-                        InteractiveMeshSphereTopology::Triangles {
-                            subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                        }
-                    } else {
-                        return false;
-                    };
-                    0
-                } else if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 2 {
-                        return false;
-                    }
-                    vertical_count = Some(count);
-                    1
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = Some(count);
-                    2
-                } else if name.eq_ignore_ascii_case("Subdivisions") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    subdivisions = Some(count);
-                    3
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            topology = match topology {
-                InteractiveMeshSphereTopology::Uv { .. } => {
-                    if subdivisions.is_some() {
-                        return false;
-                    }
-                    let vertical_count = vertical_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-                    let around_count = around_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-                    if vertical_count
-                        .checked_mul(around_count)
-                        .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
-                    {
-                        return false;
-                    }
-                    InteractiveMeshSphereTopology::Uv {
-                        vertical_count,
-                        around_count,
-                    }
-                }
-                InteractiveMeshSphereTopology::Quads { .. } => {
-                    if vertical_count.is_some() || around_count.is_some() {
-                        return false;
-                    }
-                    let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-                    if subdivisions > MAX_MESH_SPHERE_QUAD_SUBDIVISIONS {
-                        return false;
-                    }
-                    InteractiveMeshSphereTopology::Quads { subdivisions }
-                }
-                InteractiveMeshSphereTopology::Triangles { .. } => {
-                    if vertical_count.is_some() || around_count.is_some() {
-                        return false;
-                    }
-                    let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-                    if subdivisions > MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS {
-                        return false;
-                    }
-                    InteractiveMeshSphereTopology::Triangles { subdivisions }
-                }
-            };
-            InteractiveCommand::MeshSphere {
-                center: None,
-                topology,
-            }
-        } else if normalized == "meshtorus" {
-            let mut vertical_count = DEFAULT_MESH_TORUS_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_TORUS_FACE_COUNT;
-            let mut seen = [false; 2];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            if vertical_count
-                .checked_mul(around_count)
-                .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshTorus {
-                center: None,
-                major_point: None,
-                vertical_count,
-                around_count,
-            }
-        } else if normalized == "meshtruncatedcone" {
-            let mut vertical_count = DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT;
-            let mut solid = true;
-            let mut cap_style = MeshCapFaceStyle::Triangles;
-            let mut seen = [false; 4];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count == 0 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else if name.eq_ignore_ascii_case("Solid") {
-                    solid = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    2
-                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
-                    cap_style = if value.eq_ignore_ascii_case("Tri")
-                        || value.eq_ignore_ascii_case("Triangle")
-                        || value.eq_ignore_ascii_case("Triangles")
-                    {
-                        MeshCapFaceStyle::Triangles
-                    } else if value.eq_ignore_ascii_case("Quad")
-                        || value.eq_ignore_ascii_case("Quadrilateral")
-                        || value.eq_ignore_ascii_case("Quadrilaterals")
-                    {
-                        MeshCapFaceStyle::Quadrilaterals
-                    } else {
-                        return false;
-                    };
-                    3
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            let wall_faces = vertical_count.checked_mul(around_count);
-            let cap_faces = if !solid {
-                Some(0)
-            } else {
-                let one_cap = if cap_style == MeshCapFaceStyle::Quadrilaterals
-                    && around_count.is_multiple_of(2)
-                {
-                    if around_count == 4 {
-                        1
-                    } else {
-                        around_count / 2
-                    }
-                } else {
-                    around_count
-                };
-                one_cap.checked_mul(2)
-            };
-            if wall_faces
-                .and_then(|wall| cap_faces.and_then(|caps| wall.checked_add(caps)))
-                .is_none_or(|faces| faces > MAX_MESH_TRUNCATED_CONE_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshTruncatedCone {
-                center: None,
-                base_radius_point: None,
-                end_center: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            }
-        } else if normalized == "meshcone" {
-            let mut vertical_count = DEFAULT_MESH_CONE_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_CONE_FACE_COUNT;
-            let mut solid = true;
-            let mut cap_style = MeshCapFaceStyle::Triangles;
-            let mut seen = [false; 4];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count == 0 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else if name.eq_ignore_ascii_case("Solid") {
-                    solid = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    2
-                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
-                    cap_style = if value.eq_ignore_ascii_case("Tri")
-                        || value.eq_ignore_ascii_case("Triangle")
-                        || value.eq_ignore_ascii_case("Triangles")
-                    {
-                        MeshCapFaceStyle::Triangles
-                    } else if value.eq_ignore_ascii_case("Quad")
-                        || value.eq_ignore_ascii_case("Quadrilateral")
-                        || value.eq_ignore_ascii_case("Quadrilaterals")
-                    {
-                        MeshCapFaceStyle::Quadrilaterals
-                    } else {
-                        return false;
-                    };
-                    3
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            let wall_faces = vertical_count.checked_mul(around_count);
-            let cap_faces = if !solid {
-                Some(0)
-            } else if cap_style == MeshCapFaceStyle::Quadrilaterals
-                && around_count.is_multiple_of(2)
-            {
-                Some(if around_count == 4 {
-                    1
-                } else {
-                    around_count / 2
-                })
-            } else {
-                Some(around_count)
-            };
-            if wall_faces
-                .and_then(|wall| cap_faces.and_then(|cap| wall.checked_add(cap)))
-                .is_none_or(|faces| faces > MAX_MESH_CONE_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshCone {
-                center: None,
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                cap_style,
-            }
-        } else if normalized == "meshcylinder" {
-            let mut vertical_count = DEFAULT_MESH_CYLINDER_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_CYLINDER_FACE_COUNT;
-            let mut solid = true;
-            let mut both_sides = false;
-            let mut cap_style = MeshCapFaceStyle::Triangles;
-            let mut seen = [false; 5];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count == 0 {
-                        return false;
-                    }
-                    vertical_count = count;
-                    0
-                } else if name.eq_ignore_ascii_case("AroundFaces") {
-                    let Ok(count) = value.parse::<usize>() else {
-                        return false;
-                    };
-                    if count < 3 {
-                        return false;
-                    }
-                    around_count = count;
-                    1
-                } else if name.eq_ignore_ascii_case("Solid") {
-                    solid = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    2
-                } else if name.eq_ignore_ascii_case("BothSides") {
-                    both_sides = if value.eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    3
-                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
-                    cap_style = if value.eq_ignore_ascii_case("Tri")
-                        || value.eq_ignore_ascii_case("Triangle")
-                        || value.eq_ignore_ascii_case("Triangles")
-                    {
-                        MeshCapFaceStyle::Triangles
-                    } else if value.eq_ignore_ascii_case("Quad")
-                        || value.eq_ignore_ascii_case("Quadrilateral")
-                        || value.eq_ignore_ascii_case("Quadrilaterals")
-                    {
-                        MeshCapFaceStyle::Quadrilaterals
-                    } else {
-                        return false;
-                    };
-                    4
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                seen[option_index] = true;
-            }
-            let wall_faces = vertical_count.checked_mul(around_count);
-            let cap_faces = if !solid {
-                Some(0)
-            } else if cap_style == MeshCapFaceStyle::Quadrilaterals
-                && around_count.is_multiple_of(2)
-            {
-                Some(if around_count == 4 { 2 } else { around_count })
-            } else {
-                around_count.checked_mul(2)
-            };
-            if wall_faces
-                .and_then(|wall| cap_faces.and_then(|caps| wall.checked_add(caps)))
-                .is_none_or(|faces| faces > MAX_MESH_CYLINDER_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshCylinder {
-                center: None,
-                radius_point: None,
-                vertical_count,
-                around_count,
-                solid,
-                both_sides,
-                cap_style,
             }
         } else if normalized == "meshbox" {
             let mut x_count = DEFAULT_MESH_BOX_FACE_COUNT;
@@ -1934,7 +1440,7 @@ impl VibocerosApp {
             InteractiveCommand::CircleVertical {
                 center: None,
                 radius: None,
-                mode: CircleSizeMode::Radius,
+                mode: self.commands.circle_preferences().mode(),
             }
         } else if matches!(normalized.as_str(), "arc" | "a")
             && arguments.len() == 1
@@ -2025,8 +1531,6 @@ impl VibocerosApp {
                 "lines" => InteractiveCommand::Lines,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
-                "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
-                "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
                 "arc" | "a" => InteractiveCommand::ArcCenter {
                     center: None,
                     start: None,

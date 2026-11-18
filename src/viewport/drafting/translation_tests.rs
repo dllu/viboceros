@@ -23,8 +23,14 @@ fn vertical_mouse_picks_work_with_an_edge_on_cplane_and_keep_explicit_snap_sourc
         distance: None,
     };
     assert!(
-        view.filtered_drafting_cursor(pointer, rect, &document, input, None, None)
-            .is_none()
+        view.filtered_drafting_cursor(
+            pointer,
+            rect,
+            &document,
+            input,
+            CursorConstraints::default()
+        )
+        .is_none()
     );
     let cursor = view
         .translation_drafting_cursor(

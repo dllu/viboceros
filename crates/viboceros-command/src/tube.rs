@@ -1,66 +1,103 @@
-//! Hollow cylinder command; parsing is shared with axial primitives.
+//! Staged Tube execution and the explicit-axis positional form.
 use super::*;
+use solid_axial::{Definition, Kind, MeshTopology, TubeSettings};
+use std::sync::Arc;
 
-pub(super) struct TubeCommand(pub use_extrusions::Preference);
+pub(super) struct TubeCommand {
+    pub extrusions: use_extrusions::Preference,
+    pub settings: Arc<remembered::Remembered<TubeSettings>>,
+}
 
 impl Command for TubeCommand {
     fn name(&self) -> &'static str {
-        "Tube"
+        Kind::Tube.name()
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_tube_options(arguments)?;
+        self.run_in_context(document, arguments, CommandContext::default())
+    }
+
+    fn run_in_context(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
         let tolerance = document.tolerance();
-        let (base_frame, first_radius) = axial_primitive_frame(
-            options.center,
-            options.first_radius,
-            options.axis,
-            tolerance,
-        )?;
-        let second_radius = if let Some(radius) = options.second_radius {
-            axial_primitive_radius_value(options.center, radius, base_frame)?
+        let (definition, preferences) = if let Ok(options) = parse_tube_options(arguments) {
+            (positional_definition(options, tolerance)?, None)
         } else {
-            first_radius + options.wall_thickness.expect("validated thickness form")
+            let input = solid_axial::from_arguments(
+                document,
+                arguments,
+                Kind::Tube,
+                context.construction_plane,
+                self.settings.get().0,
+            )?;
+            (
+                input.definition.expect("complete Tube"),
+                Some(input.preferences),
+            )
         };
-        let direction = if options.height > 0. {
-            base_frame.z_axis()
+        let use_extrusions = self.extrusions.get().0;
+        let geometries = if preferences.is_some() {
+            definition.geometries(use_extrusions, tolerance)?
         } else {
-            base_frame.z_axis().opposite()
+            vec![definition.geometry(use_extrusions, tolerance)?]
         };
-        let start = if options.both_sides {
-            options
-                .center
-                .translated(base_frame.z_axis().as_vector().scaled(-options.height)?)?
+        let representation = match &geometries[0] {
+            Geometry::Brep(brep) if brep.is_extrusion() => "extrusion",
+            _ => "B-rep",
+        };
+        let inner = definition.radius.min(definition.end_radius);
+        let outer = definition.radius.max(definition.end_radius);
+        let closed = match &geometries[0] {
+            Geometry::Brep(brep) if brep.is_solid() => "closed",
+            _ => "open",
+        };
+        let ids = geometries
+            .into_iter()
+            .map(|geometry| document.add_geometry(geometry).map(|id| id.to_string()))
+            .collect::<Result<Vec<_>, _>>()?
+            .join(", ");
+        if let Some(preferences) = preferences {
+            self.settings.set(TubeSettings(preferences));
+        }
+        let span = if definition.both_sides {
+            ", both sides"
         } else {
-            options.center
+            ""
         };
-        let frame =
-            Frame3::try_from_unit_x_and_normal(start, base_frame.x_axis(), direction, tolerance)?;
-        let height = options.height.abs() * if options.both_sides { 2. } else { 1. };
-        let tube = Brep::try_tube_extrusion(
-            frame,
-            [first_radius, second_radius],
-            height,
-            true,
-            tolerance,
-        )?;
-        let tube = use_extrusions::output(tube, &self.0, tolerance)?;
-        let inner_radius = first_radius.min(second_radius);
-        let outer_radius = first_radius.max(second_radius);
-        let representation = if tube.is_extrusion() {
-            "extrusion"
-        } else {
-            "B-rep"
-        };
-        let id = document.add_geometry(Geometry::Brep(tube))?;
         Ok(format!(
-            "Added closed {representation} tube {id} (inner radius {inner_radius:.6}, outer radius {outer_radius:.6}, height {:.6}{})",
-            options.height,
-            if options.both_sides {
-                ", both sides"
-            } else {
-                ""
-            }
+            "Added {closed} {representation} tube {ids} (inner radius {inner:.6}, outer radius {outer:.6}, height {:.6}{span})",
+            definition.height,
         ))
     }
+}
+
+fn positional_definition(
+    options: TubeCommandOptions,
+    tolerance: Tolerance,
+) -> Result<Definition, CommandError> {
+    let (base_frame, first_radius) = axial_primitive_frame(
+        options.center,
+        options.first_radius,
+        options.axis,
+        tolerance,
+    )?;
+    let second_radius = if let Some(radius) = options.second_radius {
+        axial_primitive_radius_value(options.center, radius, base_frame)?
+    } else {
+        first_radius + options.wall_thickness.expect("validated thickness form")
+    };
+    Ok(Definition {
+        kind: Kind::Tube,
+        frame: base_frame,
+        radius: first_radius,
+        height: options.height,
+        solid: true,
+        both_sides: options.both_sides,
+        end_radius: second_radius,
+        topology: MeshTopology::default(),
+    })
 }

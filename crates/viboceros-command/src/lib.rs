@@ -57,6 +57,8 @@ pub mod replace_block;
 pub mod rigid_groups;
 pub mod section;
 pub mod soft_crease;
+pub mod solid_axial;
+pub mod sphere_command;
 pub mod sphere_input;
 pub mod subd_axial;
 pub mod subd_box;
@@ -73,6 +75,8 @@ mod surface_edge_reference;
 pub mod surface_flow;
 pub mod surface_reference;
 pub mod to_subd;
+mod torus;
+pub mod torus_input;
 mod uv_inputs;
 mod uv_reference;
 use apply_curves::ApplyCurvesCommand;
@@ -158,14 +162,21 @@ pub use interpolation_options::{
 };
 pub mod catenary_input;
 pub mod ellipse_input;
+pub mod ellipsoid;
 pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
+pub mod mesh_ellipsoid;
+pub mod mesh_sphere;
+mod mesh_torus;
 mod model_tolerance;
 pub mod named_view;
 pub mod parabola;
 #[cfg(test)]
 mod parabola_tests;
+mod parabolic_axis;
+pub mod paraboloid;
+pub mod pyramid;
 pub mod spiral_input;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
@@ -453,7 +464,7 @@ mod curve_pair_edit;
 mod edge_blend_input;
 mod extract_surface;
 pub mod fillet;
-mod fillet_corners;
+pub mod fillet_corners;
 mod fillet_edge;
 use fillet_edge::FilletEdgeCommand;
 pub use fillet_edge::{EdgeBlendSelection, FilletEdgeSelection};
@@ -562,16 +573,14 @@ use viboceros_geometry::{
     GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
     MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
-    sort_and_cull_points, try_catenary,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MeshCapFaceStyle, MeshEdgeFilter, MeshFaceExtraction, NurbsCurve, NurbsCurve2, NurbsSurface,
+    Plane, Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
+    try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -664,6 +673,7 @@ pub trait Command: Send + Sync {
     fn circle_preferences(&self) -> Option<circle_around_input::Preferences> {
         None
     }
+    fn remember_circle_diameter(&self, _diameter: bool) {}
     fn catenary_options(&self) -> Option<catenary_input::Options> {
         None
     }
@@ -682,6 +692,14 @@ pub trait Command: Send + Sync {
     fn parabola_options(&self) -> Option<parabola::Options> {
         None
     }
+    fn pyramid_options(&self) -> Option<pyramid::Preferences> {
+        None
+    }
+    fn remember_pyramid_options(&self, _value: pyramid::Preferences) {}
+    fn paraboloid_options(&self) -> Option<paraboloid::Preferences> {
+        None
+    }
+    fn remember_paraboloid_options(&self, _value: paraboloid::Preferences) {}
     fn conic_options(&self) -> Option<conic::Options> {
         None
     }
@@ -1027,6 +1045,19 @@ pub struct CommandRegistry {
     curve_extrusion_split: extrude_curve::SplitPreference,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
+    sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
+    ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
+    mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
+    mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
+    mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
+    solid_cylinder_preferences:
+        std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
+    tube_preferences: std::sync::Arc<remembered::Remembered<solid_axial::TubeSettings>>,
+    solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
+    truncated_cone_preferences:
+        std::sync::Arc<remembered::Remembered<solid_axial::TruncatedConeSettings>>,
+    torus_preferences: std::sync::Arc<remembered::Remembered<torus::Settings>>,
+    mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
     draft_angle_analysis: std::sync::Arc<draft_angle_analysis::Session>,
@@ -1247,7 +1278,9 @@ impl CommandRegistry {
             .register(ellipse_input::EllipseCommand::default())
             .expect("unique built-in command");
         registry
-            .register(EllipsoidCommand)
+            .register(ellipsoid::EllipsoidCommand(
+                registry.ellipsoid_mark_foci.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(polyline_command::PolylineCommand)
@@ -1391,26 +1424,35 @@ impl CommandRegistry {
             .register(MeshPlaneCommand)
             .expect("unique built-in command");
         registry
-            .register(MeshSphereCommand)
+            .register(mesh_sphere::MeshSphereCommand(
+                registry.mesh_sphere_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(MeshEllipsoidCommand)
+            .register(mesh_ellipsoid::MeshEllipsoidCommand(
+                registry.mesh_ellipsoid_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(MeshTorusCommand)
+            .register(mesh_torus::MeshTorusCommand(
+                registry.mesh_torus_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(MeshBoxCommand)
             .expect("unique built-in command");
-        registry
-            .register(MeshConeCommand)
-            .expect("unique built-in command");
-        registry
-            .register(MeshTruncatedConeCommand)
-            .expect("unique built-in command");
-        registry
-            .register(MeshCylinderCommand)
-            .expect("unique built-in command");
+        for kind in [
+            solid_axial::Kind::MeshCone,
+            solid_axial::Kind::MeshTruncatedCone,
+            solid_axial::Kind::MeshCylinder,
+        ] {
+            registry
+                .register(solid_axial::MeshCommand {
+                    kind,
+                    preferences: registry.mesh_axial_preferences[kind.shape() as usize].clone(),
+                })
+                .expect("unique built-in circular mesh command");
+        }
         registry
             .register(to_subd::ToSubDCommand::default())
             .expect("unique built-in ToSubD");
@@ -1484,13 +1526,20 @@ impl CommandRegistry {
             .register(DuplicateFaceBorderCommand)
             .expect("unique built-in command");
         registry
-            .register(SphereCommand)
+            .register(sphere_command::SphereCommand(
+                registry.sphere_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(CylinderCommand(registry.use_extrusions.clone()))
+            .register(CylinderCommand(
+                registry.use_extrusions.clone(),
+                registry.solid_cylinder_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(ConeCommand)
+            .register(solid_axial::ConeCommand(
+                registry.solid_cone_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(parabola::ParabolaCommand::new(parabola::Kind::Axis))
@@ -1499,7 +1548,7 @@ impl CommandRegistry {
             .register(parabola::ParabolaCommand::new(parabola::Kind::ThreePoint))
             .expect("unique built-in command");
         registry
-            .register(ParaboloidCommand)
+            .register(paraboloid::ParaboloidCommand::default())
             .expect("unique built-in command");
         registry
             .register(hyperbola::HyperbolaCommand::default())
@@ -1514,19 +1563,26 @@ impl CommandRegistry {
             .register(CatenaryCommand::default())
             .expect("unique built-in command");
         registry
-            .register(TruncatedConeCommand)
+            .register(solid_axial::TruncatedConeCommand(
+                registry.truncated_cone_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(PyramidCommand)
+            .register(pyramid::PyramidCommand::new(pyramid::Kind::Pyramid))
             .expect("unique built-in command");
         registry
-            .register(TruncatedPyramidCommand)
+            .register(pyramid::PyramidCommand::new(
+                pyramid::Kind::TruncatedPyramid,
+            ))
             .expect("unique built-in command");
         registry
-            .register(TubeCommand(registry.use_extrusions.clone()))
+            .register(TubeCommand {
+                extrusions: registry.use_extrusions.clone(),
+                settings: registry.tube_preferences.clone(),
+            })
             .expect("unique built-in command");
         registry
-            .register(TorusCommand)
+            .register(torus::TorusCommand(registry.torus_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(ExtrudeCurveCommand {
@@ -1923,7 +1979,7 @@ impl CommandRegistry {
             .register(FilletSurfaceCommand)
             .expect("unique built-in command");
         registry
-            .register(FilletCornersCommand)
+            .register(FilletCornersCommand::default())
             .expect("unique built-in command");
         registry
             .register(chamfer_edge::ChamferEdgeCommand)
@@ -2930,6 +2986,11 @@ impl CommandRegistry {
             .and_then(|i| self.commands[*i].circle_preferences())
             .unwrap_or_default()
     }
+    pub fn remember_circle_diameter(&self, diameter: bool) {
+        if let Some(index) = self.lookup.get("circle") {
+            self.commands[*index].remember_circle_diameter(diameter);
+        }
+    }
     pub fn catenary_options(&self) -> catenary_input::Options {
         self.lookup
             .get(&normalize_command_name("Catenary"))
@@ -2967,6 +3028,28 @@ impl CommandRegistry {
             .get(&normalize_command_name(kind.name()))
             .and_then(|i| self.commands[*i].parabola_options())
             .unwrap_or_default()
+    }
+    pub fn pyramid_options(&self, kind: pyramid::Kind) -> pyramid::Preferences {
+        self.lookup
+            .get(&normalize_command_name(kind.name()))
+            .and_then(|index| self.commands[*index].pyramid_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_pyramid_options(&self, kind: pyramid::Kind, value: pyramid::Preferences) {
+        if let Some(index) = self.lookup.get(&normalize_command_name(kind.name())) {
+            self.commands[*index].remember_pyramid_options(value);
+        }
+    }
+    pub fn paraboloid_options(&self) -> paraboloid::Preferences {
+        self.lookup
+            .get("paraboloid")
+            .and_then(|index| self.commands[*index].paraboloid_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_paraboloid_options(&self, value: paraboloid::Preferences) {
+        if let Some(index) = self.lookup.get("paraboloid") {
+            self.commands[*index].remember_paraboloid_options(value);
+        }
     }
     pub fn select_uv_options(&self) -> select_uv_rows::Options {
         self.lookup
@@ -3401,27 +3484,6 @@ impl Command for ArcCommand {
         Ok(format!(
             "Added arc {id} (sweep {:.6}°)",
             d.signed_sweep_degrees
-        ))
-    }
-}
-
-const ELLIPSOID_USAGE: &str = "Ellipsoid center radius-x radius-y radius-z | Ellipsoid center first-axis-point second-axis-point third-axis-radius-point";
-
-struct EllipsoidCommand;
-
-impl Command for EllipsoidCommand {
-    fn name(&self) -> &'static str {
-        "Ellipsoid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let positionals = parse_ellipsoid_positionals(arguments, document.tolerance())?;
-        require_consumed(arguments, positionals.option_start, ELLIPSOID_USAGE)?;
-        let surface = NurbsSurface::try_ellipsoid(positionals.frame, positionals.radii)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added NURBS ellipsoid {id} (radii {:.6} × {:.6} × {:.6})",
-            positionals.radii[0], positionals.radii[1], positionals.radii[2]
         ))
     }
 }
@@ -5698,85 +5760,20 @@ fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions,
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
 
-struct SphereCommand;
-
-impl Command for SphereCommand {
-    fn name(&self) -> &'static str {
-        "Sphere"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Sph"]
-    }
-
-    fn object_selection_prompt(
-        &self,
-        args: &[&str],
-    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok(matches!(args,[option]if option_name_eq(option,"FitPoints"))
-            .then(|| point_fitting::selection_prompt(point_fitting::PointFitKind::Sphere)))
-    }
-    fn run_postselected(
-        &self,
-        document: &mut Document,
-        args: &[&str],
-        _context: CommandContext,
-    ) -> Result<String, CommandError> {
-        if args.first().is_some_and(|s| option_name_eq(s, "FitPoints")) {
-            require_consumed(args, 1, "Sphere FitPoints (select points or grips)")?;
-            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], true);
-        }
-        self.run(document, args)
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        if arguments
-            .first()
-            .is_some_and(|s| option_name_eq(s, "FitPoints"))
-        {
-            require_consumed(arguments, 1, "Sphere FitPoints (select points or grips)")?;
-            return point_fitting::run(point_fitting::PointFitKind::Sphere, document, &[], false);
-        }
-        const USAGE: &str = "Sphere center radius | Sphere center point-on-sphere";
-        let (center, center_consumed) = parse_point(arguments)?;
-        let remaining = &arguments[center_consumed..];
-        let radius = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?
-        } else {
-            let (point_on_sphere, point_consumed) = parse_point(remaining)?;
-            require_consumed(remaining, point_consumed, USAGE)?;
-            center.distance_to(point_on_sphere)?
-        };
-        let frame = Frame3::try_from_unit_normal(
-            center,
-            Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
-        )?;
-        let surface = NurbsSurface::try_sphere(frame, radius)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!("Added NURBS sphere {id} (radius {radius:.6})"))
-    }
-}
-
 pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
-pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 3;
+pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 2;
 pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
-const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV|Quads|Triangles] [VerticalFaces=integer-at-least-2 AroundFaces=integer-at-least-3 | Subdivisions=non-negative-integer]";
 pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
-const MESH_ELLIPSOID_USAGE: &str = "MeshEllipsoid center radius-x radius-y radius-z | MeshEllipsoid center first-axis-point second-axis-point third-axis-radius-point [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
-const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
-const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT: usize = 10;
 const MESH_TRUNCATED_CONE_USAGE: &str = "MeshTruncatedCone base-center base-radius height end-radius | MeshTruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
-const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
-const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Helix AroundCurve radius-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
@@ -5784,8 +5781,7 @@ const CATENARY_USAGE: &str = "Catenary start end axis-direction-point constraint
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
-const TUBE_USAGE: &str = "Tube center first-radius second-radius height | Tube center point-on-first-wall second-radius height | Tube center first-radius height WallThickness=positive-distance [Axis=x,y,z] [BothSides=Yes|No]";
-const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
+const TUBE_USAGE: &str = "Tube [DirectionConstraint=None|Vertical|AroundCurve Solid=Yes|No] base-circle (second-radius-or-point|WallThickness=distance) [BothSides=Yes|No] height-or-end | Tube center first-radius second-radius height [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum AxialPrimitiveRadius {
@@ -5843,28 +5839,6 @@ struct TruncatedConeCommandOptions {
     height: Real,
     end_radius: Real,
     axis: UnitVector3,
-    solid: bool,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ParabolicConstruction {
-    Focus,
-    Vertex,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ParabolicPositionals {
-    construction: ParabolicConstruction,
-    first: Point3,
-    second: Point3,
-    end: Point3,
-    option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ParaboloidCommandOptions {
-    positionals: ParabolicPositionals,
-    mark_focus: bool,
     solid: bool,
 }
 
@@ -5982,51 +5956,10 @@ struct MeshTruncatedConeCommandOptions {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshSphereCommandOptions {
-    center: Point3,
-    radius: AxialPrimitiveRadius,
-    axis: UnitVector3,
-    topology: MeshSphereCommandTopology,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
 struct EllipsoidPositionals {
     frame: Frame3,
     radii: [Real; 3],
     option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshEllipsoidCommandOptions {
-    frame: Frame3,
-    radii: [Real; 3],
-    vertical_count: usize,
-    around_count: usize,
-    cap_style: MeshCapFaceStyle,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum MeshSphereCommandTopology {
-    Uv {
-        vertical_count: usize,
-        around_count: usize,
-    },
-    Quads {
-        subdivisions: usize,
-    },
-    Triangles {
-        subdivisions: usize,
-    },
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshTorusCommandOptions {
-    center: Point3,
-    major_radius: AxialPrimitiveRadius,
-    minor_radius: Real,
-    axis: UnitVector3,
-    vertical_count: usize,
-    around_count: usize,
 }
 
 fn parse_radial_radius_positionals(
@@ -6301,66 +6234,6 @@ fn parse_truncated_cone_options(
         height: positionals.height,
         end_radius: positionals.end_radius,
         axis,
-        solid,
-    })
-}
-
-fn parse_parabolic_positionals(
-    arguments: &[&str],
-    usage: &'static str,
-) -> Result<ParabolicPositionals, CommandError> {
-    let first_argument = arguments.first().ok_or(CommandError::Usage(usage))?;
-    let (construction, positional_start) = if first_argument
-        .trim_start_matches('_')
-        .eq_ignore_ascii_case("Focus")
-    {
-        (ParabolicConstruction::Focus, 1)
-    } else if first_argument
-        .trim_start_matches('_')
-        .eq_ignore_ascii_case("Vertex")
-    {
-        (ParabolicConstruction::Vertex, 1)
-    } else {
-        (ParabolicConstruction::Focus, 0)
-    };
-    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
-    let second_start = positional_start + first_consumed;
-    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
-    let end_start = second_start + second_consumed;
-    let (end, end_consumed) = parse_point(&arguments[end_start..])?;
-    Ok(ParabolicPositionals {
-        construction,
-        first,
-        second,
-        end,
-        option_start: end_start + end_consumed,
-    })
-}
-
-fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptions, CommandError> {
-    let positionals = parse_parabolic_positionals(arguments, PARABOLOID_USAGE)?;
-    let mut mark_focus = false;
-    let mut solid = false;
-    let mut mark_focus_seen = false;
-    let mut solid_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(PARABOLOID_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
-            mark_focus = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
-            mark_focus_seen = true;
-        } else if option_name_eq(name, "Solid") && !solid_seen {
-            solid = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
-            solid_seen = true;
-        } else {
-            return Err(CommandError::Usage(PARABOLOID_USAGE));
-        }
-    }
-    Ok(ParaboloidCommandOptions {
-        positionals,
-        mark_focus,
         solid,
     })
 }
@@ -6871,249 +6744,6 @@ fn parse_ellipsoid_positionals(
     })
 }
 
-fn parse_mesh_ellipsoid_options(
-    arguments: &[&str],
-    tolerance: Tolerance,
-) -> Result<MeshEllipsoidCommandOptions, CommandError> {
-    let positionals = parse_ellipsoid_positionals(arguments, tolerance)?;
-    let mut options = MeshEllipsoidCommandOptions {
-        frame: positionals.frame,
-        radii: positionals.radii,
-        vertical_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-        around_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
-        cap_style: MeshCapFaceStyle::Triangles,
-    };
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    let mut cap_style_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            options.vertical_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 2)
-                .ok_or_else(|| {
-                    CommandError::InvalidMeshEllipsoidVerticalFaceCount(value.to_owned())
-                })?;
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            options.around_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| {
-                    CommandError::InvalidMeshEllipsoidAroundFaceCount(value.to_owned())
-                })?;
-            around_seen = true;
-        } else if option_name_eq(name, "CapFaceStyle") && !cap_style_seen {
-            options.cap_style = parse_mesh_cap_face_style(value)
-                .ok_or(CommandError::Usage(MESH_ELLIPSOID_USAGE))?;
-            cap_style_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
-        }
-    }
-
-    let face_count = if options.cap_style == MeshCapFaceStyle::Quadrilaterals
-        && options.around_count.is_multiple_of(2)
-    {
-        options
-            .vertical_count
-            .checked_sub(1)
-            .and_then(|bands| bands.checked_mul(options.around_count))
-    } else {
-        options.vertical_count.checked_mul(options.around_count)
-    };
-    if face_count.is_none_or(|count| count > MAX_MESH_ELLIPSOID_FACES) {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
-}
-
-fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
-    let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-    let mut style = MeshSphereCommandTopology::Uv {
-        vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-        around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-    };
-    let mut vertical_count = None;
-    let mut around_count = None;
-    let mut subdivisions = None;
-    let mut axis_seen = false;
-    let mut style_seen = false;
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    let mut subdivisions_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_unit_axis_option(value, MESH_SPHERE_USAGE)?;
-            axis_seen = true;
-        } else if option_name_eq(name, "Style") && !style_seen {
-            style = if value.eq_ignore_ascii_case("UV") {
-                MeshSphereCommandTopology::Uv {
-                    vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                    around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                }
-            } else if value.eq_ignore_ascii_case("Quad") || value.eq_ignore_ascii_case("Quads") {
-                MeshSphereCommandTopology::Quads {
-                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                }
-            } else if value.eq_ignore_ascii_case("Triangle")
-                || value.eq_ignore_ascii_case("Triangles")
-            {
-                MeshSphereCommandTopology::Triangles {
-                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                }
-            } else {
-                return Err(CommandError::UnsupportedMeshSphereStyle(value.to_owned()));
-            };
-            style_seen = true;
-        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            vertical_count = Some(
-                value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|count| *count >= 2)
-                    .ok_or_else(|| {
-                        CommandError::InvalidMeshSphereVerticalFaceCount(value.to_owned())
-                    })?,
-            );
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            around_count = Some(
-                value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|count| *count >= 3)
-                    .ok_or_else(|| {
-                        CommandError::InvalidMeshSphereAroundFaceCount(value.to_owned())
-                    })?,
-            );
-            around_seen = true;
-        } else if option_name_eq(name, "Subdivisions") && !subdivisions_seen {
-            subdivisions = Some(value.parse::<usize>().map_err(|_| {
-                CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: value.to_owned(),
-                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
-                }
-            })?);
-            subdivisions_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-        }
-    }
-
-    let topology = match style {
-        MeshSphereCommandTopology::Uv { .. } => {
-            if subdivisions.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let vertical_count = vertical_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-            let around_count = around_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-            if vertical_count
-                .checked_mul(around_count)
-                .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
-            {
-                return Err(GeometryError::TooManyMeshFaces.into());
-            }
-            MeshSphereCommandTopology::Uv {
-                vertical_count,
-                around_count,
-            }
-        }
-        MeshSphereCommandTopology::Quads { .. } => {
-            if vertical_count.is_some() || around_count.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-            if subdivisions > MAX_MESH_SPHERE_QUAD_SUBDIVISIONS {
-                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: subdivisions.to_string(),
-                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
-                });
-            }
-            MeshSphereCommandTopology::Quads { subdivisions }
-        }
-        MeshSphereCommandTopology::Triangles { .. } => {
-            if vertical_count.is_some() || around_count.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-            if subdivisions > MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS {
-                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: subdivisions.to_string(),
-                    maximum: MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
-                });
-            }
-            MeshSphereCommandTopology::Triangles { subdivisions }
-        }
-    };
-    Ok(MeshSphereCommandOptions {
-        center: positionals.center,
-        radius: positionals.radius,
-        axis,
-        topology,
-    })
-}
-
-fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOptions, CommandError> {
-    let positionals = parse_radial_primitive_positionals(arguments, MESH_TORUS_USAGE)?;
-    let mut options = MeshTorusCommandOptions {
-        center: positionals.center,
-        major_radius: positionals.radius,
-        minor_radius: positionals.value,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?,
-        vertical_count: DEFAULT_MESH_TORUS_FACE_COUNT,
-        around_count: DEFAULT_MESH_TORUS_FACE_COUNT,
-    };
-    let mut axis_seen = false;
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_TORUS_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_unit_axis_option(value, MESH_TORUS_USAGE)?;
-            axis_seen = true;
-        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            options.vertical_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| CommandError::InvalidMeshTorusVerticalFaceCount(value.to_owned()))?;
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            options.around_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| CommandError::InvalidMeshTorusAroundFaceCount(value.to_owned()))?;
-            around_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_TORUS_USAGE));
-        }
-    }
-    if options
-        .vertical_count
-        .checked_mul(options.around_count)
-        .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
-    {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
-}
-
 fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions, CommandError> {
     let positionals = parse_radial_primitive_positionals(arguments, MESH_CONE_USAGE)?;
     let mut options = MeshConeCommandOptions {
@@ -7415,407 +7045,6 @@ fn axial_primitive_radius_value(
     }
 }
 
-struct MeshCylinderCommand;
-
-impl Command for MeshCylinderCommand {
-    fn name(&self) -> &'static str {
-        "MeshCylinder"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_cylinder_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let heights = if options.both_sides {
-            let magnitude = options.height.abs();
-            [-magnitude, magnitude]
-        } else {
-            [options.height.min(0.0), options.height.max(0.0)]
-        };
-        let mesh_options = MeshCylinderOptions {
-            vertical_count: options.vertical_count,
-            around_count: options.around_count,
-            cap_bottom: options.solid,
-            cap_top: options.solid,
-            circumscribe: false,
-            cap_style: options.cap_style,
-        };
-        let mesh =
-            TriangleMesh::try_cylinder_grid(frame, radius, heights, mesh_options, tolerance)?;
-        // Rhino's command orients the otherwise independently constructed
-        // bottom cap before adding the mesh to the document.
-        let mesh = if options.solid {
-            mesh.unified_face_orientations()?.0
-        } else {
-            mesh
-        };
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh cylinder {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
-    }
-}
-
-struct MeshConeCommand;
-
-impl Command for MeshConeCommand {
-    fn name(&self) -> &'static str {
-        "MeshCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_cone_options(arguments)?;
-        if options.height == 0.0 {
-            return Err(GeometryError::InvalidMeshConeDimensions.into());
-        }
-        let tolerance = document.tolerance();
-        let (base_frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let base_to_apex = base_frame.z_axis().as_vector().scaled(options.height)?;
-        let apex = options.center.translated(base_to_apex)?;
-        let apex_to_base_normal = if options.height > 0.0 {
-            base_frame.z_axis().opposite()
-        } else {
-            base_frame.z_axis()
-        };
-        let apex_frame = Frame3::try_from_unit_x_and_normal(
-            apex,
-            base_frame.x_axis(),
-            apex_to_base_normal,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_cone_grid(
-            apex_frame,
-            radius,
-            options.height.abs(),
-            MeshConeOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                solid: options.solid,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh cone {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
-    }
-}
-
-struct MeshTruncatedConeCommand;
-
-impl Command for MeshTruncatedConeCommand {
-    fn name(&self) -> &'static str {
-        "MeshTruncatedCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_truncated_cone_options(arguments)?;
-        if options.height == 0.0 {
-            return Err(GeometryError::InvalidMeshTruncatedConeDimensions.into());
-        }
-        let tolerance = document.tolerance();
-        let (base_frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = if options.height > 0.0 {
-            base_frame.z_axis()
-        } else {
-            base_frame.z_axis().opposite()
-        };
-        let frame = Frame3::try_from_unit_x_and_normal(
-            options.center,
-            base_frame.x_axis(),
-            direction,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_truncated_cone_grid(
-            frame,
-            [base_radius, options.end_radius],
-            options.height.abs(),
-            MeshTruncatedConeOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                solid: options.solid,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added {} mesh truncated cone {id} ({} around × {} vertical faces)",
-            if options.solid { "closed" } else { "open" },
-            options.around_count,
-            options.vertical_count
-        ))
-    }
-}
-
-struct MeshSphereCommand;
-
-impl Command for MeshSphereCommand {
-    fn name(&self) -> &'static str {
-        "MeshSphere"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_sphere_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let (mesh, style, details) = match options.topology {
-            MeshSphereCommandTopology::Uv {
-                vertical_count,
-                around_count,
-            } => (
-                TriangleMesh::try_uv_sphere_grid(
-                    frame,
-                    radius,
-                    MeshUvSphereOptions {
-                        vertical_count,
-                        around_count,
-                    },
-                    tolerance,
-                )?,
-                "UV",
-                format!("({around_count} around × {vertical_count} vertical faces)"),
-            ),
-            MeshSphereCommandTopology::Quads { subdivisions } => {
-                let mesh = TriangleMesh::try_quad_sphere(
-                    frame,
-                    radius,
-                    MeshSubdivisionSphereOptions { subdivisions },
-                    tolerance,
-                )?;
-                let face_count = mesh.face_count();
-                (
-                    mesh,
-                    "quad",
-                    format!("({subdivisions} subdivisions, {face_count} faces)"),
-                )
-            }
-            MeshSphereCommandTopology::Triangles { subdivisions } => {
-                let mesh = TriangleMesh::try_ico_sphere(
-                    frame,
-                    radius,
-                    MeshSubdivisionSphereOptions { subdivisions },
-                    tolerance,
-                )?;
-                let face_count = mesh.face_count();
-                (
-                    mesh,
-                    "triangle",
-                    format!("({subdivisions} subdivisions, {face_count} faces)"),
-                )
-            }
-        };
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!("Added {style} mesh sphere {id} {details}"))
-    }
-}
-
-struct MeshEllipsoidCommand;
-
-impl Command for MeshEllipsoidCommand {
-    fn name(&self) -> &'static str {
-        "MeshEllipsoid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let tolerance = document.tolerance();
-        let options = parse_mesh_ellipsoid_options(arguments, tolerance)?;
-        let mesh = TriangleMesh::try_ellipsoid_grid(
-            options.frame,
-            options.radii,
-            MeshEllipsoidOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-                cap_style: options.cap_style,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added mesh ellipsoid {id} ({} around × {} vertical faces)",
-            options.around_count, options.vertical_count
-        ))
-    }
-}
-
-struct MeshTorusCommand;
-
-impl Command for MeshTorusCommand {
-    fn name(&self) -> &'static str {
-        "MeshTorus"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_torus_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, major_radius) = axial_primitive_frame(
-            options.center,
-            options.major_radius,
-            options.axis,
-            tolerance,
-        )?;
-        let mesh = TriangleMesh::try_torus_grid(
-            frame,
-            major_radius,
-            options.minor_radius,
-            MeshTorusOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-            },
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added closed mesh torus {id} (major radius {major_radius:.6}, minor radius {:.6}; {} around × {} vertical faces)",
-            options.minor_radius, options.around_count, options.vertical_count
-        ))
-    }
-}
-
-struct ConeCommand;
-
-impl Command for ConeCommand {
-    fn name(&self) -> &'static str {
-        "Cone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_axial_primitive_options(arguments, CONE_USAGE, false)?;
-        let tolerance = document.tolerance();
-        let (base_frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        if options.solid {
-            let brep = Brep::try_cone(base_frame, radius, options.height, tolerance)?;
-            let id = document.add_geometry(Geometry::Brep(brep))?;
-            Ok(format!(
-                "Added closed B-rep cone {id} (radius {radius:.6}, height {:.6})",
-                options.height
-            ))
-        } else {
-            let apex = options
-                .center
-                .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
-            let apex_frame = base_frame.with_origin(apex);
-            let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
-            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-            Ok(format!(
-                "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
-                options.height
-            ))
-        }
-    }
-}
-
-fn parabolic_frame_and_dimensions(
-    positionals: ParabolicPositionals,
-    tolerance: Tolerance,
-) -> Result<(Frame3, Real, Real, Point3, Real), GeometryError> {
-    let (vertex, focus, axis, focal_distance, end_offset) = match positionals.construction {
-        ParabolicConstruction::Focus => {
-            let focus = positionals.first;
-            let axis = focus.vector_to(positionals.second)?.normalized(tolerance)?;
-            let focus_to_end = focus.vector_to(positionals.end)?;
-            let axial_coordinate = focus_to_end.dot(axis.as_vector())?;
-            let axial = axis.as_vector().scaled(axial_coordinate)?;
-            let radial = Vector3::try_new(
-                focus_to_end.x() - axial.x(),
-                focus_to_end.y() - axial.y(),
-                focus_to_end.z() - axial.z(),
-            )?;
-            let radius = radial.length()?;
-            let half_sum = 0.5 * axial_coordinate.hypot(radius) + 0.5 * axial_coordinate.abs();
-            let (focal_distance, height) = if axial_coordinate >= 0.0 {
-                (0.25 * radius * (radius / half_sum), half_sum)
-            } else {
-                (half_sum, 0.25 * radius * (radius / half_sum))
-            };
-            let vertex = focus.translated(axis.as_vector().scaled(-focal_distance)?)?;
-            return Ok((
-                Frame3::try_from_unit_x_and_normal(
-                    vertex,
-                    radial.normalized(tolerance)?,
-                    axis,
-                    tolerance,
-                )?,
-                radius,
-                height,
-                focus,
-                focal_distance,
-            ));
-        }
-        ParabolicConstruction::Vertex => {
-            let vertex = positionals.first;
-            let vertex_to_focus = vertex.vector_to(positionals.second)?;
-            let axis = vertex_to_focus.normalized(tolerance)?;
-            let focal_distance = vertex_to_focus.length()?;
-            (
-                vertex,
-                positionals.second,
-                axis,
-                focal_distance,
-                vertex.vector_to(positionals.end)?,
-            )
-        }
-    };
-
-    let axial_coordinate = end_offset.dot(axis.as_vector())?;
-    let axial = axis.as_vector().scaled(axial_coordinate)?;
-    let radial = Vector3::try_new(
-        end_offset.x() - axial.x(),
-        end_offset.y() - axial.y(),
-        end_offset.z() - axial.z(),
-    )?;
-    let radius = radial.length()?;
-    let height = 0.25 * radius * (radius / focal_distance);
-    Ok((
-        Frame3::try_from_unit_x_and_normal(vertex, radial.normalized(tolerance)?, axis, tolerance)?,
-        radius,
-        height,
-        focus,
-        focal_distance,
-    ))
-}
-
-struct ParaboloidCommand;
-
-impl Command for ParaboloidCommand {
-    fn name(&self) -> &'static str {
-        "Paraboloid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_paraboloid_options(arguments)?;
-        let (frame, radius, height, focus, focal_distance) =
-            parabolic_frame_and_dimensions(options.positionals, document.tolerance())?;
-        let paraboloid =
-            Brep::try_paraboloid(frame, radius, height, options.solid, document.tolerance())?;
-        let focus_id = if options.mark_focus {
-            Some(document.add_geometry(Geometry::Point(focus))?)
-        } else {
-            None
-        };
-        let id = document.add_geometry(Geometry::Brep(paraboloid))?;
-        let focus_suffix = focus_id
-            .map(|focus_id| format!(" and focus point {focus_id}"))
-            .unwrap_or_default();
-        Ok(format!(
-            "Added {} B-rep paraboloid {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
-            if options.solid { "closed" } else { "open" },
-        ))
-    }
-}
-
 #[derive(Default)]
 struct HelixCommand {
     options: remembered::Remembered<spiral_input::Options>,
@@ -8024,144 +7253,6 @@ fn curve_radius_value(
             .length()
             .map_err(Into::into)
         }
-    }
-}
-
-struct TruncatedConeCommand;
-
-impl Command for TruncatedConeCommand {
-    fn name(&self) -> &'static str {
-        "TruncatedCone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_truncated_cone_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (base_frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let direction = if options.height > 0.0 {
-            base_frame.z_axis()
-        } else {
-            base_frame.z_axis().opposite()
-        };
-        let frame = Frame3::try_from_unit_x_and_normal(
-            options.center,
-            base_frame.x_axis(),
-            direction,
-            tolerance,
-        )?;
-        let radii = [base_radius, options.end_radius];
-        let height = options.height.abs();
-        if options.solid {
-            let brep = Brep::try_truncated_cone(frame, radii, height, tolerance)?;
-            let id = document.add_geometry(Geometry::Brep(brep))?;
-            Ok(format!(
-                "Added closed B-rep truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-                options.end_radius, options.height
-            ))
-        } else {
-            let surface = NurbsSurface::try_truncated_cone(frame, radii, height)?;
-            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-            Ok(format!(
-                "Added open NURBS truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-                options.end_radius, options.height
-            ))
-        }
-    }
-}
-
-struct PyramidCommand;
-
-impl Command for PyramidCommand {
-    fn name(&self) -> &'static str {
-        "Pyramid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_pyramid_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let pyramid = Brep::try_pyramid(
-            frame,
-            options.side_count,
-            radius,
-            options.height,
-            options.solid,
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Brep(pyramid))?;
-        Ok(format!(
-            "Added {}-sided {} B-rep pyramid {id} (radius {radius:.6}, height {:.6})",
-            options.side_count,
-            if options.solid { "closed" } else { "open" },
-            options.height
-        ))
-    }
-}
-
-struct TruncatedPyramidCommand;
-
-impl Command for TruncatedPyramidCommand {
-    fn name(&self) -> &'static str {
-        "TruncatedPyramid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_truncated_pyramid_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, base_radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let pyramid = Brep::try_truncated_pyramid(
-            frame,
-            options.side_count,
-            [base_radius, options.top_radius],
-            options.height,
-            options.solid,
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Brep(pyramid))?;
-        Ok(format!(
-            "Added {}-sided {} B-rep truncated pyramid {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
-            options.side_count,
-            if options.solid { "closed" } else { "open" },
-            options.top_radius,
-            options.height
-        ))
-    }
-}
-
-struct TorusCommand;
-
-impl Command for TorusCommand {
-    fn name(&self) -> &'static str {
-        "Torus"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let positionals = parse_radial_primitive_positionals(arguments, TORUS_USAGE)?;
-        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-        let mut axis_seen = false;
-        for argument in &arguments[positionals.option_start..] {
-            let Some((name, value)) = argument.split_once('=') else {
-                return Err(CommandError::Usage(TORUS_USAGE));
-            };
-            if !option_name_eq(name, "Axis") || axis_seen {
-                return Err(CommandError::Usage(TORUS_USAGE));
-            }
-            axis = parse_unit_axis_option(value.trim_start_matches('_'), TORUS_USAGE)?;
-            axis_seen = true;
-        }
-
-        let tolerance = document.tolerance();
-        let (frame, major_radius) =
-            axial_primitive_frame(positionals.center, positionals.radius, axis, tolerance)?;
-        let minor_radius = positionals.value;
-        let surface = NurbsSurface::try_torus(frame, major_radius, minor_radius)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added NURBS torus {id} (major radius {major_radius:.6}, minor radius {minor_radius:.6})"
-        ))
     }
 }
 

@@ -12,7 +12,7 @@ impl PointFitKind {
         match command {
             "LineThroughPt" => Some(Self::Line),
             "PlaneThroughPt" => Some(Self::Plane),
-            "Sphere FitPoints" => Some(Self::Sphere),
+            "Sphere FitPoints" | mesh_sphere::FIT_COMMAND => Some(Self::Sphere),
             _ => None,
         }
     }

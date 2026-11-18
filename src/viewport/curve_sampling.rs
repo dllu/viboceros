@@ -6,6 +6,26 @@ pub(super) trait ViewportCurve {
     fn visit_segments(&self, visit: impl FnMut(Point3, Point3));
 }
 
+impl ViewportCurve for Circle3 {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        visit_parametric_segments(
+            CIRCLE_SAMPLES,
+            |t| self.point_at_angle(std::f64::consts::TAU * t),
+            &mut visit,
+        );
+    }
+}
+
+impl ViewportCurve for Ellipse3 {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        visit_parametric_segments(
+            CIRCLE_SAMPLES,
+            |t| self.point_at_angle(std::f64::consts::TAU * t),
+            &mut visit,
+        );
+    }
+}
+
 impl ViewportCurve for NurbsCurve {
     fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
         if let Ok(sampler) = self.parameter_sampler() {
@@ -37,6 +57,14 @@ impl ViewportCurve for CurveSegment3 {
                 |t| arc.point_at(t),
                 &mut visit,
             ),
+        }
+    }
+}
+
+impl ViewportCurve for PolyCurve3 {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        for segment in self.segments() {
+            segment.visit_segments(&mut visit);
         }
     }
 }

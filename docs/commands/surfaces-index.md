@@ -5,6 +5,13 @@ B-rep output for eligible creators.
 
 [All commands](README.md) · [Command input](../command-line.md)
 
+- [Torus construction modes and live previews](torus.md)
+- [Cone and Cylinder bases, direction constraints and live previews](cone-cylinder.md)
+- [TruncatedCone base and top-circle input](truncated-cone.md)
+- [Tube base, second wall and height input](tube.md)
+- [Paraboloid focus, vertex and direction input](paraboloid.md)
+- [Pyramid modes, guides and live previews](pyramid.md)
+- [TruncatedPyramid base, direction and live top sizing](truncated-pyramid.md)
 - [ShortPath surface geodesics](short-path.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [DivideAlongCreases](divide-along-creases.md)
@@ -102,7 +109,7 @@ Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
-Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
+Paraboloid Vertex w1,2,3 Direction w1,2,8 MarkFocus=Yes Solid=Yes w4,6,5
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
 TruncatedPyramid 5 0,0,0 5 10 2.5 Solid=Yes

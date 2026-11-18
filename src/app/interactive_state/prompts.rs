@@ -129,6 +129,12 @@ impl InteractiveCommand {
             Self::BlendCurve => "BlendCrv: select sources, adjust the blend, then Enter",
             Self::Chamfer { .. } => "Chamfer: pick two curve ends; Distances / Join / Trim",
             Self::Fillet { .. } => "Fillet: pick two curve ends; Radius / Join / Trim / Dynamic",
+            Self::FilletCorners { anchor: None } => {
+                "Enter a radius or pick the first distance point"
+            }
+            Self::FilletCorners { anchor: Some(_) } => {
+                "Pick the second distance point or type a distance constraint"
+            }
             Self::ArcBlend => {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"
             }
@@ -197,7 +203,7 @@ impl InteractiveCommand {
                 "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/Tangent/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
-                "Circle: pick a radius point or type Radius/Diameter/Circumference/Area (Esc cancels)"
+                "Circle: pick a radius point or type a size. Diameter, Orientation, Circumference, Area, ProjectOsnap. Enter keeps the radius."
             }
             Self::ArcTangent { .. } => {
                 "Arc Tangent: specify contacts and choose an arc (Esc cancels)"
@@ -226,13 +232,13 @@ impl InteractiveCommand {
             }
             Self::CircleSize { mode, .. } => mode.prompt(),
             Self::CircleVertical { center: None, .. } => {
-                "Circle Vertical: pick the center (Esc cancels)"
+                "Circle Vertical: pick the center or choose Deformable or 2Point (Esc cancels)"
             }
             Self::CircleVertical {
                 center: Some(_),
                 radius: None,
-                ..
-            } => "Circle Vertical: pick a radius point or enter a size (Esc cancels)",
+                mode,
+            } => mode.prompt(),
             Self::CircleVertical {
                 center: Some(_),
                 radius: Some(_),
@@ -243,12 +249,18 @@ impl InteractiveCommand {
             } => "Circle Orientation: pick a perpendicular direction point (Esc cancels)",
             Self::CircleOrientation {
                 normal_point: Some(_),
+                mode,
                 ..
-            } => "Circle Orientation: pick a radius point or enter a size (Esc cancels)",
-            Self::CircleTwoPoint { first: None } => {
-                "Circle 2Point: pick the first diameter end (Esc cancels)"
-            }
-            Self::CircleTwoPoint { first: Some(_) } => {
+            } => mode.prompt(),
+            Self::CircleTwoPoint {
+                first: None,
+                vertical: false,
+            } => "Circle 2Point: pick the first diameter end or choose Vertical (Esc cancels)",
+            Self::CircleTwoPoint {
+                first: None,
+                vertical: true,
+            } => "Circle Vertical 2Point: pick the first diameter end (Esc cancels)",
+            Self::CircleTwoPoint { first: Some(_), .. } => {
                 "Circle 2Point: pick the second diameter end (Esc cancels)"
             }
             Self::CircleThreePoint { points: [None, _] } => {
@@ -264,12 +276,22 @@ impl InteractiveCommand {
             Self::CircleThreePointRadius {
                 radius: Some(_), ..
             } => "Circle 3Point Radius: pick the center direction (Esc cancels)",
-            Self::Sphere { center: None } => {
-                "Sphere: pick the center or choose FitPoints (Esc to cancel)"
+            Self::Sphere {
+                input,
+                output: sphere::Output::Solid,
+            } if input.at_start() => {
+                "Sphere: pick the center or choose 2Point, 3Point, 4Point, Tangent, AroundCurve, or FitPoints (Esc cancels)"
             }
-            Self::Sphere { center: Some(_) } => {
-                "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
+            Self::Sphere {
+                output: sphere::Output::Mesh { .. },
+                ..
             }
+            | Self::SphereGuide {
+                output: sphere::Output::Mesh { .. },
+                ..
+            } => "MeshSphere: specify a point or choose a construction option (Esc cancels)",
+            Self::Sphere { .. } => "Sphere: specify a point or size (Esc cancels)",
+            Self::SphereGuide { .. } => "Sphere: pick a guide or specify the size (Esc cancels)",
             Self::SelVolumeSphere { center: None, .. } => {
                 "SelVolumeSphere: pick the center in the viewport (Esc to cancel)"
             }
@@ -299,18 +321,12 @@ impl InteractiveCommand {
             Self::Pipe {
                 source: Some(_), ..
             } => "Pipe: pick a radius point near the rail (Esc to cancel)",
-            Self::Ellipsoid { points } => match points {
-                [None, _, _] => "Ellipsoid: pick the center in the viewport (Esc to cancel)",
-                [Some(_), None, _] => {
-                    "Ellipsoid: pick the end of the first axis in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), None] => {
-                    "Ellipsoid: pick the second-axis radius in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), Some(_)] => {
-                    "Ellipsoid: pick the third-axis radius in the viewport (Esc to cancel)"
-                }
-            },
+            Self::Ellipsoid { mesh: false, .. } => {
+                "Ellipsoid: pick a point or enter a size (Esc cancels)"
+            }
+            Self::Ellipsoid { mesh: true, .. } => {
+                "MeshEllipsoid: pick a point or enter a size (Esc cancels)"
+            }
             Self::Arc { points } => match points {
                 [None, _] => "Arc StartPoint ThroughPoint: pick the start point (Esc to cancel)",
                 [Some(_), None] => {
@@ -393,6 +409,7 @@ impl InteractiveCommand {
             Self::Catenary { .. } => "Catenary: follow the point prompts (Esc cancels)",
             Self::Spiral { .. } => "Helix/Spiral: follow the point prompts (Esc cancels)",
             Self::Hyperbola { .. } => "Hyperbola: follow the point prompts (Esc cancels)",
+            Self::Paraboloid { .. } => "Paraboloid follows the point prompts (Esc cancels)",
             Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
             Self::Conic { .. } => {
                 "Conic: pick start, end, apex and curvature point or rho (Esc cancels)"
@@ -481,7 +498,7 @@ impl InteractiveCommand {
             Self::PointGrid { .. } => {
                 "PointGrid: pick or enter height; Enter uses base width (Esc to cancel)"
             }
-            Self::SubDTorus { .. } => "SubDTorus: pick a base circle and tube size; Esc cancels",
+            Self::Torus { .. } => "Pick a base circle and tube size; Esc cancels",
             Self::SubDEllipsoid { .. } => {
                 "SubDEllipsoid: pick a base ellipse and third axis; Esc cancels"
             }
@@ -490,6 +507,15 @@ impl InteractiveCommand {
                 "SubDTruncatedCone: pick a base circle, height and end size; Esc cancels"
             }
             Self::SubDCone { .. } => "SubDCone: pick a base circle or cone end; Esc cancels",
+            Self::SolidAxial { kind, .. }
+                if matches!(
+                    kind.shape(),
+                    viboceros_command::solid_axial::Shape::TruncatedCone
+                ) =>
+            {
+                "Pick the base circle, height and top size (Esc cancels)"
+            }
+            Self::SolidAxial { .. } => "Pick the base circle or specify the height (Esc cancels)",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }
@@ -518,77 +544,7 @@ impl InteractiveCommand {
             Self::SelBox {
                 opposite: Some(_), ..
             } => "SelBox: pick a height point (Esc to cancel)",
-            Self::MeshCone { center: None, .. } => {
-                "MeshCone: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshCone {
-                center: Some(_),
-                radius_point: None,
-                ..
-            } => "MeshCone: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshCone {
-                radius_point: Some(_),
-                ..
-            } => "MeshCone: pick the apex height in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone { center: None, .. } => {
-                "MeshTruncatedCone: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshTruncatedCone {
-                center: Some(_),
-                base_radius_point: None,
-                ..
-            } => "MeshTruncatedCone: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone {
-                base_radius_point: Some(_),
-                end_center: None,
-                ..
-            } => "MeshTruncatedCone: pick the end-circle center in the viewport (Esc to cancel)",
-            Self::MeshTruncatedCone {
-                end_center: Some(_),
-                ..
-            } => "MeshTruncatedCone: pick the end-circle radius in the viewport (Esc to cancel)",
-            Self::MeshCylinder { center: None, .. } => {
-                "MeshCylinder: pick the base center in the viewport (Esc to cancel)"
-            }
-            Self::MeshCylinder {
-                center: Some(_),
-                radius_point: None,
-                ..
-            } => "MeshCylinder: pick the base radius in the viewport (Esc to cancel)",
-            Self::MeshCylinder {
-                radius_point: Some(_),
-                ..
-            } => "MeshCylinder: pick the height in the viewport (Esc to cancel)",
-            Self::MeshSphere { center: None, .. } => {
-                "MeshSphere: pick the center in the viewport (Esc to cancel)"
-            }
-            Self::MeshSphere {
-                center: Some(_), ..
-            } => "MeshSphere: pick an equator radius in the viewport (Esc to cancel)",
-            Self::MeshEllipsoid { points, .. } => match points {
-                [None, _, _] => "MeshEllipsoid: pick the center in the viewport (Esc to cancel)",
-                [Some(_), None, _] => {
-                    "MeshEllipsoid: pick the end of the first axis in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), None] => {
-                    "MeshEllipsoid: pick the second-axis radius in the viewport (Esc to cancel)"
-                }
-                [Some(_), Some(_), Some(_)] => {
-                    "MeshEllipsoid: pick the third-axis radius in the viewport (Esc to cancel)"
-                }
-            },
-            Self::MeshTorus { center: None, .. } => {
-                "MeshTorus: pick the center in the viewport (Esc to cancel)"
-            }
-            Self::MeshTorus {
-                center: Some(_),
-                major_point: None,
-                ..
-            } => "MeshTorus: pick the major-circle radius in the viewport (Esc to cancel)",
-            Self::MeshTorus {
-                major_point: Some(_),
-                ..
-            } => "MeshTorus: pick the tube radius in the viewport (Esc to cancel)",
+            Self::Pyramid { .. } => "Follow the base and end prompts (Esc cancels)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }

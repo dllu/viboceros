@@ -7,15 +7,21 @@ impl VibocerosApp {
             && let Some(curve) = &s.curve
             && self.document.is_selected(curve.object_id())
         {
-            let _ = self
-                .document
-                .select_object(curve.object_id(), SelectionMode::Remove);
+            if s.ellipsoid_output().is_some() {
+                let _ = self
+                    .document
+                    .select_objects_direct([curve.object_id()], SelectionMode::Remove);
+            } else {
+                let _ = self
+                    .document
+                    .select_object(curve.object_id(), SelectionMode::Remove);
+            }
         }
     }
     pub(in crate::app) fn picking_ellipse_curve(&self) -> bool {
-        self.ellipse_session
-            .as_ref()
-            .is_some_and(|s| s.input.requests_curve() && s.curve.is_none())
+        self.ellipse_session.as_ref().is_some_and(|s| {
+            !s.waiting_for_topology() && s.input.requests_curve() && s.curve.is_none()
+        })
     }
     pub(super) fn bind_ellipse_preselection(&mut self) {
         if !self.picking_ellipse_curve() {
@@ -53,9 +59,15 @@ impl VibocerosApp {
                 s.curve = Some(curve);
                 s.postselected = postselected;
                 if edge.is_none() {
-                    self.document
-                        .select_object(id, SelectionMode::Add)
-                        .expect("selectable Ellipse guide");
+                    if s.ellipsoid_output().is_some() {
+                        self.document
+                            .select_objects_direct([id], SelectionMode::Add)
+                            .expect("selectable Ellipsoid guide");
+                    } else {
+                        self.document
+                            .select_object(id, SelectionMode::Add)
+                            .expect("selectable Ellipse guide");
+                    }
                 }
                 self.component_selection.clear_choices();
                 self.ellipse_prompt();
@@ -68,7 +80,7 @@ impl VibocerosApp {
         if self
             .ellipse_session
             .as_ref()
-            .is_some_and(|s| s.subd_ellipsoid)
+            .is_some_and(|s| s.owner == Owner::SubDEllipsoid)
         {
             if !self.valid_subd_ellipsoid() {
                 return;

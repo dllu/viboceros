@@ -111,14 +111,18 @@ diameter normal to the CPlane is invalid. Enter `Circle 2Point` to pick both
 ends, or choose `2Point` at Circle's first prompt. Six
 [live Rhino command records](../circle-two-point-rhino-reference.json) match
 the native sampled curves and domains within `1e-10`.
+`Circle Vertical 2Point` and `Circle 2Point Vertical` keep the given diameter
+in a plane perpendicular to the CPlane. The two options can also be chosen
+in sequence before the first endpoint. A diameter parallel to the CPlane
+normal leaves the plane ambiguous.
 `Circle 3Point first second third` passes through three noncollinear world
 points, including points off the CPlane. Pick order sets the circle direction
 and the first point is its seam. Enter `Circle 3Point` to pick all three points,
 or choose `3Point` at Circle's first prompt. A collinear final pick leaves the
 prompt open for correction. The [four live Rhino command records](../circle-three-point-rhino-reference.json)
 match the native circle samples and domains within `1e-10`.
-After two `Circle 3Point` picks, choose `Radius` to enter a fixed radius and
-pick a center direction. The direction chooses a center on the perpendicular
+After two `Circle 3Point` picks, choose `Radius` to enter a fixed radius or
+reuse it with Enter, then pick a center direction. The direction chooses a center on the perpendicular
 bisector, and the second circumference point becomes the circle seam. A picked
 radius location completes the circle immediately: its 3D distance from the
 first point sets the radius, while the same location chooses the center
@@ -129,14 +133,23 @@ match the native sampled curves and domains within `1e-10`.
 `Area=28.274333882308138` each create a radius-three circle. At the interactive
 size prompt, enter a value or pick a point. A Diameter pick supplies a radius
 point; Circumference and Area picks use their distance from the center as the
-numeric size. Numeric sizes and picked sizes match the corresponding
+numeric size. Typed lengths accept units. Press Enter at a radius or diameter
+prompt to use the last size. The circle follows the cursor once there are
+enough points to determine it, using the same geometry as the final pick.
+At a Radius or Diameter prompt, `ProjectOsnap=Yes` projects an object snap
+to the center elevation. Orientation and AroundCurve use their circle plane.
+The option is on initially and is remembered across Circle invocations.
+Typed coordinates and Circumference or Area picks use the full 3D input.
+Numeric sizes and picked sizes match the corresponding
 [Rhino records](../circle-size-options-rhino-reference.json) and
 [pick records](../circle-size-picks-rhino-reference.json) within `1e-10`.
 `Circle Vertical center radius-point` draws a circle perpendicular to the
 construction plane, with the picked point setting its seam. An off-plane pick
 sets both radius and seam direction. `Circle Vertical center radius direction-point`
 fixes the radius while the final point sets direction. Enter `Vertical` at
-Circle's first prompt for the same interactive sequence. Three
+Circle's first prompt for the same interactive sequence. In Vertical mode,
+a Circumference or Area sets the size in the plane of the CPlane's X and Z
+axes. Three
 [picked-point Rhino records](../circle-vertical-rhino-reference.json) and one
 [numeric-radius record](../circle-vertical-numeric-rhino-reference.json) match
 the native sampled curves and domains within `1e-10`.

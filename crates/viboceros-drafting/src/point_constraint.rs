@@ -1,7 +1,7 @@
 //! One-pick scalar distance and angular cursor constraints.
 
 use thiserror::Error;
-use viboceros_geometry::{Frame3, GeometryError, Point3, Real};
+use viboceros_geometry::{Frame3, GeometryError, Point3, Real, UnitVector3};
 
 use crate::{PointConstraintInput, plane};
 
@@ -16,6 +16,7 @@ pub struct PointConstraintState {
     anchor: Point3,
     plane: Frame3,
     distance: Option<DistanceLock>,
+    distance_normal: Option<UnitVector3>,
     angle_increment_degrees: Option<Real>,
 }
 
@@ -37,8 +38,15 @@ impl PointConstraintState {
             anchor,
             plane,
             distance: None,
+            distance_normal: None,
             angle_increment_degrees: None,
         }
+    }
+
+    /// Measure a distance after projection onto a plane through the anchor.
+    pub fn with_distance_plane(mut self, normal: UnitVector3) -> Self {
+        self.distance_normal = Some(normal);
+        self
     }
 
     pub fn angle_active(self) -> bool {
@@ -78,8 +86,8 @@ impl PointConstraintState {
         self.apply_distance(candidate)
     }
 
-    /// Snap a picked cursor to the nearest local angular ray, then its locked
-    /// 3D distance from the previously accepted point.
+    /// Snap a picked cursor to the nearest local angular ray and apply the
+    /// distance lock in space or on the configured plane through the anchor.
     pub fn apply_cursor(self, candidate: Point3) -> Result<Point3, PointConstraintError> {
         let angled = if let Some(step) = self.angle_increment_degrees {
             plane::angle_constraint_point(candidate, self.anchor, self.plane, step)
@@ -93,6 +101,14 @@ impl PointConstraintState {
     fn apply_distance(self, candidate: Point3) -> Result<Point3, PointConstraintError> {
         let Some(distance) = self.distance else {
             return Ok(candidate);
+        };
+        let candidate = if let Some(normal) = self.distance_normal {
+            let normal = normal.as_vector();
+            let offset = self.anchor.vector_to(candidate)?;
+            let axial = offset.dot(normal)?;
+            candidate.translated(normal.scaled(-axial)?)?
+        } else {
+            candidate
         };
         if candidate == self.anchor {
             return Err(PointConstraintError::ZeroDirection);

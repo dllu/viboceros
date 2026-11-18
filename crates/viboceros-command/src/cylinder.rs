@@ -1,7 +1,10 @@
 //! Cylinder construction and its typed extrusion representation.
 use super::*;
 
-pub(super) struct CylinderCommand(pub use_extrusions::Preference);
+pub(super) struct CylinderCommand(
+    pub use_extrusions::Preference,
+    pub std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
+);
 
 impl Command for CylinderCommand {
     fn name(&self) -> &'static str {
@@ -12,36 +15,26 @@ impl Command for CylinderCommand {
         &["Cyl"]
     }
 
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let mut options = parse_axial_primitive_options(arguments, CYLINDER_USAGE, true)?;
-        if !arguments.iter().any(|a| {
-            a.split_once('=')
-                .is_some_and(|(k, _)| option_name_eq(k, "Solid"))
-        }) {
-            options.solid = true;
-        }
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let heights = if options.both_sides {
-            [-options.height, options.height]
-        } else {
-            [0., options.height]
-        };
-        let brep = Brep::try_cylinder_extrusion(frame, radius, heights, options.solid, tolerance)?;
-        let brep = use_extrusions::output(brep, &self.0, tolerance)?;
-        let representation = if brep.is_extrusion() {
-            "extrusion"
-        } else {
-            "B-rep"
-        };
-        let id = document.add_geometry(Geometry::Brep(brep))?;
-        Ok(format!(
-            "Added {} {representation} cylinder {id} (radius {radius:.6}, heights {:.6} to {:.6})",
-            if options.solid { "closed" } else { "open" },
-            heights[0],
-            heights[1]
-        ))
+    fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
+        self.run_in_context(doc, args, CommandContext::default())
+    }
+
+    fn run_in_context(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        ctx: CommandContext,
+    ) -> Result<String, CommandError> {
+        let (message, preferences) = solid_axial::run(
+            solid_axial::Kind::Cylinder,
+            doc,
+            args,
+            ctx,
+            self.1.get().0,
+            self.0.get().0,
+        )?;
+        self.1.set(solid_axial::CylinderSettings(preferences));
+        Ok(message)
     }
 }
 

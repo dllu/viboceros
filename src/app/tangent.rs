@@ -1,28 +1,34 @@
 //! Circle, Arc and Splop share one read-only tangent-contact picker.
 use super::*;
-use viboceros_command::circle_tangent_input::Input;
+use viboceros_command::{
+    circle_tangent_input::Input, solid_axial::Kind as AxialKind, torus_input::Kind as TorusKind,
+};
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Circle,
+    Sphere(sphere::Output),
     Arc,
     Splop,
     SubDCylinder,
     SubDCone,
     SubDTruncatedCone,
     SubDSphere,
-    SubDTorus,
+    Torus(TorusKind),
+    SolidAxial(AxialKind),
 }
 impl Kind {
     fn name(self) -> &'static str {
         match self {
             Self::Circle => "Circle",
+            Self::Sphere(output) => output.name(),
             Self::Arc => "Arc",
             Self::Splop => "Splop",
             Self::SubDCylinder => "SubDCylinder",
             Self::SubDCone => "SubDCone",
             Self::SubDTruncatedCone => "SubDTruncatedCone",
             Self::SubDSphere => "SubDSphere",
-            Self::SubDTorus => "SubDTorus",
+            Self::Torus(kind) => kind.name(),
+            Self::SolidAxial(kind) => kind.name(),
         }
     }
 }
@@ -36,7 +42,7 @@ pub(super) struct Session {
 }
 impl Session {
     pub(super) fn sphere(&self) -> bool {
-        self.kind == Kind::Splop
+        matches!(self.kind, Kind::Sphere(_) | Kind::Splop)
     }
     pub(super) fn wants_point(&self) -> bool {
         self.support.is_some() || self.input.wants_point()
@@ -54,11 +60,17 @@ impl VibocerosApp {
     ) {
         self.start_tangent(Kind::Circle, output);
     }
-    pub(super) fn start_subd_torus_tangent(&mut self) {
-        self.start_tangent(Kind::SubDTorus, None);
+    pub(super) fn start_tangent_sphere(&mut self, output: sphere::Output) {
+        self.start_tangent(Kind::Sphere(output), None);
+    }
+    pub(super) fn start_torus_tangent(&mut self, kind: TorusKind) {
+        self.start_tangent(Kind::Torus(kind), None);
     }
     pub(super) fn start_subd_sphere_tangent(&mut self) {
         self.start_tangent(Kind::SubDSphere, None);
+    }
+    pub(super) fn start_solid_axial_tangent(&mut self, kind: AxialKind) {
+        self.start_tangent(Kind::SolidAxial(kind), None);
     }
     pub(super) fn start_subd_axial_tangent(&mut self) {
         let kind = match self.subd_axial_session.as_ref().map(|s| s.kind()) {
@@ -75,7 +87,9 @@ impl VibocerosApp {
         self.start_tangent(Kind::Splop, None);
     }
     pub(super) fn picking_splop_tangent(&self) -> bool {
-        self.tangent_session.as_ref().is_some_and(Session::sphere)
+        self.tangent_session
+            .as_ref()
+            .is_some_and(|s| s.kind == Kind::Splop)
     }
     fn start_tangent(
         &mut self,
@@ -92,17 +106,27 @@ impl VibocerosApp {
                 | Kind::SubDCone
                 | Kind::SubDTruncatedCone
                 | Kind::SubDSphere
-                | Kind::SubDTorus
+                | Kind::Torus(_)
+                | Kind::SolidAxial(_)
         ) {
             self.cancel_interactive_command(false);
         }
-        let preferences = if kind == Kind::SubDTorus {
-            let p = self.commands.subd_torus_preferences();
+        let preferences = if let Kind::Torus(kind) = kind {
+            let p = self.torus_preferences(kind);
             viboceros_command::circle_around_input::Preferences {
                 radius: p.radius,
                 diameter: p.diameter,
                 ..Default::default()
             }
+        } else if let Kind::SolidAxial(kind) = kind {
+            let p = kind.preferences(&self.commands);
+            viboceros_command::circle_around_input::Preferences {
+                radius: p.radius,
+                diameter: p.diameter,
+                ..Default::default()
+            }
+        } else if let Kind::Sphere(output) = kind {
+            output.size_preferences(&self.commands).into()
         } else if kind == Kind::Arc {
             viboceros_command::circle_around_input::Preferences {
                 radius: self.commands.arc_tangent_radius(),
@@ -130,8 +154,12 @@ impl VibocerosApp {
         self.tangent_session = Some(Session {
             kind,
             support: None,
-            input: if kind == Kind::Splop {
-                Input::reference_sphere(plane, self.document.tolerance())
+            input: if matches!(kind, Kind::Sphere(_) | Kind::Splop) {
+                Input::reference_sphere_with_preferences(
+                    plane,
+                    self.document.tolerance(),
+                    preferences,
+                )
             } else {
                 Input::new(plane, self.document.tolerance(), preferences)
             },
@@ -173,12 +201,14 @@ impl VibocerosApp {
         self.active_command = Some(match s.kind {
             Kind::Arc => InteractiveCommand::ArcTangent { anchor },
             Kind::Circle => InteractiveCommand::CircleTangent { anchor },
+            Kind::Sphere(output) => InteractiveCommand::SphereGuide { anchor, output },
             Kind::Splop => InteractiveCommand::Splop { last: anchor },
             Kind::SubDCylinder => InteractiveCommand::SubDCylinder { anchor },
             Kind::SubDCone => InteractiveCommand::SubDCone { anchor },
             Kind::SubDTruncatedCone => InteractiveCommand::SubDTruncatedCone { anchor },
             Kind::SubDSphere => InteractiveCommand::SubDSphere { anchor },
-            Kind::SubDTorus => InteractiveCommand::SubDTorus { anchor },
+            Kind::Torus(kind) => InteractiveCommand::Torus { kind, anchor },
+            Kind::SolidAxial(kind) => InteractiveCommand::SolidAxial { kind, anchor },
         });
         self.drafting_plane = s
             .support
@@ -204,8 +234,17 @@ impl VibocerosApp {
         if self
             .tangent_session
             .as_ref()
-            .is_some_and(|s| s.kind == Kind::SubDTorus)
-            && !self.valid_subd_torus()
+            .is_some_and(|s| matches!(s.kind, Kind::SolidAxial(_)))
+            && !self.valid_solid_axial()
+        {
+            return false;
+        }
+
+        if self
+            .tangent_session
+            .as_ref()
+            .is_some_and(|s| matches!(s.kind, Kind::Torus(_)))
+            && !self.valid_torus()
         {
             return false;
         }
@@ -235,7 +274,7 @@ impl VibocerosApp {
             let session = self.tangent_session.as_mut().unwrap();
             session.input.reset_sources(self.document.tolerance());
             session.support = None;
-            if session.sphere() {
+            if session.kind == Kind::Splop {
                 self.refresh_splop_reference_history();
             }
             self.point_filter = None;
@@ -250,12 +289,21 @@ impl VibocerosApp {
     }
     fn finish_tangent(&mut self, choice: Option<Point3>) -> bool {
         let s = self.tangent_session.as_ref().unwrap();
-        if s.kind == Kind::SubDTorus {
+        if matches!(s.kind, Kind::SolidAxial(_)) {
+            return match s.input.finish() {
+                Ok(circle) => self.accept_solid_axial_reference(circle, vec![]),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    false
+                }
+            };
+        }
+        if matches!(s.kind, Kind::Torus(_)) {
             return match s.input.finish().and_then(|c| {
                 viboceros_command::circle_input::CircleDefinition::from_circle(c)
                     .map_err(Into::into)
             }) {
-                Ok(d) => self.accept_subd_torus_reference(d, vec![]),
+                Ok(d) => self.accept_torus_reference(d, vec![]),
                 Err(e) => {
                     self.push_log(format!("Error: {e}"));
                     false
@@ -288,7 +336,23 @@ impl VibocerosApp {
                 }
             };
         }
-        if s.sphere() {
+        if let Kind::Sphere(output) = s.kind {
+            let result = s.input.finish().and_then(|circle| {
+                let definition =
+                    viboceros_command::circle_input::CircleDefinition::from_circle(circle)?;
+                Ok((definition, s.input.preferences(circle).into()))
+            });
+            return match result {
+                Ok((definition, preferences)) => {
+                    self.finish_sphere(output, definition, preferences, None)
+                }
+                Err(e) => {
+                    self.push_log(format!("Error: {e}"));
+                    false
+                }
+            };
+        }
+        if s.kind == Kind::Splop {
             let result = s.input.finish();
             return match result {
                 Ok(circle) => self.accept_splop_tangent_circle(circle),

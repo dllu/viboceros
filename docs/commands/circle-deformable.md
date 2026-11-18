@@ -5,9 +5,10 @@ Choose `Deformable` at Circle’s first prompt, or start `Circle Deformable`
 Settings accept `Degree=5`, `PointCount=12`, or a separate integer prompt.
 Enter retains the integer setting; Escape and `Cancel` cancel the command.
 
-Deformable output works with center/size, 2Point, 3Point, 3Point Radius,
-Vertical, Orientation, [AroundCurve](circle-around-curve.md),
+Deformable output works with center/size, 2Point, Vertical 2Point, 3Point,
+3Point Radius, Vertical, Orientation, [AroundCurve](circle-around-curve.md),
 [Tangent](circle-tangent.md), and FitPoints.
+Choose Deformable before or after Vertical when starting a vertical circle.
 Radius, Diameter, Circumference and Area use the ordinary Circle sizing rules.
 FitPoints reuses the existing point/grip fitter and selection workflow.
 World, CPlane and relative points, snapping, filters and constraints use the

@@ -25,9 +25,90 @@ pub(super) struct CursorConstraints {
     pub(super) filter: Option<viboceros_drafting::PointFilterSession>,
     pub(super) point: Option<viboceros_drafting::PointConstraintState>,
     pub(super) translation: Option<viboceros_command::translation::DestinationConstraint>,
+    pub(super) source_line: Option<viboceros_command::translation::DestinationConstraint>,
 }
 
+pub(crate) const MAX_DRAFT_MESH_FACES: usize = 4096;
+
 impl Viewport {
+    pub(super) fn paint_sphere_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        definition: viboceros_command::circle_input::CircleDefinition,
+    ) {
+        let [x, y, z] = definition.frame.axes();
+        for (seam, normal) in [(x, z), (x, y), (y, x)] {
+            if let Ok(circle) = Circle3::try_from_frame(
+                definition.frame.origin(),
+                definition.radius,
+                seam,
+                normal,
+                Tolerance::NUMERICAL_VALIDATION,
+            ) {
+                self.paint_curve_draft(painter, rect, &circle);
+            }
+        }
+    }
+
+    pub(super) fn paint_sphere_output_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        definition: viboceros_command::circle_input::CircleDefinition,
+        mesh: Option<viboceros_command::mesh_sphere::Topology>,
+        tolerance: Tolerance,
+    ) {
+        if let Some(topology) =
+            mesh.filter(|m| m.face_count().is_some_and(|n| n <= MAX_DRAFT_MESH_FACES))
+        {
+            if let Ok(mesh) = topology.mesh(definition, tolerance) {
+                self.paint_mesh_draft(painter, rect, &mesh);
+            }
+        } else {
+            self.paint_sphere_draft(painter, rect, definition);
+        }
+    }
+    pub(super) fn paint_mesh_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        mesh: &TriangleMesh,
+    ) {
+        let mut drawn = std::collections::HashSet::new();
+        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        for face in mesh.faces() {
+            let vertices = face.indices();
+            for (&a, &b) in vertices.iter().zip(vertices.iter().cycle().skip(1)) {
+                if a != b
+                    && drawn.insert((a.min(b), a.max(b)))
+                    && let Some(segment) = self.project_segment(
+                        mesh.vertices()[a as usize],
+                        mesh.vertices()[b as usize],
+                        rect,
+                    )
+                {
+                    painter.line_segment(segment, stroke);
+                }
+            }
+        }
+    }
+
+    pub(super) fn paint_curve_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        curve: &impl ViewportCurve,
+    ) {
+        // A new curve can extend past every existing object's display depth.
+        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        curve.visit_segments(|start, end| {
+            if let Some(segment) = self.project_segment(start, end, rect) {
+                painter.line_segment(segment, stroke);
+            }
+        });
+    }
+
     /// Translation line picks remain usable when the CPlane is edge-on. A
     /// free mouse pick follows the closest point to the viewing line; object snaps
     /// and point filters continue to provide explicit 3D source coordinates.
@@ -39,13 +120,11 @@ impl Viewport {
         input: DraftingInput,
         constraints: CursorConstraints,
     ) -> Option<DraftingCursor> {
-        let CursorConstraints {
-            filter,
-            point: point_constraint,
-            translation,
-        } = constraints;
-        let translation = translation.filter(|_| {
-            !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+        let point_constraint = constraints.point;
+        let translation = constraints.translation.filter(|_| {
+            !constraints
+                .filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
         });
         let input = if translation.is_some_and(|constraint| constraint.direction.is_some()) {
             DraftingInput {
@@ -57,12 +136,11 @@ impl Viewport {
         } else {
             input
         };
-        let cursor =
-            self.filtered_drafting_cursor(pointer, rect, document, input, filter, point_constraint);
+        let cursor = self.filtered_drafting_cursor(pointer, rect, document, input, constraints);
         let Some(translation) = translation else {
             return cursor;
         };
-        let projected = if filter.is_none()
+        let projected = if constraints.filter.is_none()
             && cursor.is_none_or(|cursor| cursor.object_snap.is_none())
         {
             self.drafting_view_line_relative_to(translation.anchor, pointer, rect)
@@ -96,9 +174,10 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         input: DraftingInput,
-        filter: Option<viboceros_drafting::PointFilterSession>,
-        constraint: Option<viboceros_drafting::PointConstraintState>,
+        constraints: CursorConstraints,
     ) -> Option<DraftingCursor> {
+        let filter = constraints.filter;
+        let constraint = constraints.point;
         let input =
             if constraint.is_some_and(viboceros_drafting::PointConstraintState::angle_active) {
                 DraftingInput {
@@ -113,6 +192,12 @@ impl Viewport {
         let mut cursor = self.drafting_cursor(pointer, rect, document, input)?;
         if let Some(filter) = filter {
             cursor.point = filter.preview_point(cursor.source_point).ok()?;
+        } else if let Some(line) = constraints.source_line
+            && cursor.object_snap.is_none()
+        {
+            let point = line.resolve(cursor.source_point).ok()?;
+            cursor.source_point = point;
+            cursor.point = point;
         }
         if let Some(constraint) = constraint
             && !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
@@ -272,8 +357,18 @@ impl Viewport {
         } else {
             None
         };
-        let point = object_snap
-            .map(ObjectSnap::point)
+        let snapped_point = if let Some(snap) = object_snap {
+            let point = snap.point();
+            Some(if let Some(plane) = input.snap_projection {
+                let [x, y] = plane.projected_coordinates_of(point).ok()?;
+                plane.point_at([x, y, 0.]).ok()?
+            } else {
+                point
+            })
+        } else {
+            None
+        };
+        let point = snapped_point
             .or(ortho_point)
             .or_else(|| track.map(OrthogonalTrack::point))
             .or(grid_point)

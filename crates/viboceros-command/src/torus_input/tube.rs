@@ -7,7 +7,7 @@ pub(super) fn radius(
 ) -> Result<Definition, CommandError> {
     if !radius.is_finite() {
         return Err(GeometryError::NonFinite {
-            context: "SubDTorus tube radius",
+            context: "torus tube radius",
         }
         .into());
     }
@@ -33,7 +33,15 @@ pub(super) fn point(
     circle: CircleDefinition,
     point: Point3,
     p: Preferences,
+    kind: Kind,
 ) -> Result<Definition, CommandError> {
     let [x, y] = circle.frame.projected_coordinates_of(point)?;
-    radius(circle, (x.hypot(y) - circle.radius).abs(), p)
+    let distance = (x.hypot(y) - circle.radius).abs();
+    let radius_value =
+        if matches!(kind, Kind::Solid | Kind::Mesh) && p.fix_inner_dimension && p.tube_diameter {
+            0.5 * distance
+        } else {
+            distance
+        };
+    radius(circle, radius_value, p)
 }

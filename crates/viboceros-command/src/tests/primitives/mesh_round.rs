@@ -5,20 +5,8 @@ use super::*;
 fn mesh_sphere_matches_all_rhino_styles_and_orientations() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed = parse_mesh_sphere_options(&["0,0,0", "2"]).unwrap();
-    assert_eq!(
-        parsed.topology,
-        MeshSphereCommandTopology::Uv {
-            vertical_count: 10,
-            around_count: 10,
-        }
-    );
-    assert_eq!(
-        parse_mesh_sphere_options(&["0,0,0", "2", "Style=Quads"])
-            .unwrap()
-            .topology,
-        MeshSphereCommandTopology::Quads { subdivisions: 3 }
-    );
+    let (topology, _) = mesh_sphere::parse_topology(&["Style=Quads"], Default::default()).unwrap();
+    assert_eq!(topology.arguments(), "Style=Quad Subdivisions=2");
 
     let message = registry
         .execute(&mut document, "MeshSphere 0,0,0 2")
@@ -166,12 +154,10 @@ fn mesh_sphere_rejects_incompatible_styles_and_invalid_input_atomically() {
 fn mesh_ellipsoid_matches_rhino_parameterization_caps_and_orientation() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed =
-        parse_mesh_ellipsoid_options(&["1,2,3", "4", "3", "2"], document.tolerance()).unwrap();
-    assert_eq!(parsed.radii, [4.0, 3.0, 2.0]);
-    assert_eq!(parsed.vertical_count, 10);
-    assert_eq!(parsed.around_count, 10);
-    assert_eq!(parsed.cap_style, MeshCapFaceStyle::Triangles);
+    let topology = registry.mesh_ellipsoid_preferences().topology;
+    assert_eq!(topology.vertical_count, 10);
+    assert_eq!(topology.around_count, 10);
+    assert_eq!(topology.cap_style, MeshCapFaceStyle::Triangles);
 
     let message = registry
         .execute(&mut document, "MeshEllipsoid 1,2,3 4 3 2")
@@ -286,12 +272,12 @@ fn mesh_ellipsoid_rejects_invalid_options_and_dimensions_atomically() {
 fn mesh_torus_matches_default_and_oriented_rhino_topology() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed = parse_mesh_torus_options(&["0,0,0", "4", "1"]).unwrap();
-    assert_eq!(parsed.vertical_count, 10);
-    assert_eq!(parsed.around_count, 10);
+    let defaults = registry.mesh_torus_preferences();
+    assert_eq!(defaults.vertical_faces, 10);
+    assert_eq!(defaults.around_faces, 10);
 
     let message = registry
-        .execute(&mut document, "MeshTorus 0,0,0 4 1")
+        .execute(&mut document, "MeshTorus 0,0,0 4 Radius=1")
         .unwrap();
     assert!(message.ends_with("10 around × 10 vertical faces)"));
     assert_eq!(document.selected_object_count(), 0);
@@ -354,7 +340,7 @@ fn mesh_torus_rejects_invalid_options_and_radii_atomically() {
         "MeshTorus",
         "MeshTorus 0,0,0 0 1",
         "MeshTorus 0,0,0 4 0",
-        "MeshTorus 0,0,0 4 4",
+        "MeshTorus 0,0,0 4 Radius=4",
         "MeshTorus 0,0,0 1 2",
         "MeshTorus 0,0,0 4 1 VerticalFaces=2",
         "MeshTorus 0,0,0 4 1 AroundFaces=2",

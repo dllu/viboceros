@@ -58,6 +58,7 @@ impl VibocerosApp {
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
+        self.validate_fillet_corners();
         self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
@@ -881,7 +882,7 @@ impl VibocerosApp {
                     .as_ref()
                     .and(self.drafting_plane)
             })
-            .or_else(|| self.subd_torus_session.as_ref().and(self.drafting_plane))
+            .or_else(|| self.torus_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_sphere_session.as_ref().and(self.drafting_plane))
             .or_else(|| self.subd_axial_session.as_ref().and(self.drafting_plane))
             .or_else(|| {
@@ -891,16 +892,37 @@ impl VibocerosApp {
                     .map(viboceros_command::circle_around_input::Input::frame)
             })
             .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
+            .or_else(|| self.pyramid_session.as_ref()?.input.mouse_plane())
             .or_else(|| self.rectangle_mouse_plane())
             .or_else(|| {
                 self.conic_session
                     .as_ref()
                     .and_then(|s| s.input.mouse_plane())
             });
+        let solid_axial_input = (model_input_active && self.plane_prompt.is_none())
+            .then(|| self.solid_axial_preview_input())
+            .flatten();
+        let pyramid_input = self
+            .pyramid_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.circle_around_session.is_none()
+            })
+            .map(|s| s.input);
+        let solid_axial_fit = model_input_active
+            .then(|| self.solid_axial_fit_preview())
+            .flatten();
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
                     .or_else(|| self.line_axis_constraint())
+                    .or_else(|| pyramid_input?.point_constraint())
+                    .or_else(|| {
+                        solid_axial_input
+                            .and_then(viboceros_command::solid_axial::Input::height_constraint)
+                    })
                     .or_else(|| {
                         self.refinement_prompt
                             .as_ref()
@@ -993,6 +1015,17 @@ impl VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
+        let torus_fit_preview = model_input_active
+            .then(|| self.torus_fit_preview())
+            .flatten();
+        let mesh_sphere_topology = self.mesh_sphere_preview_topology();
+        let mesh_sphere_fit_preview = model_input_active
+            .then(|| self.mesh_sphere_fit_preview())
+            .flatten();
+        let sphere_preview = model_input_active
+            .then(|| self.sphere_preview_input())
+            .flatten();
         let circle_deform_input = self
             .circle_deform_session
             .as_ref()
@@ -1004,6 +1037,7 @@ impl VibocerosApp {
             .filter(|_| model_input_active)
             .map(|s| crate::viewport::TangentPreview {
                 sphere: s.sphere(),
+                mesh_sphere_topology,
                 contacts: &s.input,
                 output: s.output,
                 arc: s.support.as_ref(),
@@ -1042,18 +1076,27 @@ impl VibocerosApp {
         let circle_around_input = self
             .circle_around_session
             .as_ref()
-            .and_then(|s| s.input)
+            .and_then(|s| Some((s.input?, s.sphere())))
             .filter(|_| model_input_active);
         let ellipse_input = self
             .ellipse_session
             .as_ref()
+            .filter(|s| s.ellipsoid_output().is_none())
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let ellipsoid_preview = model_input_active
+            .then(|| self.ellipsoid_preview())
+            .flatten();
         let parabola_input = self
             .parabola_session
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let paraboloid_input = self
+            .paraboloid_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let conic_input = self
             .conic_session
             .as_ref()
@@ -1289,6 +1332,11 @@ impl VibocerosApp {
                                         .filter(|p| p.show_curve)
                                         .map(|p| &p.geometry.curve)
                                 }),
+                            preview_polycurves: self
+                                .fillet_corners_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map_or(&[], fillet_corners::Session::preview),
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()
@@ -1297,11 +1345,6 @@ impl VibocerosApp {
                                     self.subd_ellipsoid_session
                                         .as_ref()
                                         .map(subd_ellipsoid::Session::preview_curves)
-                                })
-                                .or_else(|| {
-                                    self.subd_torus_session
-                                        .as_ref()
-                                        .map(subd_torus::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.subd_sphere_session
@@ -1370,14 +1413,34 @@ impl VibocerosApp {
                             spiral_input: spiral_input.as_ref(),
                             hyperbola_input,
                             parabola_input,
+                            paraboloid_input,
                             ellipse_input,
+                            ellipsoid_preview,
                             tangent: tangent_input,
                             arc_tilted_input,
                             arc_extension_input,
                             arc_output,
                             arc_preview,
                             circle_around_input,
+                            solid_axial_input,
+                            pyramid_input,
+                            solid_axial_fit,
+                            torus_preview_curves: self
+                                .torus_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map_or(&[], torus::Session::preview_curves),
+                            torus_fit_preview,
+                            mesh_torus_preview: self
+                                .torus_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .and_then(torus::Session::mesh_preview),
+                            mesh_sphere_topology,
+                            mesh_sphere_fit_preview,
+                            sphere_preview,
                             circle_around_output,
+                            circle_preview,
                             circle_deform_input,
                             conic_input,
                             conic_reference,
@@ -1507,6 +1570,12 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
+        let fillet_corners_point = viewport_outputs
+            .iter()
+            .find_map(|output| output.drafting_hover);
+        if self.update_fillet_corners_preview(fillet_corners_point) {
+            ui.ctx().request_repaint();
+        }
         for (index, output) in viewport_outputs.into_iter().enumerate() {
             if let Some(preview) = output.mirror_preview
                 && self.update_mirror_preview(preview)

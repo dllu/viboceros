@@ -38,6 +38,11 @@ impl VibocerosApp {
                 && !self.picking_conic_curve()
                 && !self.picking_rectangle_curve()
                 && !self.picking_ellipse_curve()
+                && (self.plane_prompt.is_some()
+                    || self
+                        .ellipse_session
+                        .as_ref()
+                        .is_none_or(|s| !s.waiting_for_topology()))
                 && !self.picking_line_normal()
                 && !self.picking_curve_line()
                 && ((self.arc_blend_session.is_none()
@@ -113,6 +118,10 @@ impl VibocerosApp {
                     construction_plane::PlanePrompt::requests_point,
                 ),
             osnap: self.effective_snap_modes(),
+            snap_projection: self
+                .circle_project_osnap
+                .then(|| self.circle_snap_plane())
+                .flatten(),
             mesh_edges: self.snaps.mesh_edges,
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,

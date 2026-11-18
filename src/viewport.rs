@@ -9,8 +9,8 @@ use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, CurveSegment3, Frame3, GeometryError, NurbsCurve, Point3, PointCloud3, Real,
-    Tolerance, TriangleMesh, Vector3,
+    Circle3, CircularArc3, CurveSegment3, Ellipse3, Frame3, GeometryError, NurbsCurve, Point3,
+    PointCloud3, PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -20,7 +20,7 @@ use crate::viewport_gpu::{
 };
 
 #[cfg(test)]
-use viboceros_geometry::{Brep, Circle3, NurbsSurface, Polyline3};
+use viboceros_geometry::{Brep, NurbsSurface, Polyline3};
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
@@ -29,6 +29,12 @@ mod clipping;
 mod curve_line;
 pub(crate) mod direction;
 mod drafting;
+mod paraboloid;
+mod pyramid;
+mod solid_axial;
+pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
+mod ellipsoid;
+pub(crate) use ellipsoid::EllipsoidPreview;
 mod named_view;
 mod navigation;
 mod normal_point;
@@ -269,6 +275,7 @@ impl ViewKind {
 pub struct DraftingInput {
     pub active: bool,
     pub osnap: viboceros_drafting::ObjectSnapModes,
+    pub snap_projection: Option<Frame3>,
     pub mesh_edges: bool,
     pub smart_track: bool,
     pub grid_snap: bool,
@@ -286,6 +293,7 @@ impl Default for DraftingInput {
         Self {
             active: false,
             osnap: Default::default(),
+            snap_projection: None,
             mesh_edges: false,
             smart_track: false,
             grid_snap: false,
@@ -393,6 +401,7 @@ pub struct ViewportInput<'a> {
     pub point_cloud_highlights: &'a [usize],
     pub preview_curve: Option<&'a NurbsCurve>,
     pub preview_curves: &'a [NurbsCurve],
+    pub preview_polycurves: &'a [PolyCurve3],
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub select_uv_rows: Option<(
@@ -412,15 +421,33 @@ pub struct ViewportInput<'a> {
     pub spiral_input: Option<&'a viboceros_command::spiral_input::Input>,
     pub hyperbola_input: Option<viboceros_command::hyperbola::Input>,
     pub ellipse_input: Option<viboceros_command::ellipse_input::Input>,
+    pub ellipsoid_preview: Option<EllipsoidPreview>,
     pub tangent: Option<TangentPreview<'a>>,
     pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
     pub arc_preview: Option<(viboceros_command::arc_input::Preview, Frame3)>,
     pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
-    pub circle_around_input: Option<viboceros_command::circle_around_input::Input>,
+    pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
+    pub solid_axial_input: Option<viboceros_command::solid_axial::Input>,
+    pub solid_axial_fit: Option<Circle3>,
+    pub torus_preview_curves: &'a [NurbsCurve],
+    pub torus_fit_preview: Option<Circle3>,
+    pub mesh_torus_preview: Option<(
+        viboceros_command::torus_input::Definition,
+        viboceros_command::torus_input::Preferences,
+    )>,
+    pub mesh_sphere_topology: Option<viboceros_command::mesh_sphere::Topology>,
+    pub mesh_sphere_fit_preview: Option<(
+        viboceros_command::mesh_sphere::Topology,
+        viboceros_command::circle_input::CircleDefinition,
+    )>,
+    pub sphere_preview: Option<viboceros_command::sphere_input::SphereInput>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
+    pub circle_preview: Option<(viboceros_command::circle_input::PointConstruction, Frame3)>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
+    pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
+    pub pyramid_input: Option<viboceros_command::pyramid::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
@@ -536,6 +563,7 @@ impl Default for ViewportInput<'_> {
             point_cloud_highlights: &[],
             preview_curve: None,
             preview_curves: &[],
+            preview_polycurves: &[],
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
@@ -549,14 +577,26 @@ impl Default for ViewportInput<'_> {
             spiral_input: None,
             hyperbola_input: None,
             parabola_input: None,
+            paraboloid_input: None,
+            pyramid_input: None,
             ellipse_input: None,
+            ellipsoid_preview: None,
             tangent: None,
             arc_tilted_input: None,
             arc_extension_input: None,
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
+            solid_axial_input: None,
+            solid_axial_fit: None,
+            torus_preview_curves: &[],
+            torus_fit_preview: None,
+            mesh_torus_preview: None,
+            mesh_sphere_topology: None,
+            mesh_sphere_fit_preview: None,
+            sphere_preview: None,
             circle_around_output: None,
+            circle_preview: None,
             circle_deform_input: None,
             conic_input: None,
             conic_reference: None,
@@ -1713,6 +1753,7 @@ impl Viewport {
             };
         let zoom_drafting = DraftingInput {
             active: true,
+            snap_projection: None,
             anchor: None,
             reference: None,
             ..drafting
@@ -2555,13 +2596,15 @@ impl Viewport {
             }
         }
         if drafting.active {
+            let mut projected = ProjectedPrimitives::default();
             for curve in input.preview_curve.into_iter().chain(input.preview_curves) {
-                let mut projected = ProjectedPrimitives::default();
                 self.add_projected_nurbs_curve(&mut projected, rect, curve);
-                for segment in projected.segments {
-                    painter
-                        .line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
-                }
+            }
+            for curve in input.preview_polycurves {
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            }
+            for segment in projected.segments {
+                painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
             }
         }
         if drafting.active {
@@ -2790,18 +2833,88 @@ impl Viewport {
         {
             self.paint_arc_preview(&painter, rect, arc, input.arc_output);
         }
-        if let Some(getter) = input.circle_around_input {
+        if let Some((construction, plane)) = input.circle_preview
+            && let Some(cursor) = drafting_cursor
+            && input
+                .point_filter
+                .is_none_or(|filter| !filter.awaiting_source())
+            && let Ok(circle) = construction.circle(cursor.point, plane, document.tolerance())
+        {
+            self.paint_curve_draft(&painter, rect, &circle);
+        }
+        if let Some((getter, sphere)) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);
-            if let Some(circle) = drafting_cursor.and_then(|c| getter.preview(c.point))
-                && let Ok(curve) = input
+            if let Some(circle) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
+                if sphere {
+                    if let Ok(definition) =
+                        viboceros_command::circle_input::CircleDefinition::from_circle(circle)
+                    {
+                        self.paint_sphere_output_draft(
+                            &painter,
+                            rect,
+                            definition,
+                            input.mesh_sphere_topology,
+                            document.tolerance(),
+                        );
+                    }
+                } else if let Ok(curve) = input
                     .circle_around_output
                     .map_or_else(|| circle.to_nurbs(), |o| o.curve(circle))
-            {
-                let mut projected = ProjectedPrimitives::default();
-                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-                for segment in projected.segments {
-                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
+                {
+                    self.paint_curve_draft(&painter, rect, &curve);
                 }
+            }
+        }
+        if let Some(getter) = input.solid_axial_input {
+            let cursor =
+                drafting_cursor.filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()));
+            self.paint_solid_axial_preview(
+                &painter,
+                rect,
+                getter,
+                cursor.map(|p| p.point),
+                document.tolerance(),
+            );
+        }
+        if let Some(circle) = input.solid_axial_fit {
+            self.paint_curve_draft(&painter, rect, &circle);
+        }
+        for curve in input.torus_preview_curves {
+            self.paint_curve_draft(&painter, rect, curve);
+        }
+        if let Some(circle) = input.torus_fit_preview {
+            self.paint_curve_draft(&painter, rect, &circle);
+        }
+        if let Some((definition, preferences)) = input.mesh_torus_preview
+            && let Ok(mesh) = definition.mesh(preferences, document.tolerance())
+        {
+            self.paint_mesh_draft(&painter, rect, &mesh);
+        }
+        if let Some((topology, definition)) = input.mesh_sphere_fit_preview {
+            self.paint_sphere_output_draft(
+                &painter,
+                rect,
+                definition,
+                Some(topology),
+                document.tolerance(),
+            );
+        }
+        if let Some(getter) = input.sphere_preview
+            && let Some(cursor) = drafting_cursor
+            && input
+                .point_filter
+                .is_none_or(|filter| !filter.awaiting_source())
+        {
+            if let Some(definition) = getter.preview(cursor.point, document.tolerance()) {
+                self.paint_sphere_output_draft(
+                    &painter,
+                    rect,
+                    definition,
+                    input.mesh_sphere_topology,
+                    document.tolerance(),
+                );
+            } else if let Some(section) = getter.preview_section(cursor.point) {
+                self.paint_curve_draft(&painter, rect, &section);
             }
         }
         if let Some(getter) = input.circle_deform_input {
@@ -2809,11 +2922,7 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &[point]);
             }
             if let Some(curve) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
-                let mut projected = ProjectedPrimitives::default();
-                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-                for segment in projected.segments {
-                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-                }
+                self.paint_curve_draft(&painter, rect, &curve);
             }
         }
         if let Some(getter) = input.ellipse_input {
@@ -2834,6 +2943,21 @@ impl Viewport {
                 }
             }
         }
+        if let Some(preview) = input.ellipsoid_preview {
+            self.paint_ellipsoid_draft(
+                &painter,
+                rect,
+                preview,
+                drafting_cursor
+                    .filter(|_| {
+                        input
+                            .point_filter
+                            .is_none_or(|filter| !filter.awaiting_source())
+                    })
+                    .map(|cursor| cursor.point),
+                document.tolerance(),
+            );
+        }
         if let Some(getter) = input.parabola_input {
             self.paint_draft_points(&painter, rect, &getter.markers());
             if let Some(definition) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
@@ -2844,6 +2968,26 @@ impl Viewport {
                 }
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
             }
+        }
+        if let Some(getter) = input.pyramid_input {
+            let cursor = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_pyramid_preview(&painter, rect, getter, cursor);
+        }
+        if let Some(getter) = input.paraboloid_input {
+            let cursor = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_paraboloid_preview(&painter, rect, getter, cursor);
         }
         if let Some(getter) = input.conic_input {
             let point = edge_cursor
@@ -6636,8 +6780,10 @@ mod tests {
                     active: true,
                     ..Default::default()
                 },
-                Some(filter),
-                None,
+                drafting::CursorConstraints {
+                    filter: Some(filter),
+                    ..Default::default()
+                },
             )
             .unwrap();
         assert!(
@@ -6684,6 +6830,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(0.0, 0.0, 8.0)),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6723,6 +6870,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6755,6 +6903,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(anchor),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6928,6 +7077,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(8.0, 8.0, 6.0)),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6965,6 +7115,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();

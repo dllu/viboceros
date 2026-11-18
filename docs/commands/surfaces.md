@@ -21,18 +21,36 @@ planner in both builds. See [region grouping, source deletion and qualification]
 `Cap` fills planar openings on existing surfaces and B-reps in place, including
 nested annular caps. See [capping behavior, evidence, and limits](cap.md).
 
-`Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
-a center and numeric radius or point on the sphere. Its longitude domain is
-`[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
-arguments starts the two-pick viewport workflow.
+`Sphere` creates an exact 9-by-5 rational quadratic surface. Pick or type a
+center, then pick a radius point or enter a size. The size getter accepts
+`Diameter`, `Circumference`, `Area`, and `Orientation`. Enter at a Radius or
+Diameter prompt reuses the last size. `2Point` uses opposite points,
+`3Point` uses a base circle, and `4Point` adds a point off the section plane.
+Choose `Radius` after the first two 3Point picks or after the second or third
+4Point pick to constrain the sphere. The viewport previews the section or
+sphere as the cursor moves. The surface domains are `[0, 2π]` and
+`[-π/2, π/2]`.
+
+`Sphere Tangent` uses point or curve contacts for its base circle.
+`Sphere AroundCurve` takes a curve or surface edge, a center on that guide,
+and a size perpendicular to the tangent. Both show a live sphere preview.
 
 `Sphere FitPoints` fits a sphere through selected point objects or grips.
 See [point fitting and its retained Rhino difference](sphere-fit-points.md).
 
-`Ellipsoid` creates the exact closed 9-by-5 rational surface obtained by
-scaling that sphere along three orthogonal semi-axes. Supply three numeric
-radii in World XY, or center and three axis-radius points for an oriented
-ellipsoid; entering it without arguments starts the four-pick viewport workflow.
+`Ellipsoid` creates a closed 9-by-5 rational surface. Pick a center and two
+base axes, then set the third radius along the base normal. Typing a length at
+either base-axis prompt locks that length for the next pick. The viewport
+previews the base ellipse and then the ellipsoid. Complete commands also
+accept a center and three numeric World XY radii.
+
+`Corner` takes opposite corners, or a center and a corner if chosen after the
+center. `Diameter` starts with opposite ends of the first axis and accepts a
+numeric third diameter. Choose `Vertical` before the first diameter end to
+stand the base in a vertical plane. `AroundCurve` uses a curve or surface edge
+to set the center and third axis. `FromFoci` finishes with two foci and a point
+on the ellipsoid. Its remembered `MarkFoci` option adds the two points in the
+same Undo step. Newly created surfaces place their poles on the first axis.
 
 `Box` follows Rhino's two-opposite-base-corners and signed-height workflow in
 the active construction plane. It creates one closed typed extrusion with an
@@ -171,28 +189,25 @@ and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
 
 ## Solid primitives, extrusion, and revolution
 
-`Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
-`Vertex vertex focus end-point` constructions; `Focus` is the default. The
-vertex form projects the end point perpendicular to the focus axis and derives
-the height from that radius. Both produce Rhino's exact 9-by-3 rational
-quadratic wall with an arc-length meridian domain and singular/shared seam
-topology. `Solid=Yes` adds the exact planar rim cap, while `MarkFocus=Yes` adds
-a point object at the focus in the same undo step.
+[Paraboloid](paraboloid.md) builds an exact rational quadratic wall using
+the focus, the vertex and focus, or the vertex and axis direction. Its
+meridian domain measures arc length, and the open wall or capped B-rep
+shares the same rim and singular vertex topology.
 
 `TruncatedCone` creates an exact rational frustum from base and end radii. Its
 linear V domain is the physical slant length, matching Rhino; negative heights
 reverse the construction direction while preserving the base seam. `Solid=Yes`
 adds outward planar caps with Rhino-compatible shared rim and seam topology.
 
-`Pyramid` and `TruncatedPyramid` create regular polygonal joined B-reps with
-Rhino-compatible vertex, edge, face, trim, and planar-surface parameterization.
-They accept a side count, numeric or picked base radius, signed height,
-arbitrary `Axis=`, and optional exact planar caps through `Solid=Yes`.
+[Pyramid](pyramid.md) creates a joined B-rep from an inscribed, circumscribed,
+edge-defined, or star base. [TruncatedPyramid](truncated-pyramid.md) uses
+the same base modes and adds a live top-size getter. The positional forms
+accept `Axis=` and `Solid=Yes`.
 
-`Tube` creates a closed typed extrusion with concentric rational cylinder walls and
-annular planar caps. The two radii may be entered in either order;
-`WallThickness=` expands outward from the first radius, and `BothSides=Yes`
-centers the full doubled height on the starting point.
+[Tube](tube.md) creates concentric cylindrical walls with a live preview and
+optional annular caps. Enter either radius first or set a signed
+`WallThickness=`. `BothSides=Yes` centers the full doubled height on the
+starting point.
 
 `Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
 major radius (or point on the major circle), and minor radius. `Axis=` orients

@@ -186,6 +186,9 @@ impl PendingObjectCommand {
                 "Enter a positive size; Radius, Diameter, Area, Circumference, Copy=Yes|No; Esc cancels"
             };
         }
+        if self.description.command == "FilletCorners" {
+            return "Select curves to fillet; Enter sets the radius, Esc cancels";
+        }
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
@@ -268,7 +271,10 @@ impl PendingObjectCommand {
                 "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
-        if self.description.command == "Sphere FitPoints" {
+        if matches!(
+            self.description.command,
+            "Sphere FitPoints" | "MeshSphere FitPoints"
+        ) {
             return "Select at least three points or grips; Enter fits a sphere, Esc cancels";
         }
         if self.description.command == "LineThroughPt" {
@@ -293,10 +299,19 @@ impl PendingObjectCommand {
         if matches!(
             self.description.command,
             "Circle FitPoints"
+                | "Cone FitPoints"
+                | "Cylinder FitPoints"
+                | "Tube FitPoints"
+                | "TruncatedCone FitPoints"
+                | "MeshCone FitPoints"
+                | "MeshCylinder FitPoints"
+                | "MeshTruncatedCone FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
                 | "SubDTorus FitPoints"
+                | "MeshTorus FitPoints"
+                | "Torus FitPoints"
                 | "SubDSphere FitPoints"
         ) {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
@@ -398,14 +413,24 @@ impl VibocerosApp {
                 && (matches!(
                     p.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
+                        | "Tube FitPoints"
+                        | "TruncatedCone FitPoints"
+                        | "MeshCone FitPoints"
+                        | "MeshCylinder FitPoints"
+                        | "MeshTruncatedCone FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
+                        | "MeshTorus FitPoints"
+                        | "Torus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
+                        | "MeshSphere FitPoints"
                         | "Smooth"
                         | "HidePt"
                         | "ExtractPt"
@@ -869,13 +894,23 @@ impl VibocerosApp {
                 }
             }
             "Circle FitPoints"
+            | "Cone FitPoints"
+            | "Cylinder FitPoints"
+            | "Tube FitPoints"
+            | "TruncatedCone FitPoints"
+            | "MeshCone FitPoints"
+            | "MeshCylinder FitPoints"
+            | "MeshTruncatedCone FitPoints"
             | "SubDCylinder FitPoints"
             | "SubDCone FitPoints"
             | "SubDTruncatedCone FitPoints"
             | "SubDTorus FitPoints"
+            | "MeshTorus FitPoints"
+            | "Torus FitPoints"
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
-            | "Sphere FitPoints" => 3,
+            | "Sphere FitPoints"
+            | "MeshSphere FitPoints" => 3,
             "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "PlanarUnion"
             | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" | "MergeSrf" => 2,
             _ => 1,
@@ -895,14 +930,24 @@ impl VibocerosApp {
         let selected_grips = if matches!(
             description.command,
             "Circle FitPoints"
+                | "Cone FitPoints"
+                | "Cylinder FitPoints"
+                | "Tube FitPoints"
+                | "TruncatedCone FitPoints"
+                | "MeshCone FitPoints"
+                | "MeshCylinder FitPoints"
+                | "MeshTruncatedCone FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
                 | "SubDTorus FitPoints"
+                | "MeshTorus FitPoints"
+                | "Torus FitPoints"
                 | "SubDSphere FitPoints"
                 | "PlaneThroughPt"
                 | "LineThroughPt"
                 | "Sphere FitPoints"
+                | "MeshSphere FitPoints"
                 | "Smooth"
                 | "HidePt"
                 | "ExtractPt"
@@ -1030,8 +1075,9 @@ impl VibocerosApp {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
-            let selection_before = matches!(description.command, "Sweep1" | "Dir")
-                .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
+            let selection_before =
+                matches!(description.command, "Sweep1" | "Dir" | "FilletCorners")
+                    .then(|| self.document.selected_object_ids().collect::<Vec<_>>());
             let rail_revolve_partial = matches!(description.command, "RailRevolve" | "Sweep1")
                 .then(|| {
                     self.document
@@ -1040,7 +1086,7 @@ impl VibocerosApp {
                         .map(|o| o.id())
                         .collect::<Vec<_>>()
                 });
-            if matches!(description.command, "Sweep1" | "Dir") {
+            if matches!(description.command, "Sweep1" | "Dir" | "FilletCorners") {
                 let _ = self
                     .document
                     .set_transient_selection(rail_revolve_partial.unwrap_or_default());
@@ -1077,10 +1123,20 @@ impl VibocerosApp {
                     | "RailRevolve"
                     | "Sweep1"
                     | "Circle FitPoints"
+                    | "MeshSphere FitPoints"
+                    | "Cone FitPoints"
+                    | "Cylinder FitPoints"
+                    | "Tube FitPoints"
+                    | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
                     | "SubDTruncatedCone FitPoints"
                     | "SubDTorus FitPoints"
+                    | "MeshTorus FitPoints"
+                    | "Torus FitPoints"
                     | "SubDSphere FitPoints"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
@@ -1381,14 +1437,24 @@ impl VibocerosApp {
                     || (matches!(
                         pending.description.command,
                         "Circle FitPoints"
+                            | "Cone FitPoints"
+                            | "Cylinder FitPoints"
+                            | "Tube FitPoints"
+                            | "TruncatedCone FitPoints"
+                            | "MeshCone FitPoints"
+                            | "MeshCylinder FitPoints"
+                            | "MeshTruncatedCone FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"
                             | "SubDTorus FitPoints"
+                            | "MeshTorus FitPoints"
+                            | "Torus FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"
+                            | "MeshSphere FitPoints"
                             | "Smooth"
                             | "HidePt"
                             | "ExtractPt"
@@ -1453,13 +1519,30 @@ impl VibocerosApp {
                 self.push_log("Enter number to remove or Percent=n".into());
                 return true;
             }
-            if pending.description.command == "SubDTorus FitPoints" {
-                self.accept_subd_torus_fit(pending.postselected);
+            if matches!(
+                pending.description.command,
+                "SubDTorus FitPoints" | "MeshTorus FitPoints" | "Torus FitPoints"
+            ) {
+                self.accept_torus_fit(pending.postselected);
                 self.command_input.clear();
                 return true;
             }
             if pending.description.command == "SubDSphere FitPoints" {
                 self.accept_subd_sphere_fit(pending.postselected);
+                self.command_input.clear();
+                return true;
+            }
+            if matches!(
+                pending.description.command,
+                "Cone FitPoints"
+                    | "Cylinder FitPoints"
+                    | "Tube FitPoints"
+                    | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
+            ) {
+                self.accept_solid_axial_fit(pending.postselected);
                 self.command_input.clear();
                 return true;
             }
@@ -1484,6 +1567,11 @@ impl VibocerosApp {
             if pending.description.command == "Dir" && command.split_whitespace().count() == 1 {
                 self.object_prompt = None;
                 self.begin_direction(pending.postselected);
+                return true;
+            }
+            if pending.description.command == "FilletCorners" {
+                self.object_prompt = None;
+                self.begin_fillet_corners(pending.postselected);
                 return true;
             }
             if pending.description.command == "RailRevolve" {
@@ -1669,7 +1757,11 @@ impl VibocerosApp {
                 return true;
             }
             if normalized == "selnone" {
-                self.document.clear_selection();
+                if pending.description.command == "FilletCorners" {
+                    self.restore_curve_selection(vec![]);
+                } else {
+                    self.document.clear_selection();
+                }
                 if self.shrink_prompt_mode().is_some()
                     || self.picking_subdivide()
                     || self.picking_nurbs_edges()
@@ -1692,14 +1784,24 @@ impl VibocerosApp {
                 if matches!(
                     pending.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
+                        | "Tube FitPoints"
+                        | "TruncatedCone FitPoints"
+                        | "MeshCone FitPoints"
+                        | "MeshCylinder FitPoints"
+                        | "MeshTruncatedCone FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
+                        | "MeshTorus FitPoints"
+                        | "Torus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
+                        | "MeshSphere FitPoints"
                         | "HidePt"
                         | "ExtractPt"
                         | "Weight"
@@ -2001,8 +2103,11 @@ impl VibocerosApp {
             ) {
                 self.document.clear_selection();
             }
-            if pending.description.command == "SubDTorus FitPoints" {
-                self.subd_torus_session = None;
+            if matches!(
+                pending.description.command,
+                "SubDTorus FitPoints" | "MeshTorus FitPoints" | "Torus FitPoints"
+            ) {
+                self.torus_session = None;
                 self.active_command = None;
                 self.drafting_plane = None;
             }
@@ -2012,6 +2117,20 @@ impl VibocerosApp {
                 self.drafting_plane = None;
             }
 
+            if matches!(
+                pending.description.command,
+                "Cone FitPoints"
+                    | "Cylinder FitPoints"
+                    | "Tube FitPoints"
+                    | "TruncatedCone FitPoints"
+                    | "MeshCone FitPoints"
+                    | "MeshCylinder FitPoints"
+                    | "MeshTruncatedCone FitPoints"
+            ) {
+                self.solid_axial_session = None;
+                self.active_command = None;
+                self.drafting_plane = None;
+            }
             if matches!(
                 pending.description.command,
                 "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"
@@ -2036,7 +2155,10 @@ impl VibocerosApp {
                 self.component_selection.clear();
             }
             if let Some(selection_before) = pending.selection_before {
-                if matches!(pending.description.command, "Sweep1" | "Dir") {
+                if matches!(
+                    pending.description.command,
+                    "Sweep1" | "Dir" | "FilletCorners"
+                ) {
                     self.restore_curve_selection(selection_before);
                 } else if let Err(error) = self
                     .document
@@ -2161,9 +2283,9 @@ impl VibocerosApp {
         let result = if self
             .object_prompt
             .as_ref()
-            .is_some_and(|prompt| prompt.description.command == "Dir")
+            .is_some_and(|prompt| matches!(prompt.description.command, "Dir" | "FilletCorners"))
         {
-            // Dir picks are provisional: Escape must preserve SelPrev and Redo
+            // These picks are provisional: Escape must preserve SelPrev and Redo
             // as well as the prior selection. Retain click order without group
             // expansion or quadratic per-object searches.
             let previous = self.document.selected_object_ids().collect::<Vec<_>>();

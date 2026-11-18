@@ -1079,6 +1079,21 @@ impl TriangleMesh {
         options: MeshTruncatedConeOptions,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        if radii[1] == 0.0 {
+            return Err(GeometryError::InvalidMeshTruncatedConeDimensions);
+        }
+        Self::try_truncated_cone_with_apex(frame, radii, height, options, tolerance)
+    }
+
+    /// Constructs the command's frustum grid, including coincident top-ring
+    /// vertices and collapsed quad edges when the top radius is zero.
+    pub fn try_truncated_cone_with_apex(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        options: MeshTruncatedConeOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         require_finite(
             radii.into_iter().chain(std::iter::once(height)),
             "mesh truncated-cone dimensions",
@@ -1089,7 +1104,7 @@ impl TriangleMesh {
                 around_count: options.around_count,
             });
         }
-        if radii.into_iter().any(|radius| radius <= 0.0) || height <= 0.0 {
+        if radii[0] <= 0.0 || radii[1] < 0.0 || height <= 0.0 {
             return Err(GeometryError::InvalidMeshTruncatedConeDimensions);
         }
 
@@ -1097,13 +1112,10 @@ impl TriangleMesh {
             .vertical_count
             .checked_mul(options.around_count)
             .ok_or(GeometryError::TooManyMeshFaces)?;
-        let cap_face_count = if options.solid {
-            mesh_radial_cap_face_count(options.around_count, options.cap_style)
-                .checked_mul(2)
-                .ok_or(GeometryError::TooManyMeshFaces)?
-        } else {
-            0
-        };
+        let cap_count = usize::from(options.solid) * (1 + usize::from(radii[1] > 0.0));
+        let cap_face_count = mesh_radial_cap_face_count(options.around_count, options.cap_style)
+            .checked_mul(cap_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
         let face_count = wall_face_count
             .checked_add(cap_face_count)
             .ok_or(GeometryError::TooManyMeshFaces)?;
@@ -1125,13 +1137,9 @@ impl TriangleMesh {
                     .checked_add(1)
                     .ok_or(GeometryError::TooManyMeshVertices)?
             };
-        let cap_vertex_count = if options.solid {
-            one_cap_vertex_count
-                .checked_mul(2)
-                .ok_or(GeometryError::TooManyMeshVertices)?
-        } else {
-            0
-        };
+        let cap_vertex_count = one_cap_vertex_count
+            .checked_mul(cap_count)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
         let vertex_count = wall_vertex_count
             .checked_add(cap_vertex_count)
             .ok_or(GeometryError::TooManyMeshVertices)?;
@@ -1221,22 +1229,28 @@ impl TriangleMesh {
                 *face = face.reversed();
             }
 
-            let end_coordinates = unit_radial_coordinates
-                .iter()
-                .map(|[x, y]| [radii[1] * x, radii[1] * y])
-                .collect::<Vec<_>>();
-            append_mesh_radial_cap(
-                &mut vertices,
-                &mut faces,
-                frame,
-                &end_coordinates,
-                height,
-                options.cap_style,
-            )?;
+            if radii[1] > 0.0 {
+                let end_coordinates = unit_radial_coordinates
+                    .iter()
+                    .map(|[x, y]| [radii[1] * x, radii[1] * y])
+                    .collect::<Vec<_>>();
+                append_mesh_radial_cap(
+                    &mut vertices,
+                    &mut faces,
+                    frame,
+                    &end_coordinates,
+                    height,
+                    options.cap_style,
+                )?;
+            }
         }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
-        Self::try_new_faces(vertices, faces, tolerance)
+        if radii[1] > 0.0 {
+            Self::try_new_faces(vertices, faces, tolerance)
+        } else {
+            Self::try_from_face_records(vertices, faces)
+        }
     }
 
     /// Constructs Rhino's ordered UV mesh sphere with shared pole vertices.

@@ -1059,11 +1059,25 @@ impl NurbsSurface {
         radii: [Real; 2],
         height: Real,
     ) -> Result<Self, GeometryError> {
+        if radii[1] == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "truncated cone",
+            });
+        }
+        Self::try_truncated_cone_wall(frame, radii, height)
+    }
+
+    /// Constructs a base-first frustum wall with a singular top when its radius is zero.
+    pub fn try_truncated_cone_wall(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+    ) -> Result<Self, GeometryError> {
         require_finite(
             radii.into_iter().chain(std::iter::once(height)),
             "truncated-cone dimensions",
         )?;
-        if radii.into_iter().any(|radius| radius <= 0.0) || height <= 0.0 {
+        if radii[0] <= 0.0 || radii[1] < 0.0 || height <= 0.0 {
             return Err(GeometryError::Degenerate {
                 context: "truncated cone",
             });
@@ -1233,6 +1247,22 @@ impl NurbsSurface {
             ],
             vec![height_start, height_start, height_end, height_end],
         )
+    }
+
+    /// Constructs an apex-first cone wall on the circular arc-length and
+    /// axial height domains. The frame Z axis points from the apex to the rim.
+    pub fn try_cone_from_apex(
+        frame: Frame3,
+        radius: Real,
+        height: Real,
+    ) -> Result<Self, GeometryError> {
+        if height <= 0. {
+            return Err(GeometryError::Degenerate {
+                context: "cone height",
+            });
+        }
+        let wall = Self::try_cone(frame, radius, height)?;
+        wall.try_reparameterized(0.0..=std::f64::consts::TAU * radius, 0.0..=height)
     }
 
     /// Constructs Rhino's exact open NURBS paraboloid surface.
