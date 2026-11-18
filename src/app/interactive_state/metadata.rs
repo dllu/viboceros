@@ -30,6 +30,7 @@ impl InteractiveCommand {
             Self::OrientPoints { kind, .. } => kind.name(),
             Self::ProjectDirection { .. } => "Project",
             Self::ProjectPlane { command, .. } => command,
+            Self::CurveOffset { kind, .. } => kind.name(),
             Self::Section { .. } => "Section",
             Self::Contour { .. } => "Contour",
             Self::BlockEditAdd | Self::BlockEditBasePoint => "BlockEdit",
@@ -212,6 +213,7 @@ impl InteractiveCommand {
             | Self::OrientOnSurface { last }
             | Self::Splop { last } => last,
             Self::SurfacePointGrid { anchor, .. } | Self::ProjectPlane { anchor, .. } => anchor,
+            Self::CurveOffset { anchor, .. } => anchor,
             Self::Section { start, .. } => start,
             Self::Contour {
                 base,

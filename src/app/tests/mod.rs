@@ -80,6 +80,7 @@ mod curve_boolean_corpus;
 mod curve_completion;
 mod curve_deviation;
 mod curve_input;
+mod curve_offset;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/curve_path.rs"]
 mod curve_path_support;

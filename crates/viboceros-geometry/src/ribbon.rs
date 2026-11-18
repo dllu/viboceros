@@ -1,5 +1,6 @@
 //! Offset ribbons with ordered ruled tensors and shared corner identities.
 mod corner;
+pub(crate) use corner::smooth_corner;
 mod in_plane;
 mod polyline;
 mod smooth;

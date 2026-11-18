@@ -61,9 +61,23 @@ pub fn try_fixed_plane_ribbon_with_fit_tolerance<E: From<GeometryError>>(
         distance,
         both_sides,
         model,
-        &mut |d| Ok(offset(source, d, normal, model, fit)?),
+        &mut |d| Ok(offset(source, d, normal, model, fit, true)?),
         ruled,
     )
+}
+
+impl NurbsCurve {
+    /// Offset perpendicular to a fixed plane normal, retaining each source
+    /// station's normal height. Uses the fixed-plane ribbon fitting routine.
+    pub fn try_offset_in_fixed_plane(
+        &self,
+        distance: Real,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+        fit: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        offset(self, distance, normal, tolerance, fit, false)
+    }
 }
 
 fn offset(
@@ -72,6 +86,7 @@ fn offset(
     normal: UnitVector3,
     tolerance: Tolerance,
     fit: Tolerance,
+    ribbon: bool,
 ) -> Result<NurbsCurve, GeometryError> {
     source.tight_bounds(tolerance)?;
     let projected = source.transformed(AffineTransform3::try_planar_projection(Plane::new(
@@ -91,34 +106,31 @@ fn offset(
             .scaled(distance)?;
         return source.transformed(AffineTransform3::from_translation(shift));
     }
-    if fit.absolute() > tolerance.absolute()
-        && (source.spans().count() > 1
-            || source
-                .control_points()
-                .iter()
-                .any(|p| p.weight() != source.control_points()[0].weight()))
-    {
-        // Coarse rational/multispan inputs can switch to a different native
-        // seed and corner partition. Keep these explicit until reproduced.
-        return Err(GeometryError::UnsupportedCurveOffset);
-    }
-    let controls = source
-        .control_points()
-        .iter()
-        .map(|p| p.point())
-        .collect::<Vec<_>>();
-    let plane = crate::PointProjection3::onto_best_fit_plane(&controls)?.as_plane()?;
-    let cosine = plane.normal().as_vector().dot(normal.as_vector())?.abs();
-    // Deliberately conservative bounds around observed native mode switches.
-    // These are support limits, not purported Rhino angular constants.
-    if !(0.001..=0.9999).contains(&cosine) {
-        return Err(GeometryError::UnsupportedCurveOffset);
-    }
-    if !source
-        .discontinuity_parameters(CurveContinuity::G1, tolerance.angular())?
-        .is_empty()
-    {
-        return Err(GeometryError::UnsupportedCurveOffset);
+    if ribbon {
+        if fit.absolute() > tolerance.absolute()
+            && (source.spans().count() > 1
+                || source
+                    .control_points()
+                    .iter()
+                    .any(|p| p.weight() != source.control_points()[0].weight()))
+        {
+            // Coarse rational/multispan inputs can switch to a different seed.
+            return Err(GeometryError::UnsupportedCurveOffset);
+        }
+        let controls = source
+            .control_points()
+            .iter()
+            .map(|p| p.point())
+            .collect::<Vec<_>>();
+        let plane = crate::PointProjection3::onto_best_fit_plane(&controls)?.as_plane()?;
+        let cosine = plane.normal().as_vector().dot(normal.as_vector())?.abs();
+        if !(0.001..=0.9999).contains(&cosine)
+            || !source
+                .discontinuity_parameters(CurveContinuity::G1, tolerance.angular())?
+                .is_empty()
+        {
+            return Err(GeometryError::UnsupportedCurveOffset);
+        }
     }
     let spans = source.spans().collect::<Vec<_>>();
     if spans.len() > MAX_PIECES {
@@ -141,22 +153,26 @@ fn offset(
             q.translated(w.scaled(-third)?)?,
             q,
         ];
-        let mut accepted = depth == MAX_DEPTH;
+        let mut accepted = ribbon && depth == MAX_DEPTH;
         if !accepted {
             accepted = true;
             for check in 1..=CHECKS {
                 let x = check as Real / (CHECKS + 1) as Real;
                 let t = a.mul_add(1. - x, b * x);
                 let (point, velocity) = source.evaluate_with_derivative(t)?;
-                // This fitting target uses the cross product of the unit
-                // spatial tangent. End jets instead normalize its projection.
-                // A depth cap can therefore leave substantial locus residual.
-                let expected = point.translated(
+                let left = if ribbon {
+                    // Ribbon uses a spatial unit tangent for its interior checks.
                     normal
                         .as_vector()
                         .cross(velocity.normalized_nonzero()?.as_vector())?
-                        .scaled(distance)?,
-                )?;
+                } else {
+                    normal
+                        .as_vector()
+                        .cross(velocity)?
+                        .normalized_nonzero()?
+                        .as_vector()
+                };
+                let expected = point.translated(left.scaled(distance)?)?;
                 if cubic(controls, x)?.distance_to(expected)? > fit.absolute() * 0.5 {
                     accepted = false;
                     break;
@@ -164,7 +180,7 @@ fn offset(
             }
         }
         if !accepted {
-            if points.len() / 3 + pending.len() + 2 > MAX_PIECES {
+            if depth >= 24 || points.len() / 3 + pending.len() + 2 > MAX_PIECES {
                 return Err(GeometryError::NurbsOffsetFitLimit);
             }
             let middle = a.midpoint(b);

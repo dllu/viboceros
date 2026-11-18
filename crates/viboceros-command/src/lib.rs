@@ -507,7 +507,7 @@ pub mod geometry_check;
 pub mod merge_coplanar_face;
 mod merge_edge;
 mod merge_edges;
-mod offset_curve;
+pub mod offset_curve;
 pub mod ribbon;
 mod split_edge;
 use cap::CapCommand;
@@ -1053,6 +1053,8 @@ pub struct CommandRegistry {
     mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
     polygon_preferences: std::sync::Arc<remembered::Remembered<polygon::Preferences>>,
     polyline_preferences: std::sync::Arc<remembered::Remembered<polyline_input::Preferences>>,
+    offset_settings: std::sync::Arc<remembered::Remembered<offset_curve::Settings>>,
+    offset_multiple_settings: std::sync::Arc<remembered::Remembered<offset_curve::Settings>>,
     section_options: std::sync::Arc<remembered::Remembered<section::SectionOptions>>,
     contour_preferences: std::sync::Arc<remembered::Remembered<contour::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
@@ -1969,7 +1971,7 @@ impl CommandRegistry {
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
-            .register(OffsetCommand)
+            .register(OffsetCommand(registry.offset_settings.clone()))
             .expect("unique built-in command");
         registry
             .register(ribbon::RibbonCommand(registry.ribbon_options.clone()))
@@ -2008,7 +2010,9 @@ impl CommandRegistry {
             .register(FilletEdgeCommand)
             .expect("unique built-in command");
         registry
-            .register(OffsetMultipleCommand)
+            .register(OffsetMultipleCommand(
+                registry.offset_multiple_settings.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(CapCommand::default())

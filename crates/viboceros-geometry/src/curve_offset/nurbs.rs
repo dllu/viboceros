@@ -463,6 +463,17 @@ pub(super) fn offset_nurbs_open_gaps(
     tolerance: Tolerance,
     operations: Option<CurveOffsetOperations>,
 ) -> Result<Vec<Curve3>, GeometryError> {
+    offset_nurbs_gaps(curve, distance, fallback, tolerance, true, operations)
+}
+
+fn offset_nurbs_gaps(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    trim: bool,
+    operations: Option<CurveOffsetOperations>,
+) -> Result<Vec<Curve3>, GeometryError> {
     let normal = offset_plane(curve, fallback, tolerance)?;
     let domain = curve.domain();
     let spans = curve.spans().collect::<Vec<_>>();
@@ -482,7 +493,7 @@ pub(super) fn offset_nurbs_open_gaps(
             distance,
             tolerance,
         )? {
-            cuts.push((parameter, convex));
+            cuts.push((parameter, convex || !trim));
         }
     }
     let closed = curve.is_closed()?;
@@ -503,6 +514,7 @@ pub(super) fn offset_nurbs_open_gaps(
     } else {
         None
     };
+    let seam = seam.map(|convex| convex || !trim);
     if cuts.is_empty() && seam.is_none() {
         return Ok(vec![Curve3::NurbsCurve(offset_nurbs(
             curve, distance, fallback, tolerance, operations,
@@ -647,7 +659,15 @@ pub(super) fn offset_nurbs_chamfer(
     tolerance: Tolerance,
     operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    offset_nurbs_connected(curve, distance, fallback, tolerance, false, operations)
+    offset_nurbs_connected(
+        curve,
+        distance,
+        fallback,
+        tolerance,
+        crate::RibbonCornerStyle::Chamfer,
+        true,
+        operations,
+    )
 }
 
 pub(super) fn offset_nurbs_round(
@@ -657,7 +677,33 @@ pub(super) fn offset_nurbs_round(
     tolerance: Tolerance,
     operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    offset_nurbs_connected(curve, distance, fallback, tolerance, true, operations)
+    offset_nurbs_connected(
+        curve,
+        distance,
+        fallback,
+        tolerance,
+        crate::RibbonCornerStyle::Round,
+        true,
+        operations,
+    )
+}
+
+pub(super) fn offset_with_join_policy(
+    curve: &NurbsCurve,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    corner: crate::RibbonCornerStyle,
+    trim: bool,
+    operations: Option<CurveOffsetOperations>,
+) -> Result<Vec<Curve3>, GeometryError> {
+    if corner == crate::RibbonCornerStyle::None {
+        offset_nurbs_gaps(curve, distance, fallback, tolerance, trim, operations)
+    } else {
+        Ok(vec![offset_nurbs_connected(
+            curve, distance, fallback, tolerance, corner, trim, operations,
+        )?])
+    }
 }
 
 fn offset_nurbs_connected(
@@ -665,10 +711,12 @@ fn offset_nurbs_connected(
     distance: Real,
     fallback: UnitVector3,
     tolerance: Tolerance,
-    round: bool,
+    corner: crate::RibbonCornerStyle,
+    trim: bool,
     operations: Option<CurveOffsetOperations>,
 ) -> Result<Curve3, GeometryError> {
-    let mut pieces = offset_nurbs_open_gaps(curve, distance, fallback, tolerance, operations)?;
+    use crate::RibbonCornerStyle::{Round, Smooth};
+    let mut pieces = offset_nurbs_gaps(curve, distance, fallback, tolerance, trim, operations)?;
     let closed = curve.is_closed()?;
     if pieces.len() == 1 && (!closed || pieces[0].as_ref().is_closed()?) {
         return Ok(pieces.remove(0));
@@ -693,7 +741,7 @@ fn offset_nurbs_connected(
     let span = *curve.domain().end() - *curve.domain().start();
     let end = start + span;
     crate::require_finite([end], "joined NURBS offset parameter")?;
-    let normal = if round {
+    let normal = if corner == Round {
         Some(offset_plane(curve, fallback, tolerance)?)
     } else {
         None
@@ -738,6 +786,15 @@ fn offset_nurbs_connected(
                 }
                 segments.push(CurveSegment3::Arc(CircularArc3::try_from_circle_sweep(
                     circle, sweep,
+                )?));
+            } else if corner == Smooth {
+                let a = piece.as_ref();
+                let b = pieces[next].as_ref();
+                segments.push(CurveSegment3::NurbsCurve(crate::ribbon::smooth_corner(
+                    ends[index],
+                    starts[next],
+                    a.evaluate_with_tangent(a.parameter_at(1.)?)?.tangent(),
+                    b.evaluate_with_tangent(b.parameter_at(0.)?)?.tangent(),
                 )?));
             } else {
                 segments.push(CurveSegment3::Line(LineSegment::try_new(

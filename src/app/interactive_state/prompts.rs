@@ -77,6 +77,7 @@ impl InteractiveCommand {
             Self::ProjectDirection { start: Some(_) } => {
                 "Project: pick the custom direction end (Undo revises start; Esc cancels)"
             }
+            Self::CurveOffset { .. } => "Pick an offset side or through point. Esc cancels",
             Self::Contour { base: None, .. } => {
                 "Contour: pick the base point (Range sets the picked interval; Esc cancels)"
             }

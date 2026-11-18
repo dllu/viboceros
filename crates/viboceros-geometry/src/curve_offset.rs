@@ -632,6 +632,55 @@ impl Curve3 {
         )?])
     }
 
+    /// Join convex gaps with tangent cubic blends and optionally retain
+    /// crossing offset spans at inside corners.
+    pub fn try_offset_with_corner_and_trim(
+        &self,
+        distance: Real,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+        corner: crate::RibbonCornerStyle,
+        trim: bool,
+        operations: Option<CurveOffsetOperations>,
+    ) -> Result<Vec<Self>, GeometryError> {
+        use crate::RibbonCornerStyle::Smooth;
+        if trim && corner != Smooth {
+            return self.try_offset_parts_with_operations(
+                distance,
+                normal,
+                tolerance,
+                corner.layout_style(),
+                operations,
+            );
+        }
+        match self {
+            Self::Polyline(curve) => {
+                offset_polyline_with_trim(curve, distance, normal, tolerance, corner, trim)
+            }
+            Self::PolyCurve(curve) => offset_proxy(curve, tolerance)?
+                .try_offset_with_corner_and_trim(
+                    distance, normal, tolerance, corner, trim, operations,
+                ),
+            Self::NurbsCurve(curve) => {
+                if let Some(polyline) = linear_nurbs_proxy(curve, tolerance)? {
+                    return offset_polyline_with_trim(
+                        &polyline, distance, normal, tolerance, corner, trim,
+                    );
+                }
+                nurbs::offset_with_join_policy(
+                    curve, distance, normal, tolerance, corner, trim, operations,
+                )
+            }
+            _ => self.try_offset_parts_with_operations(
+                distance,
+                normal,
+                tolerance,
+                corner.layout_style(),
+                operations,
+            ),
+        }
+    }
+
     /// Find an offset that contains `through` within absolute model tolerance.
     /// Planar polylines try the nearest segment's perpendicular distance and
     /// the nearest corner's radius or chamfer construction when applicable.
@@ -1183,6 +1232,17 @@ pub(crate) fn polyline_offset_layout(
     tolerance: Tolerance,
     corner_style: CurveOffsetCornerStyle,
 ) -> Result<OffsetPolylineLayout, GeometryError> {
+    polyline_offset_layout_with_trim(polyline, distance, fallback, tolerance, corner_style, true)
+}
+
+fn polyline_offset_layout_with_trim(
+    polyline: &Polyline3,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    corner_style: CurveOffsetCornerStyle,
+    trim: bool,
+) -> Result<OffsetPolylineLayout, GeometryError> {
     let normal = polyline_offset_normal(polyline, fallback, tolerance)?;
     let vertices = polyline.vertices();
     let closed = polyline.is_closed();
@@ -1223,9 +1283,7 @@ pub(crate) fn polyline_offset_layout(
                 .dot(normal.as_vector())?;
             inside = turn * distance > tolerance.angular() * distance.abs();
             outside = turn * distance < -tolerance.angular() * distance.abs();
-            if corner_style != CurveOffsetCornerStyle::Sharp
-                && turn * distance < -tolerance.angular() * distance.abs()
-            {
+            if (!trim && inside) || (corner_style != CurveOffsetCornerStyle::Sharp && outside) {
                 let pair = (
                     vertices[index].translated(lefts[previous].scaled(distance)?)?,
                     vertices[index].translated(lefts[index].scaled(distance)?)?,
@@ -1277,6 +1335,85 @@ pub(crate) fn polyline_offset_layout(
         inside_corners,
         outside_corners,
     })
+}
+
+fn offset_polyline_with_trim(
+    source: &Polyline3,
+    distance: Real,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+    corner: crate::RibbonCornerStyle,
+    trim: bool,
+) -> Result<Vec<Curve3>, GeometryError> {
+    use crate::RibbonCornerStyle::{None, Round, Smooth};
+    let layout = polyline_offset_layout_with_trim(
+        source,
+        distance,
+        normal,
+        tolerance,
+        corner.layout_style(),
+        trim,
+    )?;
+    let directions = source
+        .segments()
+        .map(|segment| segment.direction(tolerance))
+        .collect::<Result<Vec<_>, _>>()?;
+    let corners = &layout.corners;
+    let mut chains = vec![Vec::new()];
+    for (index, &incoming) in directions.iter().enumerate() {
+        let next = (index + 1) % corners.len();
+        let chain = chains.last_mut().unwrap();
+        chain.push(CurveSegment3::Line(LineSegment::try_new(
+            corners[index].1,
+            corners[next].0,
+            tolerance,
+        )?));
+        let (a, b) = corners[next];
+        if a == b {
+            continue;
+        }
+        if corner == None {
+            chains.push(Vec::new());
+            continue;
+        }
+        let piece = match corner {
+            Round if !layout.inside_corners[next] => {
+                CurveSegment3::Arc(polyline_offset_corner_arc(
+                    source.vertices()[next],
+                    a,
+                    b,
+                    layout.normal,
+                    tolerance,
+                )?)
+            }
+            Smooth if !layout.inside_corners[next] => CurveSegment3::NurbsCurve(
+                crate::ribbon::smooth_corner(a, b, incoming, directions[next % directions.len()])?,
+            ),
+            _ => CurveSegment3::Line(LineSegment::try_new(a, b, tolerance)?),
+        };
+        chain.push(piece);
+    }
+    if source.is_closed() && chains.len() > 1 && corners[0].0 == corners[0].1 {
+        let mut last = chains.pop().unwrap();
+        last.append(&mut chains[0]);
+        chains[0] = last;
+    }
+    let joined = chains.len() == 1;
+    chains
+        .into_iter()
+        .filter(|parts| !parts.is_empty())
+        .map(|mut parts| {
+            if parts.len() == 1 {
+                return Ok(parts.remove(0).into_curve());
+            }
+            let curve = PolyCurve3::try_new(parts)?;
+            Ok(Curve3::PolyCurve(if joined {
+                curve.try_reparameterized(source.domain())?
+            } else {
+                curve
+            }))
+        })
+        .collect()
 }
 
 fn offset_polyline_open_gaps(

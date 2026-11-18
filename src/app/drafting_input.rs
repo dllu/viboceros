@@ -170,6 +170,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_orient_curve_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_curve_offset_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_contour_point(point) {
             return accepted;
         }
@@ -256,6 +259,7 @@ impl VibocerosApp {
             | InteractiveCommand::Flow { .. }
             | InteractiveCommand::OrientOnSurface { .. }
             | InteractiveCommand::Splop { .. }
+            | InteractiveCommand::CurveOffset { .. }
             | InteractiveCommand::Section { .. }
             | InteractiveCommand::Contour { .. } => {
                 return false;

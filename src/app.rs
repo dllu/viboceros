@@ -184,6 +184,7 @@ mod curve_chamfer;
 mod curve_deviation;
 mod curve_extrusion;
 mod curve_fillet;
+mod curve_offset;
 mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
@@ -522,6 +523,7 @@ pub struct VibocerosApp {
     paraboloid_session: Option<paraboloid::Session>,
     polygon_session: Option<polygon::Session>,
     section_session: Option<section::Session>,
+    curve_offset_session: Option<curve_offset::Session>,
     cutting_preview: cutting_preview::Preview,
     polyline_session: Option<polyline::Session>,
     pyramid_session: Option<pyramid::Session>,
@@ -725,6 +727,7 @@ impl VibocerosApp {
             paraboloid_session: None,
             polygon_session: None,
             section_session: None,
+            curve_offset_session: None,
             cutting_preview: cutting_preview::Preview::default(),
             polyline_session: None,
             pyramid_session: None,
@@ -1025,6 +1028,9 @@ impl VibocerosApp {
             return;
         }
         if self.continue_rail_revolve_input(&input) {
+            return;
+        }
+        if self.continue_curve_offset(&input) {
             return;
         }
         if self.continue_contour_input(&input) {

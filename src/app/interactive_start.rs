@@ -106,6 +106,9 @@ impl VibocerosApp {
         {
             return true;
         }
+        if self.start_curve_offset(input, false) {
+            return true;
+        }
         if self.try_start_contour_input(input) {
             return true;
         }

@@ -3,6 +3,7 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn cancel_interactive_command(&mut self, announce: bool) {
+        self.release_curve_offset();
         self.finish_section_run();
         self.finish_chain(false);
         self.finish_edge_pattern(false);

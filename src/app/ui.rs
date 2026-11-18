@@ -36,6 +36,7 @@ impl VibocerosApp {
         self.suspend_surface_interpolation_close(ui.input(|i| i.modifiers.alt));
         self.validate_short_path();
         self.validate_surface_offset();
+        self.validate_curve_offset();
         self.validate_orient_edge();
         self.validate_curve_array();
         self.validate_surface_array();
@@ -910,6 +911,11 @@ impl VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active && self.plane_prompt.is_none())
             .and_then(pipe::Session::preview);
+        let offset_preview = self
+            .curve_offset_session
+            .as_ref()
+            .filter(|_| model_input_active && self.plane_prompt.is_none())
+            .and_then(|session| session.preview(self.document.tolerance()));
         let cutting_draft = self.cutting_draft();
         let cutting_sources = cutting_draft.and_then(|draft| self.cutting_sources(draft));
         let cutting_preview =
@@ -1455,6 +1461,7 @@ impl VibocerosApp {
                             solid_axial_input,
                             pipe_preview,
                             cutting_preview,
+                            offset_preview,
                             polyline_input: self
                                 .polyline_session
                                 .as_ref()
@@ -1625,6 +1632,10 @@ impl VibocerosApp {
         if self.update_fillet_corners_preview(fillet_corners_point) {
             ui.ctx().request_repaint();
         }
+        let offset_draft = viewport_outputs
+            .iter()
+            .find_map(|output| output.offset_draft);
+        self.sync_curve_offset_preview(offset_draft, ui.ctx());
         let cutting_plan = viewport_outputs
             .iter_mut()
             .find_map(|output| output.cutting_plan.take());

@@ -27,6 +27,8 @@ const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod clipping;
 mod curve_line;
+mod curve_offset;
+pub(crate) use curve_offset::OffsetDraft;
 mod cutting;
 pub(crate) mod direction;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
@@ -458,6 +460,7 @@ pub struct ViewportInput<'a> {
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
     pub(crate) cutting_preview: Option<CuttingPreview<'a>>,
+    pub(crate) offset_preview: Option<OffsetDraft<'a>>,
     pub polyline_input: Option<PolylinePreview<'a>>,
     pub polygon_input: Option<viboceros_command::polygon::Input>,
     pub pyramid_input: Option<viboceros_command::pyramid::Input>,
@@ -594,6 +597,7 @@ impl Default for ViewportInput<'_> {
             parabola_input: None,
             paraboloid_input: None,
             cutting_preview: None,
+            offset_preview: None,
             polyline_input: None,
             polygon_input: None,
             pyramid_input: None,
@@ -735,6 +739,7 @@ pub struct ViewportOutput {
     pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
     pub(crate) cutting_plan: Option<CutPlan>,
+    pub(crate) offset_draft: Option<viboceros_command::offset_curve::Draft>,
     pub enter_pressed: bool,
     pub source_viewport_click: bool,
     pub activated: bool,
@@ -3031,6 +3036,16 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
             }
         }
+        let offset_draft = input.offset_preview.and_then(|preview| {
+            let point = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_curve_offset(&painter, rect, preview, point)
+        });
         let cutting_plan = input.cutting_preview.and_then(|preview| {
             let cursor = drafting_cursor
                 .filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()))?;
@@ -3591,6 +3606,7 @@ impl Viewport {
             lasso_stroke,
             point_cloud_selection,
             cutting_plan,
+            offset_draft,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Secondary),

@@ -2,6 +2,25 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
+Start `Offset` and pick a source curve, then move the pointer to preview
+either side. A click or typed coordinate commits the offset. `OffsetMultiple`
+lets you pick several curves before Enter and previews the nested-region
+direction. The first interactive run starts at one model unit and one copy.
+
+- Type a new distance or use `Distance` to measure between two snapped points.
+  `ThroughPoint` sets the distance from a picked point. `BothSides` previews
+  both directions. Enter also accepts a fixed-distance two-sided offset.
+- Set `Corner` to Sharp, Round, Smooth, Chamfer, or None. `Trim=No` retains
+  crossing spans at inside corners. `Loose` moves the source edit points.
+  `Tolerance=0` uses the document default. `InCPlane` uses the current
+  construction plane's normal, including for spatial fixed-plane fits.
+- `Cap=Flat` joins open curves with line segments. `Cap=Round` uses tangent
+  arcs. A one-sided cap joins the offset to its source and replaces the source.
+  Two-sided caps use both offsets and keep the source.
+- The commands remember their distances and persistent options independently.
+  BothSides, ThroughPoint, and Loose apply to one run. The shaded model and Undo
+  history are updated on acceptance. Esc ends the current preview.
+
 Select one or more lines, circles, circular arcs, ellipses, planar NURBS curves,
 planar polylines, or supported polycurves, then enter
 `Offset distance side-point`. The point chooses the side of each curve; the
@@ -68,10 +87,9 @@ supporting line or circle is ambiguous and rejected.
 
 `OffsetMultiple distance side-point OffsetCount=n` creates `n` offsets per
 selected curve at successive multiples of the distance (default `n=2`).
-Open curves offset toward the picked side. Closed curves use a shared inward
-or outward choice: a point inside any selected closed region chooses inward.
-Each nested island reverses that direction, including successive nesting
-levels. Closed circles, full circular arcs, ellipses, simple planar polylines,
+Open curves offset toward the picked side. For closed curves, a point
+inside an odd number of selected boundaries chooses inward. An even number
+chooses outward. Each nesting level reverses that direction. Closed circles, full circular arcs, ellipses, simple planar polylines,
 certified simple planar NURBS curves, and their supported polycurve equivalents
 can form regions. Selected closed
 boundaries that intersect or touch are rejected. Self-intersecting closed
@@ -85,9 +103,14 @@ staged before the document changes.
 `OutputLayer=Current` is the default; `OutputLayer=Input` uses each source's
 layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
-curve leaves the document unchanged. Smooth corners,
-trim, cap, and construction-plane overrides, remain
-to be implemented.
+curve leaves the document unchanged. Direct calls support the positional
+options above. The point getter also supports the interactive modes at the
+top of this page. Offsetting surface-edge components and picking a SubCrv
+are still pending. Fixed-plane fitting requires a regular projected tangent
+and continuous offset spans.
+
+The staged Rhino 8 replay fixture checks curve bounds, length, closure,
+selection, and Undo/Redo across 28 cases. See the [captured curves](../../src/app/tests/curve_offset/rhino.json).
 
 ## Ellipse oracle probe
 
