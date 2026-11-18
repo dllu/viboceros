@@ -9,6 +9,7 @@ B-rep output for eligible creators.
 - [Cone and Cylinder bases, direction constraints and live previews](cone-cylinder.md)
 - [TruncatedCone base and top-circle input](truncated-cone.md)
 - [Paraboloid focus, vertex and direction input](paraboloid.md)
+- [Pyramid modes, guides and live previews](pyramid.md)
 - [ShortPath surface geodesics](short-path.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [DivideAlongCreases](divide-along-creases.md)

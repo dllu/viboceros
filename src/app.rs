@@ -272,6 +272,7 @@ mod polyline_on_mesh;
 mod preferences;
 mod project;
 mod project_plane;
+mod pyramid;
 mod radius;
 mod rail_revolve;
 mod rectangle;
@@ -518,6 +519,7 @@ pub struct VibocerosApp {
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
     paraboloid_session: Option<paraboloid::Session>,
+    pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     plane_surface_session: Option<plane_surface::Session>,
@@ -714,6 +716,7 @@ impl VibocerosApp {
             hyperbola_session: None,
             parabola_session: None,
             paraboloid_session: None,
+            pyramid_session: None,
             conic_session: None,
             rectangle_session: None,
             plane_surface_session: None,
@@ -906,6 +909,7 @@ impl VibocerosApp {
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
             || self.try_continue_paraboloid(&input)
+            || self.try_continue_pyramid(&input)
             || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
             || self.continue_solid_axial(&input)

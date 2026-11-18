@@ -169,7 +169,7 @@ impl Direction {
         }
     }
 
-    fn parse(value: &str) -> Option<Self> {
+    pub(crate) fn parse(value: &str) -> Option<Self> {
         [Self::None, Self::Vertical, Self::AroundCurve]
             .into_iter()
             .find(|choice| option_name_eq(value, choice.label()))

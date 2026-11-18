@@ -92,6 +92,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_paraboloid_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_pyramid_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_conic_point(point) {
             return accepted;
         }
@@ -225,6 +228,7 @@ impl VibocerosApp {
             | InteractiveCommand::Hyperbola { .. }
             | InteractiveCommand::Parabola { .. }
             | InteractiveCommand::Paraboloid { .. }
+            | InteractiveCommand::Pyramid { .. }
             | InteractiveCommand::Conic { .. }
             | InteractiveCommand::Torus { .. }
             | InteractiveCommand::SubDEllipsoid { .. }

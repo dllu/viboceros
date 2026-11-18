@@ -80,7 +80,10 @@ impl VibocerosApp {
         if self.start_subd_sphere(input) {
             return true;
         }
-        if self.start_solid_axial(input) || self.start_subd_axial(input) {
+        if self.start_solid_axial(input)
+            || self.start_subd_axial(input)
+            || self.try_start_pyramid(input)
+        {
             return true;
         }
         if self.start_subd_primitive(input) {

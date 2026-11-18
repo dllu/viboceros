@@ -14,6 +14,7 @@ enum Owner {
     SubDSphere,
     Torus(TorusKind),
     SolidAxial(AxialKind),
+    Pyramid,
 }
 impl Owner {
     fn name(self) -> &'static str {
@@ -23,6 +24,7 @@ impl Owner {
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
             Self::SolidAxial(kind) => kind.name(),
+            Self::Pyramid => "Pyramid",
         }
     }
 }
@@ -44,6 +46,7 @@ impl Session {
         let input = self.input?;
         let projects_snaps = match self.owner {
             Owner::Circle | Owner::SolidAxial(_) => true,
+            Owner::Pyramid => false,
             Owner::Torus(kind) => kind.projects_base_snaps(),
             _ => false,
         };
@@ -101,6 +104,10 @@ impl VibocerosApp {
     }
     pub(super) fn start_solid_axial_around(&mut self, kind: AxialKind) {
         self.start_circle_around_for(Owner::SolidAxial(kind), None);
+    }
+
+    pub(super) fn start_pyramid_around(&mut self) {
+        self.start_circle_around_for(Owner::Pyramid, None);
     }
 
     fn start_circle_around_for(
@@ -216,6 +223,7 @@ impl VibocerosApp {
                 kind,
                 anchor: center,
             },
+            Owner::Pyramid => InteractiveCommand::Pyramid { anchor: center },
         });
         self.drafting_plane = s.input.map(Input::frame);
         let name = s.owner.name();
@@ -285,6 +293,15 @@ impl VibocerosApp {
             .as_ref()
             .is_some_and(|s| s.owner == Owner::SubDSphere)
             && !self.valid_subd_sphere()
+        {
+            return false;
+        }
+
+        if self
+            .circle_around_session
+            .as_ref()
+            .is_some_and(|s| s.owner == Owner::Pyramid)
+            && !self.valid_pyramid()
         {
             return false;
         }
@@ -434,6 +451,10 @@ impl VibocerosApp {
             Some(
                 match perpendicular_frame(s.curve.as_ref().unwrap().curve_ref(), point) {
                     Ok(frame) => {
+                        if s.owner == Owner::Pyramid {
+                            let release = s.postselected_object();
+                            return Some(self.accept_pyramid_guide(frame, release));
+                        }
                         let mut input = Input::new(frame, s.preferences, self.document.tolerance());
                         input.option(s.mode.label());
                         s.input = Some(input);
@@ -456,10 +477,14 @@ impl VibocerosApp {
             return true;
         }
         let session = self.circle_around_session.as_ref().unwrap();
-        if matches!(session.owner, Owner::SolidAxial(_))
+        let owner = session.owner;
+        if matches!(owner, Owner::SolidAxial(_))
             && session.input.is_none()
             && self.try_edit_solid_axial_guide(text, session.curve.is_some())
         {
+            return true;
+        }
+        if owner == Owner::Pyramid && self.try_edit_pyramid_guide(text) {
             return true;
         }
         if self.try_continue_circle_snap_projection(text) {

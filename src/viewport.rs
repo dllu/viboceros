@@ -30,6 +30,7 @@ mod curve_line;
 pub(crate) mod direction;
 mod drafting;
 mod paraboloid;
+mod pyramid;
 mod solid_axial;
 pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
 mod ellipsoid;
@@ -446,6 +447,7 @@ pub struct ViewportInput<'a> {
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
+    pub pyramid_input: Option<viboceros_command::pyramid::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
@@ -576,6 +578,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             paraboloid_input: None,
+            pyramid_input: None,
             ellipse_input: None,
             ellipsoid_preview: None,
             tangent: None,
@@ -2965,6 +2968,16 @@ impl Viewport {
                 }
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
             }
+        }
+        if let Some(getter) = input.pyramid_input {
+            let cursor = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_pyramid_preview(&painter, rect, getter, cursor);
         }
         if let Some(getter) = input.paraboloid_input {
             let cursor = drafting_cursor

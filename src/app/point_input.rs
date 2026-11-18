@@ -61,7 +61,13 @@ impl VibocerosApp {
             self.paraboloid_session
                 .as_ref()
                 .and_then(|s| s.input.point_constraint(plane))
-                .unwrap_or_else(|| PointConstraintState::new(anchor, plane))
+                .unwrap_or_else(|| {
+                    let state = PointConstraintState::new(anchor, plane);
+                    self.pyramid_session
+                        .as_ref()
+                        .and_then(|session| session.input.mouse_plane())
+                        .map_or(state, |base| state.with_distance_plane(base.z_axis()))
+                })
         });
         match state.set(constraint, plane) {
             Ok(()) => {
@@ -129,6 +135,7 @@ impl VibocerosApp {
                             .as_ref()
                             .and_then(|s| s.input.anchor())
                     })
+                    .or_else(|| self.pyramid_session.as_ref()?.input.anchor())
                     .or(self.last_point),
             )
         });

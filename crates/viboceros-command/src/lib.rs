@@ -176,6 +176,7 @@ pub mod parabola;
 mod parabola_tests;
 mod parabolic_axis;
 pub mod paraboloid;
+pub mod pyramid;
 pub mod spiral_input;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
@@ -691,6 +692,10 @@ pub trait Command: Send + Sync {
     fn parabola_options(&self) -> Option<parabola::Options> {
         None
     }
+    fn pyramid_options(&self) -> Option<pyramid::Preferences> {
+        None
+    }
+    fn remember_pyramid_options(&self, _value: pyramid::Preferences) {}
     fn paraboloid_options(&self) -> Option<paraboloid::Preferences> {
         None
     }
@@ -1562,7 +1567,7 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(PyramidCommand)
+            .register(pyramid::PyramidCommand::default())
             .expect("unique built-in command");
         registry
             .register(TruncatedPyramidCommand)
@@ -3017,6 +3022,17 @@ impl CommandRegistry {
             .get(&normalize_command_name(kind.name()))
             .and_then(|i| self.commands[*i].parabola_options())
             .unwrap_or_default()
+    }
+    pub fn pyramid_options(&self) -> pyramid::Preferences {
+        self.lookup
+            .get("pyramid")
+            .and_then(|index| self.commands[*index].pyramid_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_pyramid_options(&self, value: pyramid::Preferences) {
+        if let Some(index) = self.lookup.get("pyramid") {
+            self.commands[*index].remember_pyramid_options(value);
+        }
     }
     pub fn paraboloid_options(&self) -> paraboloid::Preferences {
         self.lookup
@@ -7231,36 +7247,6 @@ fn curve_radius_value(
             .length()
             .map_err(Into::into)
         }
-    }
-}
-
-struct PyramidCommand;
-
-impl Command for PyramidCommand {
-    fn name(&self) -> &'static str {
-        "Pyramid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_pyramid_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
-        let pyramid = Brep::try_pyramid(
-            frame,
-            options.side_count,
-            radius,
-            options.height,
-            options.solid,
-            tolerance,
-        )?;
-        let id = document.add_geometry(Geometry::Brep(pyramid))?;
-        Ok(format!(
-            "Added {}-sided {} B-rep pyramid {id} (radius {radius:.6}, height {:.6})",
-            options.side_count,
-            if options.solid { "closed" } else { "open" },
-            options.height
-        ))
     }
 }
 

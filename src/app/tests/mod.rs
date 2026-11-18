@@ -225,6 +225,7 @@ mod polyline_closure;
 mod polyline_closure_reference;
 mod polyline_on_mesh;
 mod primitive_input;
+mod pyramid;
 mod revolve_deformable;
 mod revolve_splitting;
 mod revolve_subd;

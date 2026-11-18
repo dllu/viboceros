@@ -544,6 +544,7 @@ impl InteractiveCommand {
             Self::SelBox {
                 opposite: Some(_), ..
             } => "SelBox: pick a height point (Esc to cancel)",
+            Self::Pyramid { .. } => "Pyramid follows the base and apex prompts (Esc cancels)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }

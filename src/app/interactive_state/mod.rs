@@ -416,6 +416,9 @@ pub(super) enum InteractiveCommand {
         y_count: usize,
         z_count: usize,
     },
+    Pyramid {
+        anchor: Option<Point3>,
+    },
     Polygon {
         side_count: usize,
         center: Option<Point3>,

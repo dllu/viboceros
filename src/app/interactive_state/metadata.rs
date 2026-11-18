@@ -108,6 +108,7 @@ impl InteractiveCommand {
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
             Self::Polygon { .. } => "Polygon",
+            Self::Pyramid { .. } => "Pyramid",
             Self::SurfacePointGrid { control, .. } => {
                 if control {
                     "SrfControlPtGrid"
@@ -287,6 +288,7 @@ impl InteractiveCommand {
             | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
             | Self::Paraboloid { anchor: None }
+            | Self::Pyramid { anchor: None }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Plane { first: None }
@@ -386,6 +388,7 @@ impl InteractiveCommand {
             | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
             | Self::Paraboloid { anchor: start }
+            | Self::Pyramid { anchor: start }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Plane { first: start }

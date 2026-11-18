@@ -892,6 +892,7 @@ impl VibocerosApp {
                     .map(viboceros_command::circle_around_input::Input::frame)
             })
             .or_else(|| surface_session.and_then(orient_surface::Session::angle_plane))
+            .or_else(|| self.pyramid_session.as_ref()?.input.mouse_plane())
             .or_else(|| self.rectangle_mouse_plane())
             .or_else(|| {
                 self.conic_session
@@ -901,6 +902,15 @@ impl VibocerosApp {
         let solid_axial_input = (model_input_active && self.plane_prompt.is_none())
             .then(|| self.solid_axial_preview_input())
             .flatten();
+        let pyramid_input = self
+            .pyramid_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.circle_around_session.is_none()
+            })
+            .map(|s| s.input);
         let solid_axial_fit = model_input_active
             .then(|| self.solid_axial_fit_preview())
             .flatten();
@@ -908,6 +918,7 @@ impl VibocerosApp {
             .then(|| {
                 self.translation_constraint()
                     .or_else(|| self.line_axis_constraint())
+                    .or_else(|| pyramid_input?.height_constraint())
                     .or_else(|| {
                         solid_axial_input
                             .and_then(viboceros_command::solid_axial::Input::height_constraint)
@@ -1412,6 +1423,7 @@ impl VibocerosApp {
                             arc_preview,
                             circle_around_input,
                             solid_axial_input,
+                            pyramid_input,
                             solid_axial_fit,
                             torus_preview_curves: self
                                 .torus_session
