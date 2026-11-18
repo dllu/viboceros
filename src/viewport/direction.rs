@@ -16,6 +16,18 @@ pub(crate) struct Overlay<'a> {
     pub markers: &'a [Marker],
 }
 
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) enum Readout {
+    CurveParameter(f64),
+    DraftAngle(f64),
+}
+
+pub(super) struct Hit {
+    pub(super) object: ObjectId,
+    pub(super) marker: Option<Marker>,
+    pub(super) readout: Option<Readout>,
+}
+
 impl Viewport {
     pub(super) fn direction_hit(
         &self,
@@ -23,44 +35,59 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         overlay: Overlay<'_>,
-    ) -> Option<(ObjectId, Option<Marker>)> {
+    ) -> Option<Hit> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return None;
         }
+        let curve_hit = overlay
+            .edits
+            .geometries()
+            .filter_map(|(id, g)| {
+                let curve = g.curve_ref()?;
+                let converted;
+                let display = match curve {
+                    viboceros_geometry::CurveRef::NurbsCurve(nurbs) => nurbs,
+                    _ => {
+                        converted = curve.to_nurbs().ok()?;
+                        &converted
+                    }
+                };
+                let t = curve
+                    .parameter_from_nurbs(self.pick_edge_parameter(display, pointer, rect, false)?)
+                    .ok()?;
+                let sample = curve.evaluate_with_tangent(t).ok();
+                let point = sample
+                    .as_ref()
+                    .map(|sample| sample.point())
+                    .or_else(|| curve.evaluate(t).ok())?;
+                let distance = self.project(point, rect)?.distance(pointer);
+                (distance <= PICK_CAPTURE_PIXELS).then_some((
+                    distance,
+                    Hit {
+                        object: id,
+                        marker: sample.map(|sample| Marker {
+                            object: id,
+                            point,
+                            axes: [Some(sample.tangent().as_vector()), None, None],
+                            surface: false,
+                        }),
+                        readout: Some(Readout::CurveParameter(t)),
+                    },
+                ))
+            })
+            .min_by(|a, b| a.0.total_cmp(&b.0));
+        if let Some((_, hit)) = curve_hit {
+            return Some(hit);
+        }
         // A Dir surface remains pickable across its face in wireframe too.
-        let face_hit = self.pick_selected_face_with_point_restricted(
+        let (id, face_index, point) = self.pick_selected_face_with_point_restricted(
             pointer,
             rect,
             document,
             FacePickMode::Any,
             None,
             Some(overlay.ids),
-        );
-        let curve_hit = overlay
-            .edits
-            .geometries()
-            .filter(|(_, g)| g.curve_ref().is_some())
-            .filter_map(|(id, g)| {
-                let curve = g.curve_ref()?.to_nurbs().ok()?;
-                let t = self.pick_edge_parameter(&curve, pointer, rect, false)?;
-                let sample = g.curve_ref()?.evaluate_with_tangent(t).ok()?;
-                let distance = self.project(sample.point(), rect)?.distance(pointer);
-                (distance <= PICK_CAPTURE_PIXELS).then_some((
-                    distance,
-                    id,
-                    Marker {
-                        object: id,
-                        point: sample.point(),
-                        axes: [Some(sample.tangent().as_vector()), None, None],
-                        surface: false,
-                    },
-                ))
-            })
-            .min_by(|a, b| a.0.total_cmp(&b.0));
-        if let Some((_, id, marker)) = curve_hit {
-            return Some((id, Some(marker)));
-        }
-        let (id, face_index, point) = face_hit?;
+        )?;
         let geometry = overlay.edits.geometries().find(|(key, _)| *key == id)?.1;
         let marker = match geometry {
             Geometry::Brep(brep) => {
@@ -82,7 +109,25 @@ impl Viewport {
             }
             _ => None,
         };
-        Some((id, marker))
+        let single_surface = match geometry {
+            Geometry::NurbsSurface(_) => true,
+            Geometry::Brep(brep) => brep.faces().len() == 1,
+            _ => false,
+        };
+        let readout = marker
+            .as_ref()
+            .filter(|_| single_surface)
+            .and_then(|marker| {
+                let normal = marker.axes[2]?;
+                let up = self.construction_plane().z_axis().as_vector();
+                let sine = normal.dot(up).ok()?;
+                Some(Readout::DraftAngle(sine.clamp(-1., 1.).asin().to_degrees()))
+            });
+        Some(Hit {
+            object: id,
+            marker,
+            readout,
+        })
     }
 
     pub(super) fn paint_direction(

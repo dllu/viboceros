@@ -384,7 +384,7 @@ impl VibocerosApp {
                     length: p.length,
                     locked_forward: p.locked_forward,
                     midpoint: p.from_midpoint,
-                    retain_orientation: !p.offset_temporary,
+                    retain_orientation: p.temporary.is_none(),
                     bounded: false,
                 });
             return p

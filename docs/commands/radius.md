@@ -2,21 +2,23 @@
 
 [Command index](README.md)
 
-Enter `Radius 2,0,0` or `Diameter 2,0,0`. With no coordinates,
-the application prompts for one picked or typed point. The closest point on the
-nearest eligible curve determines the evaluation location. With no preselection,
-all selectable curves are candidates: hidden/locked objects and hidden/locked
-layers are excluded, and non-curves are ignored. Preselect curves to restrict
-the search to those objects. Both commands report
-radius and diameter in model units. They do not change geometry, selection, or
-undo/redo history by default. Esc cancels the interactive prompt. Failed point
-evaluations keep the prompt and previous point anchor intact for correction.
+Run `Radius` or `Diameter` and move the pointer over a curve. The viewport
+marks the evaluation point and the status bar reports the current value.
+Click to report both radius and diameter in the command log. Pick more
+locations or press Enter to finish. Esc ends the session.
 
-Exception: bare `Radius` or `Diameter` immediately reports a single preselected
-circle or circular arc. This includes NURBS curves recognized by whole-span
-circularity bounds, not just native primitives. Non-circular or inconclusive
-NURBS curves still require a point. Explicit marking options also retain point
-input so the marker location is unambiguous. The shortcut does not create markers.
+Without preselection, the viewport looks for visible, selectable curves
+within the pick aperture. Preselect curves to limit the search. `SelectCurve`
+opens a one-curve picker. Once chosen, the pointer is constrained to the curve
+and the viewport highlights it. Press Enter in the curve picker to make all
+eligible curves available again. Use `SelectCurve`, then `SubCrv`, to measure a
+temporary portion. Pick a start and end or enter a length and confirm its
+direction. The measured portion stays private to the command.
+
+`Radius 2,0,0` and `Diameter 2,0,0` perform a one-shot model-space query
+at the closest location on an eligible curve. A bare command also reports
+a single preselected circle or circular arc immediately. That shortcut
+includes NURBS curves recognized by whole-span circularity bounds.
 
 These are local curvature measurements, not circle-fitting operations: radius
 is the reciprocal curvature magnitude and diameter is twice that value. Lines,
@@ -25,23 +27,24 @@ are arcs, circles, ellipses, NURBS curves, and polycurves, using the same
 differential evaluation as `Curvature`. A finite result outside the representable
 numeric range is an error, not an infinite-curvature-radius report.
 
-`Radius MarkRadius=Yes 2,0,0` or `Diameter MarkDiameter=Yes 2,0,0` adds a point
-and, where the existing curvature-marker policy permits, an osculating circle.
-Markers use the current layer, preserve source selection, and form one undoable
-operation. Flat curves receive a point only. All markers are constructed before
-insertion; failed commands roll back atomically.
+`MarkRadius` and `MarkDiameter` toggle the creation of a point and an
+osculating circle. Straight or zero-curvature locations receive a point.
+Markers use the current layer and preserve source selection. All marked picks
+in one viewport session form one undo step. The toggle is remembered
+independently for each command. Scripted calls can specify `MarkRadius=Yes`
+or `MarkDiameter=Yes` before the point.
 
-With no preselected objects, `Radius 2,0,0 Units=cm` and
-`Diameter 2,0,0 Units=cm` convert the reported lengths to centimeters without
-changing model units or geometry. `Units=Model_Units` restores the model-unit
-report. The option may be given before or after the point, or entered during the
-interactive point prompt. A preselected object makes `Units` unavailable, as in
-[Rhino's Radius/Diameter options](https://docs.mcneel.com/rhino/8/help/en-us/commands/diameter.htm).
-Physical source units are required for conversion; invalid and unrepresentable
-conversions leave the model and its history intact. The curvature-to-length
-quotient applies display scaling before its final binary64 rounding, so a
-finite converted diameter can be reported even if its model-unit value would
-overflow.
+Use `Units` to open the display-unit menu or enter `Units=cm` directly.
+`Model_Units` reports the original model lengths. The interactive choice is
+remembered independently for each command. `Decimal_Inches`, `Decimal_Feet`,
+`Fractional_Inches`, and `Feet_Inches` are accepted. Fractional formats display
+to the nearest eighth of an inch. Unit conversion requires physical model
+units and leaves the model settings unchanged. The Units option is disabled
+for explicit object preselection.
+
+At the numeric length prompt in `Fillet`, `Offset`, `OffsetSrf`, or `Circle`,
+enter `'Radius` and pick a curve location. A finite result fills the parent
+prompt in model units. Esc returns to that prompt with its previous value.
 
 Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2),
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,
@@ -60,17 +63,16 @@ The probe's zero elapsed times are not performance measurements.
 tools/rhino_oracle/run_headless.sh rhino tools/rhino_oracle/fixtures/radius-command.json --timeout 240
 ```
 
-Live prompt inspection also found that Rhino immediately reports a preselected
-circular arc's radius, whereas a preselected line still opens the picking prompt.
-The native UI now implements that distinction for one preselected curve. Rhino's unrestricted
-picker did not consume the world-coordinate token used by the probe, so this
-fixture does not establish parity for typed versus mouse-picked input. The probe
-cleans up its temporary source and restores prior selection, including failures;
-mock tests exercise construction and command-capture failures.
+Headless Rhino 8.32 viewport probes also verified repeated measurements,
+curve restriction and temporary portions, marking on both curved and linear
+inputs, and remembered unit and marker choices. The viewport cases used an
+ellipse with semiaxes 4 and 2 and reported radii of 1.000 and 8.000 at the
+axis ends. Rhino reported 3/8 inch and 5/8 inch for the radius and diameter in
+fractional format at the minor-axis end of that millimeter model. Egui
+pointer tests exercise the same getters and verify preview-to-pick agreement,
+marker undo, and return to the parent numeric prompt.
+A native Fillet probe measured the ellipse through `'Radius` and returned to
+Fillet with its radius set to 8.
 
-[Rhino's reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/radius.htm)
-also describes cursor feedback, `SelectCurve`,
-`SubCrv`, and nested numeric input. Those workflows and live hover/status-bar
-curvature feedback are not implemented yet. Point lookup currently uses 3D
-nearest distance, not a screen-space hit aperture. Explicit mixed selections
-containing non-curves are rejected.
+[McNeel's Radius and Diameter reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/diameter.htm)
+documents the units pane, curve restriction, and nested measurement workflow.

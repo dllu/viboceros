@@ -175,6 +175,7 @@ mod catenary;
 mod conic;
 mod construction_plane;
 mod contour;
+mod curvature;
 mod curvature_analysis;
 mod curvature_graph;
 mod curve_apex;
@@ -252,6 +253,7 @@ mod mesh_face_prompt;
 mod mirror;
 mod move_normal;
 mod named_view;
+mod nested_measurement;
 mod object_selection;
 mod offset_mesh;
 mod offset_subd;
@@ -496,6 +498,15 @@ pub struct VibocerosApp {
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
     align_session: Option<align::Session>,
+    radius_session: Option<radius::Session>,
+    nested_measurement: Option<nested_measurement::Session>,
+    nested_distance_units: Option<&'static str>,
+    nested_length_units: Option<&'static str>,
+    distance_units_prompt: bool,
+    radius_mark: [bool; 2],
+    radius_units: [Option<&'static str>; 2],
+    curvature_session: Option<curvature::Session>,
+    curvature_mark: bool,
     distribute_session: Option<distribute::Session>,
     distribute_settings: viboceros_command::DistributionSettings,
     offset_mesh_session: Option<offset_mesh::Session>,
@@ -705,6 +716,15 @@ impl VibocerosApp {
             surface_offset_session: None,
             short_path_session: None,
             align_session: None,
+            radius_session: None,
+            nested_measurement: None,
+            nested_distance_units: None,
+            nested_length_units: None,
+            distance_units_prompt: false,
+            radius_mark: [false; 2],
+            radius_units: [None; 2],
+            curvature_session: None,
+            curvature_mark: false,
             distribute_session: None,
             distribute_settings: Default::default(),
             offset_mesh_session: None,
@@ -794,6 +814,9 @@ impl VibocerosApp {
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
         if self.command_file_input(&input) || self.continue_layer_prompt(&input) {
+            return;
+        }
+        if self.continue_nested_measurement(&input) || self.start_nested_measurement(&input) {
             return;
         }
         if self.try_draft_pull_command(&input) {
@@ -1110,6 +1133,7 @@ impl VibocerosApp {
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
+            || self.continue_curvature(&input)
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_circle(&input)
@@ -1231,6 +1255,9 @@ impl VibocerosApp {
         };
         let input: &str = input.as_ref();
         self.selection_menu = None;
+        if self.continue_nested_measurement(input) || self.start_nested_measurement(input) {
+            return true;
+        }
         if self.try_continue_component_choice(input)
             || self.try_continue_soft_crease(input)
             || self.try_continue_crease(input)
@@ -1262,6 +1289,7 @@ impl VibocerosApp {
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
+            || self.continue_curvature(input)
             || self.try_continue_length(input)
             || self.try_continue_angle(input)
             || self.try_continue_circle(input)

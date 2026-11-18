@@ -66,6 +66,9 @@ impl Session {
     pub(super) fn wants_point(&self) -> bool {
         self.distance_menu || self.through_point
     }
+    pub(super) fn takes_distance_measurement(&self) -> bool {
+        self.distance_menu
+    }
     pub(super) fn hint(&self) -> &'static str {
         if self.tolerance_menu {
             "Offset tolerance; Default or 0 follows the document tolerance"
@@ -230,7 +233,7 @@ impl VibocerosApp {
         self.log_offset_surface();
         true
     }
-    fn log_offset_surface(&mut self) {
+    pub(super) fn log_offset_surface(&mut self) {
         if let Some(s) = &self.offset_surface_session {
             if s.tolerance_menu {
                 self.push_log(format!(

@@ -30,6 +30,7 @@ pub use evaluate_uv::{
 mod tests;
 pub(super) use distance::DistanceCommand;
 pub use distance::distance_display_units;
+pub use length::{length_edge_kind, measure_length_targets};
 
 fn format_measurement(value: Real) -> String {
     if value == 0.0 {

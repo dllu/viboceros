@@ -13,6 +13,8 @@ impl VibocerosApp {
     ) -> bool {
         if self.start_align(input, picked_sources.is_some())
             || self.start_distribute(input, picked_sources.is_some())
+            || self.start_radius(input)
+            || self.start_curvature(input)
         {
             return true;
         }
@@ -205,15 +207,6 @@ impl VibocerosApp {
                 self.commands.copy_default(&normalized).unwrap(),
             )
         });
-        if matches!(normalized.as_str(), "radius" | "diameter")
-            && arguments.is_empty()
-            && viboceros_command::preselected_circular_radius(&self.document)
-                .ok()
-                .flatten()
-                .is_some()
-        {
-            return false;
-        }
         if normalized == "angle"
             && arguments.is_empty()
             && self.document.selected_object_ids().next().is_some()
@@ -456,51 +449,6 @@ impl VibocerosApp {
                 return false;
             };
             command
-        } else if matches!(normalized.as_str(), "curvature" | "radius" | "diameter") {
-            let mut mark = false;
-            let mut display_units = None;
-            let mut units_seen = false;
-            let mark_option = match normalized.as_str() {
-                "radius" => "MarkRadius",
-                "diameter" => "MarkDiameter",
-                _ => "MarkCurvature",
-            };
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                if name.eq_ignore_ascii_case(mark_option) {
-                    mark = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                        true
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                        false
-                    } else {
-                        return false;
-                    };
-                } else if name.eq_ignore_ascii_case("Units")
-                    && normalized != "curvature"
-                    && !units_seen
-                    && self.document.selected_object_count() == 0
-                {
-                    display_units = match viboceros_command::distance_display_units(value) {
-                        Ok(units) => units,
-                        Err(_) => return false,
-                    };
-                    units_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            if normalized == "curvature" {
-                InteractiveCommand::Curvature { mark }
-            } else {
-                InteractiveCommand::Radius {
-                    diameter: normalized == "diameter",
-                    mark,
-                    display_units,
-                }
-            }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
             let Some((copy, output_on_current_layer, subd_add_corners)) = extract_surface::options(
                 &arguments,
@@ -1531,7 +1479,6 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeSurfaceToPoint { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
-                | InteractiveCommand::Curvature { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }

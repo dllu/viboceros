@@ -112,8 +112,8 @@ fn inspection_paints_and_clicks_in_every_view_and_display_mode() {
                     let hit = view
                         .direction_hit(pointer, view.last_rect.unwrap(), &doc, overlay)
                         .unwrap();
-                    assert_eq!(hit.0, id);
-                    assert!(hit.1.is_some());
+                    assert_eq!(hit.object, id);
+                    assert!(hit.marker.is_some());
                     let input = ViewportInput {
                         direction: Some(overlay),
                         ..Default::default()
@@ -178,8 +178,8 @@ fn trimmed_face_markers_and_hover_avoid_holes_and_retain_face_identity() {
     };
     let material = view.project(markers[0].point, rect).unwrap();
     let hit = view.direction_hit(material, rect, &doc, overlay).unwrap();
-    assert_eq!(hit.0, id);
-    assert!(hit.1.is_some());
+    assert_eq!(hit.object, id);
+    assert!(hit.marker.is_some());
     // The frozen source has an interior hole at (3,3).
     let hole = view.project(point(3., 3., 0.), rect).unwrap();
     assert!(view.direction_hit(hole, rect, &doc, overlay).is_none());

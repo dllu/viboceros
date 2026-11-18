@@ -117,15 +117,24 @@ the requested conversion reduces magnitude, an exact scaled-projection fallback
 converts before rounding and measures the finite display-space displacement.
 Tests cover overflowing coordinate differences and overflowing norms separately.
 The override is available in complete typed commands and at either interactive
-point prompt: enter `Units=Inches` (or another physical unit), then continue
-picking. `Units=Model_Units` clears the override. Unit choices preserve accepted
+point prompt. Enter `Units` to open the unit menu or `Units=Inches` to choose
+directly, then continue picking. `Units=Model_Units` clears the override. Unit choices preserve accepted
 points. You can also start with `Distance Units=Inches`; underscore-prefixed
 macro forms such as `_Distance _Units=_Inches` are accepted. Complete commands
 containing both coordinates still execute directly instead of opening a prompt.
 Unit choices survive local `Undo`, but reset for each new measurement. Invalid
 choices leave the prompt unchanged; failed final conversions retain the first
 point so units or the second point can be corrected.
-Nesting a measurement inside another command's numeric prompt is not implemented.
+
+At a numeric length prompt in `Fillet`, `Offset`, `OffsetSrf`, or `Circle`,
+enter `'Distance` and pick or type two points to supply their distance.
+Enter `'Length` to pick curves or edges. Drag a selection window to collect
+curves, use `SubCrv` for temporary portions, or use `SelChain` for connected
+inputs. Press Enter to supply the total.
+Both measurements return model-unit values, including when a unit option is
+set. Esc returns to the parent prompt. Measurements preserve the document's
+geometry and selection. [Rhino Distance](https://docs.mcneel.com/rhino/8/help/en-us/commands/distance.htm) · [Rhino Length](https://docs.mcneel.com/rhino/8/help/en-us/commands/length.htm)
+
 Six live command probes on Rhino 8.32.26160.13001 cover positive deltas,
 negative X/Y, vertical up/down, and a translated/rotated CPlane. The
 [captured output](../distance-rhino-reference.json) established the signed

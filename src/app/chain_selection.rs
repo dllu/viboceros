@@ -9,6 +9,7 @@ pub(super) struct Prompt {
     preview: Vec<Target>,
     pending: Option<String>,
     defer_apply: bool,
+    private: bool,
 }
 impl Prompt {
     pub(super) fn hint(&self) -> &'static str {
@@ -63,11 +64,17 @@ impl VibocerosApp {
                 return true;
             }
         };
-        if !self.length_chain_available() {
+        let private = self.nested_length_wants_source();
+        if !private && !self.length_chain_available() {
             self.cancel_interactive_command(false);
         }
         self.length_choices = None;
-        match Session::new(&self.document, self.commands.component_selection(), options) {
+        let session = if private {
+            Session::new_for_measurement(&self.document, options)
+        } else {
+            Session::new(&self.document, self.commands.component_selection(), options)
+        };
+        match session {
             Ok(session) => {
                 self.commands
                     .remember_chain_selection_options(options)
@@ -78,6 +85,7 @@ impl VibocerosApp {
                     preview: Vec::new(),
                     pending: None,
                     defer_apply: false,
+                    private,
                 });
                 self.push_log(format!("SelChain: {HINT}"));
             }
@@ -122,8 +130,12 @@ impl VibocerosApp {
             .session
             .pick_input(&self.document, picks[0])
             .and_then(|()| {
-                p.session
-                    .apply(&mut self.document, self.commands.component_selection())
+                if p.private {
+                    Ok(())
+                } else {
+                    p.session
+                        .apply(&mut self.document, self.commands.component_selection())
+                }
             });
         if result.is_ok() {
             p.defer_apply = false;
@@ -154,6 +166,16 @@ impl VibocerosApp {
             return;
         };
         let accept = accept && p.session.has_seed();
+        if p.private {
+            if accept && p.session.current(&self.document) {
+                self.add_nested_length_targets(p.session.targets(), SelectionMode::Add, true);
+            } else {
+                self.push_log("SelChain canceled".into());
+            }
+            self.command_input.clear();
+            self.log_nested_length();
+            return;
+        }
         let result = if accept {
             p.session
                 .apply(&mut self.document, self.commands.component_selection())
@@ -211,7 +233,7 @@ impl VibocerosApp {
                 Ok(true) => self.finish_chain(true),
                 Ok(false) => {
                     p.preview = p.session.preview();
-                    let result = if p.defer_apply {
+                    let result = if p.private || p.defer_apply {
                         Ok(())
                     } else {
                         p.session
@@ -242,7 +264,11 @@ impl VibocerosApp {
                 self.pick_chain(vec![target]);
                 return true;
             }
-            let result = if input.eq_ignore_ascii_case("All") {
+            let result = if p.private && input.eq_ignore_ascii_case("All") {
+                p.session.extend(&self.document, false)
+            } else if p.private && input.eq_ignore_ascii_case("Undo") {
+                p.session.undo(&self.document)
+            } else if input.eq_ignore_ascii_case("All") {
                 // Native global SelAll remains visible through proposal confirmation;
                 // finishing the getter restores its internal chain selection.
                 p.defer_apply = true;
@@ -259,6 +285,11 @@ impl VibocerosApp {
             };
             if let Err(e) = result {
                 self.push_log(format!("Error: {e}"));
+            }
+            if let Some(p) = &mut self.chain_prompt
+                && p.private
+            {
+                p.preview = p.session.preview();
             }
             self.command_input.clear();
             return true;
@@ -298,8 +329,12 @@ impl VibocerosApp {
                 .and_then(|o| p.session.set_options(o))
         };
         let result = result.and_then(|()| {
-            p.session
-                .apply(&mut self.document, self.commands.component_selection())
+            if p.private {
+                Ok(())
+            } else {
+                p.session
+                    .apply(&mut self.document, self.commands.component_selection())
+            }
         });
         if result.is_ok() {
             p.defer_apply = false;

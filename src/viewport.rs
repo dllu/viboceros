@@ -29,9 +29,11 @@ mod clipping;
 mod curve_line;
 mod curve_offset;
 pub(crate) use curve_offset::OffsetDraft;
+pub(crate) mod curvature;
 mod cutting;
 pub(crate) mod direction;
 mod placement;
+pub(crate) mod radius;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -384,6 +386,9 @@ pub struct ViewportInput<'a> {
     pub distribution_source_pick: bool,
     pub alignment_curve_pick: Option<&'a viboceros_command::align::AlignmentSources>,
     pub alignment_plane_preview: Option<viboceros_command::rectangle_input::RectangleDefinition>,
+    pub(crate) radius_input: Option<radius::RadiusInput<'a>>,
+    pub(crate) curvature_input: Option<curvature::Input<'a>>,
+    pub(crate) curvature_guides: Option<curvature::Guides<'a>>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -497,6 +502,7 @@ pub struct ViewportInput<'a> {
     pub curve_or_edge_pick: bool,
     pub chain_pick: bool,
     pub length_pick: bool,
+    pub(crate) nested_length_guides: &'a [&'a NurbsCurve],
     pub chain_highlights: &'a [viboceros_command::chain_selection::Target],
     pub component_preselection: bool,
     pub control_point_pick: bool,
@@ -561,6 +567,9 @@ impl Default for ViewportInput<'_> {
             distribution_source_pick: false,
             alignment_curve_pick: None,
             alignment_plane_preview: None,
+            radius_input: None,
+            curvature_input: None,
+            curvature_guides: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -657,6 +666,7 @@ impl Default for ViewportInput<'_> {
             curve_or_edge_pick: false,
             chain_pick: false,
             length_pick: false,
+            nested_length_guides: &[],
             chain_highlights: &[],
             component_preselection: false,
             control_point_pick: false,
@@ -685,6 +695,10 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub(crate) radius_hover: Option<(Pos2, radius::RadiusHit)>,
+    pub(crate) radius_click: Option<radius::RadiusClick>,
+    pub(crate) curvature_hover: Option<(Pos2, curvature::Hit)>,
+    pub(crate) curvature_click: Option<curvature::Click>,
     pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
     pub arc_blend_hover: Option<Real>,
     pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
@@ -696,6 +710,7 @@ pub struct ViewportOutput {
     pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub direction_click: Option<ObjectId>,
+    pub(crate) direction_readout: Option<direction::Readout>,
     pub insert_point: Option<(
         viboceros_geometry::PolygonEdgePoint,
         viboceros_geometry::UnitVector3,
@@ -718,6 +733,7 @@ pub struct ViewportOutput {
     pub parametric_click: Option<Vec<ParametricPick>>,
     pub chain_click: Option<Vec<viboceros_command::chain_selection::Target>>,
     pub length_mode: Option<SelectionMode>,
+    pub(crate) length_direct: bool,
     pub component_click: Option<ComponentClick>,
     pub component_double_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
@@ -1683,6 +1699,8 @@ impl Viewport {
             .or(component_hover_mode
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
+            || input.radius_input.is_some()
+            || input.curvature_input.is_some()
             || input.direction.is_some()
             || input.parametric_pick
             || input.chain_pick
@@ -2462,8 +2480,43 @@ impl Viewport {
                 }
             }
         }
+        let (radius_hover, radius_click) = self.radius_getter(
+            input.radius_input,
+            &response,
+            &painter,
+            rect,
+            viewport_index,
+            document,
+            drafting,
+        );
+        let (curvature_hover, curvature_click) =
+            input.curvature_input.map_or((None, None), |input_view| {
+                self.paint_curvature_guides(&painter, rect, input_view, input.curvature_guides);
+                let clicked = response.clicked_by(PointerButton::Primary);
+                let pixel = if clicked {
+                    response.interact_pointer_pos()
+                } else {
+                    response.hover_pos()
+                };
+                let Some(pixel) = pixel else {
+                    return (None, None);
+                };
+                let hit =
+                    self.curvature_hit(input_view, pixel, rect, document, drafting.snap_options());
+                (
+                    hit.map(|hit| (pixel, hit)),
+                    clicked.then_some(curvature::Click {
+                        viewport: viewport_index,
+                        pixel,
+                        hit,
+                    }),
+                )
+            });
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
+        for &curve in input.nested_length_guides {
+            self.paint_curve_draft(&painter, rect, curve);
+        }
         if (input.chain_pick || input.length_pick)
             && let Some(pointer) = response.hover_pos()
         {
@@ -2506,11 +2559,7 @@ impl Viewport {
                 rect,
                 overlay,
                 (overlay.ids.len() == 1)
-                    .then_some(
-                        direction_hit
-                            .as_ref()
-                            .and_then(|(_, marker)| marker.as_ref()),
-                    )
+                    .then_some(direction_hit.as_ref().and_then(|hit| hit.marker.as_ref()))
                     .flatten(),
             );
         }
@@ -3563,6 +3612,10 @@ impl Viewport {
                 && response
                     .interact_pointer_pos()
                     .is_some_and(|pointer| pointer.y <= rect.top() + 28.0),
+            radius_hover,
+            radius_click,
+            curvature_hover,
+            curvature_click,
             zoom_window_result,
             zoom_window_cancelled: input.zoom_window
                 && response.clicked_by(PointerButton::Secondary),
@@ -3596,10 +3649,16 @@ impl Viewport {
             parametric_click,
             chain_click,
             length_mode: input.length_pick.then_some(selection_mode(modifiers)),
+            length_direct: modifiers.command && modifiers.shift,
             direction_click: response
                 .clicked_by(PointerButton::Primary)
-                .then_some(direction_hit.map(|(id, _)| id))
+                .then_some(direction_hit.as_ref().map(|hit| hit.object))
                 .flatten(),
+            direction_readout: input
+                .direction
+                .filter(|overlay| overlay.ids.len() == 1)
+                .and(direction_hit)
+                .and_then(|hit| hit.readout),
             component_click,
             component_double_click,
             component_window,

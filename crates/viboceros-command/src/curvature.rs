@@ -1,13 +1,16 @@
 use super::*;
 use viboceros_geometry::SurfaceCurvature;
+mod features;
 mod radius;
+pub use features::{CurvatureFeature, curve_curvature_features};
 pub(super) use radius::RadiusCommand;
-pub use radius::preselected_circular_radius;
+pub use radius::{RadiusMeasurement, preselected_circular_radius, radius_display_units};
 
 pub(super) struct CurvatureCommand;
 const USAGE: &str = "Curvature [MarkCurvature=Yes|No] point-on-selected-curve-or-surface";
 
-enum Evaluation {
+#[derive(Clone, Copy, Debug)]
+pub enum CurvatureSample {
     Curve {
         parameter: f64,
         point: Point3,
@@ -34,11 +37,11 @@ impl Target<'_> {
             Self::Surface(s, _, [u, v], _, _) => s.evaluate(*u, *v),
         }
     }
-    fn evaluate(self) -> Result<Evaluation, GeometryError> {
+    fn evaluate(self) -> Result<CurvatureSample, GeometryError> {
         Ok(match self {
             Self::Curve(curve, parameter) => {
                 let sample = curve.evaluate_with_tangent(parameter)?;
-                Evaluation::Curve {
+                CurvatureSample::Curve {
                     parameter,
                     point: sample.point(),
                     tangent: sample.tangent(),
@@ -47,7 +50,7 @@ impl Target<'_> {
             }
             Self::Surface(s, face, parameter, reversed, bounds_diagonal) => {
                 let c = s.curvature_at(parameter[0], parameter[1])?;
-                Evaluation::Surface {
+                CurvatureSample::Surface {
                     face,
                     parameter,
                     curvature: if reversed { c.reversed() } else { c },
@@ -58,31 +61,148 @@ impl Target<'_> {
     }
 }
 
-impl Evaluation {
-    fn point(&self) -> Point3 {
+impl CurvatureSample {
+    pub fn on_curve(
+        curve: CurveRef<'_>,
+        parameter: f64,
+        inflection: bool,
+    ) -> Result<Self, GeometryError> {
+        let mut sample = Target::Curve(curve, parameter).evaluate()?;
+        if inflection && let Self::Curve { curvature, .. } = &mut sample {
+            *curvature = Vector3::try_new(0., 0., 0.)?;
+        }
+        Ok(sample)
+    }
+
+    pub fn on_surface(
+        geometry: &Geometry,
+        face: usize,
+        [u, v]: [f64; 2],
+        tolerance: Tolerance,
+    ) -> Result<Self, CommandError> {
+        let target = match geometry {
+            Geometry::NurbsSurface(surface) if face == 0 => {
+                let bounds = surface.control_point_bounds();
+                Target::Surface(
+                    surface,
+                    None,
+                    [u, v],
+                    false,
+                    bounds.min().distance_to(bounds.max())?,
+                )
+            }
+            Geometry::Brep(brep) => {
+                let surface_face = brep
+                    .faces()
+                    .get(face)
+                    .ok_or(CommandError::CurvatureOutsideTrimmedFaces)?;
+                if !surface_face.contains_parameters(u, v, tolerance)? {
+                    return Err(CommandError::CurvatureOutsideTrimmedFaces);
+                }
+                let bounds = brep.bounds();
+                Target::Surface(
+                    surface_face.surface(),
+                    Some(face),
+                    [u, v],
+                    surface_face.is_reversed(),
+                    bounds.min().distance_to(bounds.max())?,
+                )
+            }
+            _ => return Err(CommandError::CurvatureRequiresCurveOrSurface),
+        };
+        Ok(target.evaluate()?)
+    }
+
+    pub fn nearest<'a>(
+        objects: impl Iterator<Item = &'a viboceros_document::Object>,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, CommandError> {
+        let mut best: Option<(f64, Target<'_>)> = None;
+        let mut objects = objects.peekable();
+        if objects.peek().is_none() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        for object in objects {
+            let geometry = object.geometry();
+            let value = if let Some(curve) = geometry_curve_ref(geometry) {
+                let parameter = curve.closest_parameter(target, tolerance)?;
+                Some(Target::Curve(curve, parameter))
+            } else {
+                match geometry {
+                    Geometry::NurbsSurface(surface) => {
+                        let (u, v) = surface.closest_parameters(target, tolerance)?;
+                        let bounds = surface.control_point_bounds();
+                        Some(Target::Surface(
+                            surface,
+                            None,
+                            [u, v],
+                            false,
+                            bounds.min().distance_to(bounds.max())?,
+                        ))
+                    }
+                    Geometry::Brep(brep) => {
+                        if let Some((face, u, v)) =
+                            brep.closest_face_parameters(target, tolerance)?
+                        {
+                            let f = &brep.faces()[face];
+                            Some(Target::Surface(
+                                f.surface(),
+                                Some(face),
+                                [u, v],
+                                f.is_reversed(),
+                                brep.bounds().min().distance_to(brep.bounds().max())?,
+                            ))
+                        } else {
+                            None
+                        }
+                    }
+                    _ => return Err(CommandError::CurvatureRequiresCurveOrSurface),
+                }
+            };
+            if let Some(value) = value {
+                let distance = target.distance_to(value.point()?)?;
+                if best.as_ref().is_none_or(|(d, _)| distance < *d) {
+                    best = Some((distance, value));
+                }
+            }
+        }
+        let (_, target) = best.ok_or(CommandError::CurvatureOutsideTrimmedFaces)?;
+        Ok(target.evaluate()?)
+    }
+
+    pub fn point(&self) -> Point3 {
         match self {
             Self::Curve { point, .. } => *point,
             Self::Surface { curvature, .. } => curvature.point,
         }
     }
 
-    fn report(&self) -> Result<String, GeometryError> {
+    pub fn report(&self) -> Result<String, GeometryError> {
         Ok(match self {
             Self::Curve {
                 parameter,
                 point,
                 curvature,
-                ..
+                tangent,
             } => {
                 let magnitude = curvature.length()?;
+                let center = curvature
+                    .normalized_nonzero()
+                    .ok()
+                    .and_then(|direction| direction.as_vector().scaled(1.0 / magnitude).ok())
+                    .and_then(|offset| point.translated(offset).ok())
+                    .map(point_text)
+                    .unwrap_or_else(|| "unavailable".into());
                 format!(
-                    "Curve curvature at parameter {parameter:.15}: point {}; curvature {magnitude:.15}; radius {}",
+                    "Curve curvature at parameter {parameter:.15}: point {}; curvature {magnitude:.15}; radius {}; tangent {}; curvature center {center}",
                     point_text(*point),
                     if magnitude == 0.0 {
                         "infinite".to_owned()
                     } else {
                         format!("{:.15}", 1.0 / magnitude)
-                    }
+                    },
+                    vector_text(tangent.as_vector())
                 )
             }
             Self::Surface {
@@ -92,7 +212,7 @@ impl Evaluation {
                 ..
             } => {
                 format!(
-                    "Surface curvature{} at parameter {:.15},{:.15}: point {}; normal {}; maximum-absolute principal {:.15}; minimum-absolute principal {:.15}; Gaussian {:.15}; mean {:.15}",
+                    "Surface curvature{} at parameter {:.15},{:.15}: point {}; normal {}; maximum-absolute principal {:.15}; minimum-absolute principal {:.15}; Gaussian {:.15}; mean {:.15}; first principal direction {}; second principal direction {}",
                     face.map_or(String::new(), |i| format!(" on face {i}")),
                     parameter[0],
                     parameter[1],
@@ -101,13 +221,15 @@ impl Evaluation {
                     c.principal[0],
                     c.principal[1],
                     c.gaussian()?,
-                    c.mean()
+                    c.mean(),
+                    vector_text(c.directions[0].as_vector()),
+                    vector_text(c.directions[1].as_vector())
                 )
             }
         })
     }
 
-    fn markers(&self, tolerance: Tolerance) -> Result<Vec<Geometry>, GeometryError> {
+    pub fn markers(&self, tolerance: Tolerance) -> Result<Vec<Geometry>, GeometryError> {
         let mut result = vec![Geometry::Point(self.point())];
         match self {
             Self::Curve {
@@ -205,61 +327,11 @@ impl Command for CurvatureCommand {
             }
         }
         let target = point.ok_or(CommandError::Usage(USAGE))?;
-        let tolerance = document.tolerance();
-        let mut best: Option<(f64, Target<'_>)> = None;
-        if document.selected_object_count() == 0 {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        for object in document.selected_objects() {
-            let geometry = object.geometry();
-            let value = if let Some(curve) = geometry_curve_ref(geometry) {
-                let parameter = curve.closest_parameter(target, tolerance)?;
-                Some(Target::Curve(curve, parameter))
-            } else {
-                match geometry {
-                    Geometry::NurbsSurface(surface) => {
-                        let (u, v) = surface.closest_parameters(target, tolerance)?;
-                        let bounds = surface.control_point_bounds();
-                        Some(Target::Surface(
-                            surface,
-                            None,
-                            [u, v],
-                            false,
-                            bounds.min().distance_to(bounds.max())?,
-                        ))
-                    }
-                    Geometry::Brep(brep) => {
-                        if let Some((face, u, v)) =
-                            brep.closest_face_parameters(target, tolerance)?
-                        {
-                            let f = &brep.faces()[face];
-                            Some(Target::Surface(
-                                f.surface(),
-                                Some(face),
-                                [u, v],
-                                f.is_reversed(),
-                                brep.bounds().min().distance_to(brep.bounds().max())?,
-                            ))
-                        } else {
-                            None
-                        }
-                    }
-                    _ => return Err(CommandError::CurvatureRequiresCurveOrSurface),
-                }
-            };
-            if let Some(value) = value {
-                let distance = target.distance_to(value.point()?)?;
-                if best.as_ref().is_none_or(|(d, _)| distance < *d) {
-                    best = Some((distance, value));
-                }
-            }
-        }
-        let (_, target) = best.ok_or(CommandError::CurvatureOutsideTrimmedFaces)?;
-        let value = target.evaluate()?;
+        let value =
+            CurvatureSample::nearest(document.selected_objects(), target, document.tolerance())?;
         let message = value.report()?;
         if mark {
-            let markers = value.markers(tolerance)?;
-            for geometry in markers {
+            for geometry in value.markers(document.tolerance())? {
                 document.add_geometry(geometry)?;
             }
         }

@@ -1,5 +1,8 @@
 //! Selected curve and edge lengths without temporary document objects.
 use super::*;
+use crate::chain_selection::Target;
+use crate::{ComponentPick, ComponentSelectionKind};
+use viboceros_document::Object;
 mod components;
 pub(crate) struct LengthCommand {
     selection: crate::component_selection::ComponentSelection,
@@ -148,6 +151,53 @@ fn accumulate_length(
     let picks = selection
         .checked_picks(document)
         .map_err(CommandError::Usage)?;
+    accumulate_inputs(document, document.selected_objects(), picks)
+}
+
+pub fn length_edge_kind(geometry: &Geometry) -> Option<ComponentSelectionKind> {
+    use ComponentSelectionKind as Kind;
+    match geometry {
+        Geometry::Brep(_) | Geometry::NurbsSurface(_) => Some(Kind::BrepEdge),
+        Geometry::Mesh(_) => Some(Kind::MeshEdge),
+        Geometry::SubD(_) => Some(Kind::SubDEdge),
+        _ => None,
+    }
+}
+
+/// Accumulate explicitly captured Length inputs without changing selection.
+pub fn measure_length_targets(
+    document: &Document,
+    targets: impl IntoIterator<Item = Target>,
+) -> Result<FiniteSum, CommandError> {
+    let mut curves = Vec::new();
+    let mut edges = Vec::new();
+    for target in targets {
+        let id = target.object();
+        let object = document
+            .object(id)
+            .filter(|_| document.is_object_selectable(id))
+            .ok_or(CommandError::Usage("Length input is unavailable"))?;
+        match target {
+            Target::Curve(_) => curves.push(object),
+            Target::Edge(_, index) => edges.push(ComponentPick {
+                object: id,
+                index,
+                kind: length_edge_kind(object.geometry())
+                    .ok_or(CommandError::UnsupportedLengthGeometry)?,
+            }),
+        }
+    }
+    if curves.is_empty() && edges.is_empty() {
+        return Ok(FiniteSum::default());
+    }
+    accumulate_inputs(document, curves.into_iter(), edges).map(|(_, sum)| sum)
+}
+
+fn accumulate_inputs<'a>(
+    document: &Document,
+    curves: impl Iterator<Item = &'a Object>,
+    picks: Vec<ComponentPick>,
+) -> Result<(usize, FiniteSum), CommandError> {
     let mut count = 0;
     let mut sum = FiniteSum::default();
     let mut add = |value: f64| -> Result<(), CommandError> {
@@ -161,7 +211,7 @@ fn accumulate_length(
         count += 1;
         Ok(())
     };
-    for object in document.selected_objects() {
+    for object in curves {
         let curve =
             geometry_curve_ref(object.geometry()).ok_or(CommandError::UnsupportedLengthGeometry)?;
         add(curve.length(document.tolerance())?)?;

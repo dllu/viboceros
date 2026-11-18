@@ -132,12 +132,11 @@ Use [AreaCentroid](area-centroid.md) to create one cumulative area-weighted mark
 
 ## Curvature
 
-`Curvature [MarkCurvature=Yes|No] point` measures the selected curve or surface
-nearest the point; omit the point for a one-pick viewport workflow. The default
-is read-only. Permanent markers retain the source and selection and form one
-undo step. B-rep measurements respect trims and face orientation. See
-[curvature measurement](../curvature.md) for principal-curvature signs, marker
-geometry, numerical limits and the separate sphere comparison tolerance.
+`Curvature` opens a curve or surface picker. Hover to see the curvature
+guides and click to report the sample. Continue picking or press Enter or Esc
+to finish. `MarkCurvature=Yes` adds permanent markers with one undo step for
+the session. A complete `Curvature [MarkCurvature=Yes|No] point` call measures a
+single model-space location. [Curvature measurement](../curvature.md)
 
 ## Intersection and trimming
 

@@ -25,6 +25,10 @@ pub(super) struct Session {
 }
 
 impl Session {
+    pub(super) fn takes_distance_measurement(&self) -> bool {
+        self.menu == Some(OptionName::Distance)
+    }
+
     pub(super) fn portion_guides(&self) -> &[NurbsCurve] {
         &self.portions
     }
@@ -150,7 +154,7 @@ impl VibocerosApp {
         }
     }
 
-    fn curve_offset_prompt(&mut self) {
+    pub(super) fn curve_offset_prompt(&mut self) {
         let Some(session) = &self.curve_offset_session else {
             return;
         };
@@ -170,7 +174,7 @@ impl VibocerosApp {
         if self
             .subcurve_prompt
             .as_ref()
-            .is_some_and(|p| p.offset_temporary)
+            .is_some_and(|p| p.temporary == Some(subcurve_prompt::Temporary::Offset))
         {
             return false;
         }
@@ -261,7 +265,7 @@ impl VibocerosApp {
         if self
             .subcurve_prompt
             .as_ref()
-            .is_some_and(|p| p.offset_temporary)
+            .is_some_and(|p| p.temporary == Some(subcurve_prompt::Temporary::Offset))
         {
             return None;
         }

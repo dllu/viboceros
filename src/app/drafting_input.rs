@@ -1071,12 +1071,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::SrfPt { corners } => return self.accept_srf_pt(corners, point),
             InteractiveCommand::Curvature { mark } => {
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Curvature MarkCurvature={} {}",
-                    if mark { "Yes" } else { "No" },
-                    format_model_point(point)
-                ));
+                return self.finish_curvature_point(point, mark);
             }
             InteractiveCommand::Radius {
                 diameter,

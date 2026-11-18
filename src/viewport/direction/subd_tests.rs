@@ -84,7 +84,7 @@ fn folded_control_quad_hover_uses_the_visible_triangle_normal() {
     let marker = view
         .direction_hit(pointer, rect, &doc, overlay)
         .unwrap()
-        .1
+        .marker
         .unwrap();
     assert!(marker.point.distance_to(sample).unwrap() < 1e-6);
     let expected = viboceros_geometry::Vector3::try_new(1., -1., -1.)
@@ -139,7 +139,7 @@ fn subd_hover_flip_click_and_paint_use_cached_geometry_in_all_display_modes() {
                     };
                     view.direction_hit(pointer, rect, &doc, overlay)
                         .unwrap()
-                        .1
+                        .marker
                         .unwrap()
                 };
                 let initial = hover(&session);

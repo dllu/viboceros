@@ -61,6 +61,8 @@ impl VibocerosApp {
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
+        self.validate_radius_source();
+        self.validate_curvature_source();
         self.validate_distribute();
         self.validate_offset_mesh();
         self.validate_offset_surface();
@@ -108,6 +110,7 @@ impl VibocerosApp {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
             && self.boolean_two_prompt.is_none()
@@ -211,7 +214,7 @@ impl VibocerosApp {
         selection_preview_ids.extend(
             self.subcurve_prompt
                 .as_ref()
-                .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+                .and_then(subcurve_prompt::SubcurvePrompt::temporary_reference)
                 .filter(|reference| reference.source().1.is_none())
                 .map(|reference| reference.object_id()),
         );
@@ -341,7 +344,8 @@ impl VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.picking_mesh_trim_target() {
             Some(FacePickMode::MeshAny)
-        } else if self.picking_offset_surface_sources()
+        } else if self.selecting_curvature_source()
+            || self.picking_offset_surface_sources()
             || self
                 .offset_surface_session
                 .as_ref()
@@ -548,7 +552,7 @@ impl VibocerosApp {
                 .and_then(orient_surface::Session::sphere_cursor_curve)
         });
         let edge_curve = edge_curve.or_else(|| {
-            let reference = self.subcurve_prompt.as_ref()?.offset_reference()?;
+            let reference = self.subcurve_prompt.as_ref()?.temporary_reference()?;
             (self.plane_prompt.is_none()
                 && self.point_filter.is_none()
                 && self.point_constraint.is_none())
@@ -628,7 +632,7 @@ impl VibocerosApp {
         if let Some(reference) = self
             .subcurve_prompt
             .as_ref()
-            .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+            .and_then(subcurve_prompt::SubcurvePrompt::temporary_reference)
         {
             if let Some(edge) = reference.source().1 {
                 component_highlights.push(crate::viewport::ComponentPick {
@@ -824,7 +828,7 @@ impl VibocerosApp {
                 || self.picking_circle_around_curve()
                 || (self.picking_pipe_rail() && !self.picking_pipe_chain())
                 || self.picking_splop_reference_curve());
-        let document = surface_rebuild::viewport_document(
+        let preview_document = surface_rebuild::viewport_document(
             &self.document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
             self.blend_surface_prompt
@@ -848,6 +852,11 @@ impl VibocerosApp {
                 .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.crease_prompt.as_ref().and_then(|p| p.scene())),
         );
+        let document = if self.nested_measurement.is_some() {
+            &self.document
+        } else {
+            preview_document
+        };
         let twist_preview = self
             .twist_session
             .as_ref()
@@ -1029,6 +1038,7 @@ impl VibocerosApp {
         let selection_allowed_objects = self
             .offset_surface_session
             .as_ref()
+            .filter(|_| self.nested_measurement.is_none())
             .map(|s| s.ids())
             .or_else(|| {
                 self.offset_mesh_session
@@ -1202,9 +1212,15 @@ impl VibocerosApp {
             }
             _ => None,
         };
-        let length_pick =
-            self.chain_prompt.is_none() && self.length_chain_available() && model_input_active;
-        let length_highlights = self.length_choice_highlights().to_vec();
+        let length_pick = self.chain_prompt.is_none()
+            && (self.length_chain_available() || self.nested_length_wants_source())
+            && model_input_active;
+        let mut length_highlights = self.length_choice_highlights().to_vec();
+        length_highlights.extend(self.nested_length_highlights());
+        let nested_length_guides = self
+            .nested_measurement
+            .as_ref()
+            .map_or_else(Vec::new, nested_measurement::Session::length_guides);
         let srf_pt_input = model_input_active.then(|| self.srf_pt_input()).flatten();
         let surface_point_grid = self
             .surface_point_grid_session
@@ -1224,6 +1240,20 @@ impl VibocerosApp {
                     .map_or(&[], refinement::Prompt::guides)
             });
         let distribution_source_pick = self.selecting_distribution_sources();
+        let radius_input = self
+            .radius_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.object_prompt.is_none()
+                    && matches!(self.active_command, Some(InteractiveCommand::Radius { .. }))
+            })
+            .and_then(|session| session.viewport_input(self.document.selected_object_count() != 0));
+        let curvature_session = self
+            .curvature_session
+            .as_ref()
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let alignment_curve_pick = self
             .align_session
             .as_ref()
@@ -1283,6 +1313,10 @@ impl VibocerosApp {
                                 .and_then(|s| s.preview()),
                             placement_preview,
                             alignment_curve_pick,
+                            radius_input,
+                            curvature_input: curvature_session.and_then(curvature::Session::input),
+                            curvature_guides: curvature_session
+                                .and_then(curvature::Session::guides),
                             alignment_plane_preview: self
                                 .align_session
                                 .as_ref()
@@ -1624,6 +1658,7 @@ impl VibocerosApp {
                             curve_or_edge_pick,
                             chain_pick: self.chain_prompt.is_some() && model_input_active,
                             length_pick,
+                            nested_length_guides: &nested_length_guides,
                             chain_highlights: self
                                 .chain_prompt
                                 .as_ref()
@@ -1727,6 +1762,37 @@ impl VibocerosApp {
         if self.update_align_preview(align_point, align_curve, align_view) {
             ui.ctx().request_repaint();
         }
+        let direction_readout = viewport_outputs
+            .iter()
+            .find_map(|output| output.direction_readout);
+        if self.update_direction_readout(direction_readout) {
+            ui.ctx().request_repaint();
+        }
+        if !ui.input(|input| {
+            input.pointer.primary_down()
+                || input.pointer.button_released(egui::PointerButton::Primary)
+        }) {
+            let radius_hover = viewport_outputs
+                .iter()
+                .enumerate()
+                .find_map(|(view, output)| {
+                    let (pixel, hit) = output.radius_hover?;
+                    Some((view, pixel, hit))
+                });
+            if self.update_radius_hover(radius_hover) {
+                ui.ctx().request_repaint();
+            }
+            let curvature_hover = viewport_outputs
+                .iter()
+                .enumerate()
+                .find_map(|(view, output)| {
+                    let (pixel, hit) = output.curvature_hover?;
+                    Some((view, pixel, hit))
+                });
+            if self.update_curvature_hover(curvature_hover) {
+                ui.ctx().request_repaint();
+            }
+        }
         let distribution_hover = viewport_outputs
             .iter()
             .find_map(|output| output.drafting_resolved_hover);
@@ -1805,7 +1871,11 @@ impl VibocerosApp {
                 continue;
             }
             if !handled_action && !menu_consumed {
+                let direction_click = output.direction_click.is_some();
                 handled_action = self.handle_viewport_action(output);
+                if handled_action && direction_click {
+                    ui.ctx().request_repaint();
+                }
             }
         }
         self.cutting_preview.update(

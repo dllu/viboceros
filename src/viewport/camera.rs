@@ -512,7 +512,11 @@ impl Viewport {
         .ok()
     }
 
-    fn drafting_local_view_line(&self, pointer: Pos2, rect: Rect) -> Option<(Point3, Vector3)> {
+    pub(super) fn drafting_local_view_line(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+    ) -> Option<(Point3, Vector3)> {
         let (origin, direction) = if self.kind == ViewKind::Perspective {
             let (camera, ray) = self.perspective_local_ray(pointer, rect);
             (

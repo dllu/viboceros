@@ -166,7 +166,33 @@ impl Session {
                 stage_sources(&self.app.document, vec![pick])?;
                 let point = point.map(Point3::try_from).transpose()?;
                 let mut output = ViewportOutput::default();
-                if !remove
+                if self.app.nested_measurement.is_some() && self.app.plane_prompt.is_none() {
+                    if viboceros_command::length_edge_kind(
+                        self.app.document.object(pick.object).unwrap().geometry(),
+                    ) == Some(pick.kind)
+                    {
+                        if self.app.nested_length_wants_source() {
+                            output.chain_click =
+                                Some(vec![viboceros_command::chain_selection::Target::Edge(
+                                    pick.object,
+                                    pick.index,
+                                )]);
+                            output.length_mode = Some(if remove {
+                                SelectionMode::Remove
+                            } else {
+                                SelectionMode::Add
+                            });
+                        } else if !remove
+                            && pick.kind == ComponentSelectionKind::BrepEdge
+                            && self.app.picking_subcurve_edge()
+                        {
+                            output.edge_click = Some(vec![EdgePick {
+                                object: pick.object,
+                                edge: pick.index,
+                            }]);
+                        }
+                    }
+                } else if !remove
                     && matches!(
                         pick.kind,
                         ComponentSelectionKind::BrepFace | ComponentSelectionKind::MeshFace
