@@ -110,6 +110,7 @@ impl VibocerosApp {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
             && self.boolean_two_prompt.is_none()
@@ -851,7 +852,7 @@ impl VibocerosApp {
                 .or_else(|| self.soft_crease_prompt.as_ref().and_then(|p| p.scene()))
                 .or_else(|| self.crease_prompt.as_ref().and_then(|p| p.scene())),
         );
-        let document = if self.measuring_nested_radius() {
+        let document = if self.nested_measurement.is_some() {
             &self.document
         } else {
             preview_document
@@ -1210,9 +1211,15 @@ impl VibocerosApp {
             }
             _ => None,
         };
-        let length_pick =
-            self.chain_prompt.is_none() && self.length_chain_available() && model_input_active;
-        let length_highlights = self.length_choice_highlights().to_vec();
+        let length_pick = self.chain_prompt.is_none()
+            && (self.length_chain_available() || self.nested_length_wants_source())
+            && model_input_active;
+        let mut length_highlights = self.length_choice_highlights().to_vec();
+        length_highlights.extend(self.nested_length_highlights());
+        let nested_length_guides = self
+            .nested_measurement
+            .as_ref()
+            .map_or_else(Vec::new, nested_measurement::Session::length_guides);
         let srf_pt_input = model_input_active.then(|| self.srf_pt_input()).flatten();
         let surface_point_grid = self
             .surface_point_grid_session
@@ -1650,6 +1657,7 @@ impl VibocerosApp {
                             curve_or_edge_pick,
                             chain_pick: self.chain_prompt.is_some() && model_input_active,
                             length_pick,
+                            nested_length_guides: &nested_length_guides,
                             chain_highlights: self
                                 .chain_prompt
                                 .as_ref()

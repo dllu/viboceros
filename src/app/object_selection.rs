@@ -498,6 +498,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.plane_prompt.is_none()
+            && self.subcurve_prompt.is_none()
+            && self.nested_measurement.is_some()
+        {
+            return (self.chain_prompt.is_none() && self.nested_length_wants_source())
+                .then_some(ObjectSelectionFilter::Curves);
+        }
         if self.curvature_session.is_some() && self.plane_prompt.is_none() {
             return self
                 .selecting_curvature_source()

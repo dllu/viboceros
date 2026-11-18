@@ -42,10 +42,9 @@ to the nearest eighth of an inch. Unit conversion requires physical model
 units and leaves the model settings unchanged. The Units option is disabled
 for explicit object preselection.
 
-At the numeric radius or distance prompt in `Fillet`, `Offset`, or `OffsetSrf`,
-enter `Radius` or `'Radius` and pick a curve location. A finite result fills
-the parent prompt in model units. Esc returns to that prompt with its previous
-value.
+At the numeric length prompt in `Fillet`, `Offset`, `OffsetSrf`, or `Circle`,
+enter `'Radius` and pick a curve location. A finite result fills the parent
+prompt in model units. Esc returns to that prompt with its previous value.
 
 Tests cover circles, lines, ellipse endpoint radii (1 and 8 for semiaxes 4 and 2),
 the ellipse's exact NURBS representation, nearest-curve selection, marker undo,

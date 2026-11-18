@@ -3,6 +3,21 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.nested_measurement.is_some() && self.plane_prompt.is_none() {
+            if self.subcurve_prompt.is_some() {
+                self.pick_subcurve_source(click.object_id);
+            } else if self.nested_length_wants_source()
+                && let Some(id) = click.object_id
+            {
+                let target = viboceros_command::chain_selection::Target::Curve(id);
+                if self.chain_prompt.is_some() {
+                    self.pick_chain(vec![target]);
+                } else {
+                    self.pick_nested_length(vec![target], click.mode, false);
+                }
+            }
+            return;
+        }
         if self.pick_curvature_source(click.object_id) {
             return;
         }
@@ -388,6 +403,18 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.nested_length_wants_source() && self.chain_prompt.is_none() {
+            self.add_nested_length_targets(
+                selection
+                    .object_ids
+                    .into_iter()
+                    .map(viboceros_command::chain_selection::Target::Curve)
+                    .collect(),
+                selection.mode,
+                false,
+            );
+            return;
+        }
         if self.selecting_curvature_source() {
             return;
         }

@@ -35,11 +35,24 @@ impl VibocerosApp {
         units: Option<&'static str>,
         plane: Frame3,
     ) -> bool {
+        let nested = self.nested_measurement_kind() == Some(nested_measurement::Kind::Distance);
+        let value = if nested {
+            match start.distance_to(end) {
+                Ok(value) => Some(value),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return false;
+                }
+            }
+        } else {
+            None
+        };
         let input = format!(
             "Distance {} {}{}",
             format_model_point(start),
             format_model_point(end),
             units
+                .filter(|_| !nested)
                 .map(|unit| format!(" Units={unit}"))
                 .unwrap_or_default()
         );
@@ -51,10 +64,12 @@ impl VibocerosApp {
             },
         ) {
             Ok(message) => {
-                self.cancel_interactive_command(false);
+                if !nested {
+                    self.cancel_interactive_command(false);
+                }
                 self.push_log(format!("> {input}"));
                 self.push_log(message);
-                true
+                value.is_none_or(|value| self.finish_nested_value(value))
             }
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -76,11 +91,35 @@ impl VibocerosApp {
             return false;
         }
         let input = input.trim().trim_start_matches(['_', '-']);
-        if let Some((name, value)) = input.split_once('=')
-            && name.eq_ignore_ascii_case("Units")
-        {
-            match viboceros_command::distance_display_units(value) {
+        let named_units = input
+            .split_once('=')
+            .filter(|(name, _)| name.eq_ignore_ascii_case("Units"))
+            .map(|(_, value)| value);
+        if input.eq_ignore_ascii_case("Units") {
+            self.distance_units_prompt = true;
+            self.push_log("Distance units: enter a unit name or Model_Units".into());
+            self.command_input.clear();
+            return true;
+        }
+        if self.distance_units_prompt && (input.is_empty() || input.eq_ignore_ascii_case("Enter")) {
+            self.distance_units_prompt = false;
+            self.push_log(self.active_command.unwrap().prompt().to_owned());
+            self.command_input.clear();
+            return true;
+        }
+        if let Some(value) = named_units.or(self.distance_units_prompt.then_some(input)) {
+            let nested = self.nested_measurement_kind() == Some(nested_measurement::Kind::Distance);
+            let units = if nested {
+                viboceros_command::radius_display_units(value)
+            } else {
+                viboceros_command::distance_display_units(value)
+            };
+            match units {
                 Ok(display_units) => {
+                    self.distance_units_prompt = false;
+                    if nested {
+                        self.nested_distance_units = display_units;
+                    }
                     self.active_command = Some(InteractiveCommand::Distance {
                         start,
                         previous_last,

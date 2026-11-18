@@ -11,13 +11,7 @@ pub(super) struct Choices {
     tolerance: Tolerance,
 }
 fn edge_kind(doc: &Document, id: ObjectId) -> Option<viboceros_command::ComponentSelectionKind> {
-    use viboceros_command::ComponentSelectionKind as Kind;
-    match doc.object(id)?.geometry() {
-        Geometry::Brep(_) | Geometry::NurbsSurface(_) => Some(Kind::BrepEdge),
-        Geometry::Mesh(_) => Some(Kind::MeshEdge),
-        Geometry::SubD(_) => Some(Kind::SubDEdge),
-        _ => None,
-    }
+    viboceros_command::length_edge_kind(doc.object(id)?.geometry())
 }
 impl VibocerosApp {
     pub(super) fn has_length_edges(&self) -> bool {

@@ -253,6 +253,7 @@ mod mesh_face_prompt;
 mod mirror;
 mod move_normal;
 mod named_view;
+mod nested_measurement;
 mod object_selection;
 mod offset_mesh;
 mod offset_subd;
@@ -498,6 +499,10 @@ pub struct VibocerosApp {
     short_path_session: Option<short_path::Session>,
     align_session: Option<align::Session>,
     radius_session: Option<radius::Session>,
+    nested_measurement: Option<nested_measurement::Session>,
+    nested_distance_units: Option<&'static str>,
+    nested_length_units: Option<&'static str>,
+    distance_units_prompt: bool,
     radius_mark: [bool; 2],
     radius_units: [Option<&'static str>; 2],
     curvature_session: Option<curvature::Session>,
@@ -712,6 +717,10 @@ impl VibocerosApp {
             short_path_session: None,
             align_session: None,
             radius_session: None,
+            nested_measurement: None,
+            nested_distance_units: None,
+            nested_length_units: None,
+            distance_units_prompt: false,
             radius_mark: [false; 2],
             radius_units: [None; 2],
             curvature_session: None,
@@ -807,7 +816,7 @@ impl VibocerosApp {
         if self.command_file_input(&input) || self.continue_layer_prompt(&input) {
             return;
         }
-        if self.continue_nested_radius(&input) || self.start_nested_radius(&input) {
+        if self.continue_nested_measurement(&input) || self.start_nested_measurement(&input) {
             return;
         }
         if self.try_draft_pull_command(&input) {
@@ -1246,7 +1255,7 @@ impl VibocerosApp {
         };
         let input: &str = input.as_ref();
         self.selection_menu = None;
-        if self.continue_nested_radius(input) || self.start_nested_radius(input) {
+        if self.continue_nested_measurement(input) || self.start_nested_measurement(input) {
             return true;
         }
         if self.try_continue_component_choice(input)

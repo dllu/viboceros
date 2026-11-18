@@ -77,6 +77,9 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
 
 impl VibocerosApp {
     fn model_requests_point(&self) -> bool {
+        if self.nested_measurement.is_some() {
+            return self.nested_measurement_wants_point() || self.measuring_nested_radius();
+        }
         if self.align_session.is_some() {
             return self.align_wants_point();
         }

@@ -32,6 +32,12 @@ impl VibocerosApp {
         if let Some(picks) = output.chain_click.take() {
             if self.chain_prompt.is_some() {
                 self.pick_chain(picks);
+            } else if self.nested_length_wants_source() {
+                self.pick_nested_length(
+                    picks,
+                    output.length_mode.unwrap_or(SelectionMode::Add),
+                    output.length_direct,
+                );
             } else {
                 self.pick_length_inputs(picks, output.length_mode.unwrap_or(SelectionMode::Add));
             }
@@ -162,7 +168,9 @@ impl VibocerosApp {
             return true;
         }
         if let Some(point) = output.drafting_hover.take() {
-            self.hover_curve_fillet_radius(point);
+            if self.nested_measurement.is_none() {
+                self.hover_curve_fillet_radius(point);
+            }
             self.hover_blend_curve_point(point);
             if self.plane_prompt.is_none()
                 && let Some(input) = &mut self.line_input

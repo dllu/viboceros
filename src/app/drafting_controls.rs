@@ -7,7 +7,7 @@ impl VibocerosApp {
         end_analysis_picking: bool,
         shift_inverts_ortho: bool,
     ) -> DraftingInput {
-        DraftingInput {
+        let mut input = DraftingInput {
             active: self.surface_point_grid_wants_point()
                 && !end_analysis_picking
                 && !self.picking_block_edit_sources()
@@ -176,6 +176,17 @@ impl VibocerosApp {
             } else {
                 self.active_command.and_then(InteractiveCommand::reference)
             },
+        };
+        if self.plane_prompt.is_none() {
+            if self.nested_measurement.is_some() {
+                input.active = !end_analysis_picking && self.nested_measurement_wants_point();
+                input.anchor = self.active_command.and_then(InteractiveCommand::anchor);
+                input.reference = None;
+                input.snap_projection = None;
+            } else if self.distance_units_prompt {
+                input.active = false;
+            }
         }
+        input
     }
 }

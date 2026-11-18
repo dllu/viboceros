@@ -262,6 +262,11 @@ impl VibocerosApp {
         if self.set_view_prompt.is_some() {
             return false;
         }
+        if self.plane_prompt.is_none()
+            && let Some(accepted) = self.accept_nested_measurement_point(point)
+        {
+            return accepted;
+        }
         let point = match resolve_translation
             .then(|| self.translation_constraint())
             .flatten()

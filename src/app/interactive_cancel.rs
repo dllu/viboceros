@@ -31,6 +31,8 @@ impl VibocerosApp {
         }
         self.align_session = None;
         self.radius_session = None;
+        self.nested_measurement = None;
+        self.distance_units_prompt = false;
         self.curvature_session = None;
         self.distribute_session = None;
         self.release_offset_mesh();

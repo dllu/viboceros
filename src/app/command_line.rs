@@ -49,6 +49,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && self.active_command.is_none()
+            && self.nested_measurement.is_none()
             && self.surface_path_prompt.is_none()
             && self.shell_prompt.is_none()
             && self.merge_face_prompt.is_none()
@@ -221,6 +222,10 @@ impl VibocerosApp {
             "All, Current, Next, Previous or Mark; Enter or Esc ends"
         } else if let Some(prompt) = set_view_prompt {
             prompt.message()
+        } else if self.distance_units_prompt {
+            "Enter a Distance unit name or Model_Units"
+        } else if let Some(hint) = self.nested_measurement_hint() {
+            hint
         } else if let Some(p) = &self.select_uv_prompt {
             p.hint()
         } else if let Some(p) = &self.refinement_prompt {
@@ -358,6 +363,8 @@ impl VibocerosApp {
                         "Length units"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"
+                    } else if let Some(kind) = self.nested_measurement_kind() {
+                        kind.name()
                     } else if let Some(p) = &self.edge_pattern_prompt {
                         p.command()
                     } else if self.select_uv_prompt.is_some() {

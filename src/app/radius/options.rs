@@ -80,7 +80,7 @@ impl VibocerosApp {
         true
     }
 
-    pub(super) fn log_radius_prompt(&mut self) {
+    pub(in crate::app) fn log_radius_prompt(&mut self) {
         let Some(InteractiveCommand::Radius { diameter, .. }) = self.active_command else {
             return;
         };
@@ -131,6 +131,7 @@ impl VibocerosApp {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
             return false;
         }
+        let nested = self.measuring_nested_radius();
         let Some(session) = &mut self.radius_session else {
             return false;
         };
@@ -158,7 +159,7 @@ impl VibocerosApp {
                 match viboceros_command::radius_display_units(value.unwrap_or(token)) {
                     Ok(units) => {
                         display_units = units;
-                        if session.nested.is_none() {
+                        if !nested {
                             self.radius_units[usize::from(diameter)] = units;
                         }
                         session.choosing_units = false;
@@ -176,7 +177,7 @@ impl VibocerosApp {
                 }
             }
         } else if key.eq_ignore_ascii_case(mark_name(diameter)) {
-            if session.nested.is_some() {
+            if nested {
                 self.push_log("Select a curve location to supply the radius".into());
             } else if let Some(mark) = value.map_or(Some(!mark), radius_yes_no) {
                 self.radius_mark[usize::from(diameter)] = mark;
@@ -204,7 +205,7 @@ impl VibocerosApp {
             session.unrestricted = true;
             self.log_radius_prompt();
         } else if enter {
-            if !self.cancel_nested_radius() {
+            if !self.cancel_nested_measurement() {
                 self.cancel_interactive_command(false);
             }
         } else if key.eq_ignore_ascii_case("SubCrv") && value.is_none() {
@@ -214,7 +215,7 @@ impl VibocerosApp {
                 .flatten()
                 .map(|source| (source.curve.object_id(), source.curve.source().1))
                 .or_else(|| {
-                    if session.selecting || session.nested.is_some() {
+                    if session.selecting || nested {
                         return None;
                     }
                     let mut objects = self.document.selected_objects();

@@ -6,7 +6,7 @@ impl VibocerosApp {
         if self.abort_command_file() {
             return;
         }
-        if self.plane_prompt.is_none() && self.cancel_nested_radius() {
+        if self.nested_measurement_captures_input() && self.cancel_nested_measurement() {
             return;
         }
         if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip() {

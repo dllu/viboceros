@@ -197,6 +197,7 @@ mod named_view;
 mod native_curve_comparison;
 #[path = "../../../crates/viboceros-command/tests/support/modify_radius.rs"]
 mod native_object_comparison;
+mod nested_measurement;
 mod nurbs_edges;
 mod nurbs_pack_actions;
 mod nurbs_selection;

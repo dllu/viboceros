@@ -70,6 +70,19 @@ impl Session {
         selection: &component_selection::ComponentSelection,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
+        Self::with_selection(doc, Some(selection), options)
+    }
+    pub fn new_for_measurement(
+        doc: &Document,
+        options: CurveChainOptions,
+    ) -> Result<Self, CommandError> {
+        Self::with_selection(doc, None, options)
+    }
+    fn with_selection(
+        doc: &Document,
+        selection: Option<&component_selection::ComponentSelection>,
+        options: CurveChainOptions,
+    ) -> Result<Self, CommandError> {
         options.validate()?;
         let mut sources = BTreeMap::new();
         let mut curves = Vec::new();
@@ -98,9 +111,16 @@ impl Session {
             }
             sources.insert(id, object.geometry_snapshot().clone());
         }
-        let baseline_components = selection
-            .checked_picks(doc)
-            .map_err(|_| CommandError::ChainStale)?;
+        let (baseline_whole, baseline_components) = if let Some(selection) = selection {
+            (
+                doc.selected_object_ids().collect(),
+                selection
+                    .checked_picks(doc)
+                    .map_err(|_| CommandError::ChainStale)?,
+            )
+        } else {
+            (Vec::new(), Vec::new())
+        };
         let baseline_sources = baseline_components
             .iter()
             .map(|p| {
@@ -120,7 +140,7 @@ impl Session {
             classes,
             sources,
             tolerance: doc.tolerance(),
-            baseline_whole: doc.selected_object_ids().collect(),
+            baseline_whole,
             baseline_components,
             baseline_sources,
             state: State::default(),

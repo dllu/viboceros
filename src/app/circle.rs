@@ -45,6 +45,26 @@ fn parse_size_input(
 }
 
 impl VibocerosApp {
+    pub(super) fn circle_takes_length_measurement(&self) -> bool {
+        match self.active_command {
+            Some(InteractiveCommand::Circle { center: Some(_) })
+            | Some(InteractiveCommand::CircleThreePointRadius { radius: None, .. }) => true,
+            Some(InteractiveCommand::CircleSize { mode, .. })
+            | Some(InteractiveCommand::CircleVertical {
+                center: Some(_),
+                radius: None,
+                mode,
+                ..
+            })
+            | Some(InteractiveCommand::CircleOrientation {
+                normal_point: Some(_),
+                mode,
+                ..
+            }) => mode != CircleSizeMode::Area,
+            _ => false,
+        }
+    }
+
     pub(super) fn try_continue_circle(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
             return false;

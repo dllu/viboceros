@@ -7,6 +7,7 @@ use viboceros_document::ObjectId;
 pub(super) enum Temporary {
     Offset,
     Radius,
+    NestedLength,
 }
 
 #[derive(Clone, Debug)]
@@ -222,6 +223,10 @@ impl VibocerosApp {
         reference: Option<(ObjectId, Option<usize>)>,
     ) {
         self.begin_temporary_subcurve_prompt(reference, Temporary::Offset);
+    }
+
+    pub(super) fn begin_nested_length_subcurve_prompt(&mut self) {
+        self.begin_temporary_subcurve_prompt(None, Temporary::NestedLength);
     }
 
     pub(super) fn begin_radius_subcurve_prompt(
@@ -589,6 +594,7 @@ impl VibocerosApp {
     ) -> Result<(), viboceros_command::CommandError> {
         match parent {
             Temporary::Radius => self.return_to_radius(portion)?,
+            Temporary::NestedLength => self.continue_after_nested_length_portion(portion)?,
             Temporary::Offset => {
                 if let Some((reference, curve)) = portion {
                     self.add_curve_offset_portion(&reference, curve);

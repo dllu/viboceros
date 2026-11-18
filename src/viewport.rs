@@ -502,6 +502,7 @@ pub struct ViewportInput<'a> {
     pub curve_or_edge_pick: bool,
     pub chain_pick: bool,
     pub length_pick: bool,
+    pub(crate) nested_length_guides: &'a [&'a NurbsCurve],
     pub chain_highlights: &'a [viboceros_command::chain_selection::Target],
     pub component_preselection: bool,
     pub control_point_pick: bool,
@@ -665,6 +666,7 @@ impl Default for ViewportInput<'_> {
             curve_or_edge_pick: false,
             chain_pick: false,
             length_pick: false,
+            nested_length_guides: &[],
             chain_highlights: &[],
             component_preselection: false,
             control_point_pick: false,
@@ -730,6 +732,7 @@ pub struct ViewportOutput {
     pub parametric_click: Option<Vec<ParametricPick>>,
     pub chain_click: Option<Vec<viboceros_command::chain_selection::Target>>,
     pub length_mode: Option<SelectionMode>,
+    pub(crate) length_direct: bool,
     pub component_click: Option<ComponentClick>,
     pub component_double_click: Option<ComponentClick>,
     pub component_window: Option<ComponentWindow>,
@@ -2478,6 +2481,9 @@ impl Viewport {
             });
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
+        for &curve in input.nested_length_guides {
+            self.paint_curve_draft(&painter, rect, curve);
+        }
         if (input.chain_pick || input.length_pick)
             && let Some(pointer) = response.hover_pos()
         {
@@ -3614,6 +3620,7 @@ impl Viewport {
             parametric_click,
             chain_click,
             length_mode: input.length_pick.then_some(selection_mode(modifiers)),
+            length_direct: modifiers.command && modifiers.shift,
             direction_click: response
                 .clicked_by(PointerButton::Primary)
                 .then_some(direction_hit.map(|(id, _)| id))

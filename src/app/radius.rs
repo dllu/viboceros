@@ -5,7 +5,6 @@ use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_command::{CommandError, RadiusMeasurement};
 use viboceros_document::{GeometrySnapshot, HistoryGroup};
 use viboceros_geometry::{Curve3, NurbsCurve};
-mod nested;
 mod options;
 
 struct Portion {
@@ -63,7 +62,6 @@ pub(super) struct Session {
     hover: Option<Hover>,
     subcurve_resume: Option<InteractiveCommand>,
     history: Option<HistoryGroup>,
-    nested: Option<nested::Nested>,
 }
 
 fn name(diameter: bool) -> &'static str {
@@ -93,6 +91,20 @@ impl Session {
 }
 
 impl VibocerosApp {
+    pub(super) fn begin_nested_radius(&mut self) {
+        self.radius_session = Some(Session {
+            unrestricted: true,
+            ..Default::default()
+        });
+        let command = InteractiveCommand::Radius {
+            diameter: false,
+            mark: false,
+            display_units: None,
+        };
+        self.active_command = Some(command);
+        self.log_radius_prompt();
+    }
+
     pub(super) fn radius_status(&self) -> Option<&str> {
         self.radius_session
             .as_ref()?
