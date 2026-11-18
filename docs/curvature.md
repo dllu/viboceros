@@ -2,12 +2,23 @@
 
 [Commands](commands/editing.md) · [Surface evaluation](surface-evaluation.md) · [Oracle](oracle.md)
 
-`Curvature` evaluates the selected curve or surface nearest a model-space point.
-Omit the point in the application to pick one location in a viewport; Esc cancels
-without changing the document. Existing objects, selection, attributes and groups
-are retained. B-rep queries respect face trims and face orientation.
-Underlying closest points outside a face's retained trim region are rejected;
-this does not search for a nearest point on the trim boundary.
+Enter `Curvature` and select a curve or surface, or preselect a single source.
+Move the pointer over the source and click to report the displayed
+sample. Continue picking or finish with Enter or Esc. A curve shows its
+osculating circle and tangent. A surface shows the two principal normal
+sections. The status bar displays the radius or principal curvatures.
+
+The curve getter marks and snaps to detected maxima and inflections.
+It finds exact maxima on analytic ellipses and searches bounded native
+parameter intervals on general curves. A surface pick starts on the visible
+tessellated face and refines against its underlying surface along the viewing
+line. Face numbering, trims and orientation are preserved.
+
+A complete positional command evaluates the supported selected object nearest
+the world-space point. For that form, an underlying closest point outside the
+retained trim region is rejected. The viewport preserves a single preselected
+source. With several preselected objects it asks for one source and clears the
+prior selection when that source is accepted.
 
 ```text
 Circle 0,0,0 2
@@ -16,15 +27,19 @@ Curvature 2,0,0
 Curvature MarkCurvature=Yes 2,0,0
 ```
 
-The default `MarkCurvature=No` only reports a measurement, without adding an undo
-entry. Curve reports contain the native parameter, point, curvature magnitude
-and radius. Surface reports contain the native U/V parameters, point, oriented
-normal, principal curvatures, Gaussian curvature and mean curvature.
+The initial `MarkCurvature=No` setting produces read-only measurements. Use
+`MarkCurvature` to toggle permanent markers or enter `MarkCurvature=Yes|No`.
+The interactive setting carries over to the next session. Curve reports
+include the native parameter, 3-D point, tangent, curvature magnitude, radius
+and curvature center. Surface reports include native U/V, the 3-D point,
+oriented normal, both principal curvatures and directions, Gaussian curvature
+and mean curvature.
 
 ## Permanent markers
 
 `MarkCurvature=Yes` adds an unselected point and osculating geometry with fresh
-attributes on the current layer. All markers form one undo/redo transaction:
+attributes on the current layer. The accepted picks in one viewport session
+form one undo step and remain after Enter or Esc.
 
 - A curved curve gets a full circle; a flat curve gets only the point.
 - A curved surface direction gets a normal-section half-circle through the
@@ -116,8 +131,14 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/curvature
   --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
 
-Continuous hover previews, automatic curvature-extremum/inflection finding,
-curvature graphs and false-color surface analysis remain unimplemented.
-See the public [Curvature command](https://docs.mcneel.com/rhino/8/help/en-us/commands/curvature.htm)
-and [SurfaceCurvature API](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.surfacecurvature)
-for the broader Rhino behavior.
+Headless Rhino viewport probes covered repeated curve and surface picks,
+command-first curve selection, the saved marking option, and marker creation.
+The ellipse with semiaxes 4 and 2 reported radii of 1 and 8. The plane
+produced two tangent lines, and the radius-three cylinder produced a
+half-circle and one tangent line at each marked point. Egui tests check that
+the visible guides and accepted marker geometry agree, including at a snapped
+inflection. Landmark recovery on general curves uses a bounded numerical
+search. Closely spaced or unusually high-order extrema can be missed.
+
+[McNeel's Curvature command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/curvature.htm)
+describes the viewport guides.

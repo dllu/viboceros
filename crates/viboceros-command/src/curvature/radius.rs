@@ -12,14 +12,14 @@ pub(crate) struct RadiusCommand {
 }
 
 pub struct RadiusMeasurement {
-    evaluation: Evaluation,
+    evaluation: CurvatureSample,
     magnitude: f64,
 }
 
 impl RadiusMeasurement {
     pub fn evaluate(curve: CurveRef<'_>, parameter: f64) -> Result<Self, CommandError> {
         let evaluation = Target::Curve(curve, parameter).evaluate()?;
-        let Evaluation::Curve { curvature, .. } = &evaluation else {
+        let CurvatureSample::Curve { curvature, .. } = &evaluation else {
             unreachable!()
         };
         Ok(Self {

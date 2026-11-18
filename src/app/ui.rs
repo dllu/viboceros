@@ -62,6 +62,7 @@ impl VibocerosApp {
         self.validate_fillet_corners();
         self.validate_align();
         self.validate_radius_source();
+        self.validate_curvature_source();
         self.validate_distribute();
         self.validate_offset_mesh();
         self.validate_offset_surface();
@@ -342,7 +343,8 @@ impl VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.picking_mesh_trim_target() {
             Some(FacePickMode::MeshAny)
-        } else if self.picking_offset_surface_sources()
+        } else if self.selecting_curvature_source()
+            || self.picking_offset_surface_sources()
             || self
                 .offset_surface_session
                 .as_ref()
@@ -1240,6 +1242,10 @@ impl VibocerosApp {
                     && matches!(self.active_command, Some(InteractiveCommand::Radius { .. }))
             })
             .and_then(|session| session.viewport_input(self.document.selected_object_count() != 0));
+        let curvature_session = self
+            .curvature_session
+            .as_ref()
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let alignment_curve_pick = self
             .align_session
             .as_ref()
@@ -1300,6 +1306,9 @@ impl VibocerosApp {
                             placement_preview,
                             alignment_curve_pick,
                             radius_input,
+                            curvature_input: curvature_session.and_then(curvature::Session::input),
+                            curvature_guides: curvature_session
+                                .and_then(curvature::Session::guides),
                             alignment_plane_preview: self
                                 .align_session
                                 .as_ref()
@@ -1756,6 +1765,16 @@ impl VibocerosApp {
                     Some((view, pixel, hit))
                 });
             if self.update_radius_hover(radius_hover) {
+                ui.ctx().request_repaint();
+            }
+            let curvature_hover = viewport_outputs
+                .iter()
+                .enumerate()
+                .find_map(|(view, output)| {
+                    let (pixel, hit) = output.curvature_hover?;
+                    Some((view, pixel, hit))
+                });
+            if self.update_curvature_hover(curvature_hover) {
                 ui.ctx().request_repaint();
             }
         }

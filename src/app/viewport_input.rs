@@ -3,6 +3,14 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(click) = output.curvature_click {
+            return self.pick_curvature_location(click);
+        }
+        if let Some((id, _)) = output.face_click
+            && self.pick_curvature_source(Some(id))
+        {
+            return true;
+        }
         if let Some(click) = output.radius_click {
             return self.pick_radius_location(click);
         }

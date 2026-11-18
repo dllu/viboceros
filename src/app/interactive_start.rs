@@ -14,6 +14,7 @@ impl VibocerosApp {
         if self.start_align(input, picked_sources.is_some())
             || self.start_distribute(input, picked_sources.is_some())
             || self.start_radius(input)
+            || self.start_curvature(input)
         {
             return true;
         }
@@ -448,28 +449,6 @@ impl VibocerosApp {
                 return false;
             };
             command
-        } else if normalized == "curvature" {
-            let mut mark = false;
-            for option in arguments {
-                let Some((key, value)) = option.split_once('=') else {
-                    return false;
-                };
-                if !key
-                    .trim_start_matches(['_', '-'])
-                    .eq_ignore_ascii_case("MarkCurvature")
-                {
-                    return false;
-                }
-                let value = value.trim_start_matches('_');
-                mark = if value.eq_ignore_ascii_case("Yes") {
-                    true
-                } else if value.eq_ignore_ascii_case("No") {
-                    false
-                } else {
-                    return false;
-                };
-            }
-            InteractiveCommand::Curvature { mark }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
             let Some((copy, output_on_current_layer, subd_add_corners)) = extract_surface::options(
                 &arguments,
@@ -1500,7 +1479,6 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeSurfaceToPoint { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
-                | InteractiveCommand::Curvature { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }

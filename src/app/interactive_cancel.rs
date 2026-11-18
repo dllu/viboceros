@@ -31,6 +31,7 @@ impl VibocerosApp {
         }
         self.align_session = None;
         self.radius_session = None;
+        self.curvature_session = None;
         self.distribute_session = None;
         self.release_offset_mesh();
         self.offset_subd_session = None;

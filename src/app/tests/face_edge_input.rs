@@ -112,7 +112,7 @@ fn interactive_curvature_evaluates_one_pick_and_can_cancel_without_mutation() {
     );
     app.cancel_interactive_command(true);
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-    assert!(app.try_start_interactive_command("Curvature"));
+    assert!(app.try_start_interactive_command("Curvature MarkCurvature=No"));
     app.accept_drafting_point(point(2.0, 0.0, 0.0));
     assert_eq!(app.active_command, None);
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);

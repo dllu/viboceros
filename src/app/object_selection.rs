@@ -498,6 +498,11 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.curvature_session.is_some() && self.plane_prompt.is_none() {
+            return self
+                .selecting_curvature_source()
+                .then_some(ObjectSelectionFilter::Parametric);
+        }
         if self.plane_prompt.is_none()
             && matches!(self.active_command, Some(InteractiveCommand::Radius { .. }))
         {

@@ -175,6 +175,7 @@ mod catenary;
 mod conic;
 mod construction_plane;
 mod contour;
+mod curvature;
 mod curvature_analysis;
 mod curvature_graph;
 mod curve_apex;
@@ -499,6 +500,8 @@ pub struct VibocerosApp {
     radius_session: Option<radius::Session>,
     radius_mark: [bool; 2],
     radius_units: [Option<&'static str>; 2],
+    curvature_session: Option<curvature::Session>,
+    curvature_mark: bool,
     distribute_session: Option<distribute::Session>,
     distribute_settings: viboceros_command::DistributionSettings,
     offset_mesh_session: Option<offset_mesh::Session>,
@@ -711,6 +714,8 @@ impl VibocerosApp {
             radius_session: None,
             radius_mark: [false; 2],
             radius_units: [None; 2],
+            curvature_session: None,
+            curvature_mark: false,
             distribute_session: None,
             distribute_settings: Default::default(),
             offset_mesh_session: None,
@@ -1119,6 +1124,7 @@ impl VibocerosApp {
             || self.try_continue_points(&input)
             || self.try_continue_distance(&input)
             || self.try_continue_radius(&input)
+            || self.continue_curvature(&input)
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_circle(&input)
@@ -1274,6 +1280,7 @@ impl VibocerosApp {
             || self.try_continue_points(input)
             || self.try_continue_distance(input)
             || self.try_continue_radius(input)
+            || self.continue_curvature(input)
             || self.try_continue_length(input)
             || self.try_continue_angle(input)
             || self.try_continue_circle(input)

@@ -29,6 +29,7 @@ mod clipping;
 mod curve_line;
 mod curve_offset;
 pub(crate) use curve_offset::OffsetDraft;
+pub(crate) mod curvature;
 mod cutting;
 pub(crate) mod direction;
 mod placement;
@@ -386,6 +387,8 @@ pub struct ViewportInput<'a> {
     pub alignment_curve_pick: Option<&'a viboceros_command::align::AlignmentSources>,
     pub alignment_plane_preview: Option<viboceros_command::rectangle_input::RectangleDefinition>,
     pub(crate) radius_input: Option<radius::RadiusInput<'a>>,
+    pub(crate) curvature_input: Option<curvature::Input<'a>>,
+    pub(crate) curvature_guides: Option<curvature::Guides<'a>>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -564,6 +567,8 @@ impl Default for ViewportInput<'_> {
             alignment_curve_pick: None,
             alignment_plane_preview: None,
             radius_input: None,
+            curvature_input: None,
+            curvature_guides: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -690,6 +695,8 @@ impl Default for ViewportInput<'_> {
 pub struct ViewportOutput {
     pub(crate) radius_hover: Option<(Pos2, radius::RadiusHit)>,
     pub(crate) radius_click: Option<radius::RadiusClick>,
+    pub(crate) curvature_hover: Option<(Pos2, curvature::Hit)>,
+    pub(crate) curvature_click: Option<curvature::Click>,
     pub arc_blend_handle: Option<viboceros_command::arc_blend::Handle>,
     pub arc_blend_hover: Option<Real>,
     pub blend_curve_handle: Option<viboceros_command::blend_curve::Handle>,
@@ -1657,6 +1664,7 @@ impl Viewport {
                 .map(|(filter, preselection)| (filter, preselection, modifiers)));
         let component_input = component_mode.is_some()
             || input.radius_input.is_some()
+            || input.curvature_input.is_some()
             || input.direction.is_some()
             || input.parametric_pick
             || input.chain_pick
@@ -2445,6 +2453,29 @@ impl Viewport {
             document,
             drafting,
         );
+        let (curvature_hover, curvature_click) =
+            input.curvature_input.map_or((None, None), |input_view| {
+                self.paint_curvature_guides(&painter, rect, input_view, input.curvature_guides);
+                let clicked = response.clicked_by(PointerButton::Primary);
+                let pixel = if clicked {
+                    response.interact_pointer_pos()
+                } else {
+                    response.hover_pos()
+                };
+                let Some(pixel) = pixel else {
+                    return (None, None);
+                };
+                let hit =
+                    self.curvature_hit(input_view, pixel, rect, document, drafting.snap_options());
+                (
+                    hit.map(|hit| (pixel, hit)),
+                    clicked.then_some(curvature::Click {
+                        viewport: viewport_index,
+                        pixel,
+                        hit,
+                    }),
+                )
+            });
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         if (input.chain_pick || input.length_pick)
@@ -3548,6 +3579,8 @@ impl Viewport {
                     .is_some_and(|pointer| pointer.y <= rect.top() + 28.0),
             radius_hover,
             radius_click,
+            curvature_hover,
+            curvature_click,
             zoom_window_result,
             zoom_window_cancelled: input.zoom_window
                 && response.clicked_by(PointerButton::Secondary),

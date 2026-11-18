@@ -317,8 +317,8 @@ impl VibocerosApp {
                     self.document.selected_object_count()
                 ));
                 let (units_label, units_hint) = model_units_status(&self.document);
-                if self.radius_session.is_some() {
-                    let status = self.radius_status();
+                if self.radius_session.is_some() || self.curvature_session.is_some() {
+                    let status = self.radius_status().or_else(|| self.curvature_status());
                     let label = status.unwrap_or(&units_label);
                     ui.add_sized(
                         [154., ui.spacing().interact_size.y],

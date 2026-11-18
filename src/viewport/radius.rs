@@ -68,7 +68,7 @@ impl Viewport {
         )
     }
 
-    fn radius_hit(
+    pub(super) fn radius_hit(
         &self,
         input: RadiusInput<'_>,
         pointer: Pos2,

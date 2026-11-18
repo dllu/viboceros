@@ -72,6 +72,7 @@ mod coplanar_faces;
 mod copy_options;
 mod create_uv_curves;
 mod cull_degenerate;
+mod curvature;
 mod curvature_analysis;
 mod curvature_graph;
 mod curve_array;
