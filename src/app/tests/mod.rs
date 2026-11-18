@@ -84,6 +84,7 @@ mod curve_input;
 #[path = "../../../crates/viboceros-oracle/tests/support/curve_path.rs"]
 mod curve_path_support;
 mod curve_rebuild_preview;
+mod cutting_modes;
 mod delete_grips;
 mod delete_subcurve;
 #[path = "../../../crates/viboceros-oracle/tests/support/compare.rs"]

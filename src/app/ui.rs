@@ -149,6 +149,7 @@ impl VibocerosApp {
         self.show_block_edit(ui.ctx());
         self.show_replace_block_chooser(ui.ctx());
         self.show_command_line(ui);
+        self.cutting_preview.poll();
         let _ = self.show_viewport_tabs(ui);
         let model_input_active = self.set_view_prompt.is_none() && !self.remember_copy_prompt;
         let end_analysis_picking = model_input_active && self.end_analysis_pick.is_some();
@@ -909,6 +910,19 @@ impl VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active && self.plane_prompt.is_none())
             .and_then(pipe::Session::preview);
+        let cutting_draft = self.cutting_draft();
+        let cutting_sources = cutting_draft.and_then(|draft| self.cutting_sources(draft));
+        let cutting_preview =
+            cutting_draft
+                .zip(cutting_sources.as_ref())
+                .map(|(draft, sources)| crate::viewport::CuttingPreview {
+                    draft,
+                    bounds: &sources.bounds,
+                    extent: sources.extent,
+                    result: self
+                        .cutting_preview
+                        .result(sources, self.document.tolerance()),
+                });
         let polygon_input = self
             .polygon_session
             .as_ref()
@@ -1440,6 +1454,7 @@ impl VibocerosApp {
                             circle_around_input,
                             solid_axial_input,
                             pipe_preview,
+                            cutting_preview,
                             polyline_input: self
                                 .polyline_session
                                 .as_ref()
@@ -1610,6 +1625,9 @@ impl VibocerosApp {
         if self.update_fillet_corners_preview(fillet_corners_point) {
             ui.ctx().request_repaint();
         }
+        let cutting_plan = viewport_outputs
+            .iter_mut()
+            .find_map(|output| output.cutting_plan.take());
         for (index, output) in viewport_outputs.into_iter().enumerate() {
             if let Some(preview) = output.mirror_preview
                 && self.update_mirror_preview(preview)
@@ -1672,6 +1690,12 @@ impl VibocerosApp {
                 handled_action = self.handle_viewport_action(output);
             }
         }
+        self.cutting_preview.update(
+            cutting_plan.filter(|_| cutting_draft == self.cutting_draft()),
+            cutting_sources,
+            self.document.tolerance(),
+            ui.ctx(),
+        );
         if subcurve_hover != self.subcurve_preview_hover() {
             ui.ctx().request_repaint();
         }

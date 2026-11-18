@@ -3,63 +3,76 @@ use super::*;
 use viboceros_geometry::Frame3;
 #[cfg(test)]
 mod tests;
-pub(super) struct SectionCommand;
+use crate::cutting_options::{self, Output};
+
+pub(super) struct SectionCommand(pub std::sync::Arc<remembered::Remembered<SectionOptions>>);
 pub const SECTION_USAGE: &str = "Section start-point end-point [ExtendSection=Yes|No] [AssignProperties=ByCurrentLayer|ByInputObject] [Output=All|CurvesOnly] [GroupObjectsBySectionPlane=Yes|No]";
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct SectionOptions {
     pub extend: bool,
     pub input_properties: bool,
     pub group: bool,
+    pub output: Output,
 }
-impl Default for SectionOptions {
-    fn default() -> Self {
-        Self {
-            extend: true,
-            input_properties: false,
-            group: false,
-        }
-    }
-}
-pub fn parse_options(words: &[&str]) -> Result<SectionOptions, CommandError> {
-    let mut result = SectionOptions::default();
-    let mut seen = BTreeSet::new();
-    for word in words {
+
+impl SectionOptions {
+    pub fn update(&mut self, word: &str) -> Result<bool, CommandError> {
         let (key, value) = word
-            .trim_start_matches('_')
             .split_once('=')
-            .ok_or(CommandError::Usage(SECTION_USAGE))?;
-        let key = key.to_ascii_lowercase();
-        if !seen.insert(key.clone()) {
-            return Err(CommandError::Usage(SECTION_USAGE));
+            .map_or((word, None), |(k, v)| (k, Some(v)));
+        if option_name_eq(key, "ExtendSection") {
+            self.extend = cutting_options::toggle(self.extend, value, SECTION_USAGE)?;
+        } else if option_name_eq(key, "GroupObjectsBySectionPlane") {
+            self.group = cutting_options::toggle(self.group, value, SECTION_USAGE)?;
+        } else {
+            return cutting_options::update(
+                &mut self.input_properties,
+                &mut self.output,
+                key,
+                value,
+                SECTION_USAGE,
+            );
         }
-        match key.as_str() {
-            "extendsection" => result.extend = parse_bool(value)?,
-            "groupobjectsbysectionplane" => result.group = parse_bool(value)?,
-            "assignproperties" => {
-                result.input_properties =
-                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "bycurrentlayer" => false,
-                        "byinputobject" => true,
-                        _ => return Err(CommandError::Usage(SECTION_USAGE)),
-                    }
-            }
-            "output"
-                if matches!(
-                    value.trim_start_matches('_').to_ascii_lowercase().as_str(),
-                    "all" | "curvesonly"
-                ) => {}
-            _ => return Err(CommandError::Usage(SECTION_USAGE)),
-        }
+        Ok(true)
     }
-    Ok(result)
-}
-fn parse_bool(word: &str) -> Result<bool, CommandError> {
-    match word.trim_start_matches('_').to_ascii_lowercase().as_str() {
-        "yes" => Ok(true),
-        "no" => Ok(false),
-        _ => Err(CommandError::Usage(SECTION_USAGE)),
+
+    pub fn with_arguments(self, words: &[&str]) -> Result<Self, CommandError> {
+        cutting_options::apply_words(self, words, SECTION_USAGE, Self::update)
+    }
+
+    pub fn arguments(self) -> String {
+        format!(
+            "ExtendSection={} AssignProperties={} Output={} GroupObjectsBySectionPlane={}",
+            cutting_options::yes_no(self.extend),
+            cutting_options::properties_label(self.input_properties),
+            self.output.label(),
+            cutting_options::yes_no(self.group),
+        )
     }
 }
+
+pub fn parse_options(words: &[&str]) -> Result<SectionOptions, CommandError> {
+    if words.iter().any(|word| !word.contains('=')) {
+        return Err(CommandError::Usage(SECTION_USAGE));
+    }
+    // Positional Section scripts historically extend across the sources by default.
+    SectionOptions {
+        extend: true,
+        ..Default::default()
+    }
+    .with_arguments(words)
+}
+
+impl CommandRegistry {
+    pub fn section_options(&self) -> SectionOptions {
+        self.section_options.get()
+    }
+
+    pub fn remember_section_options(&self, options: SectionOptions) {
+        self.section_options.set(options);
+    }
+}
+
 pub fn section_frame(
     start: Point3,
     end: Point3,
@@ -265,12 +278,26 @@ impl Command for SectionCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        Ok(args.is_empty().then(|| ObjectSelectionPrompt {
+        let Ok(options) = self.0.get().with_arguments(args) else {
+            return Ok(None);
+        };
+        Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Section,
-            options: Vec::new(),
+            options: vec![
+                BooleanSelectionOption {
+                    name: "ExtendSection",
+                    value: options.extend,
+                    aliases: &[],
+                },
+                BooleanSelectionOption {
+                    name: "GroupObjectsBySectionPlane",
+                    value: options.group,
+                    aliases: &[],
+                },
+            ],
             menus: Vec::new(),
-            choices: Vec::new(),
+            choices: cutting_options::choices(options.input_properties, options.output),
             workflow: ObjectSelectionWorkflow::OptionsDuringSelection,
         }))
     }
@@ -291,36 +318,60 @@ impl Command for SectionCommand {
         let inputs = doc
             .selected_objects()
             .filter(|object| ObjectSelectionFilter::Section.accepts_object(object))
+            .map(|object| object.id())
             .collect::<Vec<_>>();
-        if inputs.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let mut output = Vec::new();
-        for source in inputs {
-            for geometry in section_geometry(
-                source.geometry(),
-                frame,
-                length,
-                options.extend,
-                doc.tolerance(),
-            )? {
-                let attributes = if options.input_properties {
-                    source.attributes().clone()
-                } else {
-                    viboceros_document::ObjectAttributes::on_layer(doc.current_layer_id())
-                };
-                output.push((geometry, attributes));
-            }
-        }
-        let count = output.len();
-        let mut ids = Vec::new();
-        for (geometry, attributes) in output {
-            ids.push(doc.add_geometry_with_attributes(geometry, attributes)?);
-        }
-        if options.group && !ids.is_empty() {
-            doc.add_group(Some(doc.next_unused_group_name()), ids.iter().copied())?;
-        }
+        let ids = create_sections(doc, &inputs, frame, length, options)?;
+        let count = ids.len();
         doc.select_command_results(ids)?;
+        self.0
+            .set(self.0.get().with_arguments(&args[first + second..])?);
         Ok(format!("Created {count} section object(s)"))
     }
+}
+
+/// Stage all cuts before adding objects. Callers own the edit transaction.
+pub fn create_sections(
+    doc: &mut Document,
+    inputs: &[ObjectId],
+    frame: Frame3,
+    length: f64,
+    options: SectionOptions,
+) -> Result<Vec<ObjectId>, CommandError> {
+    if inputs.is_empty() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    let requested = inputs.iter().copied().collect::<BTreeSet<_>>();
+    let sources = doc
+        .objects()
+        .filter(|object| requested.contains(&object.id()))
+        .map(|object| (object.id(), object))
+        .collect::<std::collections::BTreeMap<_, _>>();
+    let mut output = Vec::new();
+    for &id in inputs {
+        let source = sources
+            .get(&id)
+            .ok_or(viboceros_document::DocumentError::ObjectNotFound(id))?;
+        for geometry in section_geometry(
+            source.geometry(),
+            frame,
+            length,
+            options.extend,
+            doc.tolerance(),
+        )? {
+            let attributes = if options.input_properties {
+                source.attributes().clone()
+            } else {
+                viboceros_document::ObjectAttributes::on_layer(doc.current_layer_id())
+            };
+            output.push((geometry, attributes));
+        }
+    }
+    let mut ids = Vec::new();
+    for (geometry, attributes) in output {
+        ids.push(doc.add_geometry_with_attributes(geometry, attributes)?);
+    }
+    if options.group && !ids.is_empty() {
+        doc.add_group(Some(doc.next_unused_group_name()), ids.iter().copied())?;
+    }
+    Ok(ids)
 }

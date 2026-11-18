@@ -187,6 +187,7 @@ mod curve_fillet;
 mod curve_preview;
 mod curve_prompt;
 mod curve_selection;
+mod cutting_preview;
 mod direction;
 mod direction_analysis;
 mod distance;
@@ -520,6 +521,8 @@ pub struct VibocerosApp {
     parabola_session: Option<parabola::Session>,
     paraboloid_session: Option<paraboloid::Session>,
     polygon_session: Option<polygon::Session>,
+    section_session: Option<section::Session>,
+    cutting_preview: cutting_preview::Preview,
     polyline_session: Option<polyline::Session>,
     pyramid_session: Option<pyramid::Session>,
     conic_session: Option<conic::Session>,
@@ -721,6 +724,8 @@ impl VibocerosApp {
             parabola_session: None,
             paraboloid_session: None,
             polygon_session: None,
+            section_session: None,
+            cutting_preview: cutting_preview::Preview::default(),
             polyline_session: None,
             pyramid_session: None,
             conic_session: None,

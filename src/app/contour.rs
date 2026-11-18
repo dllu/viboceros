@@ -10,7 +10,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let Ok(options) = viboceros_command::contour::parse_options(&words[1..]) else {
+        let Ok(options) = self
+            .commands
+            .contour_preferences()
+            .options
+            .with_arguments(&words[1..])
+        else {
             return false;
         };
         if !self
@@ -27,8 +32,7 @@ impl VibocerosApp {
             spacing_start: None,
             options,
         });
-        self.command_input.clear();
-        self.push_log(self.active_command.unwrap().prompt().into());
+        self.contour_prompt();
         true
     }
     pub(super) fn accept_contour_point(&mut self, point: Point3) -> Option<bool> {
@@ -58,8 +62,7 @@ impl VibocerosApp {
                 options,
             });
             self.last_point = Some(point);
-            self.command_input.clear();
-            self.push_log("Contour: pick the second spacing point".into());
+            self.contour_prompt();
             return Some(true);
         }
         if let Some(base) = base {
@@ -85,8 +88,7 @@ impl VibocerosApp {
             });
         }
         self.last_point = Some(point);
-        self.command_input.clear();
-        self.push_log(self.active_command.unwrap().prompt().into());
+        self.contour_prompt();
         Some(true)
     }
     fn finish_contour(
@@ -97,17 +99,10 @@ impl VibocerosApp {
         options: viboceros_command::contour::ContourOptions,
     ) -> bool {
         let command = format!(
-            "Contour {} {} {} Range={} AssignProperties={} Output=CurvesOnly GroupObjectsByContourPlane={}",
+            "Contour {} {} {spacing} {}",
             format_model_point(base),
             format_model_point(direction),
-            spacing,
-            if options.range { "Yes" } else { "No" },
-            if options.input_properties {
-                "ByInputObject"
-            } else {
-                "ByCurrentLayer"
-            },
-            if options.group { "Yes" } else { "No" }
+            options.arguments(),
         );
         match self.commands.execute(&mut self.document, &command) {
             Ok(message) => {
@@ -131,19 +126,38 @@ impl VibocerosApp {
         else {
             return false;
         };
-        if input.trim().eq_ignore_ascii_case("Range") && base.is_none() {
-            options.range = true;
-            self.active_command = Some(InteractiveCommand::Contour {
-                base,
-                direction,
-                spacing_start,
-                options,
-            });
-            self.command_input.clear();
-            self.push_log("Contour: pick the range start".into());
-            return true;
+        let allow_range = base.is_none() && !options.range;
+        match options.update(input, allow_range) {
+            Ok(true) => {
+                self.active_command = Some(InteractiveCommand::Contour {
+                    base,
+                    direction,
+                    spacing_start,
+                    options,
+                });
+                self.contour_prompt();
+                return true;
+            }
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                return true;
+            }
+            Ok(false) => {}
         }
         if let (Some(base), Some(direction)) = (base, direction) {
+            if input.is_empty()
+                || input
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("Enter")
+            {
+                self.finish_contour(
+                    base,
+                    direction,
+                    self.commands.contour_preferences().spacing,
+                    options,
+                );
+                return true;
+            }
             if let Some(quantity) = viboceros_drafting::PointInput::parse_length_with_units(
                 input,
                 self.document.units(),
@@ -161,5 +175,28 @@ impl VibocerosApp {
             return true;
         }
         false
+    }
+
+    fn contour_prompt(&mut self) {
+        let Some(InteractiveCommand::Contour {
+            base,
+            direction,
+            spacing_start,
+            options,
+        }) = self.active_command
+        else {
+            return;
+        };
+        let spacing = self.commands.contour_preferences().spacing;
+        let point = match (base, direction, spacing_start, options.range) {
+            (None, _, _, true) => "Contour range start point".to_owned(),
+            (None, _, _, false) => "Contour plane base point (Range)".to_owned(),
+            (_, None, _, true) => "End of contour range perpendicular to contour planes".to_owned(),
+            (_, None, _, false) => "Direction perpendicular to contour planes".to_owned(),
+            (_, _, Some(_), _) => format!("Second distance point <{spacing}>"),
+            _ => format!("Distance between contours <{spacing}>"),
+        };
+        self.push_log(format!("{point}. {}", options.arguments()));
+        self.command_input.clear();
     }
 }

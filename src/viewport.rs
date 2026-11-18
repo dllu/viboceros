@@ -27,7 +27,9 @@ const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod clipping;
 mod curve_line;
+mod cutting;
 pub(crate) mod direction;
+pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
 mod pipe;
@@ -455,6 +457,7 @@ pub struct ViewportInput<'a> {
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
     pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
+    pub(crate) cutting_preview: Option<CuttingPreview<'a>>,
     pub polyline_input: Option<PolylinePreview<'a>>,
     pub polygon_input: Option<viboceros_command::polygon::Input>,
     pub pyramid_input: Option<viboceros_command::pyramid::Input>,
@@ -590,6 +593,7 @@ impl Default for ViewportInput<'_> {
             hyperbola_input: None,
             parabola_input: None,
             paraboloid_input: None,
+            cutting_preview: None,
             polyline_input: None,
             polygon_input: None,
             pyramid_input: None,
@@ -730,6 +734,7 @@ pub struct ViewportOutput {
     pub lasso_point: Option<(Pos2, usize, SelectionMode)>,
     pub lasso_stroke: Option<(Vec<Pos2>, usize, SelectionMode)>,
     pub point_cloud_selection: Option<PointCloudPointSelection>,
+    pub(crate) cutting_plan: Option<CutPlan>,
     pub enter_pressed: bool,
     pub source_viewport_click: bool,
     pub activated: bool,
@@ -3026,6 +3031,11 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
             }
         }
+        let cutting_plan = input.cutting_preview.and_then(|preview| {
+            let cursor = drafting_cursor
+                .filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()))?;
+            self.paint_cutting_preview(&painter, rect, preview, cursor.point, document.tolerance())
+        });
         if let Some(draft) = input.polyline_input {
             let cursor = drafting_cursor
                 .filter(|_| {
@@ -3580,6 +3590,7 @@ impl Viewport {
             lasso_point,
             lasso_stroke,
             point_cloud_selection,
+            cutting_plan,
             enter_pressed: !input.zoom_window
                 && input.zoom_target.is_none()
                 && response.clicked_by(PointerButton::Secondary),

@@ -16,6 +16,7 @@ pub mod blocks;
 pub mod component_seams;
 pub mod contour;
 pub mod crease;
+pub mod cutting_options;
 pub mod extract_control_polygon;
 mod extract_points;
 mod pack_subd_faces;
@@ -1052,6 +1053,8 @@ pub struct CommandRegistry {
     mesh_plane_preferences: std::sync::Arc<remembered::Remembered<mesh_plane::Preferences>>,
     polygon_preferences: std::sync::Arc<remembered::Remembered<polygon::Preferences>>,
     polyline_preferences: std::sync::Arc<remembered::Remembered<polyline_input::Preferences>>,
+    section_options: std::sync::Arc<remembered::Remembered<section::SectionOptions>>,
+    contour_preferences: std::sync::Arc<remembered::Remembered<contour::Preferences>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
     mesh_axial_preferences: [std::sync::Arc<remembered::Remembered<solid_axial::MeshSettings>>; 3],
@@ -1207,13 +1210,15 @@ impl CommandRegistry {
                 .expect("unique built-in command");
         }
         registry
-            .register(contour::ContourCommand)
+            .register(contour::ContourCommand(
+                registry.contour_preferences.clone(),
+            ))
             .expect("built-in command names are unique");
         registry
             .register(iplane::IPlaneCommand)
             .expect("unique built-in command");
         registry
-            .register(section::SectionCommand)
+            .register(section::SectionCommand(registry.section_options.clone()))
             .expect("unique built-in command");
         registry
             .register(explode_block::ExplodeBlockCommand)
