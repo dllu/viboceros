@@ -271,7 +271,10 @@ impl PendingObjectCommand {
                 "Edit counts, degrees or output options; Enter rebuilds, Esc cancels"
             };
         }
-        if self.description.command == "Sphere FitPoints" {
+        if matches!(
+            self.description.command,
+            "Sphere FitPoints" | "MeshSphere FitPoints"
+        ) {
             return "Select at least three points or grips; Enter fits a sphere, Esc cancels";
         }
         if self.description.command == "LineThroughPt" {
@@ -409,6 +412,7 @@ impl VibocerosApp {
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
+                        | "MeshSphere FitPoints"
                         | "Smooth"
                         | "HidePt"
                         | "ExtractPt"
@@ -878,7 +882,8 @@ impl VibocerosApp {
             | "SubDTorus FitPoints"
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
-            | "Sphere FitPoints" => 3,
+            | "Sphere FitPoints"
+            | "MeshSphere FitPoints" => 3,
             "BooleanUnion" | "MeshBooleanUnion" | "MeshIntersect" | "PlanarUnion"
             | "TweenSurfaces" | "LineThroughPt" | "CrvDeviation" | "MergeSrf" => 2,
             _ => 1,
@@ -906,6 +911,7 @@ impl VibocerosApp {
                 | "PlaneThroughPt"
                 | "LineThroughPt"
                 | "Sphere FitPoints"
+                | "MeshSphere FitPoints"
                 | "Smooth"
                 | "HidePt"
                 | "ExtractPt"
@@ -1081,6 +1087,7 @@ impl VibocerosApp {
                     | "RailRevolve"
                     | "Sweep1"
                     | "Circle FitPoints"
+                    | "MeshSphere FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
                     | "SubDTruncatedCone FitPoints"
@@ -1393,6 +1400,7 @@ impl VibocerosApp {
                             | "PlaneThroughPt"
                             | "LineThroughPt"
                             | "Sphere FitPoints"
+                            | "MeshSphere FitPoints"
                             | "Smooth"
                             | "HidePt"
                             | "ExtractPt"
@@ -1713,6 +1721,7 @@ impl VibocerosApp {
                         | "PlaneThroughPt"
                         | "LineThroughPt"
                         | "Sphere FitPoints"
+                        | "MeshSphere FitPoints"
                         | "HidePt"
                         | "ExtractPt"
                         | "Weight"

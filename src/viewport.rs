@@ -424,6 +424,11 @@ pub struct ViewportInput<'a> {
     pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
+    pub mesh_sphere_topology: Option<viboceros_command::mesh_sphere::Topology>,
+    pub mesh_sphere_fit_preview: Option<(
+        viboceros_command::mesh_sphere::Topology,
+        viboceros_command::circle_input::CircleDefinition,
+    )>,
     pub sphere_preview: Option<viboceros_command::sphere_input::SphereInput>,
     pub circle_around_output: Option<viboceros_command::circle_deform_input::Output>,
     pub circle_preview: Option<(viboceros_command::circle_input::PointConstruction, Frame3)>,
@@ -566,6 +571,8 @@ impl Default for ViewportInput<'_> {
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
+            mesh_sphere_topology: None,
+            mesh_sphere_fit_preview: None,
             sphere_preview: None,
             circle_around_output: None,
             circle_preview: None,
@@ -2821,7 +2828,13 @@ impl Viewport {
                     if let Ok(definition) =
                         viboceros_command::circle_input::CircleDefinition::from_circle(circle)
                     {
-                        self.paint_sphere_draft(&painter, rect, definition);
+                        self.paint_sphere_output_draft(
+                            &painter,
+                            rect,
+                            definition,
+                            input.mesh_sphere_topology,
+                            document.tolerance(),
+                        );
                     }
                 } else if let Ok(curve) = input
                     .circle_around_output
@@ -2831,6 +2844,15 @@ impl Viewport {
                 }
             }
         }
+        if let Some((topology, definition)) = input.mesh_sphere_fit_preview {
+            self.paint_sphere_output_draft(
+                &painter,
+                rect,
+                definition,
+                Some(topology),
+                document.tolerance(),
+            );
+        }
         if let Some(getter) = input.sphere_preview
             && let Some(cursor) = drafting_cursor
             && input
@@ -2838,7 +2860,13 @@ impl Viewport {
                 .is_none_or(|filter| !filter.awaiting_source())
         {
             if let Some(definition) = getter.preview(cursor.point, document.tolerance()) {
-                self.paint_sphere_draft(&painter, rect, definition);
+                self.paint_sphere_output_draft(
+                    &painter,
+                    rect,
+                    definition,
+                    input.mesh_sphere_topology,
+                    document.tolerance(),
+                );
             } else if let Some(section) = getter.preview_section(cursor.point) {
                 self.paint_curve_draft(&painter, rect, &section);
             }

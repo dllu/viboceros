@@ -9,7 +9,7 @@ use viboceros_command::{
 };
 use viboceros_geometry::MeshEllipsoidOptions;
 
-const MAX_DRAFT_MESH_FACES: usize = 4096;
+use super::drafting::MAX_DRAFT_MESH_FACES;
 
 #[derive(Clone, Copy, Debug)]
 pub enum EllipsoidPreview {
@@ -76,7 +76,7 @@ impl Viewport {
                 .filter(|o| face_count(*o).is_some_and(|count| count <= MAX_DRAFT_MESH_FACES))
             {
                 if let Ok(mesh) = definition.mesh(options, tolerance) {
-                    self.paint_mesh_ellipsoid_draft(painter, rect, &mesh);
+                    self.paint_mesh_draft(painter, rect, &mesh);
                 }
             } else {
                 for curve in definition.sections().into_iter().flatten() {
@@ -85,26 +85,6 @@ impl Viewport {
             }
             if let Some(foci) = definition.foci {
                 self.paint_draft_points(painter, rect, &foci);
-            }
-        }
-    }
-
-    fn paint_mesh_ellipsoid_draft(&self, painter: &egui::Painter, rect: Rect, mesh: &TriangleMesh) {
-        let mut drawn = std::collections::HashSet::new();
-        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
-        for face in mesh.faces() {
-            let vertices = face.indices();
-            for (&a, &b) in vertices.iter().zip(vertices.iter().cycle().skip(1)) {
-                if a != b
-                    && drawn.insert((a.min(b), a.max(b)))
-                    && let Some(segment) = self.project_segment(
-                        mesh.vertices()[a as usize],
-                        mesh.vertices()[b as usize],
-                        rect,
-                    )
-                {
-                    painter.line_segment(segment, stroke);
-                }
             }
         }
     }

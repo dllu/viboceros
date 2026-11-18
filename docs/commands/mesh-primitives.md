@@ -55,15 +55,18 @@ elevation, and vertices/faces follow Rhino's x-fastest row-major ordering.
 One grid is bounded to one million faces and tolerance-degenerate cells are
 rejected atomically.
 
-`MeshSphere` creates all three Rhino polygon-sphere styles from a center and
-numeric or picked equator radius. `Style=UV` uses a latitude-major quad grid
-with shared triangle-fan poles; `VerticalFaces` and `AroundFaces` default to
-10. `Style=Quads` applies Catmull-Clark cube refinement before radial
-projection, while `Style=Triangles` recursively refines an icosahedron; both
-use `Subdivisions=3` by default and preserve Rhino's welded indexing. The
-command limits subdivisions to 6 quads or 5 triangles, `Axis=x,y,z` orients
-typed commands, and the two-pick toolbar workflow uses World Z. One sphere is
-bounded to one million faces.
+`MeshSphere` supports a center and radius, diameter, circumference or area,
+with an optional orientation. Choose `2Point`, `3Point`, `4Point`, `Tangent`,
+`AroundCurve` or `FitPoints` at the center prompt. `3Point` and `4Point` also
+offer a radius constraint after the initial picks.
+
+Choose `Style=UV`, `Style=Quad` or `Style=Triangle` before entering the
+sphere definition. UV uses triangle fans at the poles and defaults to 10
+`VerticalFaces` and 10 `AroundFaces`. Quad and Triangle default to two
+subdivisions and allow up to six and five respectively. Successful commands
+remember the topology settings and start the next radius prompt at 1.
+The viewport draws mesh edges up to 4,096 faces and sphere sections for
+denser meshes. Complete center/radius scripts also accept `Axis=x,y,z`.
 
 `MeshEllipsoid` creates a closed mesh from three positive semi-axis radii or
 from a center and three axis-radius points. `VerticalFaces` divides the first

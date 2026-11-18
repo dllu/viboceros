@@ -995,6 +995,10 @@ impl VibocerosApp {
             .map(|s| s.input)
             .filter(|_| model_input_active);
         let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
+        let mesh_sphere_topology = self.mesh_sphere_preview_topology();
+        let mesh_sphere_fit_preview = model_input_active
+            .then(|| self.mesh_sphere_fit_preview())
+            .flatten();
         let sphere_preview = model_input_active
             .then(|| self.sphere_preview_input())
             .flatten();
@@ -1009,6 +1013,7 @@ impl VibocerosApp {
             .filter(|_| model_input_active)
             .map(|s| crate::viewport::TangentPreview {
                 sphere: s.sphere(),
+                mesh_sphere_topology,
                 contacts: &s.input,
                 output: s.output,
                 arc: s.support.as_ref(),
@@ -1392,6 +1397,8 @@ impl VibocerosApp {
                             arc_output,
                             arc_preview,
                             circle_around_input,
+                            mesh_sphere_topology,
+                            mesh_sphere_fit_preview,
                             sphere_preview,
                             circle_around_output,
                             circle_preview,

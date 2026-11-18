@@ -19,6 +19,7 @@ fn sphere_fit_points_incremental_option_selects_points_and_records_one_edit() {
     assert_eq!(
         app.active_command,
         Some(InteractiveCommand::Sphere {
+            output: crate::app::sphere::Output::Solid,
             input: viboceros_command::sphere_input::SphereInput::new(
                 app.viewports[app.active_viewport].construction_plane(),
             ),

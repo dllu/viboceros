@@ -75,38 +75,55 @@ impl Command for SphereCommand {
             return point_fitting::run(point_fitting::PointFitKind::Sphere, doc, &[], false);
         }
         let mut preferences = self.0.get();
-        let mut release = None;
-        let definition = if let Some(definition) = positional_definition(args) {
+        let (definition, release) = if let Some(definition) = positional_definition(args) {
             let definition = definition?;
             preferences.radius = definition.radius;
-            definition
-        } else if let [option, rest @ ..] = args
-            && option_name_eq(option, "AroundCurve")
-        {
-            let around = crate::circle_around_input::from_arguments(doc, rest, preferences.into())?;
-            if around.postselected {
-                release = Some(around.source);
-            }
-            preferences = around.preferences.into();
-            CircleDefinition::from_circle(around.circle)?
-        } else if let [option, rest @ ..] = args
-            && option_name_eq(option, "Tangent")
-        {
-            let tangent = crate::circle_tangent_input::sphere_from_arguments(
-                doc,
-                rest,
-                context.construction_plane,
-                preferences.into(),
-            )?;
-            preferences = tangent.preferences.into();
-            CircleDefinition::from_circle(tangent.circle)?
+            (definition, None)
         } else {
-            input_definition(doc, args, context, &mut preferences)?
+            from_arguments(
+                doc,
+                args,
+                SphereInput::with_preferences(context.construction_plane, preferences),
+                &mut preferences,
+            )?
         };
         let id = add(doc, definition, release)?;
         self.0.set(preferences);
         Ok(message(id, definition.radius))
     }
+}
+
+pub(super) fn from_arguments(
+    doc: &Document,
+    args: &[&str],
+    input: SphereInput,
+    preferences: &mut Preferences,
+) -> Result<(CircleDefinition, Option<ObjectId>), CommandError> {
+    let mut release = None;
+    let definition = if let [option, rest @ ..] = args
+        && option_name_eq(option, "AroundCurve")
+    {
+        let around = crate::circle_around_input::from_arguments(doc, rest, (*preferences).into())?;
+        if around.postselected {
+            release = Some(around.source);
+        }
+        *preferences = around.preferences.into();
+        CircleDefinition::from_circle(around.circle)?
+    } else if let [option, rest @ ..] = args
+        && option_name_eq(option, "Tangent")
+    {
+        let tangent = crate::circle_tangent_input::sphere_from_arguments(
+            doc,
+            rest,
+            input.construction_plane(),
+            (*preferences).into(),
+        )?;
+        *preferences = tangent.preferences.into();
+        CircleDefinition::from_circle(tangent.circle)?
+    } else {
+        input_definition(doc, args, input, preferences)?
+    };
+    Ok((definition, release))
 }
 
 fn positional_definition(args: &[&str]) -> Option<Result<CircleDefinition, CommandError>> {
@@ -135,10 +152,9 @@ fn positional_definition(args: &[&str]) -> Option<Result<CircleDefinition, Comma
 fn input_definition(
     doc: &Document,
     mut words: &[&str],
-    context: CommandContext,
+    mut input: SphereInput,
     preferences: &mut Preferences,
 ) -> Result<CircleDefinition, CommandError> {
-    let mut input = SphereInput::with_preferences(context.construction_plane, *preferences);
     while let Some((&word, rest)) = words.split_first() {
         if input.option(word) {
             input.update_size_mode(preferences);

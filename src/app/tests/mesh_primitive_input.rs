@@ -329,28 +329,35 @@ fn interactive_mesh_sphere_retains_each_style_and_validates_radius_pick() {
     assert!(app.try_start_interactive_command("MeshSphere Style=UV VerticalFaces=4 AroundFaces=6"));
     let center = point(1.0, 2.0, 1.0);
     app.accept_drafting_point(center);
-    app.accept_drafting_point(point(1.0, 2.0, 9.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshSphere {
-            center: Some(center),
-            topology: InteractiveMeshSphereTopology::Uv {
-                vertical_count: 4,
-                around_count: 6,
-            },
-        })
-    );
+    app.accept_drafting_point(center);
+    assert_eq!(app.active_command.unwrap().anchor(), Some(center));
     assert_eq!(app.document.objects().len(), 0);
 
-    app.accept_drafting_point(point(4.0, 2.0, 9.0));
+    let radius_point = point(4.0, 2.0, 9.0);
+    let preview = app
+        .sphere_preview_input()
+        .unwrap()
+        .preview(radius_point, app.document.tolerance())
+        .unwrap();
+    let expected_mesh = app
+        .mesh_sphere_preview_topology()
+        .unwrap()
+        .mesh(preview, app.document.tolerance())
+        .unwrap();
+    app.accept_drafting_point(radius_point);
     assert_eq!(app.active_command, None);
     let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
         panic!("expected an interactively created UV mesh sphere")
     };
     assert_eq!(mesh.vertices().len(), 20);
     assert_eq!(mesh.face_count(), 24);
-    assert_eq!(mesh.vertices()[0], point(1.0, 2.0, -2.0));
-    assert_eq!(mesh.vertices()[19], point(1.0, 2.0, 4.0));
+    assert_eq!(mesh.vertices(), expected_mesh.vertices());
+    assert!(
+        mesh.vertices()[0]
+            .distance_to(point(9.0, 2.0, -2.0))
+            .unwrap()
+            < 1e-12
+    );
     assert_eq!(mesh.faces()[0], MeshFace::Triangle([0, 2, 1]));
     assert_eq!(mesh.faces()[6], MeshFace::Quad([1, 2, 8, 7]));
     assert_eq!(mesh.faces()[18], MeshFace::Triangle([13, 14, 19]));

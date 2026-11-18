@@ -164,6 +164,7 @@ pub mod hyperbola;
 #[cfg(test)]
 mod hyperbola_tests;
 pub mod mesh_ellipsoid;
+pub mod mesh_sphere;
 mod model_tolerance;
 pub mod named_view;
 pub mod parabola;
@@ -565,16 +566,15 @@ use viboceros_geometry::{
     GeometryError, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
     MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
     MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TORUS_FACES,
     MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
     MIN_SMOOTH_CATENARY_POINT_COUNT, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshFaceExtraction, MeshSubdivisionSphereOptions, MeshTorusOptions,
-    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsCurve2, NurbsSurface, Plane,
-    Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
-    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
-    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves, sort_and_cull_points,
-    try_catenary,
+    MeshEdgeFilter, MeshFaceExtraction, MeshTorusOptions, MeshTruncatedConeOptions, NurbsCurve,
+    NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
+    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_curves,
+    sort_and_cull_points, try_catenary,
 };
 use viboceros_io::{StepError, StlError, ThreeDmError};
 #[cfg(test)]
@@ -1033,6 +1033,7 @@ pub struct CommandRegistry {
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
+    mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
@@ -1400,7 +1401,9 @@ impl CommandRegistry {
             .register(MeshPlaneCommand)
             .expect("unique built-in command");
         registry
-            .register(MeshSphereCommand)
+            .register(mesh_sphere::MeshSphereCommand(
+                registry.mesh_sphere_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(mesh_ellipsoid::MeshEllipsoidCommand(
@@ -5696,10 +5699,9 @@ fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions,
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
 
 pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
-pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 3;
+pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 2;
 pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
-const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV|Quads|Triangles] [VerticalFaces=integer-at-least-2 AroundFaces=integer-at-least-3 | Subdivisions=non-negative-integer]";
 pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
 const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
@@ -5919,32 +5921,10 @@ struct MeshTruncatedConeCommandOptions {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-struct MeshSphereCommandOptions {
-    center: Point3,
-    radius: AxialPrimitiveRadius,
-    axis: UnitVector3,
-    topology: MeshSphereCommandTopology,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
 struct EllipsoidPositionals {
     frame: Frame3,
     radii: [Real; 3],
     option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum MeshSphereCommandTopology {
-    Uv {
-        vertical_count: usize,
-        around_count: usize,
-    },
-    Quads {
-        subdivisions: usize,
-    },
-    Triangles {
-        subdivisions: usize,
-    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -6799,137 +6779,6 @@ fn parse_ellipsoid_positionals(
     })
 }
 
-fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
-    let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
-    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-    let mut style = MeshSphereCommandTopology::Uv {
-        vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-        around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-    };
-    let mut vertical_count = None;
-    let mut around_count = None;
-    let mut subdivisions = None;
-    let mut axis_seen = false;
-    let mut style_seen = false;
-    let mut vertical_seen = false;
-    let mut around_seen = false;
-    let mut subdivisions_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "Axis") && !axis_seen {
-            axis = parse_unit_axis_option(value, MESH_SPHERE_USAGE)?;
-            axis_seen = true;
-        } else if option_name_eq(name, "Style") && !style_seen {
-            style = if value.eq_ignore_ascii_case("UV") {
-                MeshSphereCommandTopology::Uv {
-                    vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                    around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
-                }
-            } else if value.eq_ignore_ascii_case("Quad") || value.eq_ignore_ascii_case("Quads") {
-                MeshSphereCommandTopology::Quads {
-                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                }
-            } else if value.eq_ignore_ascii_case("Triangle")
-                || value.eq_ignore_ascii_case("Triangles")
-            {
-                MeshSphereCommandTopology::Triangles {
-                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-                }
-            } else {
-                return Err(CommandError::UnsupportedMeshSphereStyle(value.to_owned()));
-            };
-            style_seen = true;
-        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            vertical_count = Some(
-                value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|count| *count >= 2)
-                    .ok_or_else(|| {
-                        CommandError::InvalidMeshSphereVerticalFaceCount(value.to_owned())
-                    })?,
-            );
-            vertical_seen = true;
-        } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            around_count = Some(
-                value
-                    .parse::<usize>()
-                    .ok()
-                    .filter(|count| *count >= 3)
-                    .ok_or_else(|| {
-                        CommandError::InvalidMeshSphereAroundFaceCount(value.to_owned())
-                    })?,
-            );
-            around_seen = true;
-        } else if option_name_eq(name, "Subdivisions") && !subdivisions_seen {
-            subdivisions = Some(value.parse::<usize>().map_err(|_| {
-                CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: value.to_owned(),
-                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
-                }
-            })?);
-            subdivisions_seen = true;
-        } else {
-            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-        }
-    }
-
-    let topology = match style {
-        MeshSphereCommandTopology::Uv { .. } => {
-            if subdivisions.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let vertical_count = vertical_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-            let around_count = around_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
-            if vertical_count
-                .checked_mul(around_count)
-                .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
-            {
-                return Err(GeometryError::TooManyMeshFaces.into());
-            }
-            MeshSphereCommandTopology::Uv {
-                vertical_count,
-                around_count,
-            }
-        }
-        MeshSphereCommandTopology::Quads { .. } => {
-            if vertical_count.is_some() || around_count.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-            if subdivisions > MAX_MESH_SPHERE_QUAD_SUBDIVISIONS {
-                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: subdivisions.to_string(),
-                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
-                });
-            }
-            MeshSphereCommandTopology::Quads { subdivisions }
-        }
-        MeshSphereCommandTopology::Triangles { .. } => {
-            if vertical_count.is_some() || around_count.is_some() {
-                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
-            }
-            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
-            if subdivisions > MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS {
-                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
-                    value: subdivisions.to_string(),
-                    maximum: MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
-                });
-            }
-            MeshSphereCommandTopology::Triangles { subdivisions }
-        }
-    };
-    Ok(MeshSphereCommandOptions {
-        center: positionals.center,
-        radius: positionals.radius,
-        axis,
-        topology,
-    })
-}
-
 fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOptions, CommandError> {
     let positionals = parse_radial_primitive_positionals(arguments, MESH_TORUS_USAGE)?;
     let mut options = MeshTorusCommandOptions {
@@ -7420,69 +7269,6 @@ impl Command for MeshTruncatedConeCommand {
             options.around_count,
             options.vertical_count
         ))
-    }
-}
-
-struct MeshSphereCommand;
-
-impl Command for MeshSphereCommand {
-    fn name(&self) -> &'static str {
-        "MeshSphere"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_mesh_sphere_options(arguments)?;
-        let tolerance = document.tolerance();
-        let (frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let (mesh, style, details) = match options.topology {
-            MeshSphereCommandTopology::Uv {
-                vertical_count,
-                around_count,
-            } => (
-                TriangleMesh::try_uv_sphere_grid(
-                    frame,
-                    radius,
-                    MeshUvSphereOptions {
-                        vertical_count,
-                        around_count,
-                    },
-                    tolerance,
-                )?,
-                "UV",
-                format!("({around_count} around × {vertical_count} vertical faces)"),
-            ),
-            MeshSphereCommandTopology::Quads { subdivisions } => {
-                let mesh = TriangleMesh::try_quad_sphere(
-                    frame,
-                    radius,
-                    MeshSubdivisionSphereOptions { subdivisions },
-                    tolerance,
-                )?;
-                let face_count = mesh.face_count();
-                (
-                    mesh,
-                    "quad",
-                    format!("({subdivisions} subdivisions, {face_count} faces)"),
-                )
-            }
-            MeshSphereCommandTopology::Triangles { subdivisions } => {
-                let mesh = TriangleMesh::try_ico_sphere(
-                    frame,
-                    radius,
-                    MeshSubdivisionSphereOptions { subdivisions },
-                    tolerance,
-                )?;
-                let face_count = mesh.face_count();
-                (
-                    mesh,
-                    "triangle",
-                    format!("({subdivisions} subdivisions, {face_count} faces)"),
-                )
-            }
-        };
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!("Added {style} mesh sphere {id} {details}"))
     }
 }
 

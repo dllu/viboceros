@@ -27,6 +27,8 @@ pub(super) struct CursorConstraints {
     pub(super) translation: Option<viboceros_command::translation::DestinationConstraint>,
 }
 
+pub(super) const MAX_DRAFT_MESH_FACES: usize = 4096;
+
 impl Viewport {
     pub(super) fn paint_sphere_draft(
         &self,
@@ -44,6 +46,49 @@ impl Viewport {
                 Tolerance::NUMERICAL_VALIDATION,
             ) {
                 self.paint_curve_draft(painter, rect, &circle);
+            }
+        }
+    }
+
+    pub(super) fn paint_sphere_output_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        definition: viboceros_command::circle_input::CircleDefinition,
+        mesh: Option<viboceros_command::mesh_sphere::Topology>,
+        tolerance: Tolerance,
+    ) {
+        if let Some(topology) =
+            mesh.filter(|m| m.face_count().is_some_and(|n| n <= MAX_DRAFT_MESH_FACES))
+        {
+            if let Ok(mesh) = topology.mesh(definition, tolerance) {
+                self.paint_mesh_draft(painter, rect, &mesh);
+            }
+        } else {
+            self.paint_sphere_draft(painter, rect, definition);
+        }
+    }
+    pub(super) fn paint_mesh_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        mesh: &TriangleMesh,
+    ) {
+        let mut drawn = std::collections::HashSet::new();
+        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        for face in mesh.faces() {
+            let vertices = face.indices();
+            for (&a, &b) in vertices.iter().zip(vertices.iter().cycle().skip(1)) {
+                if a != b
+                    && drawn.insert((a.min(b), a.max(b)))
+                    && let Some(segment) = self.project_segment(
+                        mesh.vertices()[a as usize],
+                        mesh.vertices()[b as usize],
+                        rect,
+                    )
+                {
+                    painter.line_segment(segment, stroke);
+                }
             }
         }
     }

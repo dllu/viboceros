@@ -3,6 +3,7 @@ use super::*;
 #[derive(Clone, Copy, Debug)]
 pub struct TangentPreview<'a> {
     pub sphere: bool,
+    pub mesh_sphere_topology: Option<viboceros_command::mesh_sphere::Topology>,
     pub contacts: &'a viboceros_command::circle_tangent_input::Input,
     pub output: Option<viboceros_command::circle_deform_input::Output>,
     pub arc_output: Option<viboceros_command::arc_deform_input::Output>,
@@ -109,6 +110,20 @@ impl Viewport {
             } else {
                 getter.preview_current()
             };
+            if let Some(topology) = input.mesh_sphere_topology {
+                if let Some(definition) = circle.and_then(|c| {
+                    viboceros_command::circle_input::CircleDefinition::from_circle(c).ok()
+                }) {
+                    self.paint_sphere_output_draft(
+                        painter,
+                        rect,
+                        definition,
+                        Some(topology),
+                        document.tolerance(),
+                    );
+                }
+                return;
+            }
             circle
                 .and_then(|c| input.circle_curves(c).ok())
                 .unwrap_or_default()

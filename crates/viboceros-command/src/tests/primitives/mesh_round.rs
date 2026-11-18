@@ -5,20 +5,8 @@ use super::*;
 fn mesh_sphere_matches_all_rhino_styles_and_orientations() {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::default();
-    let parsed = parse_mesh_sphere_options(&["0,0,0", "2"]).unwrap();
-    assert_eq!(
-        parsed.topology,
-        MeshSphereCommandTopology::Uv {
-            vertical_count: 10,
-            around_count: 10,
-        }
-    );
-    assert_eq!(
-        parse_mesh_sphere_options(&["0,0,0", "2", "Style=Quads"])
-            .unwrap()
-            .topology,
-        MeshSphereCommandTopology::Quads { subdivisions: 3 }
-    );
+    let (topology, _) = mesh_sphere::parse_topology(&["Style=Quads"], Default::default()).unwrap();
+    assert_eq!(topology.arguments(), "Style=Quad Subdivisions=2");
 
     let message = registry
         .execute(&mut document, "MeshSphere 0,0,0 2")

@@ -182,6 +182,7 @@ mod mesh_edit_input;
 mod mesh_ellipsoid_getters;
 mod mesh_face_prompt;
 mod mesh_primitive_input;
+mod mesh_sphere;
 mod mirror_preview;
 mod modify_radius;
 mod named_cplane;

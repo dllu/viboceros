@@ -520,8 +520,8 @@ impl VibocerosApp {
                     point,
                 );
             }
-            InteractiveCommand::Sphere { input } => {
-                return self.accept_sphere_point(input, point);
+            InteractiveCommand::Sphere { input, output } => {
+                return self.accept_sphere_point(input, output, point);
             }
             InteractiveCommand::SelVolumeSphere { center: None, mode } => {
                 let command = InteractiveCommand::SelVolumeSphere {
@@ -1579,54 +1579,6 @@ impl VibocerosApp {
                 radius_point: Some(_),
                 ..
             } => unreachable!("mesh-cylinder radius requires a center"),
-            InteractiveCommand::MeshSphere {
-                center: None,
-                topology,
-            } => {
-                let command = InteractiveCommand::MeshSphere {
-                    center: Some(point),
-                    topology,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("Center: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshSphere {
-                center: Some(center),
-                topology,
-            } => {
-                if same_top_point(center, point, self.document.tolerance()) {
-                    self.push_log(
-                        "Error: mesh-sphere radius must exceed model tolerance".to_owned(),
-                    );
-                    return false;
-                }
-                let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
-                    self.push_log("Error: mesh-sphere radius point is not finite".to_owned());
-                    return false;
-                };
-                self.active_command = None;
-                let topology_options = match topology {
-                    InteractiveMeshSphereTopology::Uv {
-                        vertical_count,
-                        around_count,
-                    } => format!(
-                        "Style=UV VerticalFaces={vertical_count} AroundFaces={around_count}"
-                    ),
-                    InteractiveMeshSphereTopology::Quads { subdivisions } => {
-                        format!("Style=Quads Subdivisions={subdivisions}")
-                    }
-                    InteractiveMeshSphereTopology::Triangles { subdivisions } => {
-                        format!("Style=Triangles Subdivisions={subdivisions}")
-                    }
-                };
-                self.execute_command(&format!(
-                    "MeshSphere {} {} {}",
-                    format_model_point(center),
-                    format_model_point(radius_point),
-                    topology_options
-                ));
-            }
             InteractiveCommand::MeshTorus {
                 center: None,
                 major_point: None,

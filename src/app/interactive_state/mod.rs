@@ -33,20 +33,6 @@ pub(super) enum InteractiveCurveExtensionJoin {
     No,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub(super) enum InteractiveMeshSphereTopology {
-    Uv {
-        vertical_count: usize,
-        around_count: usize,
-    },
-    Quads {
-        subdivisions: usize,
-    },
-    Triangles {
-        subdivisions: usize,
-    },
-}
-
 impl InteractiveIsocurveDirection {
     pub(super) const fn option_value(self) -> &'static str {
         match self {
@@ -267,9 +253,11 @@ pub(super) enum InteractiveCommand {
     },
     Sphere {
         input: viboceros_command::sphere_input::SphereInput,
+        output: sphere::Output,
     },
     SphereGuide {
         anchor: Option<Point3>,
+        output: sphere::Output,
     },
     SelVolumeSphere {
         center: Option<Point3>,
@@ -445,10 +433,6 @@ pub(super) enum InteractiveCommand {
         around_count: usize,
         solid: bool,
         cap_style: MeshCapFaceStyle,
-    },
-    MeshSphere {
-        center: Option<Point3>,
-        topology: InteractiveMeshSphereTopology,
     },
     MeshTorus {
         center: Option<Point3>,

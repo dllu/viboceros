@@ -69,7 +69,7 @@ impl InteractiveCommand {
             Self::CircleTwoPoint { .. } => "Circle",
             Self::CircleThreePoint { .. } => "Circle",
             Self::CircleThreePointRadius { .. } => "Circle",
-            Self::Sphere { .. } | Self::SphereGuide { .. } => "Sphere",
+            Self::Sphere { output, .. } | Self::SphereGuide { output, .. } => output.name(),
             Self::SelVolumeSphere { .. } => "SelVolumeSphere",
             Self::SelVolumePipe { .. } => "SelVolumePipe",
             Self::SelVolumeObject { .. } => "SelVolumeObject",
@@ -108,7 +108,6 @@ impl InteractiveCommand {
             Self::MeshCone { .. } => "MeshCone",
             Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
-            Self::MeshSphere { .. } => "MeshSphere",
             Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
             Self::SurfacePointGrid { control, .. } => {
@@ -185,8 +184,8 @@ impl InteractiveCommand {
 
     pub(in crate::app) const fn anchor(self) -> Option<Point3> {
         match self {
-            Self::Sphere { input } => input.anchor(),
-            Self::SphereGuide { anchor } => anchor,
+            Self::Sphere { input, .. } => input.anchor(),
+            Self::SphereGuide { anchor, .. } => anchor,
             Self::DraftPullPoints { start } => start,
             Self::DraftPullCurve => None,
             Self::SurfaceArray { base }
@@ -299,7 +298,6 @@ impl InteractiveCommand {
             | Self::MeshCone { center: None, .. }
             | Self::MeshTruncatedCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
-            | Self::MeshSphere { center: None, .. }
             | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
@@ -401,7 +399,6 @@ impl InteractiveCommand {
             | Self::MeshBox { base: start, .. }
             | Self::MeshCone { center: start, .. }
             | Self::MeshCylinder { center: start, .. }
-            | Self::MeshSphere { center: start, .. }
             | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }

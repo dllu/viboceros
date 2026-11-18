@@ -4,19 +4,17 @@ use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-    DEFAULT_MESH_TORUS_FACE_COUNT, DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings,
-    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
-    format_interp_curve_options, parse_curve_closure, parse_curve_degree,
-    parse_interp_curve_options, update_interp_curve_options,
+    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_TORUS_FACE_COUNT,
+    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings, format_interp_curve_options,
+    parse_curve_closure, parse_curve_degree, parse_interp_curve_options,
+    update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_TORUS_FACES,
     MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
@@ -235,7 +233,7 @@ mod ui;
 mod viewport_input;
 use interactive_state::{
     InteractiveCommand, InteractiveCurveExtensionJoin, InteractiveCurveExtensionStyle,
-    InteractiveIsocurveDirection, InteractiveMeshSphereTopology, InteractiveScaleKind,
+    InteractiveIsocurveDirection, InteractiveScaleKind,
 };
 mod arc_blend;
 mod blend_curve;
@@ -895,6 +893,7 @@ impl VibocerosApp {
             || self.try_continue_arc_tilted(&input)
             || self.try_continue_tangent(&input)
             || self.try_continue_arc(&input)
+            || self.try_continue_sphere(&input)
             || self.try_continue_circle_around(&input)
             || self.continue_subd_ellipsoid(&input)
             || self.continue_ellipsoid(&input)
@@ -1072,7 +1071,6 @@ impl VibocerosApp {
             || self.try_continue_length(&input)
             || self.try_continue_angle(&input)
             || self.try_continue_circle(&input)
-            || self.try_continue_sphere(&input)
             || self.try_continue_pipe(&input)
             || self.try_continue_evaluate_uv(&input)
             || self.try_continue_align(&input)

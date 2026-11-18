@@ -322,6 +322,7 @@ fn splop_tangent_viewport_pointer_routes_contacts_and_previews_three_readonly_se
         let session = app.tangent_session.as_ref().unwrap();
         let circle = session.input.preview_current().unwrap();
         let preview = crate::viewport::TangentPreview {
+            mesh_sphere_topology: None,
             sphere: session.sphere(),
             contacts: &session.input,
             output: None,

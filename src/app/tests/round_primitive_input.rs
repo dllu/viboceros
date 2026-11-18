@@ -79,7 +79,7 @@ fn interactive_sphere_uses_center_and_radius_point_transactionally() {
     app.accept_drafting_point(center);
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::Sphere { input }) if input.anchor() == Some(center)
+        Some(InteractiveCommand::Sphere { input, .. }) if input.anchor() == Some(center)
     ));
     assert_eq!(app.document.objects().len(), 0);
     assert!(app.command_log.back().unwrap().contains("sphere radius"));

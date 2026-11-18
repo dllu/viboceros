@@ -276,9 +276,20 @@ impl InteractiveCommand {
             Self::CircleThreePointRadius {
                 radius: Some(_), ..
             } => "Circle 3Point Radius: pick the center direction (Esc cancels)",
-            Self::Sphere { input } if input.at_start() => {
+            Self::Sphere {
+                input,
+                output: sphere::Output::Solid,
+            } if input.at_start() => {
                 "Sphere: pick the center or choose 2Point, 3Point, 4Point, Tangent, AroundCurve, or FitPoints (Esc cancels)"
             }
+            Self::Sphere {
+                output: sphere::Output::Mesh { .. },
+                ..
+            }
+            | Self::SphereGuide {
+                output: sphere::Output::Mesh { .. },
+                ..
+            } => "MeshSphere: specify a point or choose a construction option (Esc cancels)",
             Self::Sphere { .. } => "Sphere: specify a point or size (Esc cancels)",
             Self::SphereGuide { .. } => "Sphere: pick a guide or specify the size (Esc cancels)",
             Self::SelVolumeSphere { center: None, .. } => {
@@ -564,12 +575,6 @@ impl InteractiveCommand {
                 radius_point: Some(_),
                 ..
             } => "MeshCylinder: pick the height in the viewport (Esc to cancel)",
-            Self::MeshSphere { center: None, .. } => {
-                "MeshSphere: pick the center in the viewport (Esc to cancel)"
-            }
-            Self::MeshSphere {
-                center: Some(_), ..
-            } => "MeshSphere: pick an equator radius in the viewport (Esc to cancel)",
             Self::MeshTorus { center: None, .. } => {
                 "MeshTorus: pick the center in the viewport (Esc to cancel)"
             }
