@@ -3,6 +3,8 @@ use super::*;
 use std::f64::consts::FRAC_1_SQRT_2;
 use viboceros_geometry::SubD;
 
+mod circular;
+
 #[cfg(test)]
 mod tests;
 
@@ -25,6 +27,12 @@ pub struct ControlCage {
     points: Vec<Point3>,
     faces: Vec<Vec<u32>>,
     crease_rims: Vec<u32>,
+    walls: Vec<Wall>,
+}
+
+struct Wall {
+    first: u32,
+    rings: u32,
 }
 
 impl ControlCage {
@@ -34,9 +42,23 @@ impl ControlCage {
             .iter()
             .flat_map(|face| face.iter().zip(face.iter().cycle().skip(1)))
             .filter_map(move |(&a, &b)| {
-                seen.insert((a.min(b), a.max(b)))
+                (self.visible_segment(a, b) && seen.insert((a.min(b), a.max(b))))
                     .then(|| (self.points[a as usize], self.points[b as usize]))
             })
+    }
+
+    fn visible_segment(&self, a: u32, b: u32) -> bool {
+        for wall in &self.walls {
+            let range = wall.first..wall.first + wall.rings * SIDES;
+            if wall.rings > 33 && range.contains(&a) && range.contains(&b) {
+                let row = (a - wall.first) / SIDES;
+                if row == (b - wall.first) / SIDES {
+                    return row == wall.rings - 1 || row % wall.rings.div_ceil(32) == 0;
+                }
+                return a % 2 == 0;
+            }
+        }
+        true
     }
 
     fn into_geometry(self) -> Result<Geometry, GeometryError> {
@@ -81,6 +103,15 @@ impl ControlCage {
                 self.ring(axis.frame_at(distance)?, radius * RADIUS_SCALE, reverse)
             })
             .collect::<Result<Vec<_>, _>>()?;
+        Ok(self.join_wall(&rings, false))
+    }
+
+    fn join_wall(&mut self, rings: &[u32], closed: bool) -> [u32; 2] {
+        let ends = [rings[0], *rings.last().unwrap()];
+        self.walls.push(Wall {
+            first: ends[0],
+            rings: rings.len() as u32,
+        });
         for side in 0..SIDES {
             let next = (side + 1) % SIDES;
             for pair in rings.windows(2) {
@@ -88,8 +119,13 @@ impl ControlCage {
                 self.faces
                     .push(vec![a + side, b + side, b + next, a + next]);
             }
+            if closed {
+                let [b, a] = ends;
+                self.faces
+                    .push(vec![a + side, b + side, b + next, a + next]);
+            }
         }
-        Ok([rings[0], *rings.last().unwrap()])
+        ends
     }
 
     fn flat_cap(&mut self, rim: u32, center: Point3, start: bool) {
@@ -179,7 +215,7 @@ impl StraightRail {
     fn from_curve(rail: CurveRef<'_>, tolerance: Tolerance) -> Result<Self, CommandError> {
         if !matches!(rail, CurveRef::Line(_)) && !rail.to_nurbs()?.is_linear(tolerance)? {
             return Err(CommandError::Usage(
-                "Pipe SubD output requires a straight rail",
+                "Pipe SubD output requires a straight or circular rail",
             ));
         }
         let start = rail.start_point()?;
@@ -244,19 +280,19 @@ fn control_stations(axis: &StraightRail, profile: &Profile, blend: SweepBlend) -
 
 // Invert the cubic vertex mask along each radial column while retaining the
 // exact end samples. Both the distance and radius share the same factorization.
-fn interpolate_control_stations(samples: &mut [[Real; 2]]) {
+fn interpolate_control_stations<const N: usize>(samples: &mut [[Real; N]]) {
     let end = samples.len() - 1;
     let mut upper = vec![0.; end];
     for i in 1..end {
         let divisor = 4. - upper[i - 1];
         upper[i] = 1. / divisor;
-        for axis in 0..2 {
+        for axis in 0..N {
             let last = if i + 1 == end { samples[end][axis] } else { 0. };
             samples[i][axis] = (6. * samples[i][axis] - samples[i - 1][axis] - last) / divisor;
         }
     }
     for i in (1..end - 1).rev() {
-        for axis in 0..2 {
+        for axis in 0..N {
             samples[i][axis] -= upper[i] * samples[i + 1][axis];
         }
     }
@@ -274,6 +310,9 @@ pub(super) fn cages(
             "Pipe SubD output with intermediate radii requires Local shape blending",
         ));
     }
+    if let Some(path) = circular::CircularRail::from_curve(rail, tolerance)? {
+        return path.cages(a, b, options);
+    }
     let axis = StraightRail::from_curve(rail, tolerance)?;
     let at_distance = |p: &Profile| -> Result<Profile, GeometryError> {
         let stations = p
@@ -283,25 +322,40 @@ pub(super) fn cages(
             .collect::<Result<Vec<_>, GeometryError>>()?;
         Ok(Profile::new(p.endpoints, stations))
     };
+    let frames = [axis.frame, axis.frame_at(axis.height)?];
+    assemble_cages(a, b, options.cap, |cage, profile, reverse| {
+        let rims = cage.wall(&axis, &at_distance(profile)?, options.blend, reverse)?;
+        Ok((rims, frames))
+    })
+}
+
+fn assemble_cages(
+    a: &Profile,
+    b: Option<&Profile>,
+    cap: PipeCap,
+    mut wall: impl FnMut(
+        &mut ControlCage,
+        &Profile,
+        bool,
+    ) -> Result<([u32; 2], [Frame3; 2]), CommandError>,
+) -> Result<Vec<ControlCage>, CommandError> {
     let mut cage = ControlCage::default();
     if let Some(b) = b {
-        let outer = at_distance(&a.combine(b, Real::max))?;
-        let inner = at_distance(&a.combine(b, Real::min))?;
-        let outer = cage.wall(&axis, &outer, options.blend, false)?;
-        if options.cap == PipeCap::None {
+        let (outer, _) = wall(&mut cage, &a.combine(b, Real::max), false)?;
+        let inner = a.combine(b, Real::min);
+        if cap == PipeCap::None {
             let mut other = ControlCage::default();
-            other.wall(&axis, &inner, options.blend, true)?;
+            wall(&mut other, &inner, true)?;
             return Ok(vec![cage, other]);
         }
-        let inner = cage.wall(&axis, &inner, options.blend, true)?;
+        let (inner, _) = wall(&mut cage, &inner, true)?;
         for i in 0..2 {
             cage.annular_cap(outer[i], inner[i], i == 0);
         }
     } else {
-        let frames = [axis.frame, axis.frame_at(axis.height)?];
-        let rims = cage.wall(&axis, &at_distance(a)?, options.blend, false)?;
+        let (rims, frames) = wall(&mut cage, a, false)?;
         for (i, (rim, frame)) in rims.into_iter().zip(frames).enumerate() {
-            match options.cap {
+            match cap {
                 PipeCap::None => {}
                 PipeCap::Flat => cage.flat_cap(rim, frame.origin(), i == 0),
                 PipeCap::Round => cage.round_cap(rim, frame, a.endpoints[i], i == 0)?,

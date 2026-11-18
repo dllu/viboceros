@@ -39,10 +39,13 @@ Pipe 1 Stations=0.5:2 Cap=Flat
 Pipe 1 2 Output=SubD Cap=Round
 ```
 
-`Output=SubD` supports straight rails with constant radii, Local or Global
-tapers, and intermediate Local radius stations. A single wall supports open,
-flat, and round ends. Thick pipes support open or flat ends. Turning on
-`Thick` with round ends selected switches the cap to Flat.
+`Output=SubD` supports straight rails and circular arcs with constant radii
+or Local and Global tapers. A single wall supports open, flat, and round ends.
+Thick pipes support open or flat ends. Turning on `Thick` with round ends
+selected switches the cap to Flat. A circle takes one radius and makes a
+closed SubD. Straight rails also accept intermediate Local radius stations.
+Circular control rows use chord-length sampling. Their spacing can differ
+from Rhino's adaptive fit.
 
 In Surface mode, straight constant-radius rails use exact cylinders. For two different radii,
 `ShapeBlending=Local` uses a smooth cubic radius transition and
@@ -121,8 +124,9 @@ surface differs from the available sweep beyond the project volume tolerance.
 
 This implements part of [Rhino's Pipe command](https://docs.mcneel.com/rhino/8/help/en-us/commands/pipe.htm).
 Variable-radius sharp rails with `FitRail=No`, closed rails other than
-constant-radius line loops and circles, and SubD output on curved rails
-are still unsupported. Intermediate radii require Local shape blending.
+constant-radius line loops and circles, and SubD output on rails other than
+lines, arcs and circles remain open. Intermediate radii require Local shape
+blending. In SubD mode they are available on straight rails.
 Closed sharp line loops with `FitRail=No` remain unsupported because Rhino's
 tested rectangle case produces an open five-face result. A
 circular rail requires a pipe radius smaller than the rail radius.

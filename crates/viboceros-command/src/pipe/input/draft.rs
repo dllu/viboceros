@@ -32,7 +32,9 @@ impl Input {
                 } else {
                     [
                         candidate,
-                        self.fixed_thickness.map_or(0., |t| (candidate + t).max(0.)),
+                        self.fixed_thickness
+                            .filter(|_| !self.closed_subd())
+                            .map_or(0., |t| (candidate + t).max(0.)),
                     ]
                 };
                 let index = sections.partition_point(|&(f, _)| f < fraction);
@@ -57,10 +59,11 @@ impl Input {
         let first = sections.first()?.1;
         if self.settings.output == Output::SubD {
             let first = wall_profile(&sections, 0, self.closed);
-            let second = sections
-                .iter()
-                .all(|(_, radii)| radii[1] > 0. && radii[0] != radii[1])
-                .then(|| wall_profile(&sections, 1, self.closed));
+            let second = (self.active_thickness()
+                && sections
+                    .iter()
+                    .all(|(_, radii)| radii[1] > 0. && radii[0] != radii[1]))
+            .then(|| wall_profile(&sections, 1, self.closed));
             return Some(Draft {
                 sections: vec![],
                 active,

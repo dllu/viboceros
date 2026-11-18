@@ -97,8 +97,16 @@ impl Input {
         }
     }
 
+    fn closed_subd(&self) -> bool {
+        self.closed && self.settings.output == Output::SubD
+    }
+
+    fn active_thickness(&self) -> bool {
+        self.settings.thick && !self.closed_subd()
+    }
+
     fn subd_thick(&self) -> bool {
-        self.settings.output == Output::SubD && self.settings.thick
+        self.settings.output == Output::SubD && self.active_thickness()
     }
 
     fn normalize_cap(&mut self) {
@@ -203,9 +211,14 @@ impl Input {
                     (_, _, _, false) => name.to_owned(),
                 };
                 let units = self.default_size(first) * if self.settings.diameter { 2. } else { 1. };
-                let thick = yes_no(self.settings.thick);
                 let fit = yes_no(self.settings.fit_rail);
                 let output = self.settings.output.label();
+                if self.closed_subd() {
+                    return format!(
+                        "{prefix} <{units}> ({toggle}, Output={output}, ShapeBlending={blend}, FitRail={fit})"
+                    );
+                }
+                let thick = yes_no(self.settings.thick);
                 let thickness = if first.is_some() {
                     ", WallThickness"
                 } else {
@@ -260,7 +273,7 @@ impl Input {
         }
         if option_name_eq(name, "FitRail") {
             self.settings.fit_rail = toggle(value, self.settings.fit_rail)?;
-        } else if option_name_eq(name, "Thick") && self.at_first_size() {
+        } else if option_name_eq(name, "Thick") && self.at_first_size() && !self.closed_subd() {
             self.settings.thick = toggle(value, self.settings.thick)?;
             self.normalize_cap();
             if !self.settings.thick {
@@ -283,7 +296,7 @@ impl Input {
             if let Some(value) = value {
                 return self.number(parse_finite_real(value)?).map(Some);
             }
-        } else if option_name_eq(name, "WallThickness") {
+        } else if option_name_eq(name, "WallThickness") && !self.closed_subd() {
             if let Stage::Radius {
                 fraction,
                 first: Some(first),
@@ -343,6 +356,15 @@ impl Input {
             Menu::Output => {
                 self.settings.output = Output::parse(choice)?;
                 self.normalize_cap();
+                if self.closed_subd()
+                    && let Stage::Radius {
+                        fraction,
+                        first: Some(first),
+                    }
+                    | Stage::Thickness { fraction, first } = self.stage
+                {
+                    self.accept_pair(fraction, [first, 0.]);
+                }
             }
             _ => return Err(CommandError::Usage(USAGE)),
         }
@@ -457,7 +479,7 @@ impl Input {
             self.settings.second = radius;
             return Ok(self.accept_pair(fraction, [first, radius]));
         }
-        if let Some(thickness) = self.fixed_thickness {
+        if let Some(thickness) = self.fixed_thickness.filter(|_| !self.closed_subd()) {
             let other = radius + thickness;
             check_radius(other)?;
             if other == radius {
@@ -467,7 +489,7 @@ impl Input {
             return Ok(self.accept_pair(fraction, [radius, other]));
         }
         self.settings.radius = radius;
-        if self.settings.thick {
+        if self.active_thickness() {
             self.stage = if self.settings.by_thickness {
                 Stage::Thickness {
                     fraction,
@@ -535,8 +557,7 @@ impl Input {
         }
         let a = wall_profile(&self.sections, 0, self.closed);
         let b = self
-            .settings
-            .thick
+            .active_thickness()
             .then(|| wall_profile(&self.sections, 1, self.closed));
         let options = self.options();
         let mut outputs = Vec::with_capacity(rails.len());

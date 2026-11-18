@@ -1,6 +1,8 @@
 use super::*;
 use serde_json::Value;
 
+mod circular;
+
 #[test]
 fn pipe_subd_matches_rhino_control_positions_and_topology() {
     // Extracted from Rhino 8 using ReadCommandFile and public RhinoCommon

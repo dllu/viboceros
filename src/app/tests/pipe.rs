@@ -173,3 +173,40 @@ fn pipe_subd_previews_the_control_cage_and_commits_one_edit() {
     assert_eq!(app.document.redo().unwrap().as_deref(), Some("Pipe"));
     assert_eq!(app.document.objects().len(), 2);
 }
+
+#[test]
+fn pipe_subd_closed_rail_updates_its_preview_and_needs_one_radius() {
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.active_viewport = 0;
+    app.maximized_viewport = Some(0);
+    app.grid_snap = false;
+    app.osnap = false;
+    enter(&mut app, "Circle 0,0,0 8");
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    let rail = app.document.objects().next().unwrap().id();
+    enter(
+        &mut app,
+        &format!("Pipe Curve={rail} Thick=Yes Output=SubD"),
+    );
+    let ctx = egui::Context::default();
+    viewport_frame(&mut app, &ctx, vec![]);
+    viewport_frame(&mut app, &ctx, vec![]);
+    let a = screen_point(&app, point(8., 0., 1.));
+    let b = screen_point(&app, point(8., 0., 2.));
+    let small = viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(a)]);
+    let large = viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(b)]);
+    assert!(!small.is_empty());
+    assert!(small != large, "preview should follow both radius points");
+    viewport_click(&mut app, &ctx, b);
+    assert!(app.pipe_session.as_ref().unwrap().radius_plane().is_none());
+    assert_eq!(app.document.objects().len(), 1);
+    enter(&mut app, "");
+    let Geometry::SubD(pipe) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected a closed SubD pipe: {:?}", app.command_log);
+    };
+    assert_eq!(pipe.faces().len(), 4112);
+    assert!(pipe.edge_face_counts().iter().all(|&n| n == 2));
+    assert_eq!(app.document.undo().unwrap().as_deref(), Some("Pipe"));
+    assert_eq!(app.document.objects().len(), 1);
+}
