@@ -259,6 +259,7 @@ mod orient_edge;
 mod orient_points;
 mod orient_surface;
 mod parabola;
+mod paraboloid;
 mod pipe;
 mod planar_boolean;
 mod plane_primitives;
@@ -516,6 +517,7 @@ pub struct VibocerosApp {
     spiral_session: Option<spiral::Session>,
     hyperbola_session: Option<hyperbola::Session>,
     parabola_session: Option<parabola::Session>,
+    paraboloid_session: Option<paraboloid::Session>,
     conic_session: Option<conic::Session>,
     rectangle_session: Option<rectangle::InputSession>,
     plane_surface_session: Option<plane_surface::Session>,
@@ -711,6 +713,7 @@ impl VibocerosApp {
             spiral_session: None,
             hyperbola_session: None,
             parabola_session: None,
+            paraboloid_session: None,
             conic_session: None,
             rectangle_session: None,
             plane_surface_session: None,
@@ -902,6 +905,7 @@ impl VibocerosApp {
             || self.try_continue_spiral(&input)
             || self.try_continue_hyperbola(&input)
             || self.try_continue_parabola(&input)
+            || self.try_continue_paraboloid(&input)
             || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
             || self.continue_solid_axial(&input)

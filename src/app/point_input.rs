@@ -57,9 +57,12 @@ impl VibocerosApp {
             return true;
         };
         let plane = self.viewports[self.active_viewport].construction_plane();
-        let mut state = self
-            .point_constraint
-            .unwrap_or_else(|| PointConstraintState::new(anchor, plane));
+        let mut state = self.point_constraint.unwrap_or_else(|| {
+            self.paraboloid_session
+                .as_ref()
+                .and_then(|s| s.input.point_constraint(plane))
+                .unwrap_or_else(|| PointConstraintState::new(anchor, plane))
+        });
         match state.set(constraint, plane) {
             Ok(()) => {
                 self.point_constraint = Some(state);
@@ -120,6 +123,11 @@ impl VibocerosApp {
                         self.spiral_session
                             .as_ref()
                             .and_then(|s| s.input.relative_base())
+                    })
+                    .or_else(|| {
+                        self.paraboloid_session
+                            .as_ref()
+                            .and_then(|s| s.input.anchor())
                     })
                     .or(self.last_point),
             )

@@ -29,6 +29,7 @@ mod clipping;
 mod curve_line;
 pub(crate) mod direction;
 mod drafting;
+mod paraboloid;
 mod solid_axial;
 pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
 mod ellipsoid;
@@ -444,6 +445,7 @@ pub struct ViewportInput<'a> {
     pub circle_preview: Option<(viboceros_command::circle_input::PointConstruction, Frame3)>,
     pub circle_deform_input: Option<viboceros_command::circle_deform_input::Input>,
     pub parabola_input: Option<viboceros_command::parabola::Input>,
+    pub paraboloid_input: Option<viboceros_command::paraboloid::Input>,
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
@@ -573,6 +575,7 @@ impl Default for ViewportInput<'_> {
             spiral_input: None,
             hyperbola_input: None,
             parabola_input: None,
+            paraboloid_input: None,
             ellipse_input: None,
             ellipsoid_preview: None,
             tangent: None,
@@ -2962,6 +2965,16 @@ impl Viewport {
                 }
                 self.paint_draft_points(&painter, rect, &[definition.focus]);
             }
+        }
+        if let Some(getter) = input.paraboloid_input {
+            let cursor = drafting_cursor
+                .filter(|_| {
+                    input
+                        .point_filter
+                        .is_none_or(|filter| !filter.awaiting_source())
+                })
+                .map(|cursor| cursor.point);
+            self.paint_paraboloid_preview(&painter, rect, getter, cursor);
         }
         if let Some(getter) = input.conic_input {
             let point = edge_cursor
@@ -6754,8 +6767,10 @@ mod tests {
                     active: true,
                     ..Default::default()
                 },
-                Some(filter),
-                None,
+                drafting::CursorConstraints {
+                    filter: Some(filter),
+                    ..Default::default()
+                },
             )
             .unwrap();
         assert!(

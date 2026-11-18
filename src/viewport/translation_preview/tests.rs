@@ -45,6 +45,7 @@ pub(crate) fn captured_destination(
                 filter: input.point_filter,
                 point: input.point_constraint,
                 translation: input.translation_constraint,
+                ..Default::default()
             },
         )
         .unwrap();

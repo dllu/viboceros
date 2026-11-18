@@ -174,6 +174,8 @@ pub mod named_view;
 pub mod parabola;
 #[cfg(test)]
 mod parabola_tests;
+mod parabolic_axis;
+pub mod paraboloid;
 pub mod spiral_input;
 pub use curve_options::{parse_curve_closure, parse_curve_degree};
 mod model_units;
@@ -689,6 +691,10 @@ pub trait Command: Send + Sync {
     fn parabola_options(&self) -> Option<parabola::Options> {
         None
     }
+    fn paraboloid_options(&self) -> Option<paraboloid::Preferences> {
+        None
+    }
+    fn remember_paraboloid_options(&self, _value: paraboloid::Preferences) {}
     fn conic_options(&self) -> Option<conic::Options> {
         None
     }
@@ -1536,7 +1542,7 @@ impl CommandRegistry {
             .register(parabola::ParabolaCommand::new(parabola::Kind::ThreePoint))
             .expect("unique built-in command");
         registry
-            .register(ParaboloidCommand)
+            .register(paraboloid::ParaboloidCommand::default())
             .expect("unique built-in command");
         registry
             .register(hyperbola::HyperbolaCommand::default())
@@ -3011,6 +3017,17 @@ impl CommandRegistry {
             .get(&normalize_command_name(kind.name()))
             .and_then(|i| self.commands[*i].parabola_options())
             .unwrap_or_default()
+    }
+    pub fn paraboloid_options(&self) -> paraboloid::Preferences {
+        self.lookup
+            .get("paraboloid")
+            .and_then(|index| self.commands[*index].paraboloid_options())
+            .unwrap_or_default()
+    }
+    pub fn remember_paraboloid_options(&self, value: paraboloid::Preferences) {
+        if let Some(index) = self.lookup.get("paraboloid") {
+            self.commands[*index].remember_paraboloid_options(value);
+        }
     }
     pub fn select_uv_options(&self) -> select_uv_rows::Options {
         self.lookup
@@ -5735,7 +5752,6 @@ pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
-const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Helix AroundCurve radius-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [Curve=id|Edge=id,index|PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
@@ -5801,28 +5817,6 @@ struct TruncatedConeCommandOptions {
     height: Real,
     end_radius: Real,
     axis: UnitVector3,
-    solid: bool,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum ParabolicConstruction {
-    Focus,
-    Vertex,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ParabolicPositionals {
-    construction: ParabolicConstruction,
-    first: Point3,
-    second: Point3,
-    end: Point3,
-    option_start: usize,
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct ParaboloidCommandOptions {
-    positionals: ParabolicPositionals,
-    mark_focus: bool,
     solid: bool,
 }
 
@@ -6218,66 +6212,6 @@ fn parse_truncated_cone_options(
         height: positionals.height,
         end_radius: positionals.end_radius,
         axis,
-        solid,
-    })
-}
-
-fn parse_parabolic_positionals(
-    arguments: &[&str],
-    usage: &'static str,
-) -> Result<ParabolicPositionals, CommandError> {
-    let first_argument = arguments.first().ok_or(CommandError::Usage(usage))?;
-    let (construction, positional_start) = if first_argument
-        .trim_start_matches('_')
-        .eq_ignore_ascii_case("Focus")
-    {
-        (ParabolicConstruction::Focus, 1)
-    } else if first_argument
-        .trim_start_matches('_')
-        .eq_ignore_ascii_case("Vertex")
-    {
-        (ParabolicConstruction::Vertex, 1)
-    } else {
-        (ParabolicConstruction::Focus, 0)
-    };
-    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
-    let second_start = positional_start + first_consumed;
-    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
-    let end_start = second_start + second_consumed;
-    let (end, end_consumed) = parse_point(&arguments[end_start..])?;
-    Ok(ParabolicPositionals {
-        construction,
-        first,
-        second,
-        end,
-        option_start: end_start + end_consumed,
-    })
-}
-
-fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptions, CommandError> {
-    let positionals = parse_parabolic_positionals(arguments, PARABOLOID_USAGE)?;
-    let mut mark_focus = false;
-    let mut solid = false;
-    let mut mark_focus_seen = false;
-    let mut solid_seen = false;
-    for argument in &arguments[positionals.option_start..] {
-        let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(PARABOLOID_USAGE));
-        };
-        let value = value.trim_start_matches('_');
-        if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
-            mark_focus = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
-            mark_focus_seen = true;
-        } else if option_name_eq(name, "Solid") && !solid_seen {
-            solid = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
-            solid_seen = true;
-        } else {
-            return Err(CommandError::Usage(PARABOLOID_USAGE));
-        }
-    }
-    Ok(ParaboloidCommandOptions {
-        positionals,
-        mark_focus,
         solid,
     })
 }
@@ -7086,105 +7020,6 @@ fn axial_primitive_radius_value(
             .length()
             .map_err(Into::into)
         }
-    }
-}
-
-fn parabolic_frame_and_dimensions(
-    positionals: ParabolicPositionals,
-    tolerance: Tolerance,
-) -> Result<(Frame3, Real, Real, Point3, Real), GeometryError> {
-    let (vertex, focus, axis, focal_distance, end_offset) = match positionals.construction {
-        ParabolicConstruction::Focus => {
-            let focus = positionals.first;
-            let axis = focus.vector_to(positionals.second)?.normalized(tolerance)?;
-            let focus_to_end = focus.vector_to(positionals.end)?;
-            let axial_coordinate = focus_to_end.dot(axis.as_vector())?;
-            let axial = axis.as_vector().scaled(axial_coordinate)?;
-            let radial = Vector3::try_new(
-                focus_to_end.x() - axial.x(),
-                focus_to_end.y() - axial.y(),
-                focus_to_end.z() - axial.z(),
-            )?;
-            let radius = radial.length()?;
-            let half_sum = 0.5 * axial_coordinate.hypot(radius) + 0.5 * axial_coordinate.abs();
-            let (focal_distance, height) = if axial_coordinate >= 0.0 {
-                (0.25 * radius * (radius / half_sum), half_sum)
-            } else {
-                (half_sum, 0.25 * radius * (radius / half_sum))
-            };
-            let vertex = focus.translated(axis.as_vector().scaled(-focal_distance)?)?;
-            return Ok((
-                Frame3::try_from_unit_x_and_normal(
-                    vertex,
-                    radial.normalized(tolerance)?,
-                    axis,
-                    tolerance,
-                )?,
-                radius,
-                height,
-                focus,
-                focal_distance,
-            ));
-        }
-        ParabolicConstruction::Vertex => {
-            let vertex = positionals.first;
-            let vertex_to_focus = vertex.vector_to(positionals.second)?;
-            let axis = vertex_to_focus.normalized(tolerance)?;
-            let focal_distance = vertex_to_focus.length()?;
-            (
-                vertex,
-                positionals.second,
-                axis,
-                focal_distance,
-                vertex.vector_to(positionals.end)?,
-            )
-        }
-    };
-
-    let axial_coordinate = end_offset.dot(axis.as_vector())?;
-    let axial = axis.as_vector().scaled(axial_coordinate)?;
-    let radial = Vector3::try_new(
-        end_offset.x() - axial.x(),
-        end_offset.y() - axial.y(),
-        end_offset.z() - axial.z(),
-    )?;
-    let radius = radial.length()?;
-    let height = 0.25 * radius * (radius / focal_distance);
-    Ok((
-        Frame3::try_from_unit_x_and_normal(vertex, radial.normalized(tolerance)?, axis, tolerance)?,
-        radius,
-        height,
-        focus,
-        focal_distance,
-    ))
-}
-
-struct ParaboloidCommand;
-
-impl Command for ParaboloidCommand {
-    fn name(&self) -> &'static str {
-        "Paraboloid"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_paraboloid_options(arguments)?;
-        let (frame, radius, height, focus, focal_distance) =
-            parabolic_frame_and_dimensions(options.positionals, document.tolerance())?;
-        let paraboloid =
-            Brep::try_paraboloid(frame, radius, height, options.solid, document.tolerance())?;
-        let focus_id = if options.mark_focus {
-            Some(document.add_geometry(Geometry::Point(focus))?)
-        } else {
-            None
-        };
-        let id = document.add_geometry(Geometry::Brep(paraboloid))?;
-        let focus_suffix = focus_id
-            .map(|focus_id| format!(" and focus point {focus_id}"))
-            .unwrap_or_default();
-        Ok(format!(
-            "Added {} B-rep paraboloid {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
-            if options.solid { "closed" } else { "open" },
-        ))
     }
 }
 

@@ -65,7 +65,7 @@ impl VibocerosApp {
         if self.try_start_hyperbola(input) {
             return true;
         }
-        if self.try_start_parabola(input) {
+        if self.try_start_parabola(input) || self.try_start_paraboloid(input) {
             return true;
         }
         if self.try_start_conic(input) {

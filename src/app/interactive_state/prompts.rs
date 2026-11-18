@@ -409,6 +409,7 @@ impl InteractiveCommand {
             Self::Catenary { .. } => "Catenary: follow the point prompts (Esc cancels)",
             Self::Spiral { .. } => "Helix/Spiral: follow the point prompts (Esc cancels)",
             Self::Hyperbola { .. } => "Hyperbola: follow the point prompts (Esc cancels)",
+            Self::Paraboloid { .. } => "Paraboloid follows the point prompts (Esc cancels)",
             Self::Parabola { .. } => "Parabola: follow the point prompts (Esc cancels)",
             Self::Conic { .. } => {
                 "Conic: pick start, end, apex and curvature point or rho (Esc cancels)"

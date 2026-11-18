@@ -90,6 +90,7 @@ impl InteractiveCommand {
             Self::Spiral { kind, .. } => kind.name(),
             Self::Hyperbola { .. } => "Hyperbola",
             Self::Parabola { kind, .. } => kind.name(),
+            Self::Paraboloid { .. } => "Paraboloid",
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Plane { .. } => "Plane",
@@ -285,6 +286,7 @@ impl InteractiveCommand {
             | Self::Spiral { anchor: None, .. }
             | Self::Hyperbola { anchor: None }
             | Self::Parabola { anchor: None, .. }
+            | Self::Paraboloid { anchor: None }
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Plane { first: None }
@@ -383,6 +385,7 @@ impl InteractiveCommand {
             | Self::Spiral { anchor: start, .. }
             | Self::Hyperbola { anchor: start }
             | Self::Parabola { anchor: start, .. }
+            | Self::Paraboloid { anchor: start }
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Plane { first: start }

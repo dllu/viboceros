@@ -341,6 +341,9 @@ impl Viewport {
                 filter,
                 point: constraint,
                 translation: input.translation_constraint.or(line),
+                source_line: input
+                    .paraboloid_input
+                    .and_then(|getter| getter.mouse_line(self.construction_plane())),
             },
         );
         if drafting.planar

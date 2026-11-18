@@ -1081,6 +1081,11 @@ impl VibocerosApp {
             .as_ref()
             .map(|s| s.input)
             .filter(|_| model_input_active);
+        let paraboloid_input = self
+            .paraboloid_session
+            .as_ref()
+            .map(|s| s.input)
+            .filter(|_| model_input_active && self.plane_prompt.is_none());
         let conic_input = self
             .conic_session
             .as_ref()
@@ -1397,6 +1402,7 @@ impl VibocerosApp {
                             spiral_input: spiral_input.as_ref(),
                             hyperbola_input,
                             parabola_input,
+                            paraboloid_input,
                             ellipse_input,
                             ellipsoid_preview,
                             tangent: tangent_input,

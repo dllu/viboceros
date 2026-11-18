@@ -189,13 +189,10 @@ and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
 
 ## Solid primitives, extrusion, and revolution
 
-`Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
-`Vertex vertex focus end-point` constructions; `Focus` is the default. The
-vertex form projects the end point perpendicular to the focus axis and derives
-the height from that radius. Both produce Rhino's exact 9-by-3 rational
-quadratic wall with an arc-length meridian domain and singular/shared seam
-topology. `Solid=Yes` adds the exact planar rim cap, while `MarkFocus=Yes` adds
-a point object at the focus in the same undo step.
+[Paraboloid](paraboloid.md) builds an exact rational quadratic wall using
+the focus, the vertex and focus, or the vertex and axis direction. Its
+meridian domain measures arc length, and the open wall or capped B-rep
+shares the same rim and singular vertex topology.
 
 `TruncatedCone` creates an exact rational frustum from base and end radii. Its
 linear V domain is the physical slant length, matching Rhino; negative heights

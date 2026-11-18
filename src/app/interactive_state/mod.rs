@@ -345,6 +345,9 @@ pub(super) enum InteractiveCommand {
     Hyperbola {
         anchor: Option<Point3>,
     },
+    Paraboloid {
+        anchor: Option<Point3>,
+    },
     Parabola {
         kind: viboceros_command::parabola::Kind,
         anchor: Option<Point3>,

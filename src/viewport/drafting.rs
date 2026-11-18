@@ -25,6 +25,7 @@ pub(super) struct CursorConstraints {
     pub(super) filter: Option<viboceros_drafting::PointFilterSession>,
     pub(super) point: Option<viboceros_drafting::PointConstraintState>,
     pub(super) translation: Option<viboceros_command::translation::DestinationConstraint>,
+    pub(super) source_line: Option<viboceros_command::translation::DestinationConstraint>,
 }
 
 pub(crate) const MAX_DRAFT_MESH_FACES: usize = 4096;
@@ -119,13 +120,11 @@ impl Viewport {
         input: DraftingInput,
         constraints: CursorConstraints,
     ) -> Option<DraftingCursor> {
-        let CursorConstraints {
-            filter,
-            point: point_constraint,
-            translation,
-        } = constraints;
-        let translation = translation.filter(|_| {
-            !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+        let point_constraint = constraints.point;
+        let translation = constraints.translation.filter(|_| {
+            !constraints
+                .filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
         });
         let input = if translation.is_some_and(|constraint| constraint.direction.is_some()) {
             DraftingInput {
@@ -137,12 +136,11 @@ impl Viewport {
         } else {
             input
         };
-        let cursor =
-            self.filtered_drafting_cursor(pointer, rect, document, input, filter, point_constraint);
+        let cursor = self.filtered_drafting_cursor(pointer, rect, document, input, constraints);
         let Some(translation) = translation else {
             return cursor;
         };
-        let projected = if filter.is_none()
+        let projected = if constraints.filter.is_none()
             && cursor.is_none_or(|cursor| cursor.object_snap.is_none())
         {
             self.drafting_view_line_relative_to(translation.anchor, pointer, rect)
@@ -176,9 +174,10 @@ impl Viewport {
         rect: Rect,
         document: &Document,
         input: DraftingInput,
-        filter: Option<viboceros_drafting::PointFilterSession>,
-        constraint: Option<viboceros_drafting::PointConstraintState>,
+        constraints: CursorConstraints,
     ) -> Option<DraftingCursor> {
+        let filter = constraints.filter;
+        let constraint = constraints.point;
         let input =
             if constraint.is_some_and(viboceros_drafting::PointConstraintState::angle_active) {
                 DraftingInput {
@@ -193,6 +192,12 @@ impl Viewport {
         let mut cursor = self.drafting_cursor(pointer, rect, document, input)?;
         if let Some(filter) = filter {
             cursor.point = filter.preview_point(cursor.source_point).ok()?;
+        } else if let Some(line) = constraints.source_line
+            && cursor.object_snap.is_none()
+        {
+            let point = line.resolve(cursor.source_point).ok()?;
+            cursor.source_point = point;
+            cursor.point = point;
         }
         if let Some(constraint) = constraint
             && !filter.is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)

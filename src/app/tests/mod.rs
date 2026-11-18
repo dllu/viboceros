@@ -211,6 +211,7 @@ mod orient_surface;
 mod orient_surface_grips;
 mod pack_subd_faces;
 mod parabola;
+mod paraboloid;
 mod planar_boolean;
 mod plane_arrays;
 mod plane_through_points;
