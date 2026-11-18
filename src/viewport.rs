@@ -710,6 +710,7 @@ pub struct ViewportOutput {
     pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub direction_click: Option<ObjectId>,
+    pub(crate) direction_readout: Option<direction::Readout>,
     pub insert_point: Option<(
         viboceros_geometry::PolygonEdgePoint,
         viboceros_geometry::UnitVector3,
@@ -2526,11 +2527,7 @@ impl Viewport {
                 rect,
                 overlay,
                 (overlay.ids.len() == 1)
-                    .then_some(
-                        direction_hit
-                            .as_ref()
-                            .and_then(|(_, marker)| marker.as_ref()),
-                    )
+                    .then_some(direction_hit.as_ref().and_then(|hit| hit.marker.as_ref()))
                     .flatten(),
             );
         }
@@ -3623,8 +3620,13 @@ impl Viewport {
             length_direct: modifiers.command && modifiers.shift,
             direction_click: response
                 .clicked_by(PointerButton::Primary)
-                .then_some(direction_hit.map(|(id, _)| id))
+                .then_some(direction_hit.as_ref().map(|hit| hit.object))
                 .flatten(),
+            direction_readout: input
+                .direction
+                .filter(|overlay| overlay.ids.len() == 1)
+                .and(direction_hit)
+                .and_then(|hit| hit.readout),
             component_click,
             component_double_click,
             component_window,

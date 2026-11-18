@@ -1762,6 +1762,12 @@ impl VibocerosApp {
         if self.update_align_preview(align_point, align_curve, align_view) {
             ui.ctx().request_repaint();
         }
+        let direction_readout = viewport_outputs
+            .iter()
+            .find_map(|output| output.direction_readout);
+        if self.update_direction_readout(direction_readout) {
+            ui.ctx().request_repaint();
+        }
         if !ui.input(|input| {
             input.pointer.primary_down()
                 || input.pointer.button_released(egui::PointerButton::Primary)
@@ -1865,7 +1871,11 @@ impl VibocerosApp {
                 continue;
             }
             if !handled_action && !menu_consumed {
+                let direction_click = output.direction_click.is_some();
                 handled_action = self.handle_viewport_action(output);
+                if handled_action && direction_click {
+                    ui.ctx().request_repaint();
+                }
             }
         }
         self.cutting_preview.update(

@@ -1,6 +1,6 @@
 //! Bare Dir inspection; geometry stays provisional until Enter accepts it.
 use super::*;
-use crate::viewport::direction::{Marker, Overlay, collect_markers};
+use crate::viewport::direction::{Marker, Overlay, Readout, collect_markers};
 use std::collections::BTreeSet;
 use viboceros_command::direction::{DirectionEdit, DirectionSession};
 
@@ -10,6 +10,7 @@ pub(super) struct Session {
     markers: Vec<Marker>,
     mode: DirectionEdit,
     choosing_mode: bool,
+    readout: Option<(Readout, String)>,
 }
 
 impl Session {
@@ -82,6 +83,7 @@ impl VibocerosApp {
                     markers,
                     mode,
                     choosing_mode: false,
+                    readout: None,
                 });
                 self.command_input.clear();
                 self.push_log(self.direction_session.as_ref().unwrap().hint().into());
@@ -171,6 +173,28 @@ impl VibocerosApp {
         }
     }
 
+    pub(super) fn direction_status(&self) -> Option<&str> {
+        let (_, text) = self.direction_session.as_ref()?.readout.as_ref()?;
+        Some(text)
+    }
+
+    pub(super) fn update_direction_readout(&mut self, readout: Option<Readout>) -> bool {
+        let Some(session) = &mut self.direction_session else {
+            return false;
+        };
+        if session.readout.as_ref().map(|(value, _)| *value) == readout {
+            return false;
+        }
+        session.readout = readout.map(|value| {
+            let label = match value {
+                Readout::CurveParameter(t) => format!("Parameter = {}", format_readout(t)),
+                Readout::DraftAngle(angle) => format!("Draft angle = {}°", format_readout(angle)),
+            };
+            (value, label)
+        });
+        true
+    }
+
     pub(super) fn finish_direction(&mut self, accept: bool) {
         let Some(session) = self.direction_session.take() else {
             return;
@@ -191,6 +215,24 @@ impl VibocerosApp {
             Err(error) => self.push_log(format!("Error: {error}")),
         }
         self.command_input.clear();
+    }
+}
+
+fn format_readout(value: f64) -> String {
+    if value == 0. {
+        return "0".into();
+    }
+    let exponent = value.abs().log10().floor() as i32;
+    if (-4..6).contains(&exponent) {
+        let decimals = (5 - exponent) as usize;
+        let text = format!("{value:.decimals$}");
+        if decimals == 0 {
+            text
+        } else {
+            text.trim_end_matches('0').trim_end_matches('.').to_owned()
+        }
+    } else {
+        format!("{value:.5e}")
     }
 }
 

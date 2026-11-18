@@ -290,3 +290,131 @@ fn direction_navigation_keeps_preview_and_source_edits_invalidate_it() {
     assert!(app.direction_session.is_none());
     assert_eq!(format!("{:?}", app.document), before);
 }
+
+fn inspect_in_top_view(app: &mut VibocerosApp) -> egui::Context {
+    use super::circle_preview::viewport_frame;
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    viewport_frame(app, &context, Vec::new());
+    viewport_frame(app, &context, Vec::new());
+    app.viewports[0]
+        .zoom_extents(&app.document, Default::default())
+        .unwrap();
+    viewport_frame(app, &context, Vec::new());
+    enter(app, "Dir");
+    assert!(app.direction_session.is_some());
+    context
+}
+
+fn hover_direction(app: &mut VibocerosApp, context: &egui::Context, point: Point3) -> egui::Pos2 {
+    use super::circle_preview::{screen_point, viewport_frame};
+    // Starting or editing Dir can resize the log panel above the viewport.
+    for _ in 0..6 {
+        let pixel = screen_point(app, point);
+        viewport_frame(app, context, vec![egui::Event::PointerMoved(pixel)]);
+        if screen_point(app, point) == pixel {
+            return pixel;
+        }
+    }
+    panic!("viewport did not settle at {point:?}");
+}
+
+#[test]
+fn direction_status_uses_the_analytic_curve_parameter_and_clears_off_the_curve() {
+    use super::circle_preview::viewport_click;
+    let mut app = test_app();
+    app.execute_command("Circle w0,0,0 5");
+    app.execute_command("SelAll");
+    app.document.clear_history().unwrap();
+    let t = 1.75;
+    let target = app
+        .document
+        .objects()
+        .next()
+        .unwrap()
+        .geometry()
+        .curve_ref()
+        .unwrap()
+        .evaluate(t)
+        .unwrap();
+    let context = inspect_in_top_view(&mut app);
+    let before = format!("{:?}", app.document);
+    let pixel = hover_direction(&mut app, &context, target);
+    let parameter = |app: &VibocerosApp| {
+        app.direction_status()
+            .unwrap()
+            .strip_prefix("Parameter = ")
+            .unwrap()
+            .parse::<f64>()
+            .unwrap()
+    };
+    assert!(
+        (parameter(&app) - t).abs() < 1e-5,
+        "{:?}",
+        app.direction_status()
+    );
+
+    viewport_click(&mut app, &context, pixel);
+    hover_direction(&mut app, &context, target);
+    assert!(
+        (parameter(&app) + t).abs() < 1e-5,
+        "{:?}",
+        app.direction_status()
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+
+    hover_direction(&mut app, &context, point(0., 0., 0.));
+    assert_eq!(app.direction_status(), None);
+    app.cancel_current_prompt_or_selection();
+    assert_eq!(app.direction_status(), None);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn direction_status_uses_the_staged_normal_and_the_hovered_view_cplane() {
+    let mut app = test_app();
+    let surface = viboceros_geometry::NurbsSurface::try_bilinear([
+        point(-4., -3., -4.),
+        point(4., -3., -4.),
+        point(4., 3., 4.),
+        point(-4., 3., 4.),
+    ])
+    .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(surface))
+        .unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let context = inspect_in_top_view(&mut app);
+    let target = point(1., 0., 0.);
+    hover_direction(&mut app, &context, target);
+    assert_eq!(app.direction_status(), Some("Draft angle = 36.8699°"));
+
+    app.viewports[0]
+        .set_construction_plane(viboceros_command::construction_plane::WorldPlane::Front.frame());
+    hover_direction(&mut app, &context, target);
+    assert_eq!(app.direction_status(), Some("Draft angle = 53.1301°"));
+
+    enter(&mut app, "Flip");
+    hover_direction(&mut app, &context, target);
+    assert_eq!(app.direction_status(), Some("Draft angle = -53.1301°"));
+    assert!(!app.document.can_undo());
+    enter(&mut app, "");
+    assert_eq!(app.document.undo_label(), Some("Dir"));
+    assert_eq!(app.direction_status(), None);
+}
+
+#[test]
+fn direction_status_is_hidden_when_multiple_objects_are_inspected() {
+    let mut app = test_app();
+    app.execute_command("Line w-4,0,0 w4,0,0");
+    app.execute_command("Line w-4,2,0 w4,2,0");
+    app.execute_command("SelAll");
+    let context = inspect_in_top_view(&mut app);
+    hover_direction(&mut app, &context, point(-1., 0., 0.));
+    assert_eq!(app.direction_status(), None);
+}

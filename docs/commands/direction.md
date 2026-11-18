@@ -15,6 +15,9 @@ oriented normals, mesh face normals, and SubD limit face-center normals (up to
 a single object moves its arrows to the cursor. End-on arrows use a dot toward
 the camera and a cross away. Click an inspected object to preview a reversal.
 Navigation and display-mode changes remain available during inspection.
+The status bar shows the parameter under the pointer for one curve, or the
+signed draft angle for one surface. The angle uses the hovered viewport's
+CPlane Z axis. Both readouts follow provisional edits before Enter.
 
 Type `Flip`, `UReverse`, `VReverse` or `SwapUV` for repeated provisional edits.
 `Mode=FlipNormal|FlipU|FlipV|SwapUV` sets the multiple-object click mode;
@@ -23,8 +26,7 @@ FlipU → FlipV → FlipNormal → SwapUV. The mode persists between commands.
 Enter accepts the final geometry in one Undo entry; Escape discards all edits.
 Inspection and edits that return to the original geometry preserve history and
 Redo. Source changes invalidate the preview. [`ShowDir` and `ShowDirOff`](direction-analysis.md)
-provide persistent analysis. Native arrow appearance preferences and
-parameter/draft-angle status readouts are not implemented.
+provide persistent analysis. Dir uses the application's default arrow appearance.
 
 With an explicit edit on the initial command line, `Dir` executes immediately
 on preselection, or after picking objects and Enter.
@@ -90,6 +92,9 @@ Compressed raw responses and content-addressed producer snapshots remain under
 `tools/rhino_oracle/observations/`. Current portable replays compare every model
 field at absolute `1e-9`, with exact topology and selection. This is bounded
 corpus evidence, not a general performance or continuous-error certificate.
+In headless Rhino, a surface rising four units over a three-unit run along Y
+reported 36.8699° on World Top, −36.8699° after flipping, and 53.1301° with
+World Front as the CPlane.
 
 ```sh
 cargo test -p viboceros-geometry --lib brep::parameter_orientation
