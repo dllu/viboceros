@@ -6,7 +6,7 @@ pub(super) fn straight_pipe(
     radii: [Real; 2],
     stations: &[(Real, Real)],
     options: PipeOptions,
-    preference: &use_extrusions::Preference,
+    use_extrusions: bool,
     tolerance: Tolerance,
 ) -> Result<Option<Vec<Brep>>, CommandError> {
     if radii[0] != radii[1] || !stations.is_empty() || options.cap == PipeCap::Round {
@@ -36,7 +36,7 @@ pub(super) fn straight_pipe(
         } else {
             // Rhino creates disconnected open walls as separate objects; its
             // explicit constructor emits the second wall first.
-            let order = if preference.get().0 {
+            let order = if use_extrusions {
                 [radii[0], second]
             } else {
                 [second, radii[0]]
@@ -78,7 +78,11 @@ pub(super) fn straight_pipe(
                         tolerance,
                     )?
                 };
-                use_extrusions::output(brep, preference, tolerance)
+                if use_extrusions {
+                    Ok(brep)
+                } else {
+                    brep.try_extrusion_brep_form(tolerance)
+                }
             })
             .collect::<Result<Vec<_>, _>>()?,
     ))

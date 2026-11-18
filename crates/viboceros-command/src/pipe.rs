@@ -1,7 +1,14 @@
 //! Circular-profile pipe construction from a selected centerline curve.
 
 use super::*;
+mod build;
+mod command;
 mod extrusion;
+mod input;
+mod rail;
+use build::{BuiltPipe, build};
+pub use input::{Draft, Input, Preferences, RailMode};
+pub use rail::Rail;
 use viboceros_geometry::{
     Circle3, CurveSegment3, Frame3, FrameTransportOptions, NurbsSurface, PolyCurve3, SurfaceIso,
     SweepBlend, SweepFrameStyle, SweepSection, WeightedPoint3, join_breps,
@@ -10,6 +17,16 @@ use viboceros_geometry::{
 const USAGE: &str = "Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]";
 
 pub(super) struct PipeCommand(pub use_extrusions::Preference);
+
+impl CommandRegistry {
+    pub fn pipe_preferences(&self) -> Preferences {
+        self.pipe_preferences.get()
+    }
+
+    pub fn remember_pipe_preferences(&self, value: Preferences) {
+        self.pipe_preferences.set(value);
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum PipeCap {
@@ -26,409 +43,19 @@ struct PipeOptions {
     wall_thickness: Option<Real>,
 }
 
-impl Command for PipeCommand {
-    fn name(&self) -> &'static str {
-        "Pipe"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (source_id, arguments) = if let Some(id) = arguments
-            .first()
-            .and_then(|value| value.parse::<ObjectId>().ok())
-        {
-            (id, &arguments[1..])
-        } else {
-            let selected = document.selected_object_ids().collect::<Vec<_>>();
-            let [id] = selected.as_slice() else {
-                return Err(CommandError::Usage(USAGE));
-            };
-            (*id, arguments)
-        };
-        let Some(start_radius) = arguments.first() else {
-            return Err(CommandError::Usage(USAGE));
-        };
-        let start_radius = positive_radius(start_radius)?;
-        let mut next = 1;
-        let end_radius = if let Some(value) = arguments.get(next)
-            && !value.contains('=')
-        {
-            next += 1;
-            positive_radius(value)?
-        } else {
-            start_radius
-        };
-        let mut cap = None;
-        let mut blend = None;
-        let mut fit_rail = None;
-        let mut thick = None;
-        let mut wall_thickness = None;
-        let mut stations = None;
-        for argument in &arguments[next..] {
-            let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            if option_name_eq(name, "Cap") && cap.is_none() {
-                cap = Some(
-                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "none" => PipeCap::None,
-                        "flat" => PipeCap::Flat,
-                        "round" => PipeCap::Round,
-                        _ => return Err(CommandError::Usage(USAGE)),
-                    },
-                );
-            } else if option_name_eq(name, "ShapeBlending") && blend.is_none() {
-                blend = Some(
-                    match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                        "local" => SweepBlend::Local,
-                        "global" => SweepBlend::Global,
-                        _ => return Err(CommandError::Usage(USAGE)),
-                    },
-                );
-            } else if option_name_eq(name, "FitRail") && fit_rail.is_none() {
-                fit_rail = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
-            } else if option_name_eq(name, "Thick") && thick.is_none() {
-                thick = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
-            } else if option_name_eq(name, "WallThickness") && wall_thickness.is_none() {
-                let value = value
-                    .parse::<Real>()
-                    .map_err(|_| CommandError::InvalidNumber(value.to_owned()))?;
-                if !value.is_finite() || value == 0.0 {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                wall_thickness = Some(value);
-            } else if option_name_eq(name, "Stations") && stations.is_none() {
-                let parsed = value
-                    .split(',')
-                    .map(|station| {
-                        let (fraction, radius) =
-                            station.split_once(':').ok_or(CommandError::Usage(USAGE))?;
-                        let fraction = fraction
-                            .parse::<Real>()
-                            .map_err(|_| CommandError::InvalidNumber(fraction.to_owned()))?;
-                        if !fraction.is_finite() || !(0.0..1.0).contains(&fraction) {
-                            return Err(CommandError::Usage(USAGE));
-                        }
-                        Ok((fraction, positive_radius(radius)?))
-                    })
-                    .collect::<Result<Vec<_>, CommandError>>()?;
-                if parsed.is_empty()
-                    || parsed.len() > 254
-                    || parsed.windows(2).any(|pair| pair[0].0 >= pair[1].0)
-                {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                stations = Some(parsed);
-            } else {
-                return Err(CommandError::Usage(USAGE));
-            }
-        }
-        let cap = cap.unwrap_or(PipeCap::Flat);
-        let blend = blend.unwrap_or(SweepBlend::Local);
-        let fit_rail = fit_rail.unwrap_or(false);
-        if thick == Some(false) && wall_thickness.is_some()
-            || thick == Some(true) && wall_thickness.is_none()
-        {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let second_radii = wall_thickness
-            .map(|thickness| {
-                let first = start_radius + thickness;
-                let second = end_radius + thickness;
-                if !first.is_finite() || !second.is_finite() || first <= 0.0 || second <= 0.0 {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                Ok([first, second])
-            })
-            .transpose()?;
-        let stations = stations.unwrap_or_default();
-        if let Some(thickness) = wall_thickness
-            && stations
-                .iter()
-                .any(|(_, radius)| radius + thickness <= 0.0 || !(radius + thickness).is_finite())
-        {
-            return Err(CommandError::Usage(USAGE));
-        }
-        // Rhino 8's double-wall Pipe uses planar annular caps for Round too.
-        let cap = if second_radii.is_some() && cap == PipeCap::Round {
-            PipeCap::Flat
-        } else {
-            cap
-        };
-        let options = PipeOptions {
-            blend,
-            fit_rail,
-            cap,
-            wall_thickness,
-        };
-        if !document.is_object_selectable(source_id) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let source = document
-            .object(source_id)
-            .map(|object| object.geometry())
-            .ok_or(CommandError::Usage(USAGE))?;
-        let rail = source.curve_ref().ok_or(CommandError::Usage(USAGE))?;
-        let tolerance = document.tolerance();
-        if let Some(outputs) = extrusion::straight_pipe(
-            rail,
-            [start_radius, end_radius],
-            &stations,
-            options,
-            &self.0,
-            tolerance,
-        )? {
-            let count = outputs.len();
-            for brep in outputs {
-                document.add_geometry(Geometry::Brep(brep))?;
-            }
-            return Ok(format!(
-                "Added {count} {} pipe object(s)",
-                if cap == PipeCap::Flat {
-                    "closed"
-                } else {
-                    "open"
-                }
-            ));
-        }
-        let fitted_tapered_corner = fit_rail
-            && stations.is_empty()
-            && start_radius != end_radius
-            && rail.to_nurbs()?.has_full_multiplicity_kink(tolerance)?;
-        let result = match source {
-            Geometry::Polyline(polyline)
-                if stations.is_empty()
-                    && (start_radius == end_radius || fitted_tapered_corner)
-                    && polyline.vertices().len() >= 3 =>
-            {
-                let lines = polyline
-                    .vertices()
-                    .windows(2)
-                    .map(|pair| {
-                        Ok(CurveSegment3::Line(LineSegment::try_new(
-                            pair[0], pair[1], tolerance,
-                        )?))
-                    })
-                    .collect::<Result<Vec<_>, GeometryError>>()?;
-                let polycurve = PolyCurve3::try_new(lines)?;
-                Geometry::Brep(segmented_polycurve_pipe(
-                    rail,
-                    &polycurve,
-                    [start_radius, end_radius],
-                    &stations,
-                    options,
-                    tolerance,
-                )?)
-            }
-            Geometry::PolyCurve(_) if fit_rail && !stations.is_empty() => {
-                return Err(CommandError::Usage(USAGE));
-            }
-            Geometry::PolyCurve(polycurve)
-                if !fit_rail
-                    || (stations.is_empty()
-                        && (start_radius == end_radius || fitted_tapered_corner)
-                        && polycurve.segments().len() >= 2
-                        && polycurve
-                            .segments()
-                            .iter()
-                            .all(|segment| matches!(segment, CurveSegment3::Line(_)))) =>
-            {
-                Geometry::Brep(segmented_polycurve_pipe(
-                    rail,
-                    polycurve,
-                    [start_radius, end_radius],
-                    &stations,
-                    options,
-                    tolerance,
-                )?)
-            }
-            source if !stations.is_empty() => station_pipe(
-                source,
-                rail,
-                [start_radius, end_radius],
-                &stations,
-                options,
-                tolerance,
-            )?,
-            Geometry::Line(line) => {
-                let frame = Frame3::try_from_normal(
-                    line.start(),
-                    line.start().vector_to(line.end())?,
-                    tolerance,
-                )?;
-                let height = line.length()?;
-                let constant = start_radius == end_radius;
-                if cap == PipeCap::Round {
-                    let end_frame = Frame3::try_from_x_and_normal(
-                        line.end(),
-                        frame.x_axis().as_vector(),
-                        frame.z_axis().as_vector(),
-                        tolerance,
-                    )?;
-                    Geometry::Brep(round_cap_single_wall(
-                        straight_wall(frame, [start_radius, end_radius], height, blend, tolerance)?,
-                        [frame, end_frame],
-                        [start_radius, end_radius],
-                        pipe_round_cap_slopes(rail, [start_radius, end_radius], blend, tolerance)?,
-                        tolerance,
-                    )?)
-                } else if let Some(second) = second_radii {
-                    if cap == PipeCap::Flat && constant {
-                        Geometry::Brep(Brep::try_tube(
-                            frame,
-                            [start_radius, second[0]],
-                            height,
-                            tolerance,
-                        )?)
-                    } else {
-                        let (outer, inner) = wall_radii(
-                            [start_radius, end_radius],
-                            second,
-                            wall_thickness.expect("second wall requires a thickness"),
-                        );
-                        let outer = straight_wall(frame, outer, height, blend, tolerance)?;
-                        let inner = straight_wall(frame, inner, height, blend, tolerance)?;
-                        Geometry::Brep(finish_two_walls(outer, inner, cap, tolerance)?)
-                    }
-                } else {
-                    match (cap, constant) {
-                        (PipeCap::Flat, true) => Geometry::Brep(Brep::try_cylinder(
-                            frame,
-                            start_radius,
-                            0.0,
-                            height,
-                            tolerance,
-                        )?),
-                        (PipeCap::Flat, false) if blend == SweepBlend::Local => {
-                            Geometry::Brep(cap_wall(
-                                straight_wall(
-                                    frame,
-                                    [start_radius, end_radius],
-                                    height,
-                                    blend,
-                                    tolerance,
-                                )?,
-                                PipeCap::Flat,
-                                tolerance,
-                            )?)
-                        }
-                        (PipeCap::Flat, false) => Geometry::Brep(Brep::try_truncated_cone(
-                            frame,
-                            [start_radius, end_radius],
-                            height,
-                            tolerance,
-                        )?),
-                        (PipeCap::None, true) => Geometry::NurbsSurface(
-                            NurbsSurface::try_cylinder(frame, start_radius, 0.0, height)?,
-                        ),
-                        (PipeCap::None, false) => Geometry::NurbsSurface(straight_surface(
-                            frame,
-                            [start_radius, end_radius],
-                            height,
-                            blend,
-                        )?),
-                        (PipeCap::Round, _) => unreachable!("round caps handled above"),
-                    }
-                }
-            }
-            Geometry::Circle(circle) => {
-                if start_radius != end_radius {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                let frame = Frame3::try_from_x_and_normal(
-                    circle.center(),
-                    circle.x_axis().as_vector(),
-                    circle.normal()?.as_vector(),
-                    tolerance,
-                )?;
-                if let Some(second) = second_radii {
-                    let (outer, inner) = wall_radii(
-                        [start_radius, end_radius],
-                        second,
-                        wall_thickness.expect("second wall requires a thickness"),
-                    );
-                    if outer[0] >= circle.radius() {
-                        return Err(CommandError::Usage(USAGE));
-                    }
-                    let outer = torus_wall(frame, circle.radius(), outer[0], tolerance)?;
-                    let inner = torus_wall(frame, circle.radius(), inner[0], tolerance)?;
-                    Geometry::Brep(finish_two_walls(outer, inner, PipeCap::None, tolerance)?)
-                } else {
-                    if start_radius >= circle.radius() {
-                        return Err(CommandError::Usage(USAGE));
-                    }
-                    Geometry::NurbsSurface(NurbsSurface::try_torus(
-                        frame,
-                        circle.radius(),
-                        start_radius,
-                    )?)
-                }
-            }
-            _ => {
-                if rail.is_closed()? {
-                    return Err(CommandError::Usage(USAGE));
-                }
-                let first = [start_radius, end_radius];
-                let frames = if cap == PipeCap::Round {
-                    Some(pipe_rail_frames(rail, first, tolerance)?)
-                } else {
-                    None
-                };
-                let result = if let Some(second) = second_radii {
-                    let (outer_radii, inner_radii) = wall_radii(
-                        first,
-                        second,
-                        wall_thickness.expect("second wall requires a thickness"),
-                    );
-                    let outer_frames = match frames {
-                        Some(frames) => frames,
-                        None => pipe_rail_frames(rail, outer_radii, tolerance)?,
-                    };
-                    let inner_frames = match frames {
-                        Some(frames) => frames,
-                        None => pipe_rail_frames(rail, inner_radii, tolerance)?,
-                    };
-                    let outer =
-                        swept_wall_with_frames(rail, outer_radii, blend, tolerance, outer_frames)?;
-                    let inner =
-                        swept_wall_with_frames(rail, inner_radii, blend, tolerance, inner_frames)?;
-                    finish_two_walls(outer, inner, cap, tolerance)?
-                } else {
-                    let wall_frames = match frames {
-                        Some(frames) => frames,
-                        None => pipe_rail_frames(rail, first, tolerance)?,
-                    };
-                    let wall = swept_wall_with_frames(rail, first, blend, tolerance, wall_frames)?;
-                    if let Some(frames) = frames {
-                        round_cap_single_wall(
-                            wall,
-                            frames,
-                            first,
-                            pipe_round_cap_slopes(rail, first, blend, tolerance)?,
-                            tolerance,
-                        )?
-                    } else {
-                        cap_wall(wall, cap, tolerance)?
-                    }
-                };
-                Geometry::Brep(result)
-            }
-        };
-        let closed = matches!(&result, Geometry::Brep(brep) if brep.is_closed())
-            || matches!(&result, Geometry::NurbsSurface(surface) if surface.is_closed_u()? && surface.is_closed_v()?);
-        let id = document.add_geometry(result)?;
-        Ok(format!(
-            "Added {} pipe {id} (start radius {start_radius:.6}, end radius {end_radius:.6})",
-            if closed { "closed" } else { "open" }
-        ))
-    }
+#[derive(Clone, Debug)]
+struct Profile {
+    endpoints: [Real; 2],
+    stations: Vec<(Real, Real)>,
 }
 
-fn positive_radius(value: &str) -> Result<Real, CommandError> {
-    let radius = value
-        .parse::<Real>()
-        .map_err(|_| CommandError::InvalidNumber(value.to_owned()))?;
-    if !radius.is_finite() || radius <= 0.0 {
-        return Err(CommandError::Usage(USAGE));
+impl Profile {
+    fn new(endpoints: [Real; 2], stations: Vec<(Real, Real)>) -> Self {
+        Self {
+            endpoints,
+            stations,
+        }
     }
-    Ok(radius)
 }
 
 fn segmented_polycurve_pipe(
@@ -1579,5 +1206,7 @@ fn finish_two_walls(
     cap_wall(combined, cap, tolerance)
 }
 
+#[cfg(test)]
+mod staged;
 #[cfg(test)]
 mod tests;

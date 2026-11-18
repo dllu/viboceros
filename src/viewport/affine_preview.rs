@@ -346,6 +346,25 @@ impl Viewport {
                     .and_then(|getter| getter.mouse_line(self.construction_plane())),
             },
         );
+        if let Some((getter, rails)) = input.pipe_preview
+            && getter.picking_station()
+            && filter.is_none()
+            && cursor.is_none_or(|c| c.object_snap.is_none())
+        {
+            let rail = rails.first()?.projected_curve();
+            let parameter = self.pick_edge_parameter(rail, pointer, rect, false)?;
+            let point = rail.evaluate(parameter).ok()?;
+            return Some(drafting::DraftingCursor {
+                pointer,
+                point,
+                source_point: point,
+                object_snap: None,
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            });
+        }
         if drafting.planar
             && let Some(getter) = input.curve_line_input.filter(|g| g.mouse_plane().is_none())
         {
@@ -361,6 +380,9 @@ impl Viewport {
         let axial_mouse_plane = input
             .solid_axial_input
             .and_then(viboceros_command::solid_axial::Input::mouse_plane);
+        let pipe_plane = input
+            .pipe_preview
+            .and_then(|(getter, rails)| getter.radius_plane(rails.first()?));
         let Some((anchor, normal)) = definition
             .and_then(|p| p.mouse_plane(document.tolerance()))
             .or_else(|| {
@@ -378,6 +400,7 @@ impl Viewport {
             .or_else(|| input.angle_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| ellipsoid_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| axial_mouse_plane.map(|p| (p.origin(), p.z_axis())))
+            .or_else(|| pipe_plane.map(|p| (p.origin(), p.z_axis())))
             .or_else(|| input.taper_preview.and_then(|p| p.mouse_plane()))
         else {
             return cursor;
@@ -399,7 +422,10 @@ impl Viewport {
                 cursor.source_point = cursor.point;
                 return Some(cursor);
             }
-            return if ellipsoid_plane.is_some() || axial_mouse_plane.is_some() {
+            return if ellipsoid_plane.is_some()
+                || axial_mouse_plane.is_some()
+                || pipe_plane.is_some()
+            {
                 cursor
             } else {
                 input.taper_preview.and(cursor)

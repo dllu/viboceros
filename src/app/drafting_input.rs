@@ -104,6 +104,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_pipe_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_solid_axial_point(point) {
             return accepted;
         }
@@ -610,81 +613,7 @@ impl VibocerosApp {
                 self.push_log("Select a closed mesh or polysurface first".to_owned());
                 return false;
             }
-            InteractiveCommand::Pipe { source: None, .. } => {
-                self.push_log("Select a rail curve first".to_owned());
-                return false;
-            }
-            InteractiveCommand::Pipe {
-                source: Some(source),
-                cap_flat,
-                cap_round,
-                blend_global,
-                fit_rail,
-                wall_thickness,
-                pick_second_radius,
-                first_radius,
-            } => {
-                let radius = self
-                    .document
-                    .object(source)
-                    .and_then(|object| object.geometry().curve_ref())
-                    .and_then(|curve| {
-                        let parameter = curve
-                            .closest_parameter(point, self.document.tolerance())
-                            .ok()?;
-                        let nearest = curve.evaluate(parameter).ok()?;
-                        point.distance_to(nearest).ok()
-                    });
-                let Some(radius) = radius.filter(|radius| *radius > 0.0) else {
-                    self.push_log("Error: pipe radius must be positive".to_owned());
-                    return false;
-                };
-                if pick_second_radius && first_radius.is_none() {
-                    let command = InteractiveCommand::Pipe {
-                        source: Some(source),
-                        cap_flat,
-                        cap_round,
-                        blend_global,
-                        fit_rail,
-                        wall_thickness,
-                        pick_second_radius,
-                        first_radius: Some(radius),
-                    };
-                    self.active_command = Some(command);
-                    self.push_log(command.prompt().to_owned());
-                    return true;
-                }
-                let start_radius = first_radius.unwrap_or(radius);
-                let wall_thickness = if pick_second_radius {
-                    Some(radius - start_radius)
-                } else {
-                    wall_thickness
-                };
-                if wall_thickness
-                    .is_some_and(|thickness| thickness == 0.0 || start_radius + thickness <= 0.0)
-                {
-                    self.push_log(
-                        "Error: second pipe radius must be positive and distinct".to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Pipe {source} {start_radius} Cap={} ShapeBlending={} FitRail={}{}",
-                    if cap_round {
-                        "Round"
-                    } else if cap_flat {
-                        "Flat"
-                    } else {
-                        "None"
-                    },
-                    if blend_global { "Global" } else { "Local" },
-                    if fit_rail { "Yes" } else { "No" },
-                    wall_thickness.map_or_else(String::new, |thickness| {
-                        format!(" WallThickness={thickness}")
-                    })
-                ));
-            }
+            InteractiveCommand::Pipe { .. } => return false,
             InteractiveCommand::ArcCenter {
                 center: None,
                 start: None,

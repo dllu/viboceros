@@ -271,14 +271,8 @@ pub(super) enum InteractiveCommand {
         mode: RectSelectionMode,
     },
     Pipe {
-        source: Option<ObjectId>,
-        cap_flat: bool,
-        cap_round: bool,
-        blend_global: bool,
-        fit_rail: bool,
-        wall_thickness: Option<f64>,
-        pick_second_radius: bool,
-        first_radius: Option<f64>,
+        selecting: bool,
+        anchor: Option<Point3>,
     },
     Ellipsoid {
         anchor: Option<Point3>,

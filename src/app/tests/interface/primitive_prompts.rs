@@ -183,23 +183,16 @@ fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
     enter(&mut app, "Line 0,0,0 10,0,0");
     let source = app.document.objects().next().unwrap().id();
     enter(&mut app, "Pipe Cap=None");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe { source: None, .. })
-    ));
+    assert!(app.picking_pipe_rail());
     app.apply_selection_click(SelectionClick {
         object_id: Some(source),
         mode: SelectionMode::Replace,
     });
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            cap_flat: false,
-            ..
-        }) if id == source
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    assert!(!app.picking_pipe_rail());
+    assert!(app.accept_drafting_point(point(0., 1., 0.)));
+    assert_eq!(app.document.objects().len(), 1);
+    enter(&mut app, "");
+    enter(&mut app, "");
     assert!(app.active_command.is_none());
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),
@@ -216,65 +209,33 @@ fn pipe_picks_rail_and_radius_or_uses_preselected_rail() {
         Geometry::Brep(brep) if brep.is_closed()
     ));
 
-    app.document
-        .select_object(source, SelectionMode::Replace)
-        .unwrap();
     enter(&mut app, "Pipe Cap=Flat Thick=Yes WallThickness=0.2");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            wall_thickness: Some(thickness),
-            ..
-        }) if id == source && thickness == 0.2
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    let session = app.pipe_session.as_ref().unwrap();
+    assert_eq!(session.rails[0].references().next(), Some((source, None)));
+    assert!(app.accept_drafting_point(point(0., 1., 0.)));
+    enter(&mut app, "");
+    enter(&mut app, "");
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),
         Geometry::Brep(brep) if brep.is_closed() && brep.faces().len() == 4
     ));
 
-    app.document
-        .select_object(source, SelectionMode::Replace)
-        .unwrap();
     enter(&mut app, "Pipe Thick=Yes");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            pick_second_radius: true,
-            first_radius: None,
-            ..
-        }) if id == source
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            first_radius: Some(radius),
-            ..
-        }) if radius == 1.0
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1.2, 0.).unwrap()));
+    assert!(app.accept_drafting_point(point(0., 1., 0.)));
+    assert!(app.accept_drafting_point(point(0., 1.2, 0.)));
+    enter(&mut app, "");
+    enter(&mut app, "");
+    enter(&mut app, "");
     assert!(app.active_command.is_none());
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),
         Geometry::Brep(brep) if brep.is_closed() && brep.faces().len() == 4
     ));
 
-    app.document
-        .select_object(source, SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "Pipe Cap=Round");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            cap_round: true,
-            ..
-        }) if id == source
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    enter(&mut app, "Pipe Cap=Round Thick=No");
+    assert!(app.accept_drafting_point(point(0., 1., 0.)));
+    enter(&mut app, "");
+    enter(&mut app, "");
     assert!(app.active_command.is_none());
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),
@@ -292,32 +253,21 @@ fn pipe_accepts_options_while_picking_without_losing_radius_state() {
         .unwrap();
     enter(&mut app, "Pipe");
     enter(&mut app, "Thick=Yes");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            pick_second_radius: true,
-            first_radius: None,
-            ..
-        }) if id == source
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1., 0.).unwrap()));
+    assert!(app.accept_drafting_point(point(0., 1., 0.)));
     enter(&mut app, "Cap=Round");
     enter(&mut app, "ShapeBlending=Global");
     enter(&mut app, "FitRail=Yes");
     enter(&mut app, "Cap=Invalid");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::Pipe {
-            source: Some(id),
-            cap_round: true,
-            blend_global: true,
-            fit_rail: true,
-            first_radius: Some(radius),
-            ..
-        }) if id == source && radius == 1.0
-    ));
-    assert!(app.accept_drafting_point(Point3::try_new(5., 1.2, 0.).unwrap()));
+    let (input, _) = app.pipe_session.as_ref().unwrap().preview().unwrap();
+    let prompt = input.prompt();
+    assert!(prompt.starts_with("Second start radius"));
+    assert!(prompt.contains("Cap=Round"));
+    assert!(prompt.contains("ShapeBlending=Global"));
+    assert!(prompt.contains("FitRail=Yes"));
+    assert!(app.accept_drafting_point(point(0., 1.2, 0.)));
+    enter(&mut app, "");
+    enter(&mut app, "");
+    enter(&mut app, "");
     assert!(app.active_command.is_none());
     assert!(matches!(
         app.document.objects().last().unwrap().geometry(),

@@ -1,5 +1,23 @@
 # Pipe
 
+Run `Pipe` and select a curve or a surface edge. Pick a point on the start
+section or type a size. The end prompt starts with the accepted start size.
+After sizing both ends, pick a location on the rail to add a radius station.
+Enter creates the pipe. You can add stations in either order and use `Undo`
+to return to an earlier prompt before creating geometry.
+
+`Radius` and `Diameter` switch the size input. `Thick=Yes` asks for both
+wall sizes at each section. Choose `WallThickness` at the second size to apply
+a signed offset through the rest of the pipe. `Cap`, `ShapeBlending`, and
+`FitRail` remain available while sizing. The viewport draws the current
+sections and a sampled wire preview along the rail.
+
+`Multiple` uses the same sizes for every selected rail. `ChainEdges` joins
+the picked connected edges into one rail. Press Enter to finish either
+selection. The command creates all outputs in one undo step.
+
+## Positional input
+
 Straight constant-radius results follow [UseExtrusions](use-extrusions.md).
 Open thick pipes create two separate walls; flat-capped thick pipes create one
 hollow extrusion when that output mode is enabled.
@@ -9,10 +27,8 @@ for retained/refitted rails and continuous-model wall construction.
 
 `Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`
 creates a circular-profile pipe around one selected curve. The first radius is
-required and the second defaults to the first. The source curve remains in the
-document. Enter `Pipe` without dimensions to pick a rail and radius point in a
-viewport. `Pipe Cap=Round` also works in this picking flow. For example, after
-selecting a line:
+required and the second defaults to the first. For example, after selecting a
+line:
 
 ```text
 Pipe 1.5 2.0 Cap=Flat ShapeBlending=Global
@@ -20,10 +36,6 @@ Pipe 1 WallThickness=0.25 Cap=Flat
 Pipe 1 Cap=Round
 Pipe 1 Stations=0.5:2 Cap=Flat
 ```
-
-While picking, enter `Cap=`, `ShapeBlending=`, `FitRail=`, `Thick=`, or `WallThickness=` to
-change those options. Cap and blending can also change after the first radius
-of a thick pipe has been picked.
 
 Straight constant-radius rails use exact cylinders. For two different radii,
 `ShapeBlending=Local` uses a smooth cubic radius transition and
@@ -84,7 +96,7 @@ entered explicitly. A positive thickness puts the second wall outside the first
 radius; a negative thickness puts it inside. Flat caps join the walls with
 annular faces. Straight constant-radius thick pipes use the exact tube B-rep;
 curved thick pipes combine oppositely oriented swept walls. Circular thick pipes
-use nested tori. In the viewport, `Pipe Thick=Yes` asks for two radius points.
+use nested tori.
 
 `Stations=` supplies interior radius samples as normalized rail parameters in
 strictly increasing order. For example, `Stations=0.25:1.5,0.75:2` sets radii

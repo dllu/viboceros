@@ -30,6 +30,7 @@ mod curve_line;
 pub(crate) mod direction;
 mod drafting;
 mod paraboloid;
+mod pipe;
 mod pyramid;
 mod solid_axial;
 pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
@@ -429,6 +430,10 @@ pub struct ViewportInput<'a> {
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
     pub solid_axial_input: Option<viboceros_command::solid_axial::Input>,
+    pub pipe_preview: Option<(
+        &'a viboceros_command::pipe::Input,
+        &'a [viboceros_command::pipe::Rail],
+    )>,
     pub solid_axial_fit: Option<Circle3>,
     pub torus_preview_curves: &'a [NurbsCurve],
     pub torus_fit_preview: Option<Circle3>,
@@ -588,6 +593,7 @@ impl Default for ViewportInput<'_> {
             arc_preview: None,
             circle_around_input: None,
             solid_axial_input: None,
+            pipe_preview: None,
             solid_axial_fit: None,
             torus_preview_curves: &[],
             torus_fit_preview: None,
@@ -2878,6 +2884,18 @@ impl Viewport {
         }
         if let Some(circle) = input.solid_axial_fit {
             self.paint_curve_draft(&painter, rect, &circle);
+        }
+        if let Some((getter, rails)) = input.pipe_preview {
+            let cursor =
+                drafting_cursor.filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()));
+            self.paint_pipe_preview(
+                &painter,
+                rect,
+                getter,
+                rails,
+                cursor.map(|p| p.point),
+                document.tolerance(),
+            );
         }
         for curve in input.torus_preview_curves {
             self.paint_curve_draft(&painter, rect, curve);

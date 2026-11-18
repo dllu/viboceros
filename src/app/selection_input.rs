@@ -223,36 +223,9 @@ impl VibocerosApp {
             }
             return;
         }
-        if let Some(InteractiveCommand::Pipe {
-            source: None,
-            cap_flat,
-            cap_round,
-            blend_global,
-            fit_rail,
-            wall_thickness,
-            pick_second_radius,
-            first_radius,
-        }) = self.active_command
-        {
-            if let Some(source) = click.object_id
-                && self
-                    .document
-                    .object(source)
-                    .and_then(|object| object.geometry().curve_ref())
-                    .is_some()
-            {
-                let command = InteractiveCommand::Pipe {
-                    source: Some(source),
-                    cap_flat,
-                    cap_round,
-                    blend_global,
-                    fit_rail,
-                    wall_thickness,
-                    pick_second_radius,
-                    first_radius,
-                };
-                self.active_command = Some(command);
-                self.push_log(command.prompt().to_owned());
+        if self.picking_pipe_rail() {
+            if let Some(source) = click.object_id {
+                self.pick_pipe_rail(source, None);
             }
             return;
         }

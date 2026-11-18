@@ -344,7 +344,7 @@ mod object_name;
 mod offset_mesh;
 pub mod offset_subd;
 pub mod offset_surface;
-mod pipe;
+pub mod pipe;
 pub mod point_selection;
 pub mod polyline_on_mesh;
 mod project;
@@ -1053,6 +1053,7 @@ pub struct CommandRegistry {
     solid_cylinder_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
     tube_preferences: std::sync::Arc<remembered::Remembered<solid_axial::TubeSettings>>,
+    pipe_preferences: remembered::Remembered<pipe::Preferences>,
     solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
     truncated_cone_preferences:
         std::sync::Arc<remembered::Remembered<solid_axial::TruncatedConeSettings>>,

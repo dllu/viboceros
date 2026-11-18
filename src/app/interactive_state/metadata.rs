@@ -204,6 +204,7 @@ impl InteractiveCommand {
             | Self::SubDTruncatedCone { anchor: base }
             | Self::SubDCone { anchor: base }
             | Self::SolidAxial { anchor: base, .. }
+            | Self::Pipe { anchor: base, .. }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,
@@ -271,7 +272,6 @@ impl InteractiveCommand {
             | Self::SelVolumeSphere { center: None, .. }
             | Self::SelVolumePipe { .. }
             | Self::SelVolumeObject { .. }
-            | Self::Pipe { .. }
             | Self::Arc { points: [None, _] }
             | Self::ArcDeform { .. }
             | Self::ArcStartPoint { start: None, .. }

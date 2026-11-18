@@ -345,6 +345,12 @@ impl VibocerosApp {
             if self.pick_face_edge_click(&picks) {
                 return true;
             }
+            if self.picking_pipe_rail() {
+                if let Some(pick) = picks.first() {
+                    self.pick_pipe_rail(pick.object, Some(pick.edge));
+                }
+                return true;
+            }
             if self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()

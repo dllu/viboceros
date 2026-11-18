@@ -109,7 +109,10 @@ impl VibocerosApp {
                                 self.active_command,
                                 Some(
                                     InteractiveCommand::SelVolumePipe { source: None, .. }
-                                        | InteractiveCommand::Pipe { source: None, .. }
+                                        | InteractiveCommand::Pipe {
+                                            selecting: true,
+                                            ..
+                                        }
                                         | InteractiveCommand::SelVolumeObject { .. }
                                         | InteractiveCommand::MirrorObject
                                 )

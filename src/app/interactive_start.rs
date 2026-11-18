@@ -80,7 +80,8 @@ impl VibocerosApp {
         if self.start_subd_sphere(input) {
             return true;
         }
-        if self.start_solid_axial(input)
+        if self.try_start_pipe(input)
+            || self.start_solid_axial(input)
             || self.start_subd_axial(input)
             || self.try_start_pyramid(input)
         {
@@ -738,110 +739,6 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::WeldEdge
-        } else if normalized == "pipe" {
-            let mut cap_flat = true;
-            let mut cap_round = false;
-            let mut blend_global = false;
-            let mut fit_rail = None;
-            let mut cap_seen = false;
-            let mut blend_seen = false;
-            let mut thick = None;
-            let mut wall_thickness = None;
-            for argument in &arguments {
-                let Some((name, value)) = argument.split_once('=') else {
-                    return false;
-                };
-                if name.trim_start_matches('_').eq_ignore_ascii_case("Cap") && !cap_seen {
-                    cap_flat = if value.trim_start_matches('_').eq_ignore_ascii_case("Flat") {
-                        true
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("None") {
-                        false
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Round") {
-                        cap_round = true;
-                        false
-                    } else {
-                        return false;
-                    };
-                    cap_seen = true;
-                } else if name
-                    .trim_start_matches('_')
-                    .eq_ignore_ascii_case("ShapeBlending")
-                    && !blend_seen
-                {
-                    blend_global = if value.trim_start_matches('_').eq_ignore_ascii_case("Global") {
-                        true
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Local") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    blend_seen = true;
-                } else if name.trim_start_matches('_').eq_ignore_ascii_case("FitRail")
-                    && fit_rail.is_none()
-                {
-                    fit_rail = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                        Some(true)
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                        Some(false)
-                    } else {
-                        return false;
-                    };
-                } else if name.trim_start_matches('_').eq_ignore_ascii_case("Thick")
-                    && thick.is_none()
-                {
-                    thick = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                        Some(true)
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                        Some(false)
-                    } else {
-                        return false;
-                    };
-                } else if name
-                    .trim_start_matches('_')
-                    .eq_ignore_ascii_case("WallThickness")
-                    && wall_thickness.is_none()
-                {
-                    let Ok(value) = value.parse::<f64>() else {
-                        return false;
-                    };
-                    if !value.is_finite() || value == 0.0 {
-                        return false;
-                    }
-                    wall_thickness = Some(value);
-                } else {
-                    return false;
-                }
-            }
-            if thick == Some(false) && wall_thickness.is_some() {
-                return false;
-            }
-            let pick_second_radius = thick == Some(true) && wall_thickness.is_none();
-            let selected = self
-                .document
-                .selected_object_ids()
-                .take(2)
-                .collect::<Vec<_>>();
-            let source = match selected.as_slice() {
-                [id] if self
-                    .document
-                    .object(*id)
-                    .and_then(|object| object.geometry().curve_ref())
-                    .is_some() =>
-                {
-                    Some(*id)
-                }
-                _ => None,
-            };
-            InteractiveCommand::Pipe {
-                source,
-                cap_flat,
-                cap_round,
-                blend_global,
-                fit_rail: fit_rail.unwrap_or(false),
-                wall_thickness,
-                pick_second_radius,
-                first_radius: None,
-            }
         } else if matches!(
             normalized.as_str(),
             "weldvertices" | "weldvertex" | "weldmeshvertex"

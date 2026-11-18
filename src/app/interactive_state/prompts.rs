@@ -307,20 +307,10 @@ impl InteractiveCommand {
             Self::SelVolumeObject { .. } => {
                 "SelVolumeObject: select a closed mesh or polysurface (Esc to cancel)"
             }
-            Self::Pipe { source: None, .. } => "Pipe: select a rail curve (Esc to cancel)",
             Self::Pipe {
-                source: Some(_),
-                first_radius: Some(_),
-                ..
-            } => "Pipe: pick the second radius point near the rail (Esc to cancel)",
-            Self::Pipe {
-                source: Some(_),
-                pick_second_radius: true,
-                ..
-            } => "Pipe: pick the first radius point near the rail (Esc to cancel)",
-            Self::Pipe {
-                source: Some(_), ..
-            } => "Pipe: pick a radius point near the rail (Esc to cancel)",
+                selecting: true, ..
+            } => "Select a pipe rail; Esc cancels",
+            Self::Pipe { .. } => "Pick a pipe radius or station; Esc cancels",
             Self::Ellipsoid { mesh: false, .. } => {
                 "Ellipsoid: pick a point or enter a size (Esc cancels)"
             }
