@@ -304,6 +304,7 @@ impl PendingObjectCommand {
                 | "SubDTruncatedCone FitPoints"
                 | "SubDTorus FitPoints"
                 | "MeshTorus FitPoints"
+                | "Torus FitPoints"
                 | "SubDSphere FitPoints"
         ) {
             return "Select at least three points or control points; Enter fits the circle, Esc cancels";
@@ -410,6 +411,7 @@ impl VibocerosApp {
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
                         | "MeshTorus FitPoints"
+                        | "Torus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -883,6 +885,7 @@ impl VibocerosApp {
             | "SubDTruncatedCone FitPoints"
             | "SubDTorus FitPoints"
             | "MeshTorus FitPoints"
+            | "Torus FitPoints"
             | "SubDSphere FitPoints"
             | "PlaneThroughPt"
             | "Sphere FitPoints"
@@ -911,6 +914,7 @@ impl VibocerosApp {
                 | "SubDTruncatedCone FitPoints"
                 | "SubDTorus FitPoints"
                 | "MeshTorus FitPoints"
+                | "Torus FitPoints"
                 | "SubDSphere FitPoints"
                 | "PlaneThroughPt"
                 | "LineThroughPt"
@@ -1097,6 +1101,7 @@ impl VibocerosApp {
                     | "SubDTruncatedCone FitPoints"
                     | "SubDTorus FitPoints"
                     | "MeshTorus FitPoints"
+                    | "Torus FitPoints"
                     | "SubDSphere FitPoints"
             ) || description.command == "ReducePointCloud"
                 && input.split_whitespace().nth(1).is_some())
@@ -1402,6 +1407,7 @@ impl VibocerosApp {
                             | "SubDTruncatedCone FitPoints"
                             | "SubDTorus FitPoints"
                             | "MeshTorus FitPoints"
+                            | "Torus FitPoints"
                             | "SubDSphere FitPoints"
                             | "PlaneThroughPt"
                             | "LineThroughPt"
@@ -1473,7 +1479,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "SubDTorus FitPoints" | "MeshTorus FitPoints"
+                "SubDTorus FitPoints" | "MeshTorus FitPoints" | "Torus FitPoints"
             ) {
                 self.accept_torus_fit(pending.postselected);
                 self.command_input.clear();
@@ -1727,6 +1733,7 @@ impl VibocerosApp {
                         | "SubDTruncatedCone FitPoints"
                         | "SubDTorus FitPoints"
                         | "MeshTorus FitPoints"
+                        | "Torus FitPoints"
                         | "SubDSphere FitPoints"
                         | "PlaneThroughPt"
                         | "LineThroughPt"
@@ -2035,7 +2042,7 @@ impl VibocerosApp {
             }
             if matches!(
                 pending.description.command,
-                "SubDTorus FitPoints" | "MeshTorus FitPoints"
+                "SubDTorus FitPoints" | "MeshTorus FitPoints" | "Torus FitPoints"
             ) {
                 self.torus_session = None;
                 self.active_command = None;

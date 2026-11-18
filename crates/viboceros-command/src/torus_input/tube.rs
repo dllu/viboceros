@@ -37,10 +37,11 @@ pub(super) fn point(
 ) -> Result<Definition, CommandError> {
     let [x, y] = circle.frame.projected_coordinates_of(point)?;
     let distance = (x.hypot(y) - circle.radius).abs();
-    let radius_value = if kind == Kind::Mesh && p.fix_inner_dimension && p.tube_diameter {
-        0.5 * distance
-    } else {
-        distance
-    };
+    let radius_value =
+        if matches!(kind, Kind::Solid | Kind::Mesh) && p.fix_inner_dimension && p.tube_diameter {
+            0.5 * distance
+        } else {
+            distance
+        };
     radius(circle, radius_value, p)
 }

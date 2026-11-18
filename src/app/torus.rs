@@ -33,6 +33,7 @@ impl VibocerosApp {
     }
     pub(super) fn torus_preferences(&self, kind: Kind) -> Preferences {
         match kind {
+            Kind::Solid => self.commands.torus_preferences(),
             Kind::SubD => self.commands.subd_torus_preferences(),
             Kind::Mesh => self.commands.mesh_torus_preferences(),
         }
@@ -88,9 +89,15 @@ impl VibocerosApp {
             return;
         };
         let kind = s.input.kind;
-        if kind == Kind::SubD {
-            self.commands
-                .remember_subd_torus_preferences(s.input.preferences);
+        match kind {
+            Kind::Solid => self
+                .commands
+                .remember_torus_preferences(s.input.preferences),
+            Kind::SubD => {
+                self.commands
+                    .remember_subd_torus_preferences(s.input.preferences);
+            }
+            Kind::Mesh => (),
         }
         let snap_option = if s.input.snap_projection_plane().is_some() {
             if self.circle_project_osnap {
@@ -129,6 +136,10 @@ impl VibocerosApp {
         };
         let kind = s.input.kind;
         let geometry = match kind {
+            Kind::Solid => definition
+                .surface()
+                .map(Geometry::NurbsSurface)
+                .map_err(Into::into),
             Kind::SubD => definition.geometry(s.input.preferences),
             Kind::Mesh => definition
                 .mesh(s.input.preferences, self.document.tolerance())
@@ -138,11 +149,11 @@ impl VibocerosApp {
         let geometry = match geometry {
             Ok(g) => g,
             Err(e) => {
-                if kind == Kind::Mesh {
+                if kind != Kind::SubD {
+                    let tube_radius = self.torus_preferences(kind).tube_radius;
                     let input = &mut self.torus_session.as_mut().unwrap().input;
                     input.definition = None;
-                    input.preferences.tube_radius =
-                        self.commands.mesh_torus_preferences().tube_radius;
+                    input.preferences.tube_radius = tube_radius;
                 } else {
                     self.cancel_interactive_command(false);
                 }
@@ -176,6 +187,10 @@ impl VibocerosApp {
         match result {
             Ok(()) => {
                 match kind {
+                    Kind::Solid => {
+                        self.commands
+                            .remember_torus_preferences(s.input.preferences);
+                    }
                     Kind::SubD => {
                         self.commands
                             .remember_subd_torus_preferences(s.input.preferences);
@@ -371,9 +386,9 @@ impl VibocerosApp {
         let result = s.input.accept_reference(definition);
         self.advance_torus(result)
     }
-    pub(super) fn mesh_torus_fit_preview(&self) -> Option<Circle3> {
+    pub(super) fn torus_fit_preview(&self) -> Option<Circle3> {
         let s = self.torus_session.as_ref()?;
-        if s.input.kind != Kind::Mesh || !s.fit_pending {
+        if s.input.kind == Kind::SubD || !s.fit_pending {
             return None;
         }
         viboceros_command::circle_fit_points::selected_circle(&self.document)

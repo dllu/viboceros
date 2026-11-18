@@ -125,7 +125,7 @@ fn mesh_torus_tangent_around_and_fit_resume_the_tube_prompt() {
         "MeshTorus FitPoints"
     );
     enter(&mut app, "SelAll");
-    assert!(app.mesh_torus_fit_preview().is_some());
+    assert!(app.torus_fit_preview().is_some());
     enter(&mut app, "");
     assert!(app.object_prompt.is_none());
     assert!(app.torus_session.as_ref().unwrap().mesh_preview().is_some());

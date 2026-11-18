@@ -425,7 +425,8 @@ pub struct ViewportInput<'a> {
     pub arc_extension_input: Option<&'a viboceros_command::arc_extension_input::Input>,
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
-    pub mesh_torus_fit_preview: Option<Circle3>,
+    pub torus_preview_curves: &'a [NurbsCurve],
+    pub torus_fit_preview: Option<Circle3>,
     pub mesh_torus_preview: Option<(
         viboceros_command::torus_input::Definition,
         viboceros_command::torus_input::Preferences,
@@ -577,7 +578,8 @@ impl Default for ViewportInput<'_> {
             arc_output: None,
             arc_preview: None,
             circle_around_input: None,
-            mesh_torus_fit_preview: None,
+            torus_preview_curves: &[],
+            torus_fit_preview: None,
             mesh_torus_preview: None,
             mesh_sphere_topology: None,
             mesh_sphere_fit_preview: None,
@@ -2852,7 +2854,10 @@ impl Viewport {
                 }
             }
         }
-        if let Some(circle) = input.mesh_torus_fit_preview {
+        for curve in input.torus_preview_curves {
+            self.paint_curve_draft(&painter, rect, curve);
+        }
+        if let Some(circle) = input.torus_fit_preview {
             self.paint_curve_draft(&painter, rect, &circle);
         }
         if let Some((definition, preferences)) = input.mesh_torus_preview

@@ -244,6 +244,9 @@ impl CircleInput {
                 vertical: false,
             } => "First end of diameter; Vertical",
             State::TwoPoint { first: None, .. } => "First end of diameter",
+            State::TwoPoint {
+                vertical: false, ..
+            } => "Second end of diameter; Vertical",
             State::TwoPoint { .. } => "Second end of diameter",
             State::ThreePoint { first: None, .. } => "First point on circle",
             State::ThreePoint { second: None, .. } => "Second point on circle",
@@ -286,16 +289,21 @@ impl CircleInput {
         }
         if matches!(self.state, State::Vertical { center: None, .. })
             && name.eq_ignore_ascii_case("2Point")
-            || matches!(
-                self.state,
-                State::TwoPoint {
-                    first: None,
-                    vertical: false
-                }
-            ) && name.eq_ignore_ascii_case("Vertical")
         {
             self.state = State::TwoPoint {
                 first: None,
+                vertical: true,
+            };
+            return true;
+        }
+        if let State::TwoPoint {
+            first,
+            vertical: false,
+        } = self.state
+            && name.eq_ignore_ascii_case("Vertical")
+        {
+            self.state = State::TwoPoint {
+                first,
                 vertical: true,
             };
             return true;

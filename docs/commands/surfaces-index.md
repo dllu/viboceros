@@ -5,6 +5,7 @@ B-rep output for eligible creators.
 
 [All commands](README.md) · [Command input](../command-line.md)
 
+- [Torus construction modes and live previews](torus.md)
 - [ShortPath surface geodesics](short-path.md)
 - [InterpCrvOnSrf surface interpolation](interp-crv-on-srf.md)
 - [DivideAlongCreases](divide-along-creases.md)

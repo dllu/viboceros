@@ -995,8 +995,8 @@ impl VibocerosApp {
             .map(|s| s.input)
             .filter(|_| model_input_active);
         let circle_preview = model_input_active.then(|| self.circle_preview()).flatten();
-        let mesh_torus_fit_preview = model_input_active
-            .then(|| self.mesh_torus_fit_preview())
+        let torus_fit_preview = model_input_active
+            .then(|| self.torus_fit_preview())
             .flatten();
         let mesh_sphere_topology = self.mesh_sphere_preview_topology();
         let mesh_sphere_fit_preview = model_input_active
@@ -1321,11 +1321,6 @@ impl VibocerosApp {
                                         .map(subd_ellipsoid::Session::preview_curves)
                                 })
                                 .or_else(|| {
-                                    self.torus_session
-                                        .as_ref()
-                                        .map(torus::Session::preview_curves)
-                                })
-                                .or_else(|| {
                                     self.subd_sphere_session
                                         .as_ref()
                                         .map(subd_sphere::Session::preview_curves)
@@ -1400,7 +1395,12 @@ impl VibocerosApp {
                             arc_output,
                             arc_preview,
                             circle_around_input,
-                            mesh_torus_fit_preview,
+                            torus_preview_curves: self
+                                .torus_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .map_or(&[], torus::Session::preview_curves),
+                            torus_fit_preview,
                             mesh_torus_preview: self
                                 .torus_session
                                 .as_ref()

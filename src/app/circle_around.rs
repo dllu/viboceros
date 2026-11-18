@@ -39,9 +39,13 @@ impl Session {
 
     pub(super) fn snap_projection_plane(&self) -> Option<Frame3> {
         let input = self.input?;
-        (matches!(self.owner, Owner::Circle | Owner::Torus(TorusKind::Mesh))
-            && matches!(input.size_mode(), Mode::Radius | Mode::Diameter))
-        .then(|| input.frame())
+        let projects_snaps = match self.owner {
+            Owner::Circle => true,
+            Owner::Torus(kind) => kind.projects_base_snaps(),
+            _ => false,
+        };
+        (projects_snaps && matches!(input.size_mode(), Mode::Radius | Mode::Diameter))
+            .then(|| input.frame())
     }
 
     pub(super) fn cursor_curve(&self) -> Option<&viboceros_geometry::NurbsCurve> {

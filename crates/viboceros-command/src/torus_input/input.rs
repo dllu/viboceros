@@ -49,7 +49,7 @@ impl Input {
     }
 
     pub fn snap_projection_plane(&self) -> Option<Frame3> {
-        if self.kind != Kind::Mesh || self.circle.is_some() || self.pending.is_some() {
+        if !self.kind.projects_base_snaps() || self.circle.is_some() || self.pending.is_some() {
             return None;
         }
         self.getter.snap_projection_plane()
@@ -127,7 +127,7 @@ impl Input {
             .getter
             .prompt()
             .replace("Center of circle", "Center of torus");
-        if self.at_center_prompt() {
+        if self.kind == Kind::Mesh && self.at_center_prompt() {
             prompt.push_str(&format!(
                 "; VerticalFaces={} AroundFaces={}",
                 self.preferences.vertical_faces, self.preferences.around_faces
@@ -186,7 +186,7 @@ impl Input {
             None
         };
         if let Some(p) = count {
-            if !self.at_center_prompt() {
+            if self.kind == Kind::Solid || !self.at_center_prompt() {
                 return Err(CommandError::Usage(self.kind.usage()));
             }
             if let Some(v) = value {
@@ -223,6 +223,9 @@ impl Input {
             return Err(CommandError::Usage(self.kind.usage()));
         }
         if self.getter.option(name) {
+            if self.kind == Kind::Solid {
+                self.remember_base_mode();
+            }
             if let Some(v) = value {
                 self.number(crate::parse_finite_real(v)?)?;
             }
@@ -230,10 +233,7 @@ impl Input {
         }
         Ok(false)
     }
-    fn accepted_circle(&mut self, circle: CircleDefinition) {
-        if self.getter.remembers_radius() {
-            self.preferences.radius = circle.radius;
-        }
+    fn remember_base_mode(&mut self) {
         if self.getter.has_size_mode() {
             self.preferences.diameter = match self.getter.size_mode() {
                 CircleSizeMode::Radius => false,
@@ -241,6 +241,12 @@ impl Input {
                 _ => self.preferences.diameter,
             };
         }
+    }
+    fn accepted_circle(&mut self, circle: CircleDefinition) {
+        if self.getter.remembers_radius() {
+            self.preferences.radius = circle.radius;
+        }
+        self.remember_base_mode();
         self.circle = Some(circle);
     }
     pub fn accept_reference(&mut self, circle: CircleDefinition) -> Result<(), CommandError> {
@@ -264,7 +270,7 @@ impl Input {
         if let Some(circle) = crate::circle_fit_points::selected_circle(doc)? {
             let remembered_radius = self.preferences.radius;
             self.reference_circle(circle)?;
-            if self.kind == Kind::Mesh {
+            if self.kind != Kind::SubD {
                 self.preferences.radius = remembered_radius;
             }
             Ok(())
@@ -310,6 +316,9 @@ impl Input {
             self.accepted_tube(d);
         } else if let Some(c) = self.getter.number(value)? {
             self.accepted_circle(c);
+        } else if self.kind == Kind::Solid && self.getter.has_size_mode() {
+            // A numeric vertical size is remembered before its direction pick.
+            self.preferences.radius = self.getter.size_mode().radius(value);
         }
         Ok(())
     }

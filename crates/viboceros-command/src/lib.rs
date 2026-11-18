@@ -74,6 +74,7 @@ mod surface_edge_reference;
 pub mod surface_flow;
 pub mod surface_reference;
 pub mod to_subd;
+mod torus;
 pub mod torus_input;
 mod uv_inputs;
 mod uv_reference;
@@ -1036,6 +1037,7 @@ pub struct CommandRegistry {
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
+    torus_preferences: std::sync::Arc<remembered::Remembered<torus::Settings>>,
     mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
     direction_analysis: std::sync::Arc<direction::analysis::Session>,
@@ -1546,7 +1548,7 @@ impl CommandRegistry {
             .register(TubeCommand(registry.use_extrusions.clone()))
             .expect("unique built-in command");
         registry
-            .register(TorusCommand)
+            .register(torus::TorusCommand(registry.torus_preferences.clone()))
             .expect("unique built-in command");
         registry
             .register(ExtrudeCurveCommand {
@@ -5727,7 +5729,6 @@ const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
 const TUBE_USAGE: &str = "Tube center first-radius second-radius height | Tube center point-on-first-wall second-radius height | Tube center first-radius height WallThickness=positive-distance [Axis=x,y,z] [BothSides=Yes|No]";
-const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum AxialPrimitiveRadius {
@@ -7660,40 +7661,6 @@ impl Command for TruncatedPyramidCommand {
             if options.solid { "closed" } else { "open" },
             options.top_radius,
             options.height
-        ))
-    }
-}
-
-struct TorusCommand;
-
-impl Command for TorusCommand {
-    fn name(&self) -> &'static str {
-        "Torus"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let positionals = parse_radial_primitive_positionals(arguments, TORUS_USAGE)?;
-        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
-        let mut axis_seen = false;
-        for argument in &arguments[positionals.option_start..] {
-            let Some((name, value)) = argument.split_once('=') else {
-                return Err(CommandError::Usage(TORUS_USAGE));
-            };
-            if !option_name_eq(name, "Axis") || axis_seen {
-                return Err(CommandError::Usage(TORUS_USAGE));
-            }
-            axis = parse_unit_axis_option(value.trim_start_matches('_'), TORUS_USAGE)?;
-            axis_seen = true;
-        }
-
-        let tolerance = document.tolerance();
-        let (frame, major_radius) =
-            axial_primitive_frame(positionals.center, positionals.radius, axis, tolerance)?;
-        let minor_radius = positionals.value;
-        let surface = NurbsSurface::try_torus(frame, major_radius, minor_radius)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added NURBS torus {id} (major radius {major_radius:.6}, minor radius {minor_radius:.6})"
         ))
     }
 }

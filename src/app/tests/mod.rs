@@ -241,6 +241,7 @@ mod subd_volume;
 #[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;
+mod torus;
 mod transform_input;
 mod trim_split_input;
 mod type_selection;

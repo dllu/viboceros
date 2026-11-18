@@ -20,6 +20,18 @@ impl Session {
             self.preview.push(curve);
         }
     }
+    fn solid_isocurves(&mut self, definition: Definition) {
+        let Ok(surface) = definition.surface() else {
+            return;
+        };
+        let u_end = *surface.domain_u().end();
+        let v_end = *surface.domain_v().end();
+        for fraction in [0., 0.25, 0.5, 0.75] {
+            self.preview.extend(surface.isocurve_u(fraction * v_end));
+            self.preview.extend(surface.isocurve_v(fraction * u_end));
+        }
+    }
+
     pub(super) fn refresh(&mut self, point: Option<Point3>) {
         self.preview.clear();
         self.mesh_preview = None;
@@ -32,6 +44,10 @@ impl Session {
         if result.is_ok()
             && let Some(d) = copy.definition
         {
+            if self.input.kind == Kind::Solid {
+                self.solid_isocurves(d);
+                return;
+            }
             let p = self.input.preferences;
             if self.input.kind == Kind::Mesh
                 && p.vertical_faces * p.around_faces <= crate::viewport::MAX_DRAFT_MESH_FACES

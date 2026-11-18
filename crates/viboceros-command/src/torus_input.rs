@@ -1,27 +1,29 @@
-//! Shared base-circle and tube getters for subdivision and mesh tori.
+//! Shared base-circle and tube getters for solid, subdivision and mesh tori.
 use crate::circle_input::{CircleDefinition, CircleInput, CircleSizeMode};
 use crate::{CommandError, option_name_eq};
 use viboceros_document::Document;
 use viboceros_geometry::{
-    Circle3, Frame3, GeometryError, MAX_MESH_TORUS_FACES, MeshTorusOptions, Point3, Tolerance,
-    TriangleMesh,
+    Circle3, Frame3, GeometryError, MAX_MESH_TORUS_FACES, MeshTorusOptions, NurbsSurface, Point3,
+    Tolerance, TriangleMesh,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Kind {
+    Solid,
     SubD,
     Mesh,
 }
 
 impl Kind {
     pub fn from_name(name: &str) -> Option<Self> {
-        [Self::SubD, Self::Mesh]
+        [Self::Solid, Self::SubD, Self::Mesh]
             .into_iter()
             .find(|kind| option_name_eq(name, kind.name()))
     }
 
     pub const fn name(self) -> &'static str {
         match self {
+            Self::Solid => "Torus",
             Self::SubD => "SubDTorus",
             Self::Mesh => "MeshTorus",
         }
@@ -29,6 +31,7 @@ impl Kind {
 
     pub const fn fit_command(self) -> &'static str {
         match self {
+            Self::Solid => "Torus FitPoints",
             Self::SubD => "SubDTorus FitPoints",
             Self::Mesh => "MeshTorus FitPoints",
         }
@@ -36,6 +39,9 @@ impl Kind {
 
     pub const fn usage(self) -> &'static str {
         match self {
+            Self::Solid => {
+                "Torus circle-input [Radius|Diameter FixInnerDimension=Yes|No] tube-size-or-point"
+            }
             Self::SubD => {
                 "SubDTorus [AroundFaces=n VerticalFaces=n] circle-input [Radius|Diameter FixInnerDimension=Yes|No] tube-size-or-point"
             }
@@ -45,9 +51,13 @@ impl Kind {
         }
     }
 
+    pub const fn projects_base_snaps(self) -> bool {
+        matches!(self, Self::Solid | Self::Mesh)
+    }
+
     pub fn default_preferences(self) -> Preferences {
         match self {
-            Self::SubD => Preferences::default(),
+            Self::Solid | Self::SubD => Preferences::default(),
             Self::Mesh => Preferences {
                 around_faces: crate::DEFAULT_MESH_TORUS_FACE_COUNT,
                 vertical_faces: crate::DEFAULT_MESH_TORUS_FACE_COUNT,
@@ -88,6 +98,7 @@ impl Preferences {
 
     pub fn validate_for(self, kind: Kind) -> Result<(), CommandError> {
         let max_faces = match kind {
+            Kind::Solid => return Ok(()),
             Kind::SubD => 100_000,
             Kind::Mesh => MAX_MESH_TORUS_FACES,
         };
@@ -118,6 +129,10 @@ impl Definition {
                 0.
             }
     }
+    pub fn surface(self) -> Result<NurbsSurface, GeometryError> {
+        NurbsSurface::try_torus(self.circle.frame, self.major_radius(), self.tube_radius)
+    }
+
     pub fn mesh(self, p: Preferences, tolerance: Tolerance) -> Result<TriangleMesh, GeometryError> {
         TriangleMesh::try_torus_grid(
             self.circle.frame,
