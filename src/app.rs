@@ -1030,9 +1030,6 @@ impl VibocerosApp {
         if self.continue_rail_revolve_input(&input) {
             return;
         }
-        if self.continue_curve_offset(&input) {
-            return;
-        }
         if self.continue_contour_input(&input) {
             return;
         }
@@ -1188,6 +1185,7 @@ impl VibocerosApp {
             || self.start_subd_sphere(&input)
             || self.start_solid_axial(&input)
             || self.start_subd_axial(&input)
+            || self.start_curve_offset(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
         {

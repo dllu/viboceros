@@ -2,11 +2,16 @@
 use super::*;
 use std::sync::{Arc, mpsc};
 use viboceros_command::offset_curve::{self as solver, Draft, Kind, OptionName, Settings, Target};
-use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Curve3, NurbsCurve};
 
+mod sources;
+use sources::{Input, Source};
+
 pub(super) struct Session {
-    sources: Vec<(ObjectId, GeometrySnapshot)>,
+    sources: Vec<Source>,
+    owners: Vec<solver::SourceOwner>,
+    portions: Vec<NurbsCurve>,
+    selecting: Option<Vec<Input>>,
     curves: Arc<Vec<Curve3>>,
     postselected: bool,
     kind: Kind,
@@ -20,8 +25,12 @@ pub(super) struct Session {
 }
 
 impl Session {
+    pub(super) fn portion_guides(&self) -> &[NurbsCurve] {
+        &self.portions
+    }
+
     pub(super) fn preview(&self, tolerance: Tolerance) -> Option<crate::viewport::OffsetDraft<'_>> {
-        self.menu.is_none().then_some(crate::viewport::OffsetDraft {
+        (self.selecting.is_none() && self.menu.is_none()).then_some(crate::viewport::OffsetDraft {
             kind: self.kind,
             settings: self.settings,
             normal: self.plane.z_axis(),
@@ -70,14 +79,34 @@ impl Session {
     }
 
     fn current(&self, document: &viboceros_document::Document) -> bool {
-        let mut selected = document
+        if self.selecting.is_some() {
+            return true;
+        }
+        let mut whole = self.sources.iter().filter(|source| source.whole);
+        let portions = self
+            .sources
+            .iter()
+            .filter(|s| !s.whole && s.edge.is_none())
+            .map(|s| s.object)
+            .collect::<std::collections::BTreeSet<_>>();
+        for object in document
             .selected_objects()
-            .filter(|object| object.geometry().curve_ref().is_some());
-        self.sources.iter().all(|(id, storage)| {
-            selected.next().is_some_and(|object| {
-                object.id() == *id && storage.shares_storage_with(object.geometry_snapshot())
-            })
-        }) && selected.next().is_none()
+            .filter(|o| o.geometry().curve_ref().is_some())
+        {
+            if portions.contains(&object.id()) {
+                continue;
+            }
+            if !whole.next().is_some_and(|expected| {
+                object.id() == expected.object
+                    && expected
+                        .snapshot
+                        .shares_storage_with(object.geometry_snapshot())
+            }) {
+                return false;
+            }
+        }
+        whole.next().is_none()
+            && sources::all_current(document, self.sources.iter().filter(|s| !s.whole))
     }
 
     fn prompt(&self) -> String {
@@ -88,70 +117,12 @@ impl Session {
             Some(OptionName::Distance) => format!("Offset distance <{}>", self.settings.distance),
             Some(OptionName::Count) => format!("Offset count <{}>", self.settings.count),
             Some(option) => option.hint().into(),
-            None => self.settings.prompt(self.kind),
+            None => self.settings.prompt(self.kind, self.selecting.is_some()),
         }
     }
 }
 
 impl VibocerosApp {
-    pub(super) fn start_curve_offset(&mut self, input: &str, postselected: bool) -> bool {
-        let mut words = input.split_whitespace();
-        let Some(kind) = words.next().and_then(Kind::from_name) else {
-            return false;
-        };
-        let words = words.collect::<Vec<_>>();
-        if solver::is_positional(kind, &words) {
-            return false;
-        }
-        let Ok((settings, menu)) = solver::parse_settings(
-            kind,
-            &words,
-            self.commands.offset_settings(kind),
-            self.document.units(),
-        ) else {
-            return false;
-        };
-        let sources = self
-            .document
-            .selected_objects()
-            .filter_map(|object| {
-                let curve = object.geometry().curve_ref()?.to_owned();
-                Some(((object.id(), object.geometry_snapshot().clone()), curve))
-            })
-            .collect::<Vec<_>>();
-        if sources.is_empty() {
-            return false;
-        }
-        let (sources, curves): (Vec<_>, Vec<_>) = sources.into_iter().unzip();
-        let analytic = curves.len() <= 8
-            && curves.iter().all(|curve| {
-                matches!(curve, Curve3::Line(_) | Curve3::Circle(_) | Curve3::Arc(_),)
-            });
-        let plane = self.viewports[self.active_viewport].construction_plane();
-        self.cancel_interactive_command(false);
-        if postselected {
-            self.document
-                .mark_object_selection_temporary(sources.iter().map(|(id, _)| *id));
-        }
-        self.curve_offset_session = Some(Session {
-            sources,
-            curves: Arc::new(curves),
-            postselected,
-            kind,
-            settings,
-            plane,
-            menu,
-            distance_start: None,
-            analytic,
-            rendered: None,
-            worker: None,
-        });
-        self.drafting_plane = Some(plane);
-        self.push_log(format!("> {input}"));
-        self.curve_offset_prompt();
-        true
-    }
-
     pub(super) fn release_curve_offset(&mut self) {
         if self
             .curve_offset_session
@@ -185,7 +156,9 @@ impl VibocerosApp {
         };
         self.commands
             .remember_offset_settings(session.kind, session.settings);
-        self.active_command = Some(InteractiveCommand::CurveOffset {
+        self.active_command = (session.selecting.is_none()
+            || session.menu == Some(OptionName::Distance))
+        .then_some(InteractiveCommand::CurveOffset {
             kind: session.kind,
             anchor: session.distance_start,
         });
@@ -194,6 +167,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn continue_curve_offset(&mut self, text: &str) -> bool {
+        if self
+            .subcurve_prompt
+            .as_ref()
+            .is_some_and(|p| p.offset_temporary)
+        {
+            return false;
+        }
         let Some(session) = &mut self.curve_offset_session else {
             return false;
         };
@@ -227,6 +207,10 @@ impl VibocerosApp {
             self.curve_offset_prompt();
             return true;
         }
+        if session.selecting.is_some() && self.continue_curve_offset_sources(text, enter) {
+            return true;
+        }
+        let session = self.curve_offset_session.as_mut().unwrap();
         if enter {
             if session.settings.both_sides && !session.settings.through {
                 self.finish_curve_offset(Target::BothSides);
@@ -274,6 +258,13 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_curve_offset_point(&mut self, point: Point3) -> Option<bool> {
+        if self
+            .subcurve_prompt
+            .as_ref()
+            .is_some_and(|p| p.offset_temporary)
+        {
+            return None;
+        }
         let session = self.curve_offset_session.as_mut()?;
         if let Some(option) = session.menu {
             if option != OptionName::Distance {
@@ -297,6 +288,9 @@ impl VibocerosApp {
             self.last_point = Some(point);
             self.curve_offset_prompt();
             return Some(true);
+        }
+        if session.selecting.is_some() {
+            return None;
         }
         let target = if session.settings.through {
             Target::Through(point)
@@ -325,16 +319,25 @@ impl VibocerosApp {
             target,
         };
         let result = draft.solve(&session.curves).and_then(|plan| {
-            let ids = session
-                .sources
-                .iter()
-                .map(|(id, _)| *id)
-                .collect::<Vec<_>>();
-            self.commands
-                .commit_offset_plan(&mut self.document, draft, &ids, plan)
+            self.commands.commit_offset_plan(
+                &mut self.document,
+                draft,
+                &session.owners,
+                session.sources.iter().map(|source| source.object),
+                plan,
+            )
         });
         match result {
             Ok(count) => {
+                let components = session
+                    .sources
+                    .iter()
+                    .filter(|s| s.edge.is_some())
+                    .map(|s| s.object)
+                    .collect::<Vec<_>>();
+                if !components.is_empty() {
+                    self.component_selection.release_objects(&components);
+                }
                 self.cancel_interactive_command(false);
                 self.command_input.clear();
                 self.push_log(format!("Created {count} offset curve(s)"));

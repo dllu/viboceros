@@ -697,6 +697,7 @@ pub struct ViewportOutput {
     pub zoom_target_result: Option<Result<bool, &'static str>>,
     pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
+    pub edge_click_modifiers: egui::Modifiers,
     /// Original edge locations at the click pixel, retained through ambiguity.
     pub edge_contacts: Vec<(EdgePick, Point3)>,
     pub mesh_boundary_edge_click: Option<Vec<usize>>,
@@ -3507,6 +3508,7 @@ impl Viewport {
                         .unwrap_or_default()
                 }),
             edge_click,
+            edge_click_modifiers: modifiers,
             edge_contacts,
             face_click,
             face_hit_point,

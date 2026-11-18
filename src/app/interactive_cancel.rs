@@ -67,7 +67,11 @@ impl VibocerosApp {
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
-        if self.subcurve_prompt.take().is_some() {
+        if self
+            .subcurve_prompt
+            .take()
+            .is_some_and(|p| !p.offset_temporary)
+        {
             self.document.clear_selection();
         }
         self.cancel_surface_array();

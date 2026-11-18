@@ -2,10 +2,19 @@
 
 [Command reference](README.md) · [Project overview](../../README.md)
 
-Start `Offset` and pick a source curve, then move the pointer to preview
-either side. A click or typed coordinate commits the offset. `OffsetMultiple`
-lets you pick several curves before Enter and previews the nested-region
-direction. The first interactive run starts at one model unit and one copy.
+Start `Offset` and pick a curve or surface edge. Move the pointer to
+preview either side, then click or type a coordinate to commit. Options can
+be edited while selecting sources and while picking the side. `OffsetMultiple`
+accepts several inputs before Enter and previews nested-region offsets at
+successive distances. The first interactive run starts at one model unit and
+one copy.
+
+Connected curves or edges preselected for `Offset` form a single temporary
+chain. Disconnected preselection returns to the source prompt. Type
+`SubCrv` there to choose a portion from a curve or edge. Pick a start and end,
+or enter a length and confirm its direction. The viewport previews the
+portion before accepting it. Both commands keep the whole source of a
+temporary portion.
 
 - Type a new distance or use `Distance` to measure between two snapped points.
   `ThroughPoint` sets the distance from a picked point. `BothSides` previews
@@ -15,8 +24,9 @@ direction. The first interactive run starts at one model unit and one copy.
   `Tolerance=0` uses the document default. `InCPlane` uses the current
   construction plane's normal, including for spatial fixed-plane fits.
 - `Cap=Flat` joins open curves with line segments. `Cap=Round` uses tangent
-  arcs. A one-sided cap joins the offset to its source and replaces the source.
-  Two-sided caps use both offsets and keep the source.
+  arcs. A one-sided cap replaces a single whole curve on its original
+  layer. Caps on edges, portions, or joined chains keep their inputs, as do
+  two-sided caps.
 - The commands remember their distances and persistent options independently.
   BothSides, ThroughPoint, and Loose apply to one run. The shaded model and Undo
   history are updated on acceptance. Esc ends the current preview.
@@ -105,12 +115,13 @@ layer. Both choices create fresh object attributes. The command stages every
 result before changing the document, so an unsupported or degenerate selected
 curve leaves the document unchanged. Direct calls support the positional
 options above. The point getter also supports the interactive modes at the
-top of this page. Offsetting surface-edge components and picking a SubCrv
-are still pending. Fixed-plane fitting requires a regular projected tangent
-and continuous offset spans.
+top of this page. Temporary `SubCrv` outputs use the current layer, matching
+the captured Rhino behavior. Fixed-plane fitting requires a regular projected
+tangent and continuous offset spans.
 
-The staged Rhino 8 replay fixture checks curve bounds, length, closure,
-selection, and Undo/Redo across 28 cases. See the [captured curves](../../src/app/tests/curve_offset/rhino.json).
+The staged Rhino 8 replays check curve bounds, length, closure, selection, and
+Undo/Redo across 52 cases. See the [point getter](../../src/app/tests/curve_offset/rhino.json)
+and [source selection](../../src/app/tests/curve_offset/rhino_sources.json) captures.
 
 ## Ellipse oracle probe
 

@@ -600,6 +600,16 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.picking_curve_offset_edges() {
+            self.pick_curve_offset_edges(
+                picks.into_iter().map(|pick| crate::viewport::EdgePick {
+                    object: pick.object,
+                    edge: pick.index,
+                }),
+                action,
+            );
+            return;
+        }
         if self.picking_subcurve_edge() {
             if let [pick] = picks.as_slice() {
                 self.pick_subcurve_edge(crate::viewport::EdgePick {

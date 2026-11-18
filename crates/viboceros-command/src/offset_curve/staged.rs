@@ -24,7 +24,6 @@ pub struct Draft {
 pub struct Plan {
     pub(super) curves: Vec<(usize, Curve3)>,
     consumed: Vec<usize>,
-    capped: BTreeSet<usize>,
     pub(super) distance: Option<Real>,
 }
 
@@ -69,7 +68,6 @@ impl Draft {
             return Ok(Plan {
                 curves: multiple::solve(sources, options, self.normal, self.tolerance, true)?,
                 consumed: Vec::new(),
-                capped: BTreeSet::new(),
                 distance: None,
             });
         }
@@ -77,7 +75,6 @@ impl Draft {
         let mut plan = Plan {
             curves: Vec::new(),
             consumed: Vec::new(),
-            capped: BTreeSet::new(),
             distance: None,
         };
         for (index, source) in sources.iter().enumerate() {
@@ -89,7 +86,6 @@ impl Draft {
                 if consumes_source {
                     plan.consumed.push(index);
                 }
-                plan.capped.insert(index);
                 plan.curves.push((index, capped));
             } else {
                 plan.curves
@@ -367,6 +363,15 @@ pub(super) fn selection_prompt(
     }))
 }
 
+/// A prepared input's document owner and whether its whole curve can be
+/// replaced by a one-sided cap. Edge and temporary portion owners stay intact.
+#[derive(Clone, Copy, Debug)]
+pub struct SourceOwner {
+    pub object: ObjectId,
+    pub replaceable_curve: bool,
+    pub inherit_layer: bool,
+}
+
 impl CommandRegistry {
     pub fn offset_settings(&self, kind: Kind) -> Settings {
         self.offset_memory(kind).get()
@@ -387,25 +392,53 @@ impl CommandRegistry {
         &self,
         document: &mut Document,
         draft: Draft,
-        sources: &[ObjectId],
+        sources: &[SourceOwner],
+        picked: impl IntoIterator<Item = ObjectId>,
         plan: Plan,
     ) -> Result<usize, CommandError> {
+        let lookup = (sources.len() > 16).then(|| {
+            let wanted = sources
+                .iter()
+                .map(|source| source.object)
+                .collect::<BTreeSet<_>>();
+            document
+                .objects()
+                .filter(|object| wanted.contains(&object.id()))
+                .map(|object| (object.id(), object.attributes().layer_id()))
+                .collect::<std::collections::BTreeMap<_, _>>()
+        });
         let layers = sources
             .iter()
-            .map(|&id| {
-                let object = document
-                    .object(id)
-                    .ok_or(viboceros_document::DocumentError::ObjectNotFound(id))?;
-                Ok(object.attributes().layer_id())
+            .map(|source| {
+                let id = source.object;
+                lookup
+                    .as_ref()
+                    .map_or_else(
+                        || {
+                            document
+                                .object(id)
+                                .map(|object| object.attributes().layer_id())
+                        },
+                        |lookup| lookup.get(&id).copied(),
+                    )
+                    .ok_or(viboceros_document::DocumentError::ObjectNotFound(id))
             })
-            .collect::<Result<Vec<_>, CommandError>>()?;
+            .collect::<Result<Vec<_>, _>>()?;
         let current = document.current_layer_id();
         let len = plan.curves.len();
         run_command_transaction(document, draft.kind.name(), |document| {
-            document.release_command_selection_on_history_replay(sources.iter().copied())?;
-            let consumes = plan.consumed.into_iter().collect::<BTreeSet<_>>();
+            document.release_command_selection_on_history_replay(
+                picked.into_iter().collect::<BTreeSet<_>>(),
+            )?;
+            let replaces = plan
+                .consumed
+                .into_iter()
+                .filter(|&index| sources[index].replaceable_curve)
+                .collect::<BTreeSet<_>>();
             for (index, curve) in plan.curves {
-                let layer = if draft.settings.input_layer || plan.capped.contains(&index) {
+                let layer = if (draft.settings.input_layer && sources[index].inherit_layer)
+                    || replaces.contains(&index)
+                {
                     layers[index]
                 } else {
                     current
@@ -415,8 +448,12 @@ impl CommandRegistry {
                     ObjectAttributes::on_layer(layer),
                 )?;
             }
-            for index in consumes {
-                document.delete_object(sources[index])?;
+            for source in replaces
+                .into_iter()
+                .map(|index| sources[index].object)
+                .collect::<BTreeSet<_>>()
+            {
+                document.delete_object(source)?;
             }
             document.clear_selection();
             Ok(())

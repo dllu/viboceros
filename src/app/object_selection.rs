@@ -565,6 +565,9 @@ impl VibocerosApp {
                     .then_some(ObjectSelectionFilter::Curves)
             };
         }
+        if self.curve_offset_distance_input() {
+            return None;
+        }
         if self.surface_offset_session.is_some() {
             return if self.picking_surface_offset_face() {
                 Some(ObjectSelectionFilter::SurfaceComponents)
@@ -1107,8 +1110,6 @@ impl VibocerosApp {
                     | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
-                    | "Offset"
-                    | "OffsetMultiple"
                     | "Ribbon"
                     | "OffsetSubD"
                     | "Rebuild"
@@ -1216,6 +1217,17 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_curve_offset(input) {
+            return true;
+        }
+        if self
+            .subcurve_prompt
+            .as_ref()
+            .is_some_and(|p| p.offset_temporary)
+            || self.curve_offset_distance_input()
+        {
+            return false;
+        }
         if self.continue_merge_surface_options(input) {
             return true;
         }
@@ -1589,13 +1601,6 @@ impl VibocerosApp {
                 self.object_prompt = None;
                 self.try_start_interactive_command(&command);
                 return true;
-            }
-            if matches!(pending.description.command, "Offset" | "OffsetMultiple") {
-                self.object_prompt = None;
-                if self.start_curve_offset(&command, pending.postselected) {
-                    return true;
-                }
-                self.object_prompt = Some(pending.clone());
             }
             if pending.description.command == "OffsetSrf" {
                 self.object_prompt = None;
@@ -2337,6 +2342,7 @@ impl VibocerosApp {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+        self.record_curve_offset_whole_sources();
         if self.picking_nurbs_edges() {
             let whole = self.document.selected_object_ids().collect::<Vec<_>>();
             self.component_selection.release_objects(&whole);

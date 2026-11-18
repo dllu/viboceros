@@ -384,7 +384,11 @@ impl VibocerosApp {
                         })
                         .collect(),
                     preselection: false,
-                    modifiers: egui::Modifiers::NONE,
+                    modifiers: if self.picking_curve_offset_edges() {
+                        output.edge_click_modifiers
+                    } else {
+                        egui::Modifiers::NONE
+                    },
                 });
             } else if matches!(self.edge_prompt, Some(edge_commands::EdgePrompt::Match(_))) {
                 self.accept_match_contacts(output.edge_contacts);
@@ -396,7 +400,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_surface_offset_parameter(parameter)
+            if self.accept_offset_subcurve_parameter(parameter)
+                || self.accept_surface_offset_parameter(parameter)
                 || self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)
                 || self.accept_ellipse_parameter(parameter)

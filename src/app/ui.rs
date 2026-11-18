@@ -202,6 +202,13 @@ impl VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        selection_preview_ids.extend(
+            self.subcurve_prompt
+                .as_ref()
+                .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+                .filter(|reference| reference.source().1.is_none())
+                .map(|reference| reference.object_id()),
+        );
         selection_preview_ids.extend(self.surface_offset_selected_points());
         selection_preview_ids.extend(
             self.refinement_prompt
@@ -534,6 +541,13 @@ impl VibocerosApp {
                 .as_ref()
                 .and_then(orient_surface::Session::sphere_cursor_curve)
         });
+        let edge_curve = edge_curve.or_else(|| {
+            let reference = self.subcurve_prompt.as_ref()?.offset_reference()?;
+            (self.plane_prompt.is_none()
+                && self.point_filter.is_none()
+                && self.point_constraint.is_none())
+            .then_some(reference.curve())
+        });
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
         let edge_distance_parameters =
@@ -604,6 +618,20 @@ impl VibocerosApp {
         }
         let raw_mesh_face_highlights = self.component_selection.raw_face_picks(&self.document);
         let mut component_highlights = self.component_selection.highlights(&self.document);
+        component_highlights.extend(self.curve_offset_edge_highlights());
+        if let Some(reference) = self
+            .subcurve_prompt
+            .as_ref()
+            .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+        {
+            if let Some(edge) = reference.source().1 {
+                component_highlights.push(crate::viewport::ComponentPick {
+                    object: reference.object_id(),
+                    index: edge,
+                    kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                });
+            }
+        }
         if let Some(p) = &self.fillet_surface_prompt {
             component_highlights.extend(p.highlights());
         }
@@ -1174,6 +1202,15 @@ impl VibocerosApp {
         let selecting_perpendicular = model_input_active
             && (self.picking_curve_line()
                 || (self.picking_arc_blend() || self.picking_blend_curve()));
+        let isocurve_guides = self
+            .curve_offset_session
+            .as_ref()
+            .map(curve_offset::Session::portion_guides)
+            .unwrap_or_else(|| {
+                self.refinement_prompt
+                    .as_ref()
+                    .map_or(&[], refinement::Prompt::guides)
+            });
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1325,10 +1362,7 @@ impl VibocerosApp {
                             selection_preview_ids: &selection_preview_ids,
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
-                            isocurve_guides: self
-                                .refinement_prompt
-                                .as_ref()
-                                .map_or(&[], refinement::Prompt::guides),
+                            isocurve_guides,
                             select_uv_rows: self.select_uv_prompt.as_ref().and_then(|p| p.picker()),
                             control_removal: self
                                 .refinement_prompt

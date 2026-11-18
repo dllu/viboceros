@@ -78,8 +78,15 @@ impl Settings {
         }
     }
 
-    pub fn prompt(self, kind: Kind) -> String {
-        let point = if self.through {
+    pub fn prompt(self, kind: Kind, selecting: bool) -> String {
+        let point = if selecting {
+            let hint = if kind == Kind::Offset {
+                "Select a curve or surface edge"
+            } else {
+                "Select curves or surface edges. Enter continues"
+            };
+            format!("{hint} (Distance={})", self.distance)
+        } else if self.through {
             "Through point".into()
         } else {
             format!("Side to offset (Distance={})", self.distance)
@@ -115,6 +122,9 @@ impl Settings {
         } else {
             " OutputLayer=Current"
         });
+        if selecting {
+            options.push_str(" SubCrv");
+        }
         format!("{point}. {options}")
     }
 
