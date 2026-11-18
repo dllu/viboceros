@@ -348,6 +348,9 @@ impl PendingObjectCommand {
             ObjectPromptPhase::RebuildValue(_) | ObjectPromptPhase::MergeSurfaceValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
+            ObjectPromptPhase::Selecting if self.description.command == "Distribute" => {
+                "Select at least three objects, groups, or grips, then press Enter."
+            }
             ObjectPromptPhase::Selecting if self.description.command == "OffsetMesh" => {
                 "OffsetMesh select meshes, then press Enter".into()
             }

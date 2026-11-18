@@ -34,7 +34,7 @@ impl Geometry {
         }
         self.with_grip_map(
             indices,
-            |point| transform.transform_point(point),
+            |_, point| transform.transform_point(point),
             tolerance,
             mode,
             transform == AffineTransform3::identity(),
@@ -52,7 +52,7 @@ impl Geometry {
     ) -> Result<Self, GeometryError> {
         let edited = self.with_grip_map(
             indices,
-            |point| morph.morph_point(point),
+            |_, point| morph.morph_point(point),
             tolerance,
             mode,
             false,
@@ -64,10 +64,27 @@ impl Geometry {
         }
     }
 
+    /// Set individual logical grip destinations, including coincident grips
+    /// that have different indices. Preserve the original grip representation.
+    pub fn with_positioned_grips(
+        &self,
+        targets: &BTreeMap<usize, Point3>,
+        tolerance: Tolerance,
+        mode: GripMode,
+    ) -> Result<Self, GeometryError> {
+        self.with_grip_map(
+            &targets.keys().copied().collect(),
+            |index, _| Ok(targets[&index]),
+            tolerance,
+            mode,
+            false,
+        )
+    }
+
     fn with_grip_map(
         &self,
         indices: &BTreeSet<usize>,
-        map_point: impl Fn(Point3) -> Result<Point3, GeometryError>,
+        map_point: impl Fn(usize, Point3) -> Result<Point3, GeometryError>,
         tolerance: Tolerance,
         mode: GripMode,
         identity: bool,
@@ -86,7 +103,7 @@ impl Geometry {
                 }
                 let targets = indices
                     .iter()
-                    .map(|&i| map_point(points[i]).map(|p| (i, p)))
+                    .map(|&i| map_point(i, points[i]).map(|p| (i, p)))
                     .collect::<Result<Vec<_>, _>>()?;
                 return subd
                     .try_with_selected_limit_points(&targets, tolerance)
@@ -94,7 +111,7 @@ impl Geometry {
             }
             if let Self::PolyCurve(curve) = self {
                 return curve
-                    .with_mapped_edit_grips(indices, map_point, tolerance)
+                    .with_indexed_edit_grips(indices, map_point, tolerance)
                     .map(Self::PolyCurve);
             }
             let curve = self
@@ -116,7 +133,7 @@ impl Geometry {
                 return Ok(self.clone());
             }
             for &index in indices {
-                points[index] = map_point(points[index])?;
+                points[index] = map_point(index, points[index])?;
             }
             // The closed end station shares the first displayed grip. The
             // interpolation system still needs both endpoint equations.
@@ -146,7 +163,7 @@ impl Geometry {
                 .enumerate()
                 .map(|(i, &p)| {
                     if indices.contains(&i) {
-                        map_point(p)
+                        map_point(i, p)
                     } else {
                         Ok(p)
                     }
@@ -171,7 +188,7 @@ impl Geometry {
                 tolerance,
             )?),
             Self::NurbsCurve(curve) => {
-                let result = curve.with_mapped_grips(indices, &map_point)?;
+                let result = curve.with_indexed_grips(indices, &map_point)?;
                 if result != *curve
                     && result.degree() == 1
                     && !result.is_rational()
@@ -189,21 +206,21 @@ impl Geometry {
                 }
             }
             Self::PolyCurve(curve) => {
-                Self::PolyCurve(curve.with_mapped_grips(indices, &map_point)?)
+                Self::PolyCurve(curve.with_indexed_grips(indices, &map_point)?)
             }
             Self::Circle(_) | Self::Arc(_) | Self::Ellipse(_) => Self::NurbsCurve(
                 self.curve_ref()
                     .unwrap()
                     .to_nurbs()?
-                    .with_mapped_grips(indices, &map_point)?,
+                    .with_indexed_grips(indices, &map_point)?,
             ),
             Self::NurbsSurface(surface) => {
-                Self::NurbsSurface(surface.with_mapped_grips(indices, &map_point)?)
+                Self::NurbsSurface(surface.with_indexed_grips(indices, &map_point)?)
             }
             Self::Brep(brep) if brep.faces().len() == 1 => {
                 let face = &brep.faces()[0];
                 Self::Brep(brep.try_with_edited_single_surface(
-                    face.surface().with_mapped_grips(indices, &map_point)?,
+                    face.surface().with_indexed_grips(indices, &map_point)?,
                     tolerance,
                 )?)
             }

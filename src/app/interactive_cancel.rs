@@ -29,6 +29,7 @@ impl VibocerosApp {
         if self.extrude_subd_session.take().is_some() {
             self.component_selection.clear();
         }
+        self.distribute_session = None;
         self.release_offset_mesh();
         self.offset_subd_session = None;
         if self.ribbon_session.take().is_some_and(|s| s.postselected) {

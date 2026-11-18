@@ -13,6 +13,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_curve_chamfer_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_distribute_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_offset_mesh_point(point) {
             return accepted;
         }
@@ -1438,44 +1441,7 @@ impl VibocerosApp {
                     if fill { "Fill" } else { "UnitCell" }
                 ));
             }
-            InteractiveCommand::Distribute {
-                settings,
-                start: None,
-            } => {
-                let command = InteractiveCommand::Distribute {
-                    settings,
-                    start: Some(point),
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "First direction point: {}",
-                    format_model_point(point)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::Distribute {
-                settings,
-                start: Some(start),
-            } => {
-                if !start
-                    .vector_to(point)
-                    .and_then(|v| v.length())
-                    .is_ok_and(|length| length > self.document.tolerance().absolute())
-                {
-                    self.push_log("Error: Distribute direction points must be distinct".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Distribute Direction {} {} Mode={:?} Spacing={}",
-                    format_model_point(start),
-                    format_model_point(point),
-                    settings.mode,
-                    settings
-                        .spacing
-                        .map_or_else(|| "Automatic".to_owned(), |d| d.to_string())
-                ));
-            }
+            InteractiveCommand::Distribute => return false,
             InteractiveCommand::ArrayLinear {
                 item_count,
                 start: None,

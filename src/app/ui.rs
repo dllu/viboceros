@@ -60,6 +60,7 @@ impl VibocerosApp {
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
+        self.validate_distribute();
         self.validate_offset_mesh();
         self.validate_offset_surface();
         self.validate_curve_boolean();
@@ -1221,6 +1222,7 @@ impl VibocerosApp {
                     .as_ref()
                     .map_or(&[], refinement::Prompt::guides)
             });
+        let distribution_source_pick = self.selecting_distribution_sources();
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1260,6 +1262,12 @@ impl VibocerosApp {
                                 .offset_mesh_session
                                 .as_ref()
                                 .and_then(|s| s.preview()),
+                            distribution_preview: self
+                                .distribute_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .and_then(distribute::Session::layout_preview),
+                            distribution_source_pick,
                             offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
                             inset_edges: self.inset_session.as_ref().map(|s| s.edges()),
                             extrude_subd_edges: self
@@ -1682,6 +1690,12 @@ impl VibocerosApp {
                     .drafting_hover
                     .map(|point| (point, viewport, output.drafting_hover_is_free))
             });
+        let distribution_hover = viewport_outputs
+            .iter()
+            .find_map(|output| output.drafting_resolved_hover);
+        if self.update_distribute_preview(distribution_hover) {
+            ui.ctx().request_repaint();
+        }
         if self.update_offset_mesh_preview(drafting_hover) {
             ui.ctx().request_repaint();
         }

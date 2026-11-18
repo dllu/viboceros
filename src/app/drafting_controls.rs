@@ -18,6 +18,10 @@ impl VibocerosApp {
                 && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
                 && self
+                    .distribute_session
+                    .as_ref()
+                    .is_none_or(distribute::Session::wants_point)
+                && self
                     .offset_mesh_session
                     .as_ref()
                     .is_none_or(offset_mesh::Session::wants_point)
@@ -153,6 +157,7 @@ impl VibocerosApp {
                 self.arc_length_session
                     .and_then(|s| s.first)
                     .or_else(|| self.maelstrom_circle_anchor())
+                    .or_else(|| self.distribute_session.as_ref()?.anchor())
                     .or_else(|| self.offset_mesh_session.as_ref()?.anchor())
                     .or_else(|| self.polyline_session.as_ref()?.input.anchor())
                     .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))

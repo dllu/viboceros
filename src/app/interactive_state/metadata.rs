@@ -153,7 +153,7 @@ impl InteractiveCommand {
             Self::SetPoint { .. } => "SetPt",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
-            Self::Distribute { .. } => "Distribute",
+            Self::Distribute => "Distribute",
             Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
@@ -339,7 +339,7 @@ impl InteractiveCommand {
             | Self::SetPoint { .. }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
-            | Self::Distribute { start: None, .. }
+            | Self::Distribute
             | Self::Array { start: None, .. }
             | Self::ArrayPolar { .. }
             | Self::Scale { center: None, .. }
@@ -396,7 +396,6 @@ impl InteractiveCommand {
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
-            | Self::Distribute { start, .. }
             | Self::Array { start, .. }
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }

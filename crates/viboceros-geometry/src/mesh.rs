@@ -2597,6 +2597,16 @@ impl TriangleMesh {
         self.topology_data().topological_points
     }
 
+    /// Raw vertices belonging to each exact-location topology vertex.
+    pub fn topology_vertex_raw_indices(&self) -> Vec<Vec<usize>> {
+        let topology = self.topology_data();
+        let mut result = vec![Vec::new(); topology.topological_vertex_count];
+        for (raw, vertex) in topology.topological_vertices.into_iter().enumerate() {
+            result[vertex].push(raw);
+        }
+        result
+    }
+
     /// Exact-location-welded face-boundary edges, with no tessellation diagonals.
     /// Unlike constructing new lines, querying existing edges does not apply a
     /// document length tolerance or discard short but nonzero mesh edges.

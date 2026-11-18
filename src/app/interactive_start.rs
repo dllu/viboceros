@@ -11,6 +11,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
+        if self.start_distribute(input, picked_sources.is_some()) {
+            return true;
+        }
         if self.start_curve_chamfer(input) || self.start_curve_fillet(input) {
             return true;
         }
@@ -1080,22 +1083,6 @@ impl VibocerosApp {
                 z_distance,
                 start: None,
             }
-        } else if normalized == "distribute" {
-            let options = if arguments
-                .first()
-                .is_some_and(|s| s.trim_start_matches('_').eq_ignore_ascii_case("Direction"))
-            {
-                &arguments[1..]
-            } else {
-                arguments.as_slice()
-            };
-            let Ok(settings) = DistributionSettings::parse(options) else {
-                return false;
-            };
-            InteractiveCommand::Distribute {
-                settings,
-                start: None,
-            }
         } else if normalized == "arraylinear" {
             let [item_count] = arguments.as_slice() else {
                 return false;
@@ -1524,7 +1511,6 @@ impl VibocerosApp {
                 | InteractiveCommand::Copy { .. }
                 | InteractiveCommand::Array { .. }
                 | InteractiveCommand::ArrayLinear { .. }
-                | InteractiveCommand::Distribute { .. }
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::ScaleByPlane(_)
@@ -1582,15 +1568,6 @@ impl VibocerosApp {
         {
             self.push_log("Error: no objects are selected".to_owned());
             return true;
-        }
-        if matches!(command, InteractiveCommand::Distribute { .. }) {
-            let count = viboceros_command::distribution_unit_count(&self.document);
-            if count < 3 {
-                self.push_log(format!(
-                    "Error: Distribute requires at least three objects or groups; found {count}"
-                ));
-                return true;
-            }
         }
         if transform_prompt::supports(command) {
             if !self.start_transform_session(

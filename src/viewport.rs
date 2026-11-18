@@ -31,6 +31,7 @@ mod curve_offset;
 pub(crate) use curve_offset::OffsetDraft;
 mod cutting;
 pub(crate) mod direction;
+mod distribution;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -379,6 +380,8 @@ pub struct ViewportInput<'a> {
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
+    pub distribution_preview: Option<&'a viboceros_command::distribute::Layout>,
+    pub distribution_source_pick: bool,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -552,6 +555,8 @@ impl Default for ViewportInput<'_> {
             insert_edges: None,
             insert_mesh: None,
             offset_mesh_preview: None,
+            distribution_preview: None,
+            distribution_source_pick: false,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -720,6 +725,7 @@ pub struct ViewportOutput {
     /// Resolved hovered drafting location, without accepting a point or editing
     /// the model. Commands can use it for cursor-dependent options.
     pub drafting_hover: Option<Point3>,
+    pub drafting_resolved_hover: Option<Point3>,
     pub drafting_hover_is_free: bool,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
@@ -1487,8 +1493,16 @@ impl Viewport {
         let previous_maelstrom = input
             .maelstrom_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let distribution = input
+            .distribution_preview
+            .map(|layout| self.distribution_objects(document, layout));
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                distribution
+                    .as_ref()
+                    .map(object_preview::ObjectPreview::Deformed)
+            })
             .or_else(|| {
                 input
                     .instance_preview
@@ -1594,7 +1608,9 @@ impl Viewport {
                             && modifiers.shift
                             && (modifiers.ctrl || modifiers.command))
                             .then_some((
-                                if input.object_filter
+                                if input.distribution_source_pick {
+                                    ComponentPickFilter::MeshAndSubDVertices
+                                } else if input.object_filter
                                     == Some(ObjectSelectionFilter::SurfaceComponents)
                                 {
                                     ComponentPickFilter::Faces
@@ -2240,6 +2256,11 @@ impl Viewport {
             .or(translation_preview)
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                distribution
+                    .as_ref()
+                    .map(object_preview::ObjectPreview::Deformed)
+            })
             .or_else(|| {
                 input
                     .instance_preview
@@ -3566,6 +3587,16 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
+            drafting_resolved_hover: response
+                .hovered()
+                .then_some(drafting_cursor)
+                .flatten()
+                .filter(|_| {
+                    !input
+                        .point_filter
+                        .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+                })
+                .map(|cursor| cursor.point),
             drafting_hover_is_free: response.hovered()
                 && input.point_filter.is_none()
                 && input.point_constraint.is_none()

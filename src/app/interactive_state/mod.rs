@@ -511,10 +511,7 @@ pub(super) enum InteractiveCommand {
         item_count: usize,
         start: Option<Point3>,
     },
-    Distribute {
-        settings: DistributionSettings,
-        start: Option<Point3>,
-    },
+    Distribute,
     Array {
         counts: [usize; 3],
         fill: bool,

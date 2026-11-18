@@ -21,7 +21,7 @@ fn borrowed_units_preserve_first_appearance_top_membership_and_partial_selection
             .unwrap();
     }
     let before = format!("{document:?}");
-    let grouped = units(&document);
+    let grouped = crate::layout_units::selected_units(&document);
     assert_eq!(
         grouped
             .iter()

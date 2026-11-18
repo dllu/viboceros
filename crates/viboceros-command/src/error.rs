@@ -1077,6 +1077,8 @@ pub enum CommandError {
 
     #[error("Distribute requires at least three independent objects or groups; found {actual}")]
     InsufficientDistributionObjects { actual: usize },
+    #[error("Distribute inputs or document tolerance changed; select the inputs again")]
+    DistributeStale,
 
     #[error("Align ToFitPlane requires at least three selected objects; found {actual}")]
     InsufficientPlaneAlignmentObjects { actual: usize },

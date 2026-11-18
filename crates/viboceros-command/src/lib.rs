@@ -328,7 +328,7 @@ mod bounding_box;
 pub use bounding_box::selected_bounding_box_center;
 mod block_selection;
 mod convert_extrusion;
-mod distribute;
+pub mod distribute;
 mod geometry_selection;
 pub mod infinite_plane;
 mod intersect_self;

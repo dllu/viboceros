@@ -1,12 +1,12 @@
 //! Group-aware one-dimensional distribution with staged, identity-preserving edits.
-use crate::layout_units::selected_units as units;
 use crate::{
     Command, CommandContext, CommandError, option_name_eq, parse_finite_real, parse_point,
 };
+mod layout;
 mod planner;
-use planner::offsets;
+pub use layout::{Layout, Sources};
 use viboceros_document::Document;
-use viboceros_geometry::{AffineTransform3, Frame3, GeometryError, Point3, Tolerance};
+use viboceros_geometry::{Frame3, GeometryError, Point3, Tolerance};
 #[cfg(test)]
 mod tests;
 
@@ -19,9 +19,23 @@ pub enum DistributionMode {
     Center,
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum Direction {
-    Axis(usize),
+pub enum Direction {
+    XAxis,
+    YAxis,
+    ZAxis,
     Points(Point3, Point3),
+}
+
+impl Direction {
+    pub fn axis(token: &str) -> Option<Self> {
+        [
+            (Self::XAxis, "XAxis"),
+            (Self::YAxis, "YAxis"),
+            (Self::ZAxis, "ZAxis"),
+        ]
+        .into_iter()
+        .find_map(|(axis, name)| option_name_eq(token, name).then_some(axis))
+    }
 }
 struct Options {
     direction: Direction,
@@ -37,8 +51,21 @@ pub struct DistributionSettings {
     pub spacing: Option<f64>,
 }
 
+impl Default for DistributionSettings {
+    fn default() -> Self {
+        Self {
+            mode: Mode::Gap,
+            spacing: None,
+        }
+    }
+}
+
 impl DistributionSettings {
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
+        Self::parse_over(arguments, Self::default())
+    }
+
+    pub fn parse_over(arguments: &[&str], defaults: Self) -> Result<Self, CommandError> {
         let mut mode = None;
         let mut spacing = None;
         let mut remaining = arguments;
@@ -73,8 +100,8 @@ impl DistributionSettings {
             remaining = &remaining[used..];
         }
         Ok(Self {
-            mode: mode.unwrap_or(Mode::Gap),
-            spacing: spacing.unwrap_or(None),
+            mode: mode.unwrap_or(defaults.mode),
+            spacing: spacing.unwrap_or(defaults.spacing),
         })
     }
 }
@@ -83,7 +110,7 @@ pub(super) struct DistributeCommand;
 
 /// Number of independently distributed units in the current selection.
 pub fn distribution_unit_count(document: &Document) -> usize {
-    units(document).len()
+    Sources::capture(document, &[]).unit_count()
 }
 
 impl Command for DistributeCommand {
@@ -100,68 +127,20 @@ impl Command for DistributeCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let options = parse(arguments)?;
-        let units = units(document);
-        if units.len() < 3 {
-            return Err(CommandError::InsufficientDistributionObjects {
-                actual: units.len(),
-            });
-        }
-        let anchor = units[0]
-            .iter()
-            .find_map(|o| o.geometry().bounds())
-            .ok_or(GeometryError::EmptyPointSet)?
-            .center()?;
-        let frame = direction_frame(
-            options.direction,
-            context.construction_plane,
-            anchor,
-            document.tolerance(),
-        )?;
-        let bounds = units
-            .iter()
-            .map(|objects| {
-                crate::object_bounds::local_bounds(
-                    objects.iter().map(|object| object.geometry()),
-                    frame,
-                    document.tolerance(),
-                )
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        let mut order = (0..units.len()).collect::<Vec<_>>();
-        order.sort_by(|a, b| {
-            bounds[*a]
-                .min()
-                .to_array()
-                .partial_cmp(&bounds[*b].min().to_array())
-                .expect("finite bounds")
-        });
-        let intervals = order
-            .iter()
-            .map(|i| [bounds[*i].min().x(), bounds[*i].max().x()])
-            .collect::<Vec<_>>();
-        let (offsets, spacing) =
-            offsets(&intervals, options.settings.mode, options.settings.spacing)?;
-        let mut replacements = Vec::new();
-        for (index, distance) in order.into_iter().zip(offsets) {
-            if distance == 0. {
-                continue;
-            }
-            let translation = frame.x_axis().as_vector().scaled(distance)?;
-            let transform = AffineTransform3::from_translation(translation);
-            for object in &units[index] {
-                let geometry = object
-                    .geometry()
-                    .transformed(transform, document.tolerance())?;
-                replacements.push((object.id(), geometry));
-            }
-        }
-        let unit_count = units.len();
-        let changed = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Distributed {} object/group unit(s) with {:?} spacing {spacing:.6}; moved {changed} object(s)",
-            unit_count, options.settings.mode
-        ))
+        Sources::capture(document, &[])
+            .layout(
+                options.direction,
+                context.construction_plane,
+                options.settings,
+            )?
+            .apply(document, false)
     }
+}
+
+pub fn parse_positional(
+    arguments: &[&str],
+) -> Result<(Direction, DistributionSettings), CommandError> {
+    parse(arguments).map(|options| (options.direction, options.settings))
 }
 
 fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
@@ -169,11 +148,8 @@ fn parse(arguments: &[&str]) -> Result<Options, CommandError> {
     let mut settings = Vec::new();
     let mut remaining = arguments;
     while let Some(token) = remaining.first() {
-        if let Some(axis) = ["XAxis", "YAxis", "ZAxis"]
-            .iter()
-            .position(|name| option_name_eq(token, name))
-        {
-            if direction.replace(Direction::Axis(axis)).is_some() {
+        if let Some(axis) = Direction::axis(token) {
+            if direction.replace(axis).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
             remaining = &remaining[1..];
@@ -207,8 +183,9 @@ fn direction_frame(
     let (direction, guide) = match direction {
         // Rotate the CPlane XY axes a quarter-turn for Y distribution. The
         // transverse coordinates are observable tie-breakers, not arbitrary.
-        Direction::Axis(1) => (axes[1].as_vector(), axes[0].as_vector().scaled(-1.)?),
-        Direction::Axis(axis) => (axes[axis].as_vector(), axes[(axis + 1) % 3].as_vector()),
+        Direction::XAxis => (axes[0].as_vector(), axes[1].as_vector()),
+        Direction::YAxis => (axes[1].as_vector(), axes[0].as_vector().scaled(-1.)?),
+        Direction::ZAxis => (axes[2].as_vector(), axes[0].as_vector()),
         Direction::Points(a, b) => {
             let direction = a.vector_to(b)?.normalized(tolerance)?;
             // Preserve the CPlane normal when defining the transverse guide.

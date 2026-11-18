@@ -3,8 +3,8 @@ use std::collections::VecDeque;
 use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
-    CommandRegistry, DistributionSettings, format_interp_curve_options, parse_curve_closure,
-    parse_curve_degree, parse_interp_curve_options, update_interp_curve_options,
+    CommandRegistry, format_interp_curve_options, parse_curve_closure, parse_curve_degree,
+    parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
@@ -192,6 +192,7 @@ mod cutting_preview;
 mod direction;
 mod direction_analysis;
 mod distance;
+mod distribute;
 mod domain;
 mod draft_angle_analysis;
 mod drafting_controls;
@@ -494,6 +495,8 @@ pub struct VibocerosApp {
     orient_edge_session: Option<orient_edge::Session>,
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
+    distribute_session: Option<distribute::Session>,
+    distribute_settings: viboceros_command::DistributionSettings,
     offset_mesh_session: Option<offset_mesh::Session>,
     offset_mesh_preferences: offset_mesh::Preferences,
     offset_subd_session: Option<offset_subd::Session>,
@@ -700,6 +703,8 @@ impl VibocerosApp {
             orient_edge_session: None,
             surface_offset_session: None,
             short_path_session: None,
+            distribute_session: None,
+            distribute_settings: Default::default(),
             offset_mesh_session: None,
             offset_mesh_preferences: Default::default(),
             offset_subd_session: None,
@@ -909,6 +914,7 @@ impl VibocerosApp {
         if self.continue_inset(&input)
             || self.continue_ribbon(&input)
             || self.continue_extrude_subd(&input)
+            || self.continue_distribute(&input)
             || self.continue_offset_mesh(&input)
             || self.continue_offset_subd(&input)
             || self.continue_offset_surface(&input)
@@ -1240,6 +1246,7 @@ impl VibocerosApp {
             || self.try_continue_stretch(input)
             || self.try_continue_taper(input)
             || self.try_continue_maelstrom(input)
+            || self.continue_distribute(input)
             || self.continue_offset_mesh(input)
             || self.continue_offset_surface(input)
             || self.continue_ribbon(input)
@@ -1358,6 +1365,7 @@ impl VibocerosApp {
                     self.component_selection
                         .mark_raw_pattern_faces(&self.document, &before);
                 }
+                self.remember_distribute_positional(input);
                 self.push_log(message);
                 self.start_edge_zoom_options(input);
                 if release_components {

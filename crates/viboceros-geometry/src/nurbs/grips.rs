@@ -92,6 +92,14 @@ impl NurbsCurve {
         indices: &BTreeSet<usize>,
         map: impl Fn(Point3) -> Result<Point3, GeometryError>,
     ) -> Result<Self, GeometryError> {
+        self.with_indexed_grips(indices, |_, point| map(point))
+    }
+
+    pub fn with_indexed_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(usize, Point3) -> Result<Point3, GeometryError>,
+    ) -> Result<Self, GeometryError> {
         let count = self.grip_count()?;
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
             return Err(GeometryError::InvalidControlPointIndex { index, count });
@@ -101,7 +109,7 @@ impl NurbsCurve {
             .enumerate()
             .map(|(i, c)| {
                 if indices.contains(&i) {
-                    map(c.point())
+                    map(i, c.point())
                 } else {
                     Ok(c.point())
                 }

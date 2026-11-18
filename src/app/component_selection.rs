@@ -217,6 +217,7 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && (self.object_prompt.is_none()
+                || self.selecting_distribution_sources()
                 || self.picking_extract_points()
                 || self.picking_to_subd()
                 || self.picking_nurbs_edges()

@@ -9,18 +9,24 @@ Distribute ZAxis Spacing=-2
 Distribute Direction 0,0,0 1,2,3 Mode=Center
 ```
 
-With at least three selected objects/group units, distribute them along an
-active CPlane axis or a two-point direction. The defaults are `Mode=Gap` and
-`Spacing=Automatic`; settings are not sticky. Options are case-insensitive and
-accept `Name=Value` or `Name Value`, including underscore-prefixed tokens.
-These implement the [documented Distribute options](https://docs.mcneel.com/rhino/8/help/en-us/commands/align.htm).
+Start `Distribute` with three selected objects, groups, or grips, or
+pick them when prompted. The options menu offers `XAxis`, `YAxis`, and
+`ZAxis` in the active construction plane. Each axis applies the layout
+immediately. `Direction` takes two viewport picks or typed points and
+previews the layout while you place the second point. Typed world coordinates
+can define a spatial direction.
 
-In the UI, enter `Distribute` (optionally with settings) or
-`Distribute Direction Mode=Center` to pick/type two direction points. Ordinary
-viewport picks use the construction plane and drafting aids; explicit world
-points may define a fully 3D direction, as observed in Rhino. Coincident points
-keep the prompt open for correction; Escape cancels without editing geometry.
-There is a direction guide, but no live layout preview or sticky option state.
+Set `Mode` to `Gap` or `Center`. Open `Spacing` to enter a signed distance,
+measure it with two points, or choose `Automatic`. Both direction prompts
+allow changes to Mode and Spacing. Successful commands remember these
+settings. Escape cancels the preview and discards pending option changes.
+Complete positional commands still accept options as shown above.
+[Rhino Distribute](https://docs.mcneel.com/rhino/8/help/en-us/commands/align.htm#Distribute)
+
+Grips count as individual stations. Only selected grip positions move, and
+coincident raw vertices belonging to a picked mesh topology vertex move
+together. The preview uses the applicable grip basis and the final edit keeps
+object IDs, layers, groups, and geometry metadata.
 
 ## Layout and groups
 
@@ -48,11 +54,12 @@ after a newer one. The document stores each object's membership order;
 no-op, not a reorder. See [groups](../groups.md) for the model, copied groups,
 and the separate ordered-membership oracle fixture.
 
-Objects move in place, retaining identity, attributes, layers, group membership,
-and selection. Every bound, displacement, and replacement geometry is staged
-before one atomic undo transaction. Too few units, invalid options, unresolved
-rational poles, bounds-budget exhaustion, or an unrepresentable result fails
-without partial geometry or an undo entry.
+Objects move in place. Preselected inputs retain their selection. With
+command-first picks, stationary objects stay selected after applying the layout.
+Undo and Redo release the command-first picks. Every bound, displacement,
+and replacement geometry is staged before one atomic edit. Too few units,
+invalid options, unresolved rational poles, bounds-budget exhaustion, and
+unrepresentable results leave geometry and Undo history intact.
 
 ## Geometry and verification
 
