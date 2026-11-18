@@ -13,6 +13,8 @@ fn main() {
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     for file in [
         "analysis_mesh.h",
+        "brep_parameter_map.h",
+        "brep_render_mesh.h",
         "view_camera.h",
         "subd.cpp",
         "subd.h",

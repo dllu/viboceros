@@ -396,9 +396,10 @@ pub fn import_3dm_with_views_and_cplanes(
 fn import_3dm_model(
     document: &mut Document,
     path: &str,
-    model: ThreeDmModel,
+    mut model: ThreeDmModel,
     reuse_default_layer: bool,
 ) -> Result<String, CommandError> {
+    let mut render_meshes = model.take_render_meshes();
     let unsupported = model.unsupported_object_count();
     let expanded = model.expanded_instance_count();
     let layer_count = model.layers.len();
@@ -462,11 +463,12 @@ fn import_3dm_model(
         for (key, value) in object.user_text {
             attributes = attributes.try_with_user_text(key, value)?;
         }
-        let id = document.add_geometry_with_metadata_and_id(
+        let id = document.add_archive_geometry(
             structural_blocks::import_geometry(document, object.geometry, &imported_definitions)?,
             attributes,
             object.geometry_user_text,
             Some(viboceros_document::ObjectId::from_uuid(object.id)),
+            render_meshes.remove(&object.id),
         )?;
         imported_objects.push((id, object.group_indices));
     }

@@ -204,7 +204,18 @@ int32_t vibo_transform_analytic_circle(const double* frame, const double* matrix
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
                       char* error, size_t error_capacity);
 void vibo_3dm_free(ViboThreeDmModel* model);
-int32_t vibo_3dm_read_mode(const char* path, uint8_t structural, ViboThreeDmModel** model, char* error, size_t capacity);
+typedef struct ViboRenderMesh {
+  const double* vertices;
+  const double* normals;
+  const uint32_t* faces;
+  const uint32_t* face_sources;
+  size_t vertex_count;
+  size_t face_count;
+  uint8_t has_normals;
+} ViboRenderMesh;
+
+int32_t vibo_3dm_render_mesh(const ViboThreeDmModel* model, size_t index, ViboRenderMesh* data);
+int32_t vibo_3dm_read_mode(const char* path, uint8_t structural, uint8_t retain_render_meshes, ViboThreeDmModel** model, char* error, size_t capacity);
 uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model);
 size_t vibo_3dm_definition_count(const ViboThreeDmModel* model);
 size_t vibo_3dm_top_level_start(const ViboThreeDmModel* model);

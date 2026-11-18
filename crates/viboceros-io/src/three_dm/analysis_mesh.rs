@@ -40,7 +40,7 @@ pub(super) fn apply(
 /// Open a document with native legacy profile migration. Raw archive APIs retain
 /// the stored parameters exactly; Import keeps the destination document policy.
 pub fn read_3dm_file_for_document(path: impl AsRef<Path>) -> Result<ThreeDmModel, ThreeDmError> {
-    let handle = read_handle_mode(path.as_ref(), true)?;
+    let handle = read_handle_options(path.as_ref(), true, true)?;
     let units = decode_units(&handle)?;
     let tolerance = model_tolerance(&handle)?;
     let mut model = decode_model(&handle, tolerance, units, 1.)?;

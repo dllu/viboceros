@@ -189,6 +189,21 @@ pub fn encode_brep(brep: &Brep) -> Result<Vec<u8>, GeometryCodecError> {
 }
 
 pub fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryCodecError> {
+    decode_brep_impl(bytes, tolerance, true)
+}
+
+/// Decode topology and endpoints from the OpenNURBS archive bridge. Native
+/// archive geometry can have edge and trim tolerances that fail construction
+/// checks on interior correspondence, even though Rhino opens the object.
+pub fn decode_archive_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryCodecError> {
+    decode_brep_impl(bytes, tolerance, false)
+}
+
+fn decode_brep_impl(
+    bytes: &[u8],
+    tolerance: Tolerance,
+    check_correspondence: bool,
+) -> Result<Brep, GeometryCodecError> {
     let mut reader = Reader {
         bytes,
         position: 0,
@@ -311,7 +326,7 @@ pub fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryC
     if reader.position != bytes.len() {
         return Err(GeometryCodecError::Malformed);
     }
-    Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
+    Ok(Brep::from_parts(vertices, edges, faces, tolerance, check_correspondence)?)
 }
 
 #[derive(Default)]

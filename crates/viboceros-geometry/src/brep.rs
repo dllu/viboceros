@@ -557,6 +557,16 @@ impl Brep {
         faces: Vec<BrepFace>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::from_parts(vertices, edges, faces, tolerance, true)
+    }
+
+    pub(crate) fn from_parts(
+        vertices: Vec<BrepVertex>,
+        edges: Vec<BrepEdge>,
+        faces: Vec<BrepFace>,
+        tolerance: Tolerance,
+        check_correspondence: bool,
+    ) -> Result<Self, GeometryError> {
         if vertices.is_empty() || edges.is_empty() || faces.is_empty() {
             return Err(GeometryError::InvalidBrepTopology {
                 context: "a B-rep requires vertices, edges, and faces",
@@ -568,7 +578,7 @@ impl Brep {
             edges,
             faces,
         };
-        brep.validate(tolerance)?;
+        brep.validate_parts(tolerance, check_correspondence)?;
         Ok(brep)
     }
 

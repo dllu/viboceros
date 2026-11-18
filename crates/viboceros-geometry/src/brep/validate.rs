@@ -8,6 +8,14 @@ mod tests;
 
 impl Brep {
     pub(super) fn validate(&self, tolerance: Tolerance) -> Result<(), GeometryError> {
+        self.validate_parts(tolerance, true)
+    }
+
+    pub(super) fn validate_parts(
+        &self,
+        tolerance: Tolerance,
+        check_correspondence: bool,
+    ) -> Result<(), GeometryError> {
         for edge in &self.edges {
             let allowed = tolerance.absolute().max(edge.tolerance);
             boundary::continuous(&edge.curve, |delta| {
@@ -41,7 +49,7 @@ impl Brep {
             let frame = face.local_parameter_frame()?;
             let face = frame.face.as_ref();
             for face_loop in &face.loops {
-                self.validate_loop(face, face_loop, tolerance)?;
+                self.validate_loop(face, face_loop, tolerance, check_correspondence)?;
             }
         }
 
@@ -69,6 +77,7 @@ impl Brep {
         face: &BrepFace,
         face_loop: &BrepLoop,
         tolerance: Tolerance,
+        check_correspondence: bool,
     ) -> Result<(), GeometryError> {
         for (index, trim) in face_loop.trims.iter().enumerate() {
             if trim
@@ -122,7 +131,9 @@ impl Brep {
                 }
             }
             validate_iso(face, trim, parameter_tolerance)?;
-            boundary::validate(self, face, trim, tolerance)?;
+            if check_correspondence {
+                boundary::validate(self, face, trim, tolerance)?;
+            }
         }
 
         let signed_area = sampled_loop_signed_area(face_loop)?;

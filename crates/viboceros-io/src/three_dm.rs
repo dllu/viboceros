@@ -27,6 +27,7 @@ pub use blocks::{
 };
 mod check;
 mod mesh_ngon;
+mod render_mesh;
 pub use check::{
     GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_instance_reference,
 };
@@ -243,6 +244,7 @@ pub struct ThreeDmModel {
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
     expanded_instance_count: usize,
+    render_meshes: BTreeMap<uuid::Uuid, (TriangleMesh, Vec<usize>)>,
 }
 
 impl ThreeDmModel {
@@ -269,7 +271,13 @@ impl ThreeDmModel {
             objects,
             unsupported_object_count: 0,
             expanded_instance_count: 0,
+            render_meshes: BTreeMap::new(),
         }
+    }
+
+    /// Takes the archived display meshes and their polygon-to-B-rep face maps.
+    pub fn take_render_meshes(&mut self) -> BTreeMap<uuid::Uuid, (TriangleMesh, Vec<usize>)> {
+        std::mem::take(&mut self.render_meshes)
     }
 
     pub const fn unsupported_object_count(&self) -> usize {
@@ -503,6 +511,14 @@ fn read_handle(path: &Path) -> Result<ModelHandle, ThreeDmError> {
 }
 
 fn read_handle_mode(path: &Path, structural: bool) -> Result<ModelHandle, ThreeDmError> {
+    read_handle_options(path, structural, false)
+}
+
+fn read_handle_options(
+    path: &Path,
+    structural: bool,
+    retain_render_meshes: bool,
+) -> Result<ModelHandle, ThreeDmError> {
     let path = path_to_c_string(path)?;
     let mut error = [0 as c_char; ERROR_CAPACITY];
     let mut pointer = std::ptr::null_mut();
@@ -512,6 +528,7 @@ fn read_handle_mode(path: &Path, structural: bool) -> Result<ModelHandle, ThreeD
         ffi::vibo_3dm_read_mode(
             path.as_ptr(),
             u8::from(structural),
+            u8::from(retain_render_meshes),
             &mut pointer,
             error.as_mut_ptr(),
             error.len(),
@@ -994,6 +1011,7 @@ fn decode_model(
     let mut objects = Vec::with_capacity(object_count);
     // SAFETY: the handle owns a live bridge model.
     let mut unsupported = unsafe { ffi::vibo_3dm_unsupported_object_count(handle.0.as_ptr()) };
+    let mut render_meshes = BTreeMap::new();
     for index in 0..object_count {
         match decode_object(
             handle,
@@ -1003,7 +1021,14 @@ fn decode_model(
             tolerance,
             coordinate_scale,
         ) {
-            Ok(object) => objects.push(object),
+            Ok(object) => {
+                if let ThreeDmGeometry::Brep(brep) = &object.geometry
+                    && let Some(mesh) = render_mesh::decode(handle, index, brep)
+                {
+                    render_meshes.insert(object.id, mesh);
+                }
+                objects.push(object);
+            }
             Err(ThreeDmError::Geometry(error)) => {
                 // SAFETY: the decoded model and object index remain live.
                 if unsafe { ffi::vibo_3dm_object_placement_count(handle.0.as_ptr(), index) } > 0
@@ -1034,6 +1059,7 @@ fn decode_model(
         viewports,
         objects,
         unsupported_object_count: unsupported,
+        render_meshes,
         // SAFETY: handle owns the live decoded model.
         expanded_instance_count: unsafe {
             ffi::vibo_3dm_expanded_instance_count(handle.0.as_ptr())
@@ -1475,7 +1501,7 @@ fn decode_object(
                     tolerance.angular(),
                 )
                 .map_err(|_| ThreeDmError::UnrepresentableSourceTolerance)?;
-                three_dm_geometry::decode_brep(geometry_data, source_tolerance)
+                three_dm_geometry::decode_archive_brep(geometry_data, source_tolerance)
                     .map(ThreeDmGeometry::Brep)
             } else if info.object_type == OBJECT_ARC {
                 three_dm_geometry::decode_arc(geometry_data).map(ThreeDmGeometry::Arc)
@@ -2007,6 +2033,18 @@ fn ffi_slice<T>(
 mod ffi {
     #[repr(C)]
     #[derive(Default)]
+    pub struct ViboRenderMesh {
+        pub vertices: *const f64,
+        pub normals: *const f64,
+        pub faces: *const u32,
+        pub face_sources: *const u32,
+        pub vertex_count: usize,
+        pub face_count: usize,
+        pub has_normals: u8,
+    }
+
+    #[repr(C)]
+    #[derive(Default)]
     pub struct ViboAnalysisParameters {
         pub density: f64,
         pub subd_level: u32,
@@ -2209,9 +2247,15 @@ mod ffi {
             diagnostics: *mut c_char,
             capacity: usize,
         ) -> c_int;
+        pub fn vibo_3dm_render_mesh(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            data: *mut ViboRenderMesh,
+        ) -> i32;
         pub fn vibo_3dm_read_mode(
             path: *const c_char,
             structural: u8,
+            retain_render_meshes: u8,
             output: *mut *mut ViboThreeDmModel,
             error: *mut c_char,
             capacity: usize,

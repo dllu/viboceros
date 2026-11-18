@@ -2,6 +2,7 @@
 use std::{ops::Deref, sync::Arc};
 
 use crate::Geometry;
+use viboceros_geometry::TriangleMesh;
 
 /// An owned, immutable geometry value with inexpensive cloning.
 ///
@@ -9,9 +10,23 @@ use crate::Geometry;
 /// snapshots. There is deliberately no mutable access, even for unique owners.
 /// Kernel-internal memoization does not change the geometric value.
 #[derive(Clone, Debug)]
-pub struct GeometrySnapshot(Arc<Geometry>);
+pub struct GeometrySnapshot(Arc<Geometry>, Option<Arc<(TriangleMesh, Vec<usize>)>>);
 
 impl GeometrySnapshot {
+    pub(crate) fn with_archive_render_mesh(
+        geometry: Geometry,
+        render_mesh: Option<(TriangleMesh, Vec<usize>)>,
+    ) -> Self {
+        Self(Arc::new(geometry), render_mesh.map(Arc::new))
+    }
+
+    /// Saved display polygons and the source B-rep face for each polygon.
+    pub fn archive_render_mesh(&self) -> Option<(&TriangleMesh, &[usize])> {
+        self.1
+            .as_deref()
+            .map(|(mesh, faces)| (mesh, faces.as_slice()))
+    }
+
     /// Constant-time identity check for derived-data invalidation. False does
     /// not imply unequal geometry: independently created equal values have
     /// distinct storage. Retaining the snapshot prevents address reuse, unlike
@@ -23,7 +38,7 @@ impl GeometrySnapshot {
 
 impl From<Geometry> for GeometrySnapshot {
     fn from(geometry: Geometry) -> Self {
-        Self(Arc::new(geometry))
+        Self(Arc::new(geometry), None)
     }
 }
 

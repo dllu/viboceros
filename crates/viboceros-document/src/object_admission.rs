@@ -1,6 +1,6 @@
 //! Geometry admission policy, separate from transforms and historical snapshots.
 use super::*;
-use viboceros_geometry::{BrepSolidOrientation, SubDSolidOrientation};
+use viboceros_geometry::{BrepSolidOrientation, SubDSolidOrientation, TriangleMesh};
 
 #[cfg(test)]
 mod tests;
@@ -61,6 +61,18 @@ impl Document {
         geometry_user_text: BTreeMap<String, String>,
         source_id: Option<ObjectId>,
     ) -> Result<ObjectId, DocumentError> {
+        self.add_archive_geometry(geometry, attributes, geometry_user_text, source_id, None)
+    }
+
+    /// Admits archive geometry and keeps its saved display mesh on the immutable snapshot.
+    pub fn add_archive_geometry(
+        &mut self,
+        geometry: Geometry,
+        attributes: ObjectAttributes,
+        geometry_user_text: BTreeMap<String, String>,
+        source_id: Option<ObjectId>,
+        render_mesh: Option<(TriangleMesh, Vec<usize>)>,
+    ) -> Result<ObjectId, DocumentError> {
         let mut folded_keys = BTreeSet::new();
         for (key, value) in &geometry_user_text {
             validate_user_text(key, Some(value))?;
@@ -77,7 +89,27 @@ impl Document {
         if layer.locked {
             return Err(DocumentError::LayerLocked(layer.id));
         }
+        let before_reversed = match &geometry {
+            Geometry::Brep(brep) => Some(brep.faces()[0].is_reversed()),
+            _ => None,
+        };
         let geometry = self.refresh_instance_geometry(normalize_geometry(geometry)?)?;
+        let render_mesh = render_mesh.and_then(|(mesh, sources)| {
+            let Geometry::Brep(brep) = &geometry else {
+                return None;
+            };
+            if sources.len() != mesh.faces().len()
+                || sources.iter().any(|&i| i >= brep.faces().len())
+            {
+                return None;
+            }
+            let mesh = if before_reversed == Some(brep.faces()[0].is_reversed()) {
+                mesh
+            } else {
+                mesh.reversed()
+            };
+            Some((mesh, sources))
+        });
         let id = source_id
             .filter(|id| !id.0.is_nil() && self.object(*id).is_none())
             .unwrap_or_else(ObjectId::new);
@@ -86,7 +118,7 @@ impl Document {
             runtime_serial: Object::new_runtime_serial(),
             geometry_event_serial: Object::new_runtime_serial(),
             id,
-            geometry: geometry.into(),
+            geometry: GeometrySnapshot::with_archive_render_mesh(geometry, render_mesh),
             geometry_user_text,
             attributes,
             isolation: ObjectIsolation::None,

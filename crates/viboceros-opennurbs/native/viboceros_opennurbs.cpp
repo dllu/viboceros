@@ -58,7 +58,10 @@ struct BridgeCurrentView {
   ViboCurrentView data{};
 };
 
+#include "brep_render_mesh.h"
+
 struct BridgeObject {
+  std::unique_ptr<BridgeRenderMesh> render_mesh;
   std::vector<std::array<double,16>> placements;
   std::string id = "00000000-0000-0000-0000-000000000000";
   int32_t object_type = 0;
@@ -459,8 +462,10 @@ bool append_nurbs_surface(const ON_Surface& source, BridgeObject& output) {
   return true;
 }
 
+#include "brep_parameter_map.h"
+
 bool write_nurbs_curve(const ON_Curve& source, int dimension,
-                       ByteWriter& writer) {
+                       ByteWriter& writer, const ON_NurbsSurface* trim_surface = nullptr) {
   ON_NurbsCurve curve;
   if (source.GetNurbForm(curve) <= 0 || !curve.IsValid() ||
       curve.Dimension() != dimension || curve.Order() < 2 ||
@@ -476,6 +481,8 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
     if (!curve.GetCV(index, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
       return false;
     }
+    if (trim_surface)
+      vibo_brep_parameter_map::clamp_domain_roundoff(*trim_surface, point);
     const double weight = homogeneous.w;
     writer.Double(point.x);
     writer.Double(point.y);
@@ -560,9 +567,8 @@ bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
   return true;
 }
 
-bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
-  ON_NurbsSurface surface;
-  if (source.GetNurbForm(surface) <= 0 || !surface.IsValid() ||
+bool write_nurbs_surface(const ON_NurbsSurface& surface, ByteWriter& writer) {
+  if (!surface.IsValid() ||
       surface.Order(0) < 2 || surface.Order(1) < 2 ||
       surface.CVCount(0) < surface.Order(0) ||
       surface.CVCount(1) < surface.Order(1)) {
@@ -598,7 +604,8 @@ bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
   return true;
 }
 
-bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failure=nullptr) {
+bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failure=nullptr,
+                 double model_tolerance=0.001) {
   ON_Brep normalized(source);
   normalized.SetTolerancesBoxesAndFlags(true, true, true, true, false, false,
                                         false, false);
@@ -611,9 +618,12 @@ bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failu
   const ON_Brep& brep = normalized;
   ON_wString diagnostics;
   ON_TextLog log(diagnostics);
-  if (!brep.IsValid(&log) || brep.m_V.Count() <= 0 ||
-      brep.m_E.Count() <= 0 || brep.m_F.Count() <= 0) {
-    if(failure) *failure=utf8(diagnostics);
+  // Archive admission checks topology and underlying geometry. A closed
+  // edge can be a kinked polycurve whose endpoint tangent disagrees with
+  // the trim; preserve the archived trim direction for those objects.
+  if (brep.m_V.Count() <= 0 || brep.m_E.Count() <= 0 || brep.m_F.Count() <= 0 ||
+      !brep.IsValidTopology(&log) || !brep.IsValidGeometry(&log)) {
+    if (failure) *failure = utf8(diagnostics);
     return false;
   }
 
@@ -657,7 +667,9 @@ bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failu
   for (int face_index = 0; face_index < brep.m_F.Count(); ++face_index) {
     const ON_BrepFace& face = brep.m_F[face_index];
     writer.U8(face.m_bRev ? 1 : 0);
-    if (!write_nurbs_surface(face, writer)) {
+    ON_NurbsSurface surface;
+    const int surface_form = face.GetNurbForm(surface);
+    if (surface_form <= 0 || !write_nurbs_surface(surface, writer)) {
       return false;
     }
     writer.U64(static_cast<uint64_t>(face.m_li.Count()));
@@ -721,7 +733,11 @@ bool append_brep(const ON_Brep& source, BridgeObject& output, std::string* failu
           }
           writer.Double(tolerance);
         }
-        if (!write_nurbs_curve(trim, 2, writer)) {
+        if (surface_form == 2) {
+          ON_NurbsCurve mapped;
+          if (!vibo_brep_parameter_map::convert(trim, face, surface, model_tolerance * 0.05, mapped) ||
+              !write_nurbs_curve(mapped, 2, writer)) return false;
+        } else if (!write_nurbs_curve(trim, 2, writer, &surface)) {
           return false;
         }
       }
@@ -1944,7 +1960,7 @@ bool read_geometry_metadata(const ON_Geometry* geometry,const ON_3dmObjectAttrib
       return true;
 }
 
-bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object) {
+bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object, double model_tolerance) {
       if(!read_geometry_metadata(geometry,attributes,object)) return false;
       bool supported = false;
       if (const ON_Point* point = ON_Point::Cast(geometry)) {
@@ -1956,7 +1972,7 @@ bool read_geometry_object(const ON_Geometry* geometry,const ON_3dmObjectAttribut
       } else if (const ON_Extrusion* extrusion = ON_Extrusion::Cast(geometry)) {
         object.object_type=VIBO_OBJECT_EXTRUSION;object.geometry_data=vibo_extrusion::encode(*extrusion);supported=true;
       } else if (const ON_Brep* brep = ON_Brep::Cast(geometry)) {
-        supported = append_brep(*brep, object);
+        supported = append_brep(*brep, object, nullptr, model_tolerance);
       } else if (const ON_SubD* subd = ON_SubD::Cast(geometry)) {
         object.object_type = VIBO_OBJECT_SUBD;
         object.geometry_data = vibo_subd::encode(*subd);
@@ -2019,7 +2035,7 @@ struct ViboThreeDmModel {
 };
 
 extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
-                                  ViboThreeDmModel** output, char* error,
+                                  uint8_t retain_render_meshes, ViboThreeDmModel** output, char* error,
                                   size_t error_capacity) {
   if (output != nullptr) {
     *output = nullptr;
@@ -2140,8 +2156,11 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
         continue;
       }
       const ON_UUID mode = source_view.m_display_mode_id;
+      // The editor can display the saved render polygons in its Shaded mode.
+      const bool shaded = mode == ON_StandardDisplayModeId::Shaded ||
+                          mode == ON_StandardDisplayModeId::Rendered;
       view.data.display_mode = mode == ON_StandardDisplayModeId::Wireframe ? 1 :
-                               mode == ON_StandardDisplayModeId::Shaded ? 2 :
+                               shaded ? 2 :
                                mode == ON_StandardDisplayModeId::Ghosted ? 3 : 0;
       view.data.maximized = static_cast<uint8_t>(source_view.m_position.m_bMaximized);
       view.data.active = static_cast<uint8_t>(
@@ -2184,10 +2203,16 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
       if(attrs!=nullptr && attrs->IsInstanceDefinitionObject()) continue;
       if(structural){
         BridgeObject object;
-        if(!read_structural_object(decoded->definition_index, geometry, attrs, object, error, error_capacity)){
+        if(!read_structural_object(decoded->definition_index, geometry, attrs, object, error, error_capacity, tolerances.m_absolute_tolerance)){
           if(ON_InstanceRef::Cast(geometry)!=nullptr) return 0;
           ++decoded->unsupported_object_count;
-        }else decoded->objects.push_back(std::move(object));
+        } else {
+          if (retain_render_meshes) {
+            if (const auto* brep = ON_Brep::Cast(geometry))
+              object.render_mesh = read_brep_render_mesh(*brep);
+          }
+          decoded->objects.push_back(std::move(object));
+        }
         continue;
       }
       std::vector<BridgeObject> staged;
@@ -2218,7 +2243,7 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
 }
 
 extern "C" int32_t vibo_3dm_read(const char* path,ViboThreeDmModel** output,char* error,size_t capacity){
-  return vibo_3dm_read_mode(path,0,output,error,capacity);
+  return vibo_3dm_read_mode(path,0,0,output,error,capacity);
 }
 extern "C" uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model){return model!=nullptr&&model->structural;}
 extern "C" size_t vibo_3dm_definition_count(const ViboThreeDmModel* model){return model==nullptr?0:model->definitions.size();}
@@ -2331,6 +2356,17 @@ extern "C" size_t vibo_3dm_object_count(const ViboThreeDmModel* model) {
 extern "C" size_t vibo_3dm_unsupported_object_count(
     const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->unsupported_object_count;
+}
+
+extern "C" int32_t vibo_3dm_render_mesh(const ViboThreeDmModel* model,
+                                        size_t index, ViboRenderMesh* data) {
+  if (!model || index >= model->objects.size() || !data) return 0;
+  const auto& mesh = model->objects[index].render_mesh;
+  if (!mesh) return 0;
+  *data = {mesh->vertices.data(), mesh->normals.data(), mesh->faces.data(),
+           mesh->face_sources.data(), mesh->vertices.size() / 3,
+           mesh->face_sources.size(), static_cast<uint8_t>(!mesh->normals.empty())};
+  return 1;
 }
 
 extern "C" int32_t vibo_3dm_object(

@@ -346,10 +346,16 @@ impl DisplayGeometry {
         if let Geometry::Mesh(mesh) = &*self.geometry {
             return Some(mesh);
         }
+        if let Some((mesh, _)) = self.geometry.archive_render_mesh() {
+            return Some(mesh);
+        }
         self.generated_mesh().map(|generated| &generated.mesh)
     }
 
     pub(super) fn face_sources(&self) -> Option<&[usize]> {
+        if let Some((_, sources)) = self.geometry.archive_render_mesh() {
+            return Some(sources);
+        }
         self.generated_mesh()?.face_sources.as_deref()
     }
 
@@ -385,9 +391,8 @@ impl DisplayGeometry {
     }
 
     pub(super) fn normals(&self) -> &[[NaVector3<Real>; 3]] {
-        if let Some(normals) = self
-            .generated_mesh()
-            .and_then(|mesh| mesh.normals.as_deref())
+        if self.geometry.archive_render_mesh().is_none()
+            && let Some(normals) = self.generated_mesh().and_then(|mesh| mesh.normals.as_deref())
         {
             return normals;
         }
