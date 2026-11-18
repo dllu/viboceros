@@ -54,10 +54,10 @@ impl CircleSizeMode {
     pub const fn prompt(self) -> &'static str {
         match self {
             Self::Radius => {
-                "Circle radius; Diameter, Circumference, Area; Enter accepts the remembered radius"
+                "Circle radius; Diameter, Circumference, Area, ProjectOsnap; Enter accepts the remembered radius"
             }
             Self::Diameter => {
-                "Circle diameter; Radius, Circumference, Area; Enter accepts the remembered diameter"
+                "Circle diameter; Radius, Circumference, Area, ProjectOsnap; Enter accepts the remembered diameter"
             }
             Self::Circumference => "Circle circumference",
             Self::Area => "Circle area",
@@ -566,6 +566,26 @@ impl CircleInput {
                 Tolerance::NUMERICAL_VALIDATION,
             )
             .ok(),
+            _ => None,
+        }
+    }
+    pub fn snap_projection_plane(self) -> Option<Frame3> {
+        if !matches!(
+            self.size_mode(),
+            CircleSizeMode::Radius | CircleSizeMode::Diameter
+        ) {
+            return None;
+        }
+        match self.state {
+            State::Center {
+                center: Some(center),
+                ..
+            }
+            | State::Vertical {
+                center: Some(center),
+                ..
+            } => Some(self.plane.with_origin(center)),
+            State::Orientation { .. } => self.mouse_plane(),
             _ => None,
         }
     }

@@ -203,7 +203,7 @@ impl InteractiveCommand {
                 "Circle: pick the center or enter Deformable/2Point/3Point/Vertical/AroundCurve/Tangent/FitPoints (Esc cancels)"
             }
             Self::Circle { center: Some(_) } => {
-                "Circle: pick a radius point, type a size, or choose Diameter, Orientation, Circumference or Area. Enter keeps the radius."
+                "Circle: pick a radius point or type a size. Diameter, Orientation, Circumference, Area, ProjectOsnap. Enter keeps the radius."
             }
             Self::ArcTangent { .. } => {
                 "Arc Tangent: specify contacts and choose an arc (Esc cancels)"
@@ -237,8 +237,8 @@ impl InteractiveCommand {
             Self::CircleVertical {
                 center: Some(_),
                 radius: None,
-                ..
-            } => "Circle Vertical: pick a radius point or enter a size (Esc cancels)",
+                mode,
+            } => mode.prompt(),
             Self::CircleVertical {
                 center: Some(_),
                 radius: Some(_),
@@ -249,8 +249,9 @@ impl InteractiveCommand {
             } => "Circle Orientation: pick a perpendicular direction point (Esc cancels)",
             Self::CircleOrientation {
                 normal_point: Some(_),
+                mode,
                 ..
-            } => "Circle Orientation: pick a radius point or enter a size (Esc cancels)",
+            } => mode.prompt(),
             Self::CircleTwoPoint {
                 first: None,
                 vertical: false,

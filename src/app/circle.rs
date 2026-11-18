@@ -49,6 +49,9 @@ impl VibocerosApp {
         if self.plane_prompt.is_some() || self.object_prompt.is_some() {
             return false;
         }
+        if self.try_continue_circle_snap_projection(input) {
+            return true;
+        }
         let Some(state) = self.active_command else {
             return false;
         };
@@ -351,6 +354,79 @@ impl VibocerosApp {
             .drafting_plane
             .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         Some((construction, plane))
+    }
+
+    pub(super) fn circle_snap_plane(&self) -> Option<Frame3> {
+        if self.plane_prompt.is_some() {
+            return None;
+        }
+        if let Some(session) = &self.circle_deform_session {
+            return session.input.getter().snap_projection_plane();
+        }
+        if matches!(
+            self.active_command,
+            Some(InteractiveCommand::CircleAround { .. })
+        ) {
+            let input = self.circle_around_session.as_ref()?.input?;
+            return matches!(
+                input.size_mode(),
+                CircleSizeMode::Radius | CircleSizeMode::Diameter
+            )
+            .then(|| input.frame());
+        }
+        let (construction, plane) = self.circle_preview()?;
+        match construction {
+            PointConstruction::Center {
+                center,
+                mode: CircleSizeMode::Radius | CircleSizeMode::Diameter,
+            }
+            | PointConstruction::Vertical {
+                center,
+                mode: CircleSizeMode::Radius | CircleSizeMode::Diameter,
+                ..
+            } => Some(plane.with_origin(center)),
+            PointConstruction::Oriented {
+                center,
+                normal_point,
+                mode: CircleSizeMode::Radius | CircleSizeMode::Diameter,
+            } => Frame3::try_from_normal(
+                center,
+                center.vector_to(normal_point).ok()?,
+                self.document.tolerance(),
+            )
+            .ok(),
+            _ => None,
+        }
+    }
+
+    pub(super) fn try_continue_circle_snap_projection(&mut self, input: &str) -> bool {
+        let input = input.trim().trim_start_matches(['_', '-']);
+        let (name, value) = input
+            .split_once('=')
+            .or_else(|| input.split_once(char::is_whitespace))
+            .map_or((input, None), |(name, value)| {
+                (name.trim(), Some(value.trim()))
+            });
+        if !name.eq_ignore_ascii_case("ProjectOsnap") || self.circle_snap_plane().is_none() {
+            return false;
+        }
+        self.command_input.clear();
+        self.circle_project_osnap = match value {
+            None => !self.circle_project_osnap,
+            Some(word) if word.trim_start_matches('_').eq_ignore_ascii_case("Yes") => true,
+            Some(word) if word.trim_start_matches('_').eq_ignore_ascii_case("No") => false,
+            Some(_) => {
+                self.push_log("ProjectOsnap expects Yes or No".into());
+                return true;
+            }
+        };
+        let value = if self.circle_project_osnap {
+            "Yes"
+        } else {
+            "No"
+        };
+        self.push_log(format!("ProjectOsnap={value}"));
+        true
     }
 
     pub(super) fn finish_circle_size(&mut self, state: InteractiveCommand, argument: &str) -> bool {

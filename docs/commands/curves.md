@@ -136,6 +136,10 @@ point; Circumference and Area picks use their distance from the center as the
 numeric size. Typed lengths accept units. Press Enter at a radius or diameter
 prompt to use the last size. The circle follows the cursor once there are
 enough points to determine it, using the same geometry as the final pick.
+At a Radius or Diameter prompt, `ProjectOsnap=Yes` projects an object snap
+to the center elevation. Orientation and AroundCurve use their circle plane.
+The option is on initially and is remembered across Circle invocations.
+Typed coordinates and Circumference or Area picks use the full 3D input.
 Numeric sizes and picked sizes match the corresponding
 [Rhino records](../circle-size-options-rhino-reference.json) and
 [pick records](../circle-size-picks-rhino-reference.json) within `1e-10`.

@@ -269,6 +269,7 @@ impl ViewKind {
 pub struct DraftingInput {
     pub active: bool,
     pub osnap: viboceros_drafting::ObjectSnapModes,
+    pub snap_projection: Option<Frame3>,
     pub mesh_edges: bool,
     pub smart_track: bool,
     pub grid_snap: bool,
@@ -286,6 +287,7 @@ impl Default for DraftingInput {
         Self {
             active: false,
             osnap: Default::default(),
+            snap_projection: None,
             mesh_edges: false,
             smart_track: false,
             grid_snap: false,
@@ -2803,11 +2805,7 @@ impl Viewport {
                 .is_none_or(|filter| !filter.awaiting_source())
             && let Ok(circle) = construction.circle(cursor.point, plane, document.tolerance())
         {
-            let mut projected = ProjectedPrimitives::default();
-            self.add_projected_nurbs_curve(&mut projected, rect, &circle);
-            for segment in projected.segments {
-                painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-            }
+            self.paint_curve_draft(&painter, rect, &circle);
         }
         if let Some(getter) = input.circle_around_input {
             self.paint_draft_points(&painter, rect, &[getter.center()]);
@@ -2816,11 +2814,7 @@ impl Viewport {
                     .circle_around_output
                     .map_or_else(|| circle.to_nurbs(), |o| o.curve(circle))
             {
-                let mut projected = ProjectedPrimitives::default();
-                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-                for segment in projected.segments {
-                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-                }
+                self.paint_curve_draft(&painter, rect, &curve);
             }
         }
         if let Some(getter) = input.circle_deform_input {
@@ -2828,11 +2822,7 @@ impl Viewport {
                 self.paint_draft_points(&painter, rect, &[point]);
             }
             if let Some(curve) = drafting_cursor.and_then(|c| getter.preview(c.point)) {
-                let mut projected = ProjectedPrimitives::default();
-                self.add_projected_nurbs_curve(&mut projected, rect, &curve);
-                for segment in projected.segments {
-                    painter.line_segment(segment, Stroke::new(2., Color32::from_rgb(20, 115, 190)));
-                }
+                self.paint_curve_draft(&painter, rect, &curve);
             }
         }
         if let Some(getter) = input.ellipse_input {
@@ -6703,6 +6693,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(0.0, 0.0, 8.0)),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6742,6 +6733,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6774,6 +6766,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(anchor),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6947,6 +6940,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(8.0, 8.0, 6.0)),
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();
@@ -6984,6 +6978,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    snap_projection: None,
                 },
             )
             .unwrap();

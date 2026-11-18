@@ -125,8 +125,14 @@ impl VibocerosApp {
                 Mode::Diameter => format!(" <{}>", 2. * s.preferences.radius),
                 _ => String::new(),
             };
+            let snap_option =
+                if s.owner == Owner::Circle && matches!(s.mode, Mode::Radius | Mode::Diameter) {
+                    ", ProjectOsnap"
+                } else {
+                    ""
+                };
             format!(
-                "{}{}; Radius, Diameter, Circumference, Area",
+                "{}{}; Radius, Diameter, Circumference, Area{snap_option}",
                 input.size_mode().label(),
                 default
             )
@@ -340,6 +346,9 @@ impl VibocerosApp {
             return false;
         }
         if !self.validate_circle_around_curve() {
+            return true;
+        }
+        if self.try_continue_circle_snap_projection(text) {
             return true;
         }
         let word = text.trim().trim_start_matches(['_', '-']);

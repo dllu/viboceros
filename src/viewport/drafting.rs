@@ -28,6 +28,21 @@ pub(super) struct CursorConstraints {
 }
 
 impl Viewport {
+    pub(super) fn paint_curve_draft(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        curve: &impl ViewportCurve,
+    ) {
+        // A new curve can extend past every existing object's display depth.
+        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        curve.visit_segments(|start, end| {
+            if let Some(segment) = self.project_segment(start, end, rect) {
+                painter.line_segment(segment, stroke);
+            }
+        });
+    }
+
     /// Translation line picks remain usable when the CPlane is edge-on. A
     /// free mouse pick follows the closest point to the viewing line; object snaps
     /// and point filters continue to provide explicit 3D source coordinates.
@@ -272,8 +287,18 @@ impl Viewport {
         } else {
             None
         };
-        let point = object_snap
-            .map(ObjectSnap::point)
+        let snapped_point = if let Some(snap) = object_snap {
+            let point = snap.point();
+            Some(if let Some(plane) = input.snap_projection {
+                let [x, y] = plane.projected_coordinates_of(point).ok()?;
+                plane.point_at([x, y, 0.]).ok()?
+            } else {
+                point
+            })
+        } else {
+            None
+        };
+        let point = snapped_point
             .or(ortho_point)
             .or_else(|| track.map(OrthogonalTrack::point))
             .or(grid_point)
