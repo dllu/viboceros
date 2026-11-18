@@ -378,13 +378,9 @@ pub(super) enum InteractiveCommand {
     SubDCylinder {
         anchor: Option<Point3>,
     },
-    SubDPrimitive {
-        kind: subd_primitives::Kind,
+    RectanglePrimitive {
+        kind: rectangle_primitives::Kind,
         anchor: Option<Point3>,
-    },
-    Box {
-        base: Option<Point3>,
-        opposite: Option<Point3>,
     },
     SelBox {
         base: Option<Point3>,
@@ -402,13 +398,6 @@ pub(super) enum InteractiveCommand {
         first: Option<Point3>,
         x_count: usize,
         y_count: usize,
-    },
-    MeshBox {
-        base: Option<Point3>,
-        opposite: Option<Point3>,
-        x_count: usize,
-        y_count: usize,
-        z_count: usize,
     },
     Pyramid {
         kind: viboceros_command::pyramid::Kind,

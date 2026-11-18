@@ -113,7 +113,7 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_axial_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_primitive_point(point) {
+        if let Some(accepted) = self.accept_rectangle_primitive_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_rectangle_point(point) {
@@ -241,7 +241,7 @@ impl VibocerosApp {
             | InteractiveCommand::SubDCone { .. }
             | InteractiveCommand::SolidAxial { .. }
             | InteractiveCommand::SubDCylinder { .. }
-            | InteractiveCommand::SubDPrimitive { .. }
+            | InteractiveCommand::RectanglePrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::Plane { .. }
             | InteractiveCommand::SurfaceFlow { .. }
@@ -1098,101 +1098,12 @@ impl VibocerosApp {
                     y_count
                 ));
             }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                let command = InteractiveCommand::MeshBox {
-                    base: Some(point),
-                    opposite: None,
-                    x_count,
-                    y_count,
-                    z_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("First base corner: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshBox {
-                base: Some(base),
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                if !plane_rectangle_exceeds_tolerance(plane, base, point, self.document.tolerance())
-                {
-                    self.push_log(
-                        "Error: mesh-box base width and depth must both exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                let local_plane = plane.with_origin(base);
-                let Ok(opposite) = local_plane
-                    .coordinates_of(point)
-                    .and_then(|[x, y, _]| local_plane.point_at([x, y, 0.0]))
-                else {
-                    self.push_log("Error: mesh-box base corner is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshBox {
-                    base: Some(base),
-                    opposite: Some(opposite),
-                    x_count,
-                    y_count,
-                    z_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Opposite base corner: {}",
-                    format_model_point(opposite)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshBox {
-                base: Some(base),
-                opposite: Some(opposite),
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                if !plane
-                    .with_origin(base)
-                    .coordinates_of(point)
-                    .is_ok_and(|p| p[2].abs() > self.document.tolerance().absolute())
-                {
-                    self.push_log("Error: mesh-box height must exceed model tolerance".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshBox {} {} {} XCount={} YCount={} ZCount={}",
-                    format_model_point(base),
-                    format_model_point(opposite),
-                    format_model_point(point),
-                    x_count,
-                    y_count,
-                    z_count
-                ));
-            }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: Some(_),
-                ..
-            } => unreachable!("mesh-box opposite corner requires a base corner"),
-            InteractiveCommand::Box { base, opposite } => {
-                return self.apply_box_point(plane, base, opposite, point, None);
-            }
             InteractiveCommand::SelBox {
                 base,
                 opposite,
                 mode,
             } => {
-                return self.apply_box_point(plane, base, opposite, point, Some(mode));
+                return self.apply_selection_box_point(plane, base, opposite, point, mode);
             }
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);

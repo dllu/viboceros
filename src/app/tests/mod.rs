@@ -46,6 +46,7 @@ mod boolean_split_plane;
 mod boolean_split_topology;
 mod boolean_two;
 mod boolean_union;
+mod box_modes;
 #[path = "../../../crates/viboceros-command/tests/support/brep_comparison.rs"]
 #[allow(dead_code)]
 mod brep_comparison;

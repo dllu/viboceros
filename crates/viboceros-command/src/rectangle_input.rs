@@ -159,6 +159,15 @@ impl RectangleInput {
     pub fn anchor(self) -> Option<Point3> {
         self.points[1].or(self.points[0])
     }
+    pub fn square_plane(self) -> Option<Frame3> {
+        if self.length.is_none()
+            && matches!(self.mode, RectangleMode::Corners | RectangleMode::Center)
+        {
+            Some(self.plane.with_origin(self.points[0]?))
+        } else {
+            None
+        }
+    }
     pub fn requests_curve(self) -> bool {
         self.mode == RectangleMode::AroundCurve && self.points[0].is_none()
     }

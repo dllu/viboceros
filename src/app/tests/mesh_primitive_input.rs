@@ -133,31 +133,22 @@ fn interactive_mesh_box_retains_counts_and_validates_all_three_picks() {
     let base = point(5.0, 8.0, 3.0);
     app.accept_drafting_point(base);
     app.accept_drafting_point(point(5.0, 2.0, 9.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshBox {
-            base: Some(base),
-            opposite: None,
-            x_count: 2,
-            y_count: 3,
-            z_count: 2,
-        })
-    );
+    assert_eq!(app.mesh_box_counts, [2, 3, 2]);
+    let session = app.rectangle_primitive_session.as_ref().unwrap();
+    assert_eq!(session.rectangle.input.anchor(), Some(base));
+    assert!(session.base.is_none());
     assert_eq!(app.document.objects().len(), 0);
 
-    let opposite = point(1.0, 2.0, 3.0);
     app.accept_drafting_point(point(1.0, 2.0, 9.0));
     app.accept_drafting_point(point(9.0, 9.0, 3.0));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::MeshBox {
-            base: Some(base),
-            opposite: Some(opposite),
-            x_count: 2,
-            y_count: 3,
-            z_count: 2,
-        })
-    );
+    let base = app
+        .rectangle_primitive_session
+        .as_ref()
+        .unwrap()
+        .base
+        .unwrap();
+    assert_eq!(base.corners[0], point(1.0, 2.0, 3.0));
+    assert_eq!(base.corners[2], point(5.0, 8.0, 3.0));
     assert_eq!(app.document.objects().len(), 0);
 
     app.accept_drafting_point(point(9.0, 9.0, -1.0));

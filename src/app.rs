@@ -3,15 +3,15 @@ use std::collections::VecDeque;
 use eframe::egui::{self, RichText};
 use viboceros_command::interface::RectSelectionMode;
 use viboceros_command::{
-    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DistributionSettings, format_interp_curve_options, parse_curve_closure, parse_curve_degree,
+    CommandRegistry, DEFAULT_MESH_PLANE_FACE_COUNT, DistributionSettings,
+    format_interp_curve_options, parse_curve_closure, parse_curve_degree,
     parse_interp_curve_options, update_interp_curve_options,
 };
 use viboceros_document::{
     Document, DocumentError, Geometry, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_BOX_FACES, MAX_MESH_PLANE_FACES,
+    CircularArc3, ControlPointCurveClosure, Frame3, MAX_MESH_PLANE_FACES,
     MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
@@ -276,6 +276,7 @@ mod pyramid;
 mod radius;
 mod rail_revolve;
 mod rectangle;
+mod rectangle_primitives;
 mod refinement;
 mod remap_cplane;
 mod reparameterize;
@@ -306,7 +307,6 @@ mod subd_ellipsoid;
 #[path = "../crates/viboceros-command/tests/support/subd.rs"]
 #[allow(dead_code)]
 mod subd_native_tests;
-mod subd_primitives;
 mod subd_sphere;
 #[cfg(test)]
 #[path = "../crates/viboceros-geometry/tests/support/subdivision_native.rs"]
@@ -525,7 +525,8 @@ pub struct VibocerosApp {
     plane_surface_session: Option<plane_surface::Session>,
     srf_pt_session: Option<srf_pt::Session>,
     surface_point_grid_session: Option<surface_point_grid::Session>,
-    subd_primitive_session: Option<subd_primitives::Session>,
+    rectangle_primitive_session: Option<rectangle_primitives::Session>,
+    mesh_box_counts: [usize; 3],
     solid_axial_session: Option<solid_axial::Session>,
     pipe_session: Option<pipe::Session>,
     subd_axial_session: Option<subd_axial::Session>,
@@ -723,7 +724,8 @@ impl VibocerosApp {
             plane_surface_session: None,
             srf_pt_session: None,
             surface_point_grid_session: None,
-            subd_primitive_session: None,
+            rectangle_primitive_session: None,
+            mesh_box_counts: [10; 3],
             solid_axial_session: None,
             pipe_session: None,
             subd_axial_session: None,
@@ -916,7 +918,7 @@ impl VibocerosApp {
             || self.continue_subd_sphere(&input)
             || self.continue_solid_axial(&input)
             || self.continue_subd_axial(&input)
-            || self.continue_subd_primitive(&input)
+            || self.continue_rectangle_primitive(&input)
             || self.continue_surface_point_grid(&input)
             || self.continue_srf_pt(&input)
             || self.continue_plane_surface_option(&input)

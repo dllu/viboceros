@@ -636,6 +636,26 @@ impl Command for MeshBoxCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let plane = context.construction_plane;
+        if arguments
+            .iter()
+            .any(|argument| box_input::is_extended(argument))
+            || matches!(arguments, [count, first, ..]
+                if count.parse::<usize>().is_ok_and(|n| n > 0) && first.contains(','))
+        {
+            let scripted = box_input::from_arguments(document, arguments, plane, Some([10; 3]))?;
+            let counts = scripted.counts.unwrap();
+            let geometry = box_input::mesh(
+                scripted.definition,
+                counts,
+                scripted.ordered_height,
+                document.tolerance(),
+            )?;
+            let id = document.add_geometry(Geometry::Mesh(geometry))?;
+            let [x, y, z] = counts;
+            return Ok(format!(
+                "Added closed mesh box {id} ({x} × {y} × {z} side divisions)"
+            ));
+        }
         let leading_options = mesh_box_leading_option_count(arguments);
         let (base_corner, opposite_corner, height, options) = if leading_options == 0 {
             let (base_corner, base_consumed) = parse_point(arguments)?;
@@ -709,6 +729,17 @@ impl Command for BoxCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let plane = context.construction_plane;
+        if arguments
+            .iter()
+            .any(|argument| box_input::is_extended(argument))
+        {
+            let scripted = box_input::from_arguments(document, arguments, plane, None)?;
+            let extrusion = self.0.get().0;
+            let geometry = box_input::solid(scripted.definition, extrusion, document.tolerance())?;
+            let id = document.add_geometry(Geometry::Brep(geometry))?;
+            let kind = if extrusion { "extrusion" } else { "B-rep" };
+            return Ok(format!("Added closed {kind} box {id}"));
+        }
         let (base_corner, base_consumed) = parse_point(arguments)?;
         let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
         let option_start = base_consumed + opposite_consumed;

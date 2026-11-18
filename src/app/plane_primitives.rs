@@ -1,22 +1,19 @@
-//! Interactive box state; geometry and transactions remain in the command layer.
+//! Staged rectangular volume selection.
 use super::*;
 
 impl VibocerosApp {
-    pub(super) fn apply_box_point(
+    pub(super) fn apply_selection_box_point(
         &mut self,
         plane: Frame3,
         base: Option<Point3>,
         opposite: Option<Point3>,
         point: Point3,
-        selection_mode: Option<RectSelectionMode>,
+        mode: RectSelectionMode,
     ) -> bool {
-        let command = |base, opposite| match selection_mode {
-            Some(mode) => InteractiveCommand::SelBox {
-                base,
-                opposite,
-                mode,
-            },
-            None => InteractiveCommand::Box { base, opposite },
+        let command = |base, opposite| InteractiveCommand::SelBox {
+            base,
+            opposite,
+            mode,
         };
         let command = match (base, opposite) {
             (None, None) => command(Some(point), None),
@@ -48,15 +45,8 @@ impl VibocerosApp {
                     return false;
                 }
                 self.active_command = None;
-                let mode_option = selection_mode
-                    .map_or_else(String::new, |mode| format!(" SelectionMode={mode:?}"));
                 self.execute_command(&format!(
-                    "{} {} {} {}{mode_option}",
-                    if selection_mode.is_some() {
-                        "SelBox"
-                    } else {
-                        "Box"
-                    },
+                    "SelBox {} {} {} SelectionMode={mode:?}",
                     format_model_point(base),
                     format_model_point(opposite),
                     format_model_point(point)

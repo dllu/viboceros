@@ -87,7 +87,7 @@ impl VibocerosApp {
         {
             return true;
         }
-        if self.start_subd_primitive(input) {
+        if self.start_rectangle_primitive(input) {
             return true;
         }
         if self.start_surface_point_grid(input)
@@ -374,67 +374,6 @@ impl VibocerosApp {
                 third: None,
                 width: None,
                 options,
-            }
-        } else if normalized == "meshbox" {
-            let mut x_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut y_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut z_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut seen = [false; 3];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let Ok(count) = value.parse::<usize>() else {
-                    return false;
-                };
-                if count == 0 {
-                    return false;
-                }
-                let option_index = if name.eq_ignore_ascii_case("XCount") {
-                    0
-                } else if name.eq_ignore_ascii_case("YCount") {
-                    1
-                } else if name.eq_ignore_ascii_case("ZCount") {
-                    2
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                match option_index {
-                    0 => x_count = count,
-                    1 => y_count = count,
-                    2 => z_count = count,
-                    _ => unreachable!("mesh-box option index is in range"),
-                }
-                seen[option_index] = true;
-            }
-            if x_count
-                .checked_mul(y_count)
-                .and_then(|xy| {
-                    x_count
-                        .checked_mul(z_count)
-                        .and_then(|xz| xy.checked_add(xz))
-                })
-                .and_then(|xy_xz| {
-                    y_count
-                        .checked_mul(z_count)
-                        .and_then(|yz| xy_xz.checked_add(yz))
-                })
-                .and_then(|half| half.checked_mul(2))
-                .is_none_or(|face_count| face_count > MAX_MESH_BOX_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
             }
         } else if normalized == "meshplane" {
             let mut x_count = DEFAULT_MESH_PLANE_FACE_COUNT;
@@ -1434,10 +1373,6 @@ impl VibocerosApp {
                     clockwise: true,
                 },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
-                "box" => InteractiveCommand::Box {
-                    base: None,
-                    opposite: None,
-                },
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,

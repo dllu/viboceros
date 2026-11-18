@@ -45,6 +45,7 @@ mod mesh_seams;
 use mesh_component_unweld::{UnweldEdgeCommand, UnweldVertexCommand};
 use mesh_component_weld::{WeldEdgeCommand, WeldVerticesCommand};
 use mesh_seams::{UnweldCommand, WeldCommand};
+pub mod box_input;
 pub mod insert_point;
 mod morph_edit;
 pub mod orient_curve;

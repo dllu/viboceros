@@ -113,7 +113,7 @@ impl VibocerosApp {
         self.plane_surface_session = None;
         self.srf_pt_session = None;
         self.surface_point_grid_session = None;
-        self.subd_primitive_session = None;
+        self.rectangle_primitive_session = None;
         self.solid_axial_session = None;
         self.cancel_pipe();
         self.subd_axial_session = None;

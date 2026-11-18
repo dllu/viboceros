@@ -456,6 +456,7 @@ pub struct ViewportInput<'a> {
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
+    pub box_square_plane: Option<Frame3>,
     pub srf_pt_input: Option<viboceros_command::srf_pt::Input>,
     pub surface_point_grid: Option<(&'a [Point3], usize)>,
     pub flow_preview: Option<FlowPreview<'a>>,
@@ -607,6 +608,7 @@ impl Default for ViewportInput<'_> {
             conic_input: None,
             conic_reference: None,
             rectangle_input: None,
+            box_square_plane: None,
             srf_pt_input: None,
             surface_point_grid: None,
             flow_preview: None,
@@ -692,6 +694,7 @@ pub struct ViewportOutput {
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
+    pub square_box_pick: bool,
     /// Snap attached to this accepted point, never a stale hover candidate.
     pub picked_snap: Option<viboceros_drafting::ObjectSnap>,
     /// Resolved hovered drafting location, without accepting a point or editing
@@ -1928,6 +1931,19 @@ impl Viewport {
         } else {
             None
         };
+        let mut square_box = false;
+        if modifiers.shift
+            && let Some(plane) = input.box_square_plane
+            && let Some(cursor) = drafting_cursor.as_mut()
+            && let Ok(corner) = viboceros_command::box_input::square_corner(plane, cursor.point)
+        {
+            square_box = true;
+            cursor.source_point = corner;
+            cursor.point = corner;
+            cursor.object_snap = None;
+            cursor.track = None;
+            cursor.grid_snapped = false;
+        }
         if let Some(target) = input.normal_surface
             && !input
                 .point_filter
@@ -3439,6 +3455,7 @@ impl Viewport {
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
+            square_box_pick: square_box && response.clicked_by(PointerButton::Primary),
             picked_snap: (response.clicked_by(PointerButton::Primary)
                 && input.insert_edges.is_none()
                 && !input.parametric_pick

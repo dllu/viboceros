@@ -94,7 +94,6 @@ impl InteractiveCommand {
             Self::Conic { .. } => "Conic",
             Self::Rectangle { .. } => "Rectangle",
             Self::Plane { .. } => "Plane",
-            Self::Box { .. } => "Box",
             Self::SubDSphere { .. } => "SubDSphere",
             Self::Torus { kind, .. } => kind.name(),
             Self::SubDEllipsoid { .. } => "SubDEllipsoid",
@@ -102,11 +101,10 @@ impl InteractiveCommand {
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
             Self::SubDTruncatedCone { .. } => "SubDTruncatedCone",
-            Self::SubDPrimitive { kind, .. } => kind.name(),
+            Self::RectanglePrimitive { kind, .. } => kind.name(),
             Self::SelBox { .. } => "SelBox",
             Self::PointGrid { .. } => "PointGrid",
             Self::MeshPlane { .. } => "MeshPlane",
-            Self::MeshBox { .. } => "MeshBox",
             Self::Polygon { .. } => "Polygon",
             Self::Pyramid { kind, .. } => kind.name(),
             Self::SurfacePointGrid { control, .. } => {
@@ -206,7 +204,7 @@ impl InteractiveCommand {
             | Self::SolidAxial { anchor: base, .. }
             | Self::Pipe { anchor: base, .. }
             | Self::SubDCylinder { anchor: base }
-            | Self::SubDPrimitive { anchor: base, .. } => base,
+            | Self::RectanglePrimitive { anchor: base, .. } => base,
             Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
@@ -292,11 +290,9 @@ impl InteractiveCommand {
             | Self::Conic { anchor: None }
             | Self::Rectangle { first: None }
             | Self::Plane { first: None }
-            | Self::Box { base: None, .. }
             | Self::SelBox { base: None, .. }
             | Self::PointGrid { base: None, .. }
             | Self::MeshPlane { first: None, .. }
-            | Self::MeshBox { base: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -392,11 +388,9 @@ impl InteractiveCommand {
             | Self::Conic { anchor: start }
             | Self::Rectangle { first: start }
             | Self::Plane { first: start }
-            | Self::Box { base: start, .. }
             | Self::SelBox { base: start, .. }
             | Self::PointGrid { base: start, .. }
             | Self::MeshPlane { first: start, .. }
-            | Self::MeshBox { base: start, .. }
             | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }

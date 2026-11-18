@@ -489,9 +489,9 @@ impl VibocerosApp {
                     .as_ref()
                     .or_else(|| self.plane_surface_session.as_ref().map(|s| &s.rectangle))
                     .or_else(|| {
-                        self.subd_primitive_session
+                        self.rectangle_primitive_session
                             .as_ref()
-                            .filter(|s| s.base.is_none())
+                            .filter(|s| s.building_rectangle())
                             .map(|s| &s.rectangle)
                     })
                     .or_else(|| self.surface_flow_session.as_ref()?.plane.as_ref())
@@ -1363,9 +1363,9 @@ impl VibocerosApp {
                                         .map(subd_axial::Session::preview_curves)
                                 })
                                 .or_else(|| {
-                                    self.subd_primitive_session
+                                    self.rectangle_primitive_session
                                         .as_ref()
-                                        .map(subd_primitives::Session::preview_curves)
+                                        .map(rectangle_primitives::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.surface_offset_session
@@ -1452,6 +1452,9 @@ impl VibocerosApp {
                             conic_input,
                             conic_reference,
                             rectangle_input,
+                            box_square_plane: rectangle_input.and_then(|_| {
+                                self.rectangle_primitive_session.as_ref()?.square_plane()
+                            }),
                             srf_pt_input,
                             surface_point_grid,
                             surface_flow_preview: self

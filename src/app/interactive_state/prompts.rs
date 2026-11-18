@@ -419,17 +419,6 @@ impl InteractiveCommand {
             Self::MeshPlane { first: Some(_), .. } => {
                 "MeshPlane: pick the opposite corner in the viewport (Esc to cancel)"
             }
-            Self::MeshBox { base: None, .. } => {
-                "MeshBox: pick the first base corner in the viewport (Esc to cancel)"
-            }
-            Self::MeshBox {
-                base: Some(_),
-                opposite: None,
-                ..
-            } => "MeshBox: pick the opposite base corner in the viewport (Esc to cancel)",
-            Self::MeshBox {
-                opposite: Some(_), ..
-            } => "MeshBox: pick the height in the viewport (Esc to cancel)",
             Self::PointGrid {
                 base: None,
                 options,
@@ -509,22 +498,15 @@ impl InteractiveCommand {
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }
-            Self::SubDPrimitive {
-                kind: subd_primitives::Kind::Box,
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::Box,
                 ..
             } => "SubDBox: pick the base or height; Esc cancels",
-            Self::SubDPrimitive {
-                kind: subd_primitives::Kind::Plane,
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::Plane,
                 ..
             } => "SubDPlane: pick rectangle points; Esc cancels",
-            Self::Box { base: None, .. } => "Box: pick the first base corner (Esc to cancel)",
-            Self::Box {
-                base: Some(_),
-                opposite: None,
-            } => "Box: pick the opposite base corner (Esc to cancel)",
-            Self::Box {
-                opposite: Some(_), ..
-            } => "Box: pick a height point (Esc to cancel)",
+            Self::RectanglePrimitive { .. } => "Pick a box corner or height; Esc cancels",
             Self::SelBox { base: None, .. } => "SelBox: pick the first base corner (Esc to cancel)",
             Self::SelBox {
                 base: Some(_),
