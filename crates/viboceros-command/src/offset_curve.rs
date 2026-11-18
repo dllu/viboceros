@@ -7,7 +7,7 @@ mod multiple;
 mod staged;
 pub use getter::{Cap, Kind, OptionName, Settings, parse_length, parse_settings};
 use multiple::MultipleOptions;
-pub use staged::{Draft, Plan, Target};
+pub use staged::{Draft, Plan, SourceOwner, Target};
 
 #[cfg(test)]
 mod multiple_tests;

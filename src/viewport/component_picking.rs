@@ -16,6 +16,7 @@ pub enum ComponentPickFilter {
     SubDExtrude,
     MeshAndSubDFaces,
     MeshAndSubDEdges,
+    MeshAndSubDVertices,
     /// Individual stored mesh faces, including faces inside logical n-gons.
     RawMeshFaces,
     Crease,
@@ -71,6 +72,9 @@ impl Viewport {
     ) -> Vec<ComponentPick> {
         if !pointer.is_finite() || !rect.contains(pointer) {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::MeshAndSubDVertices {
+            return self.pick_polygon_vertices(pointer, rect, document);
         }
         if filter == ComponentPickFilter::MeshAndSubDEdges {
             return self
@@ -290,6 +294,23 @@ impl Viewport {
             || selection.height() < 2.
         {
             return Vec::new();
+        }
+        if filter == ComponentPickFilter::MeshAndSubDVertices {
+            return document
+                .selectable_objects()
+                .filter(|o| matches!(o.geometry(), Geometry::Mesh(_) | Geometry::SubD(_)))
+                .flat_map(|object| {
+                    self.polygon_edges_in_rectangle(
+                        viewport, selection, document, object, crossing, inverted,
+                    )
+                })
+                .filter(|pick| {
+                    matches!(
+                        pick.kind,
+                        ComponentSelectionKind::MeshVertex | ComponentSelectionKind::SubDVertex
+                    )
+                })
+                .collect();
         }
         if filter == ComponentPickFilter::SubDExtrude {
             let mut result = Vec::new();

@@ -31,6 +31,7 @@ mod curve_offset;
 pub(crate) use curve_offset::OffsetDraft;
 mod cutting;
 pub(crate) mod direction;
+mod placement;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -378,6 +379,11 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
+    pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
+    pub placement_preview: Option<&'a viboceros_command::placement::Placement>,
+    pub distribution_source_pick: bool,
+    pub alignment_curve_pick: Option<&'a viboceros_command::align::AlignmentSources>,
+    pub alignment_plane_preview: Option<viboceros_command::rectangle_input::RectangleDefinition>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -550,6 +556,11 @@ impl Default for ViewportInput<'_> {
             direction: None,
             insert_edges: None,
             insert_mesh: None,
+            offset_mesh_preview: None,
+            placement_preview: None,
+            distribution_source_pick: false,
+            alignment_curve_pick: None,
+            alignment_plane_preview: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -697,6 +708,7 @@ pub struct ViewportOutput {
     pub zoom_target_result: Option<Result<bool, &'static str>>,
     pub zoom_target_cancelled: bool,
     pub edge_click: Option<Vec<EdgePick>>,
+    pub edge_click_modifiers: egui::Modifiers,
     /// Original edge locations at the click pixel, retained through ambiguity.
     pub edge_contacts: Vec<(EdgePick, Point3)>,
     pub mesh_boundary_edge_click: Option<Vec<usize>>,
@@ -717,6 +729,9 @@ pub struct ViewportOutput {
     /// Resolved hovered drafting location, without accepting a point or editing
     /// the model. Commands can use it for cursor-dependent options.
     pub drafting_hover: Option<Point3>,
+    pub drafting_resolved_hover: Option<Point3>,
+    pub alignment_curve_hover: Option<ObjectId>,
+    pub drafting_hover_is_free: bool,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
     pub mirror_preview: Option<Option<viboceros_geometry::AffineTransform3>>,
@@ -1515,8 +1530,16 @@ impl Viewport {
         let previous_maelstrom = input
             .maelstrom_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
+        let placement = input
+            .placement_preview
+            .map(|layout| self.placement_objects(document, layout));
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
+            .or_else(|| {
+                placement
+                    .as_ref()
+                    .map(object_preview::ObjectPreview::Deformed)
+            })
             .or_else(|| {
                 input
                     .instance_preview
@@ -1622,7 +1645,9 @@ impl Viewport {
                             && modifiers.shift
                             && (modifiers.ctrl || modifiers.command))
                             .then_some((
-                                if input.object_filter
+                                if input.distribution_source_pick {
+                                    ComponentPickFilter::MeshAndSubDVertices
+                                } else if input.object_filter
                                     == Some(ObjectSelectionFilter::SurfaceComponents)
                                 {
                                     ComponentPickFilter::Faces
@@ -2269,6 +2294,11 @@ impl Viewport {
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
+                placement
+                    .as_ref()
+                    .map(object_preview::ObjectPreview::Deformed)
+            })
+            .or_else(|| {
                 input
                     .instance_preview
                     .map(object_preview::ObjectPreview::Instances)
@@ -2364,6 +2394,9 @@ impl Viewport {
                         input
                             .selection_allowed_objects
                             .is_none_or(|ids| ids.contains(id))
+                            && input
+                                .alignment_curve_pick
+                                .is_none_or(|sources| !sources.includes_owner(*id))
                     })
                     .collect::<Vec<_>>(),
                 )
@@ -2417,6 +2450,18 @@ impl Viewport {
                 },
             ),
         );
+        if let Some(rectangle) = input.alignment_plane_preview {
+            let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
+            for (a, b) in rectangle
+                .corners
+                .into_iter()
+                .zip(rectangle.corners.into_iter().cycle().skip(1))
+            {
+                if let Some(segment) = self.project_selection_segment(a, b, rect) {
+                    painter.line_segment(segment, stroke);
+                }
+            }
+        }
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         if (input.chain_pick || input.length_pick)
@@ -3433,6 +3478,11 @@ impl Viewport {
         if let Some(edges) = input.extrude_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }
+        if let Some(preview) = input.offset_mesh_preview {
+            for mesh in preview.meshes() {
+                self.paint_mesh_draft(&painter, rect, mesh);
+            }
+        }
         if let Some(edges) = input.offset_subd_edges {
             self.paint_insert_edges(&painter, rect, edges, None);
         }
@@ -3539,6 +3589,7 @@ impl Viewport {
                         .unwrap_or_default()
                 }),
             edge_click,
+            edge_click_modifiers: modifiers,
             edge_contacts,
             face_click,
             face_hit_point,
@@ -3588,6 +3639,41 @@ impl Viewport {
                         .or_else(|| drafting_cursor.map(|cursor| cursor.source_point))
                 })
                 .flatten(),
+            drafting_resolved_hover: response
+                .hovered()
+                .then_some(drafting_cursor)
+                .flatten()
+                .filter(|_| {
+                    !input
+                        .point_filter
+                        .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+                })
+                .map(|cursor| cursor.point),
+            alignment_curve_hover: input
+                .alignment_curve_pick
+                .filter(|_| selecting && !modifiers.any())
+                .and_then(|sources| {
+                    self.pick_object_candidates_matching_preview_excluding(
+                        response.hover_pos()?,
+                        rect,
+                        document,
+                        ObjectSelectionFilter::Curves,
+                        None,
+                        None,
+                    )
+                    .into_iter()
+                    .find(|id| !sources.includes_owner(*id))
+                }),
+            drafting_hover_is_free: response.hovered()
+                && input.point_filter.is_none()
+                && input.point_constraint.is_none()
+                && drafting_cursor.is_some_and(|cursor| {
+                    cursor.object_snap.is_none()
+                        && cursor.track.is_none()
+                        && !cursor.ortho
+                        && !cursor.ortho_z
+                        && !cursor.grid_snapped
+                }),
             blend_curve_handle: blend_curve_selection.map(|p| p.0),
             blend_curve_symmetric: blend_curve_selection.is_some_and(|p| p.1),
             blend_curve_angle: blend_curve_selection.is_some_and(|p| p.2),

@@ -1,7 +1,7 @@
 //! Camera context for view-dependent getters and modeling commands.
 use crate::CommandError;
 use viboceros_geometry::{
-    Frame3, MeshOutlineProjection, NurbsCurve, Point3, Vector3, WeightedPoint3,
+    Frame3, MeshOutlineProjection, NurbsCurve, Point3, UnitVector3, Vector3, WeightedPoint3,
 };
 use viboceros_io::{ThreeDmNamedView, ThreeDmProjection};
 
@@ -25,6 +25,16 @@ impl PointerRay {
             forward_only,
         })
     }
+    /// Closest point on a world axis to this viewport's sight line.
+    pub fn closest_point_on_axis(self, anchor: Point3, axis: UnitVector3) -> Option<Point3> {
+        crate::translation::DestinationConstraint {
+            anchor,
+            direction: Some(axis),
+            distance: None,
+        }
+        .project_view_line(anchor.vector_to(self.origin).ok()?, self.direction)
+    }
+
     pub fn on_plane(self, plane: Frame3) -> Result<Option<Point3>, CommandError> {
         Ok(viboceros_drafting::plane::intersect_view_line(
             self.origin,

@@ -1,3 +1,6 @@
+mod grips;
+mod preview;
+
 use super::*;
 fn enter(app: &mut VibocerosApp, text: &str) {
     app.command_input = text.into();

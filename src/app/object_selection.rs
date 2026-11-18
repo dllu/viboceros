@@ -348,6 +348,12 @@ impl PendingObjectCommand {
             ObjectPromptPhase::RebuildValue(_) | ObjectPromptPhase::MergeSurfaceValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
+            ObjectPromptPhase::Selecting if self.description.command == "Distribute" => {
+                "Select at least three objects, groups, or grips, then press Enter."
+            }
+            ObjectPromptPhase::Selecting if self.description.command == "OffsetMesh" => {
+                "OffsetMesh select meshes, then press Enter".into()
+            }
             ObjectPromptPhase::Selecting if self.description.command == "OffsetSubD" => {
                 "Select SubD objects; Enter opens offset options, Esc cancels"
             }
@@ -564,6 +570,9 @@ impl VibocerosApp {
                 self.picking_array_curve()
                     .then_some(ObjectSelectionFilter::Curves)
             };
+        }
+        if self.curve_offset_distance_input() {
+            return None;
         }
         if self.surface_offset_session.is_some() {
             return if self.picking_surface_offset_face() {
@@ -929,7 +938,8 @@ impl VibocerosApp {
             .count();
         let selected_grips = if matches!(
             description.command,
-            "Circle FitPoints"
+            "Align"
+                | "Circle FitPoints"
                 | "Cone FitPoints"
                 | "Cylinder FitPoints"
                 | "Tube FitPoints"
@@ -984,7 +994,9 @@ impl VibocerosApp {
                 .count()
                 == 2
         } else {
-            selected_objects + selected_grips >= required || length_edges
+            selected_objects + selected_grips >= required
+                || length_edges
+                || (description.command == "Align" && self.has_alignment_components())
         };
         if description.command == "Smooth"
             && preselected
@@ -1107,9 +1119,8 @@ impl VibocerosApp {
                     | "CurvatureAnalysis"
                     | "TweenSurfaces"
                     | "OffsetSrf"
-                    | "Offset"
-                    | "OffsetMultiple"
                     | "Ribbon"
+                    | "OffsetMesh"
                     | "OffsetSubD"
                     | "Rebuild"
                     | "ShowEdges"
@@ -1216,6 +1227,17 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_curve_offset(input) {
+            return true;
+        }
+        if self
+            .subcurve_prompt
+            .as_ref()
+            .is_some_and(|p| p.offset_temporary)
+            || self.curve_offset_distance_input()
+        {
+            return false;
+        }
         if self.continue_merge_surface_options(input) {
             return true;
         }
@@ -1426,9 +1448,12 @@ impl VibocerosApp {
                     return true;
                 }
                 let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
-                let has_eligible_picks = (pending.description.command == "Length"
-                    && !pending.subcurve_measurement
-                    && self.has_length_edges())
+                let has_eligible_picks = (pending.description.command == "Align"
+                    && (self.document.selected_control_points().next().is_some()
+                        || self.has_alignment_components()))
+                    || (pending.description.command == "Length"
+                        && !pending.subcurve_measurement
+                        && self.has_length_edges())
                     || self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
                             && pending.description.filter.accepts_object(o)
@@ -1590,16 +1615,16 @@ impl VibocerosApp {
                 self.try_start_interactive_command(&command);
                 return true;
             }
-            if matches!(pending.description.command, "Offset" | "OffsetMultiple") {
+            if pending.description.command == "OffsetSrf" {
                 self.object_prompt = None;
-                if self.start_curve_offset(&command, pending.postselected) {
+                if self.start_offset_surface(&command, pending.postselected) {
                     return true;
                 }
                 self.object_prompt = Some(pending.clone());
             }
-            if pending.description.command == "OffsetSrf" {
+            if pending.description.command == "OffsetMesh" {
                 self.object_prompt = None;
-                if self.start_offset_surface(&command, pending.postselected) {
+                if self.start_offset_mesh(&command, pending.postselected) {
                     return true;
                 }
                 self.object_prompt = Some(pending.clone());
@@ -1632,15 +1657,9 @@ impl VibocerosApp {
             }
             if pending.description.command == "Align" {
                 self.object_prompt = None;
-                if self.try_start_interactive_command(&command) {
-                    if let Some(InteractiveCommand::Align { postselected, .. }) =
-                        &mut self.active_command
-                    {
-                        *postselected = pending.postselected;
-                    }
+                if self.start_align(&command, pending.postselected) {
                     return true;
                 }
-                // No-point modes execute directly after selection acceptance.
             }
             if pending.description.command == "EvaluateUVPt" && self.evaluate_uv_can_pick() {
                 self.object_prompt = None;
@@ -1792,7 +1811,8 @@ impl VibocerosApp {
                 self.select_prompt_objects(ids, SelectionMode::Add);
                 if matches!(
                     pending.description.command,
-                    "Circle FitPoints"
+                    "Align"
+                        | "Circle FitPoints"
                         | "Cone FitPoints"
                         | "Cylinder FitPoints"
                         | "Tube FitPoints"
@@ -1910,6 +1930,13 @@ impl VibocerosApp {
             return true;
         }
         let update = if pending.description.command == "Align" {
+            let choice;
+            let input = if let ObjectPromptPhase::Choice(index) = pending.phase {
+                choice = format!("{}={input}", pending.description.choices[index].name);
+                &choice
+            } else {
+                input
+            };
             self.update_align_selection(&pending.description, input)
                 .map(|description| pending.description = description)
         } else {
@@ -2337,6 +2364,7 @@ impl VibocerosApp {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+        self.record_curve_offset_whole_sources();
         if self.picking_nurbs_edges() {
             let whole = self.document.selected_object_ids().collect::<Vec<_>>();
             self.component_selection.release_objects(&whole);

@@ -47,6 +47,7 @@ impl VibocerosApp {
             self.arc_length_session
                 .and_then(|s| s.first)
                 .or_else(|| self.maelstrom_circle_anchor())
+                .or_else(|| self.distribute_session.as_ref()?.anchor())
                 .or_else(|| self.polyline_session.as_ref()?.input.anchor())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
                 .or(self.last_point.filter(|_| {
@@ -124,9 +125,11 @@ impl VibocerosApp {
         let point = parsed.and_then(|input| {
             input.resolve(
                 self.viewports[self.active_viewport].construction_plane(),
-                self.catenary_session
+                self.distribute_session
                     .as_ref()
-                    .and_then(|s| s.input.relative_base())
+                    .and_then(|s| s.anchor())
+                    .or_else(|| self.offset_mesh_session.as_ref()?.anchor())
+                    .or_else(|| self.catenary_session.as_ref()?.input.relative_base())
                     .or_else(|| {
                         self.spiral_session
                             .as_ref()

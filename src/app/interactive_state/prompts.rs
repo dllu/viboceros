@@ -16,6 +16,9 @@ impl InteractiveCommand {
             Self::OffsetSurface { .. } => {
                 "OffsetSrf: distance or options; click inputs to flip; Enter accepts, Esc cancels"
             }
+            Self::OffsetMesh => {
+                "OffsetMesh enter distance or options. Enter accepts the typed distance."
+            }
             Self::OffsetSubD => {
                 "OffsetSubD: enter distance or options; click inputs to flip; Enter commits, Esc cancels"
             }
@@ -663,12 +666,7 @@ impl InteractiveCommand {
             Self::ArrayLinear { start: Some(_), .. } => {
                 "ArrayLinear: pick the spacing point in the viewport (Esc to cancel)"
             }
-            Self::Distribute { start: None, .. } => {
-                "Distribute: pick the first direction point (Esc to cancel)"
-            }
-            Self::Distribute { start: Some(_), .. } => {
-                "Distribute: pick the second direction point (Esc to cancel)"
-            }
+            Self::Distribute => "Choose a distribution direction or edit Mode and Spacing.",
             Self::Array { start: None, .. } => {
                 "Array: pick the first cell corner in the viewport (Esc to cancel)"
             }

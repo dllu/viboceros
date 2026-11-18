@@ -217,6 +217,8 @@ impl VibocerosApp {
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
             && (self.object_prompt.is_none()
+                || self.selecting_alignment_sources()
+                || self.selecting_distribution_sources()
                 || self.picking_extract_points()
                 || self.picking_to_subd()
                 || self.picking_nurbs_edges()
@@ -598,6 +600,16 @@ impl VibocerosApp {
                     edge: pick.index,
                 });
             }
+            return;
+        }
+        if self.picking_curve_offset_edges() {
+            self.pick_curve_offset_edges(
+                picks.into_iter().map(|pick| crate::viewport::EdgePick {
+                    object: pick.object,
+                    edge: pick.index,
+                }),
+                action,
+            );
             return;
         }
         if self.picking_subcurve_edge() {

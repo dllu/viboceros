@@ -60,6 +60,9 @@ impl VibocerosApp {
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
+        self.validate_align();
+        self.validate_distribute();
+        self.validate_offset_mesh();
         self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
@@ -185,7 +188,7 @@ impl VibocerosApp {
             None
         } else if self.picking_face_append() {
             Some(viboceros_command::ObjectSelectionFilter::FaceAppend)
-        } else if self.picking_mesh_polyline() {
+        } else if self.picking_mesh_polyline() || self.picking_offset_mesh_flips() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
         } else if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
@@ -202,6 +205,16 @@ impl VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        if let Some(session) = &self.offset_mesh_session {
+            selection_preview_ids.extend(session.flip_picks());
+        }
+        selection_preview_ids.extend(
+            self.subcurve_prompt
+                .as_ref()
+                .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+                .filter(|reference| reference.source().1.is_none())
+                .map(|reference| reference.object_id()),
+        );
         selection_preview_ids.extend(self.surface_offset_selected_points());
         selection_preview_ids.extend(
             self.refinement_prompt
@@ -534,6 +547,13 @@ impl VibocerosApp {
                 .as_ref()
                 .and_then(orient_surface::Session::sphere_cursor_curve)
         });
+        let edge_curve = edge_curve.or_else(|| {
+            let reference = self.subcurve_prompt.as_ref()?.offset_reference()?;
+            (self.plane_prompt.is_none()
+                && self.point_filter.is_none()
+                && self.point_constraint.is_none())
+            .then_some(reference.curve())
+        });
         let edge_parameters =
             split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
         let edge_distance_parameters =
@@ -604,6 +624,20 @@ impl VibocerosApp {
         }
         let raw_mesh_face_highlights = self.component_selection.raw_face_picks(&self.document);
         let mut component_highlights = self.component_selection.highlights(&self.document);
+        component_highlights.extend(self.curve_offset_edge_highlights());
+        if let Some(reference) = self
+            .subcurve_prompt
+            .as_ref()
+            .and_then(subcurve_prompt::SubcurvePrompt::offset_reference)
+        {
+            if let Some(edge) = reference.source().1 {
+                component_highlights.push(crate::viewport::ComponentPick {
+                    object: reference.object_id(),
+                    index: edge,
+                    kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                });
+            }
+        }
         if let Some(p) = &self.fillet_surface_prompt {
             component_highlights.extend(p.highlights());
         }
@@ -997,6 +1031,12 @@ impl VibocerosApp {
             .as_ref()
             .map(|s| s.ids())
             .or_else(|| {
+                self.offset_mesh_session
+                    .as_ref()
+                    .filter(|s| s.flipping())
+                    .map(|s| s.ids())
+            })
+            .or_else(|| {
                 self.object_prompt
                     .as_ref()
                     .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
@@ -1174,6 +1214,34 @@ impl VibocerosApp {
         let selecting_perpendicular = model_input_active
             && (self.picking_curve_line()
                 || (self.picking_arc_blend() || self.picking_blend_curve()));
+        let isocurve_guides = self
+            .curve_offset_session
+            .as_ref()
+            .map(curve_offset::Session::portion_guides)
+            .unwrap_or_else(|| {
+                self.refinement_prompt
+                    .as_ref()
+                    .map_or(&[], refinement::Prompt::guides)
+            });
+        let distribution_source_pick = self.selecting_distribution_sources();
+        let alignment_curve_pick = self
+            .align_session
+            .as_ref()
+            .filter(|_| self.picking_alignment_curve())
+            .map(align::Session::sources);
+        let placement_preview = if model_input_active && self.plane_prompt.is_none() {
+            self.align_session
+                .as_ref()
+                .and_then(align::Session::preview)
+                .or_else(|| {
+                    self.distribute_session
+                        .as_ref()
+                        .and_then(distribute::Session::layout_preview)
+                        .map(viboceros_command::distribute::Layout::placement)
+                })
+        } else {
+            None
+        };
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1209,6 +1277,18 @@ impl VibocerosApp {
                                 .map(direction::Session::overlay),
                             insert_edges,
                             insert_mesh,
+                            offset_mesh_preview: self
+                                .offset_mesh_session
+                                .as_ref()
+                                .and_then(|s| s.preview()),
+                            placement_preview,
+                            alignment_curve_pick,
+                            alignment_plane_preview: self
+                                .align_session
+                                .as_ref()
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .and_then(align::Session::rectangle_preview),
+                            distribution_source_pick,
                             offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
                             inset_edges: self.inset_session.as_ref().map(|s| s.edges()),
                             extrude_subd_edges: self
@@ -1325,10 +1405,7 @@ impl VibocerosApp {
                             selection_preview_ids: &selection_preview_ids,
                             point_cloud_remove_target,
                             point_cloud_highlights: &point_cloud_highlights,
-                            isocurve_guides: self
-                                .refinement_prompt
-                                .as_ref()
-                                .map_or(&[], refinement::Prompt::guides),
+                            isocurve_guides,
                             select_uv_rows: self.select_uv_prompt.as_ref().and_then(|p| p.picker()),
                             control_removal: self
                                 .refinement_prompt
@@ -1626,10 +1703,40 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
-        let fillet_corners_point = viewport_outputs
+        let drafting_hover = viewport_outputs
             .iter()
-            .find_map(|output| output.drafting_hover);
-        if self.update_fillet_corners_preview(fillet_corners_point) {
+            .enumerate()
+            .find_map(|(viewport, output)| {
+                output
+                    .drafting_hover
+                    .map(|point| (point, viewport, output.drafting_hover_is_free))
+            });
+        let alignment_hover = viewport_outputs
+            .iter()
+            .enumerate()
+            .find_map(|(viewport, output)| {
+                (output.drafting_resolved_hover.is_some() || output.alignment_curve_hover.is_some())
+                    .then_some((
+                        output.drafting_resolved_hover,
+                        output.alignment_curve_hover,
+                        viewport,
+                    ))
+            });
+        let (align_point, align_curve, align_view) =
+            alignment_hover.unwrap_or((None, None, self.active_viewport));
+        if self.update_align_preview(align_point, align_curve, align_view) {
+            ui.ctx().request_repaint();
+        }
+        let distribution_hover = viewport_outputs
+            .iter()
+            .find_map(|output| output.drafting_resolved_hover);
+        if self.update_distribute_preview(distribution_hover) {
+            ui.ctx().request_repaint();
+        }
+        if self.update_offset_mesh_preview(drafting_hover) {
+            ui.ctx().request_repaint();
+        }
+        if self.update_fillet_corners_preview(drafting_hover.map(|(point, _, _)| point)) {
             ui.ctx().request_repaint();
         }
         let offset_draft = viewport_outputs

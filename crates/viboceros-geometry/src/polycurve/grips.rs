@@ -104,6 +104,15 @@ impl PolyCurve3 {
         map: impl Fn(Point3) -> Result<Point3, GeometryError>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.with_indexed_edit_grips(indices, |_, point| map(point), tolerance)
+    }
+
+    pub fn with_indexed_edit_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(usize, Point3) -> Result<Point3, GeometryError>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let (points, mappings) = self.grip_layout()?;
         if let Some(&index) = indices.last().filter(|&&i| i >= points.len()) {
             return Err(GeometryError::InvalidControlPointIndex {
@@ -125,7 +134,7 @@ impl PolyCurve3 {
                 .collect::<Vec<_>>();
             for (local, index) in mapping.iter().enumerate() {
                 if indices.contains(index) {
-                    stations[local] = map(stations[local])?;
+                    stations[local] = map(*index, stations[local])?;
                 }
             }
             for i in mapping.len()..stations.len() {
@@ -294,6 +303,14 @@ impl PolyCurve3 {
         indices: &BTreeSet<usize>,
         map: impl Fn(Point3) -> Result<Point3, GeometryError>,
     ) -> Result<Self, GeometryError> {
+        self.with_indexed_grips(indices, |_, point| map(point))
+    }
+
+    pub fn with_indexed_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(usize, Point3) -> Result<Point3, GeometryError>,
+    ) -> Result<Self, GeometryError> {
         let (points, mappings) = self.grip_layout()?;
         if let Some(&index) = indices.last().filter(|&&i| i >= points.len()) {
             return Err(GeometryError::InvalidControlPointIndex {
@@ -304,7 +321,13 @@ impl PolyCurve3 {
         let mapped = points
             .iter()
             .enumerate()
-            .map(|(i, &p)| if indices.contains(&i) { map(p) } else { Ok(p) })
+            .map(|(i, &p)| {
+                if indices.contains(&i) {
+                    map(i, p)
+                } else {
+                    Ok(p)
+                }
+            })
             .collect::<Result<Vec<_>, _>>()?;
         if mapped == points {
             return Ok(self.clone());

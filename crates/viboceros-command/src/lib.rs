@@ -1,7 +1,7 @@
 //! Extensible command registry, shared parsing and model-editing adapters.
 
 mod add_objects_to_block;
-mod align;
+pub mod align;
 mod apply_curves;
 pub mod arc_blend;
 pub mod array_curve_surface;
@@ -144,6 +144,7 @@ mod block_instance_tests;
 mod layout_units;
 #[cfg(test)]
 mod morph_test_support;
+pub mod placement;
 #[cfg(test)]
 mod transform_default_tests;
 pub use align::{AlignmentMode, AlignmentOptions};
@@ -328,7 +329,7 @@ mod bounding_box;
 pub use bounding_box::selected_bounding_box_center;
 mod block_selection;
 mod convert_extrusion;
-mod distribute;
+pub mod distribute;
 mod geometry_selection;
 pub mod infinite_plane;
 mod intersect_self;
@@ -345,7 +346,7 @@ pub mod inset;
 pub mod match_surface;
 pub mod merge_surfaces;
 mod object_name;
-mod offset_mesh;
+pub mod offset_mesh;
 pub mod offset_subd;
 pub mod offset_surface;
 pub mod pipe;

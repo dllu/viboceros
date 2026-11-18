@@ -161,7 +161,7 @@ impl AlignmentOptions {
                 mode_seen = true;
                 self.mode = Some(mode);
                 remaining = &remaining[1..];
-            } else if option_name_eq(token, "3Point") {
+            } else if option_name_eq(token, "3Point") || option_name_eq(token, "3Points") {
                 if plane_seen {
                     return Err(CommandError::Usage(USAGE));
                 }

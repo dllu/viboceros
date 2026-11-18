@@ -29,6 +29,9 @@ impl VibocerosApp {
         if self.extrude_subd_session.take().is_some() {
             self.component_selection.clear();
         }
+        self.align_session = None;
+        self.distribute_session = None;
+        self.release_offset_mesh();
         self.offset_subd_session = None;
         if self.ribbon_session.take().is_some_and(|s| s.postselected) {
             self.document.clear_selection();
@@ -67,7 +70,11 @@ impl VibocerosApp {
         self.cancel_tween_surfaces();
         self.cancel_planar_boolean();
         self.cancel_boolean_two();
-        if self.subcurve_prompt.take().is_some() {
+        if self
+            .subcurve_prompt
+            .take()
+            .is_some_and(|p| !p.offset_temporary)
+        {
             self.document.clear_selection();
         }
         self.cancel_surface_array();

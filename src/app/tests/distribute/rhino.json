@@ -1,0 +1,16 @@
+[
+  {"name":"axis-fresh","inputs":["Distribute","XAxis"],"points":[[0.0,0.0,0.0],[23.0,-5.0,10.0],[7.666666666666667,8.0,1.0],[15.333333333333334,2.0,4.0]],"grips":false},
+  {"name":"direction","inputs":["Distribute","Direction","w1,2,3","w4,7,9"],"points":[[0.0,0.0,0.0],[23.0,-5.0,10.0],[2.1285714285714286,6.5476190476190474,-0.7428571428571429],[14.585714285714285,1.3095238095238106,3.1714285714285726]],"grips":false},
+  {"name":"center-automatic","inputs":["Distribute","Mode=Center","YAxis"],"points":[[3.0,8.0,1.0],[23.0,-5.0,10.0],[0.0,-0.666666666666667,0.0],[15.0,3.666666666666666,4.0]],"grips":false},
+  {"name":"detail-signed","inputs":["Distribute","Mode=Center","Spacing=Distance","-4","XAxis"],"points":[[0.0,0.0,0.0],[-4.0,8.0,1.0],[-8.0,2.0,4.0],[-12.0,-5.0,10.0]],"grips":false},
+  {"name":"detail-zero","inputs":["Distribute","Spacing","0","XAxis"],"points":[[0.0,0.0,0.0],[0.0,8.0,1.0],[0.0,2.0,4.0],[0.0,-5.0,10.0]],"grips":false},
+  {"name":"detail-edit-second","inputs":["Distribute","Direction","w1,2,3","Mode=Center","Spacing","6","w4,7,9"],"points":[[0.0,0.0,0.0],[2.794268639659051,7.657114399431752,0.588537279318102],[15.91710870788953,3.5285145131492186,5.8342174157790625],[24.99709163326287,-1.6715139445618874,13.994183266525734]],"grips":false},
+  {"name":"input-measure","inputs":["Distribute","Spacing","w1,2,3","w1,5,7","XAxis"],"points":[[0.0,0.0,0.0],[5.0,8.0,1.0],[10.0,2.0,4.0],[15.0,-5.0,10.0]],"grips":false},
+  {"name":"input-measure-second","inputs":["Distribute","Direction","w0,0,0","Mode=Center","Spacing","w1,2,3","w1,5,7","w3,4,0"],"points":[[0.0,0.0,0.0],[1.0800000000000005,5.44,1.0],[23.12,-4.839999999999999,10.0],[17.64,5.5200000000000005,4.0]],"grips":false},
+  {"name":"input-automatic","inputs":["Distribute","Mode=Center","Spacing","5","Spacing","Automatic","XAxis"],"points":[[0.0,0.0,0.0],[23.0,-5.0,10.0],[7.666666666666667,8.0,1.0],[15.333333333333334,2.0,4.0]],"grips":false},
+  {"name":"input-grip-auto","inputs":["Distribute","Mode=Center","Spacing","Automatic","XAxis"],"points":[[0.0,0.0,0.0],[7.666666666666667,8.0,1.0],[15.333333333333334,2.0,4.0],[23.0,-5.0,10.0]],"grips":true},
+  {"name":"input-grip-signed","inputs":["Distribute","Mode=Gap","Spacing","-4","XAxis"],"points":[[0.0,0.0,0.0],[-4.0,8.0,1.0],[-8.0,2.0,4.0],[-12.0,-5.0,10.0]],"grips":true},
+  {"name":"command-first","inputs":["Distribute","@select","Spacing","Automatic","XAxis"],"points":[[0.0,0.0,0.0],[23.0,-5.0,10.0],[7.666666666666667,8.0,1.0],[15.333333333333334,2.0,4.0]],"grips":false,"postselected":true},
+  {"name":"mesh-vertex-grips","inputs":["Distribute","Spacing","4","XAxis"],"points":[[0.0,0.0,0.0],[4.0,-2.0,0.0],[12.0,3.0,0.0],[8.0,10.0,0.0]],"grips":true,"shape":"mesh","initial":[[0.0,0.0,0.0],[3.0,-2.0,0.0],[18.0,3.0,0.0],[14.0,10.0,0.0]]},
+  {"name":"subd-vertex-grips","inputs":["Distribute","Spacing","4","XAxis"],"points":[[0.0,0.0,0.0],[4.0,-2.0,0.0],[12.0,3.0,0.0],[8.0,10.0,0.0]],"grips":true,"shape":"subd","initial":[[0.0,0.0,0.0],[3.0,-2.0,0.0],[18.0,3.0,0.0],[14.0,10.0,0.0]]}
+]

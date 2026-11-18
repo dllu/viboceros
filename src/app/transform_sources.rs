@@ -6,7 +6,8 @@ use viboceros_command::{ObjectSelectionFilter, ObjectSelectionPrompt, ObjectSele
 pub(super) fn allows_grips(command: &str) -> bool {
     matches!(
         command,
-        "Stretch"
+        "Distribute"
+            | "Stretch"
             | "RemapCPlane"
             | "FlowAlongSrf"
             | "FlowAlongSurface"
@@ -54,7 +55,9 @@ pub(super) fn grip_argument(
 
 impl VibocerosApp {
     pub(super) fn start_transform_source_prompt(&mut self, command: &'static str) {
-        self.document.clear_selection();
+        if command != "Distribute" {
+            self.document.clear_selection();
+        }
         self.object_prompt = Some(PendingObjectCommand {
             description: ObjectSelectionPrompt {
                 command,
@@ -107,7 +110,15 @@ impl VibocerosApp {
         }
         if input.is_empty() || word.eq_ignore_ascii_case("Enter") {
             let sources = self.document.selected_object_ids().collect::<Vec<_>>();
-            if sources.is_empty()
+            if command == "Distribute" {
+                let actual = self.distribute_unit_count();
+                if actual < 3 {
+                    self.push_log(format!("Select at least three objects or grips to distribute. {actual} unit(s) selected."));
+                } else {
+                    self.object_prompt = None;
+                    self.start_distribute(&start_input, true);
+                }
+            } else if sources.is_empty()
                 && !(allows_grips(command)
                     && self.document.selected_control_points().next().is_some())
             {

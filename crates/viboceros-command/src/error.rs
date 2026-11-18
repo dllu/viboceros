@@ -438,6 +438,8 @@ pub enum CommandError {
     OffsetSurfaceCollapsedTorus,
     #[error("OffsetMesh requires selected meshes only")]
     UnsupportedOffsetMeshGeometry,
+    #[error("OffsetMesh inputs or tolerance changed; select the meshes again")]
+    OffsetMeshStale,
     #[error("OffsetSubD requires selected SubD objects")]
     UnsupportedOffsetSubDGeometry,
     #[error("ExtrudeSubD requires SubD faces or naked edges")]
@@ -1075,9 +1077,13 @@ pub enum CommandError {
 
     #[error("Distribute requires at least three independent objects or groups; found {actual}")]
     InsufficientDistributionObjects { actual: usize },
+    #[error("Distribute inputs or document tolerance changed; select the inputs again")]
+    DistributeStale,
 
     #[error("Align ToFitPlane requires at least three selected objects; found {actual}")]
     InsufficientPlaneAlignmentObjects { actual: usize },
+    #[error("Align inputs or target changed; select the inputs again")]
+    AlignStale,
 
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,

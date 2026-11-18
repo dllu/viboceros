@@ -425,6 +425,7 @@ fn type_to_command_frame(
 #[path = "../../../crates/viboceros-oracle/tests/support/subd_join.rs"]
 mod subd_native;
 
+mod offset_mesh;
 mod subd_offset;
 
 use subd_native as common;

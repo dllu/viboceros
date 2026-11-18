@@ -41,6 +41,12 @@ impl ComponentSelection {
     pub fn contains(&self, pick: &ComponentPick) -> bool {
         self.stored().picks.contains_key(pick)
     }
+    pub fn consume(&self, picks: &[ComponentPick]) {
+        let picks = picks.iter().copied().collect::<BTreeSet<_>>();
+        let mut stored = self.stored();
+        stored.picks.retain(|pick, _| !picks.contains(pick));
+        stored.order.retain(|pick| !picks.contains(pick));
+    }
     pub fn release_objects(&self, ids: &[ObjectId]) {
         let ids = ids.iter().copied().collect::<BTreeSet<_>>();
         let mut s = self.stored();

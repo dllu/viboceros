@@ -74,6 +74,14 @@ impl NurbsSurface {
         indices: &BTreeSet<usize>,
         map: impl Fn(Point3) -> Result<Point3, GeometryError>,
     ) -> Result<Self, GeometryError> {
+        self.with_indexed_grips(indices, |_, point| map(point))
+    }
+
+    pub fn with_indexed_grips(
+        &self,
+        indices: &BTreeSet<usize>,
+        map: impl Fn(usize, Point3) -> Result<Point3, GeometryError>,
+    ) -> Result<Self, GeometryError> {
         let [u_count, v_count] = self.grip_dimensions();
         let count = u_count * v_count;
         if let Some(&index) = indices.last().filter(|&&index| index >= count) {
@@ -88,7 +96,7 @@ impl NurbsSurface {
                 let v = index / self.control_point_count_u;
                 let grip = (u % u_count) * v_count + v % v_count;
                 let point = if indices.contains(&grip) {
-                    map(control.point())?
+                    map(grip, control.point())?
                 } else {
                     control.point()
                 };

@@ -1,3 +1,5 @@
+mod sources;
+
 use super::{
     circle_preview::{screen_point, viewport_click, viewport_frame},
     curve_fillet::enter,

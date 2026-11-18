@@ -5,10 +5,12 @@ use crate::{
     ObjectSelectionPrompt, ObjectSelectionWorkflow, option_name_eq, parse_point,
 };
 use viboceros_document::Document;
-use viboceros_geometry::{AffineTransform3, BoundingBox3, Frame3, Point3, Vector3};
+use viboceros_geometry::{BoundingBox3, Frame3, Point3, Vector3};
 
+mod layout;
 mod options;
 mod projection;
+pub use layout::{AlignedPlacement, AlignmentLayout, AlignmentSources, supports_component};
 pub use options::{AlignmentMode, AlignmentOptions};
 #[cfg(test)]
 mod tests;
@@ -114,72 +116,14 @@ impl Command for AlignCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let options = self.options(arguments)?;
-        let mode = options.mode.ok_or(CommandError::Usage(USAGE))?;
-        if options.projects() {
-            if document.selected_object_ids().next().is_none() {
-                return Err(CommandError::NoObjectsSelected);
-            }
-            self.world.set(options.world);
-            return projection::run(document, options, context);
-        }
-        let units = crate::layout_units::selected_units(document);
-        let first = units.first().ok_or(CommandError::NoObjectsSelected)?;
         self.world.set(options.world);
-        let orientation = if options.world {
-            CommandContext::default().construction_plane
-        } else {
-            context.construction_plane
-        };
-        // The display CPlane origin must not discard small extents in a distant model.
-        let frame = orientation.with_origin(
-            first
-                .iter()
-                .find_map(|o| o.geometry().bounds())
-                .ok_or(viboceros_geometry::GeometryError::EmptyPointSet)?
-                .center()?,
-        );
-        let bounds = units
-            .iter()
-            .map(|unit| {
-                crate::object_bounds::local_bounds(
-                    unit.iter().map(|object| object.geometry()),
-                    frame,
-                    document.tolerance(),
-                )
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let combined = bounds
-            .iter()
-            .copied()
-            .skip(1)
-            .try_fold(bounds[0], BoundingBox3::union)?;
-        let target = options
-            .target
-            .map(|point| frame.coordinates_of(point))
-            .transpose()?;
-        let mut replacements = Vec::new();
-        for (unit, bounds) in units.iter().zip(&bounds) {
-            let offset = offsets(mode, *bounds, combined, target);
-            if offset == [0.; 2] {
-                continue;
-            }
-            let translation = translation(frame, offset)?;
-            let transform = AffineTransform3::from_translation(translation);
-            for object in unit {
-                replacements.push((
-                    object.id(),
-                    object
-                        .geometry()
-                        .transformed(transform, document.tolerance())?,
-                ));
-            }
+        if options.projects() && !options.ready() {
+            return Err(CommandError::Usage(USAGE));
         }
-        let count = units.len();
-        let changed = document.replace_object_geometries(replacements)?;
-        Ok(format!(
-            "Aligned {count} object/group unit(s) {}; moved {changed} object(s)",
-            mode.label()
-        ))
+        AlignmentSources::capture(document, &[])
+            .prepare(options, context.construction_plane)?
+            .placement(document, options)?
+            .apply(document, false)
     }
 }
 
