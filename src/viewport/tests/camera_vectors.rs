@@ -77,6 +77,28 @@ fn check_picking(view: &Viewport) {
 }
 
 #[test]
+fn capture_camera_looks_from_the_requested_eye_toward_the_target() {
+    let mut view = Viewport::new(ViewKind::Perspective);
+    let eye = point(-1., -2., 6.);
+    let target = point(3., 6., 2.);
+    let up = Vector3::try_new(0., 0., 1.).unwrap();
+    view.capture_camera(eye, target, up, 48.).unwrap();
+    let (right, camera_up, forward) = view.perspective_basis();
+    close(
+        forward.into(),
+        eye.vector_to(target)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap()
+            .as_vector()
+            .to_array(),
+    );
+    assert!(right.z.abs() < 1e-12);
+    assert!(camera_up.z > 0.);
+    assert!(view.view_depth(eye).abs() < 1e-12);
+}
+
+#[test]
 fn camera_vectors_preserve_raw_metadata_and_native_rendering_frames() {
     let (q, n) = corpus();
     let mut count = 0;

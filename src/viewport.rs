@@ -869,14 +869,14 @@ impl Viewport {
                 context: "capture camera field of view",
             });
         }
-        let direction = Vector3::try_from(std::array::from_fn(|i| {
-            target.to_array()[i] - eye.to_array()[i]
-        }))?;
-        let right = direction.cross(up)?;
+        let direction = eye.vector_to(target)?;
+        let forward = direction.normalized_nonzero()?.as_vector();
+        let right = forward.cross(up)?;
+        let camera_up = right.cross(forward)?;
         self.perspective_frame = Some(Frame3::try_from_directions(
             target,
             right,
-            up,
+            camera_up,
             Tolerance::DEFAULT,
         )?);
         self.target = NaVector3::from(target.to_array());
