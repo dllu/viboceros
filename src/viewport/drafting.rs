@@ -303,17 +303,17 @@ impl Viewport {
     }
 
     pub(super) fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
-        let pixels_per_model_unit = self.pixels_per_model_unit_at_origin(rect);
-        let spacing = self.grid.minor_spacing;
-        let pixel_spacing = Real::from(pixels_per_model_unit) * spacing;
+        let Some((spacing, point_spacing)) = self.display_grid_spacing(rect) else {
+            return;
+        };
         let line_count = i64::from(self.grid.line_count);
         let extent = line_count as Real * spacing;
-        if self.grid.show_grid && pixel_spacing >= 8.0 && extent.is_finite() {
+        if self.grid.show_grid && extent.is_finite() {
             let center = self
                 .unproject_drafting_plane(rect.center(), rect, None)
                 .and_then(|point| self.construction_plane().coordinates_of(point).ok())
                 .unwrap_or([0.0; 3]);
-            let half_count = (Real::from(rect.width().max(rect.height())) / pixel_spacing * 1.5)
+            let half_count = (Real::from(rect.width().max(rect.height())) / point_spacing * 1.5)
                 .ceil()
                 .clamp(10.0, 250.0) as i64;
             let range = |coordinate: Real| {
@@ -378,6 +378,24 @@ impl Viewport {
         }
     }
 
+    fn display_grid_spacing(&self, rect: Rect) -> Option<(Real, Real)> {
+        let scale = self.model_to_view_scale(rect);
+        let mut spacing = self.grid.minor_spacing;
+        if !(scale.is_finite() && scale > 0.0 && spacing.is_finite() && spacing > 0.0) {
+            return None;
+        }
+        // Display subdivisions follow a 1–2–5 sequence in multiples of the
+        // model grid. Keep the configured spacing for snapping and file I/O.
+        for step in [2.0, 2.5, 2.0].into_iter().cycle() {
+            if spacing * scale >= 12.0 {
+                break;
+            }
+            spacing *= step;
+        }
+        let point_spacing = spacing * scale;
+        (spacing.is_finite() && point_spacing > 0.0).then_some((spacing, point_spacing))
+    }
+
     fn paint_world_axes_icon(&self, painter: &egui::Painter, rect: Rect) {
         let anchor = Pos2::new(rect.left() + 22.0, rect.bottom() - 22.0);
         for (label, direction, color) in [
@@ -397,7 +415,7 @@ impl Viewport {
                 Color32::from_rgb(65, 100, 185),
             ),
         ] {
-            if let Some(tip) = self.world_axis_icon_tip(anchor, direction, rect) {
+            if let Some(tip) = self.world_axis_icon_tip(anchor, direction) {
                 painter.line_segment([anchor, tip], Stroke::new(1.5, color));
                 painter.text(
                     tip,
@@ -419,20 +437,14 @@ impl Viewport {
         }
     }
 
-    fn world_axis_icon_tip(&self, anchor: Pos2, direction: Vector3, rect: Rect) -> Option<Pos2> {
-        let target = Point3::try_new(self.target.x, self.target.y, self.target.z).ok();
-        let projected = target.and_then(|target| {
-            let shifted = target.translated(direction).ok()?;
-            Some((
-                self.project_precise(target, rect)?,
-                self.project_precise(shifted, rect)?,
-            ))
-        });
-        projected
-            .map(|(from, to)| egui::vec2((to[0] - from[0]) as f32, (to[1] - from[1]) as f32))
-            .filter(|offset| offset.is_finite() && offset.length_sq() > 1.0)
-            .map(|offset| offset.normalized() * 13.0)
-            .map(|offset| anchor + offset)
+    fn world_axis_icon_tip(&self, anchor: Pos2, direction: Vector3) -> Option<Pos2> {
+        let (right, up, _) = self.screen_axes();
+        let direction = NaVector3::from(direction.to_array());
+        let x = direction.dot(&right);
+        let y = direction.dot(&up);
+        let length = x.hypot(y);
+        (length.is_finite() && length > 1e-8)
+            .then(|| anchor + 13.0 * Vec2::new((x / length) as f32, (-y / length) as f32))
     }
 
     pub(super) fn grid_point(&self, horizontal: Real, vertical: Real) -> Option<Point3> {
@@ -753,6 +765,25 @@ mod grid_tests {
             count > 0 && count <= 1_000,
             "submitted {count} lines after pan"
         );
+    }
+
+    #[test]
+    fn zooming_out_coarsens_only_the_display_grid() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let mut view = Viewport::new(ViewKind::Top);
+        let settings = view.grid;
+        let point = Point3::try_new(12.3, 8.7, 0.).unwrap();
+        let snapped = view.snap_to_grid(point);
+        for scale in [1., 0.01, 0.0001, f64::from(f32::MIN_POSITIVE)] {
+            view.pixels_per_unit = scale;
+            let (spacing, points) = view.display_grid_spacing(rect).unwrap();
+            assert!(spacing >= settings.minor_spacing && points >= 12.);
+            assert!(grid_shapes(&view).iter().any(|shape| {
+                matches!(shape, egui::Shape::LineSegment { stroke, .. }
+                    if stroke.color == Color32::from_gray(218))
+            }));
+            assert_eq!(view.snap_to_grid(point), snapped);
+        }
     }
 
     #[test]

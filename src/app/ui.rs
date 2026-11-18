@@ -11,7 +11,7 @@ impl eframe::App for VibocerosApp {
         preferences::save_four_view_projection(storage, self.four_view_projection);
     }
 
-    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, frame: &mut eframe::Frame) {
         self.show_edge_analysis(ui);
         self.show_curvature_graph(ui);
         self.show_direction_analysis(ui);
@@ -63,19 +63,32 @@ impl eframe::App for VibocerosApp {
         self.validate_weight_preview();
         self.validate_soft_crease();
         self.handle_interface_shortcuts(ui);
-        if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            self.cancel_current_prompt_or_selection();
+        self.handle_document_shortcuts(ui);
+        if ui.input(|input| input.key_pressed(egui::Key::Escape)) && !self.cancel_file_path_action()
+        {
+            if self.selection_menu.is_none()
+                && self.command_line_idle()
+                && !self.command_input.is_empty()
+            {
+                self.command_input.clear();
+            } else {
+                self.cancel_current_prompt_or_selection();
+            }
         }
         if self.drain_command_file() {
             ui.ctx().request_repaint();
         }
+        self.capture_global_command_typing(ui);
         if self.selection_menu.is_none()
             && self
                 .reparameterize_prompt
                 .as_ref()
                 .is_none_or(|p| !p.has_menu())
-            && !ui.ctx().egui_wants_keyboard_input()
-            && ui.input(|input| input.key_pressed(egui::Key::Enter))
+            && (!ui.ctx().egui_wants_keyboard_input()
+                || (self.command_focus_requested && !ui.ctx().text_edit_focused()))
+            && ui.input_mut(|input| {
+                command_line::consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Enter)
+            })
         {
             self.run_command();
         }
@@ -110,14 +123,13 @@ impl eframe::App for VibocerosApp {
             && self.edge_zoom_prompt.is_none()
             && (self.document.selected_object_count() > 0
                 || self.document.selected_control_points().next().is_some())
-            && !ui.ctx().egui_wants_keyboard_input()
+            && !self.editing_text(ui.ctx())
             && ui.input(|input| {
                 input.key_pressed(egui::Key::Delete) || input.key_pressed(egui::Key::Backspace)
             })
         {
             self.execute_command("Delete");
         }
-        self.capture_global_command_typing(ui);
         self.show_toolbar(ui);
         self.show_grid_settings(ui);
         self.show_weight_dialog(ui.ctx());
@@ -1074,6 +1086,9 @@ impl eframe::App for VibocerosApp {
             && (self.picking_curve_line()
                 || (self.picking_arc_blend() || self.picking_blend_curve()));
         let viewports = &mut self.viewports;
+        if let Some(render_state) = frame.wgpu_render_state() {
+            crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
+        }
         egui::CentralPanel::default().show(ui, |ui| {
             let available = ui.available_rect_before_wrap();
             let indices = (0..viewports.len())

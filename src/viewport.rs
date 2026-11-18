@@ -751,6 +751,7 @@ pub struct Viewport {
     camera_target_offset: NaVector3<Real>,
     target: NaVector3<Real>,
     last_rect: Option<Rect>,
+    last_pixels_per_point: Option<f32>,
     last_pointer: Option<Pos2>,
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
@@ -819,6 +820,7 @@ impl Viewport {
             camera_target_offset: NaVector3::zeros(),
             target: NaVector3::zeros(),
             last_rect: None,
+            last_pixels_per_point: None,
             last_pointer: None,
             selection_drag_start: None,
             component_drag: None,
@@ -1343,7 +1345,10 @@ impl Viewport {
         let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
-        let rect = response.rect;
+        use egui::emath::GuiRounding as _;
+        let pixels_per_point = ui.ctx().pixels_per_point();
+        let rect = response.rect.round_to_pixels(pixels_per_point);
+        self.adapt_display_scale(pixels_per_point);
         self.last_rect = Some(rect);
         if let Some(pointer) = response.hover_pos() {
             self.last_pointer = Some(pointer);

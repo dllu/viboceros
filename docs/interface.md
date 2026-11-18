@@ -7,13 +7,10 @@ for counts, direct instance selection, rename and definition/instance deletion.
 It remains available alongside pending modeling commands; model edits use Undo.
 
 The application opens with Top, Perspective, Front, and Right viewports.
-Construction-plane grid lines clip against the perspective camera plane and then
-against the viewport rectangle before stroke tessellation. A line with one endpoint
-behind the camera retains its visible part, and near-plane projections never send
-huge screen coordinates to egui. The grid remains a background drafting overlay;
-it does not write model depth. Regression tests cover both endpoint orders,
-multiple camera orientations, fully hidden lines, and bounded generated strokes.
 Each supports wireframe, shaded, and ghosted display, with independent navigation.
+The construction grid uses coarser divisions at wide zoom levels. Grid Snap
+continues to use the configured snap spacing. The first 3DM import into an
+empty document fits the viewports that are already laid out.
 Perspective wire segments crossing the camera plane are clipped before GPU
 submission and click/crossing-selection projection, rather than disappearing
 because one endpoint is behind the camera. The shared path covers lines,
@@ -65,6 +62,22 @@ The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
 Grid Snap, Ortho, Planar, Osnap, and SmartTrack. Modeling commands remain in the command line;
 the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
 a modeling prompt is unfinished.
+
+**View options → UI scale** displays the effective interface scale. Reset Zoom
+follows the system display scale. UI zoom adjustments apply on top of that scale.
+Changing the scale preserves model magnification in parallel viewports.
+
+| Shortcut | Action |
+| --- | --- |
+| Ctrl/Cmd+S | Save the current 3DM. For an untitled model, enter a path at the command line. |
+| Ctrl/Cmd+Shift+S | Enter a new path to save a 3DM. |
+| Ctrl/Cmd+O | Enter a path to open a 3DM. |
+| Ctrl/Cmd+Z | Undo the last model edit. |
+| Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z | Redo a model edit. |
+| Ctrl/Cmd+A | Select all model objects when the command line is empty. |
+
+The File menu offers the same file actions. Undo, Redo, and Select All act on
+the text while a text field is being edited.
 `SetView` adds CPlane/World and direction buttons to the command bar. Typed
 choices follow the same path. Enter/Esc cancels the view prompt and resumes
 the suspended command; a nested CPlane or zoom prompt finishes first.

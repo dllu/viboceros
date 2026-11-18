@@ -1,6 +1,44 @@
 use super::*;
 
 #[test]
+fn save_shortcut_prompts_for_first_path_then_saves_without_replacing_draft_input() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    let modifiers = egui::Modifiers::COMMAND | egui::Modifiers::CTRL;
+    frame(
+        &context,
+        &mut app,
+        1000.0,
+        vec![key(egui::Key::S, modifiers, true, false)],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_eq!(app.command_input, "");
+    assert!(app.command_line.file_path == Some(crate::app::shortcuts::FileAction::Save));
+    assert!(context.text_edit_focused());
+
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("my model.3dm");
+    enter(&mut app, &format!("\"{}\"", path.display()));
+    enter(&mut app, "Point 1,2,3");
+    app.command_input = "pending text".into();
+    frame(
+        &context,
+        &mut app,
+        1000.0,
+        vec![
+            key(egui::Key::S, modifiers, false, false),
+            key(egui::Key::S, modifiers, true, false),
+        ],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_eq!(app.command_input, "pending text");
+    let model = viboceros_io::read_3dm_file(path, Tolerance::DEFAULT).unwrap();
+    assert_eq!(model.objects.len(), 1);
+}
+
+#[test]
 fn zoom_shortcuts_preserve_focused_modeling_input_and_consume_repeats() {
     let mut app = test_app();
     let context = egui::Context::default();

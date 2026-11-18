@@ -26,11 +26,19 @@ impl CompletionState {
             self.reset();
             return;
         }
+        self.refresh_with(input, || completions(commands, input));
+    }
+
+    pub fn refresh_path(&mut self, input: &str) {
+        self.refresh_with(input, || path_completions("", input.trim_start()));
+    }
+
+    fn refresh_with(&mut self, input: &str, candidates: impl FnOnce() -> Vec<Completion>) {
         if input == self.query || self.applied.as_deref() == Some(input) {
             return;
         }
         self.query = input.to_owned();
-        self.candidates = completions(commands, input);
+        self.candidates = candidates();
         self.selected = None;
         self.applied = None;
     }
@@ -190,6 +198,10 @@ fn path_argument(input: &str) -> Option<(&str, &str)> {
     if !matches!(
         command.as_str(),
         "readviewportsfromfile"
+            | "open3dm"
+            | "open"
+            | "save"
+            | "saveas"
             | "import3dm"
             | "export3dm"
             | "importstl"
@@ -261,7 +273,7 @@ fn path_completions(prefix: &str, path: &str) -> Vec<Completion> {
     };
     let query = partial.to_lowercase();
     let separator = if parent.ends_with('\\') { '\\' } else { '/' };
-    let prefix = if prefix.ends_with(char::is_whitespace) {
+    let prefix = if prefix.is_empty() || prefix.ends_with(char::is_whitespace) {
         prefix.to_owned()
     } else {
         format!("{prefix} ")

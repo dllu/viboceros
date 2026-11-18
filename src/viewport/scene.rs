@@ -3,11 +3,14 @@
 mod curvature;
 mod face_packs;
 mod faces;
+mod reprojection;
 use super::display_cache::DisplayGeometry;
 use super::object_preview::ObjectPreview;
 #[cfg(test)]
 use super::object_preview::TransformedObjects;
 use super::*;
+use crate::viewport_gpu::ViewportGeometry;
+use reprojection::Reprojection;
 use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::Arc;
@@ -180,6 +183,7 @@ struct SceneKey {
 pub(super) struct CachedScene {
     key: SceneKey,
     scene: Arc<GpuViewportScene>,
+    reprojection: Option<Reprojection>,
 }
 
 #[derive(Clone, Copy)]
@@ -202,6 +206,7 @@ pub(super) struct GpuSceneBuilder {
     overlay_points: Vec<DepthPrimitive<GpuPointInstance, 1>>,
     pub(super) min_depth: Real,
     max_depth: Real,
+    complete: bool,
 }
 
 impl GpuSceneBuilder {
@@ -214,6 +219,7 @@ impl GpuSceneBuilder {
             overlay_points: Vec::new(),
             min_depth: Real::INFINITY,
             max_depth: Real::NEG_INFINITY,
+            complete: true,
         }
     }
 
@@ -249,8 +255,7 @@ impl GpuSceneBuilder {
         let overlay_point_start = self.points.len();
         self.lines.append(&mut self.overlay_lines);
         self.points.append(&mut self.overlay_points);
-        GpuViewportScene {
-            uniform,
+        let geometry = ViewportGeometry {
             overlay_line_start,
             overlay_point_start,
             triangles: self
@@ -294,6 +299,10 @@ impl GpuSceneBuilder {
                 })
                 .collect(),
             transparent,
+        };
+        GpuViewportScene {
+            uniform,
+            geometry: Arc::new(geometry),
         }
     }
 }
@@ -392,7 +401,7 @@ impl Viewport {
             None => (None, None, None),
         };
         let mut objects = Vec::new();
-        let mut visible = HashSet::new();
+        let mut visible = HashSet::with_capacity(document.objects().len());
         let instance_sources = instances.map(|p| p.sources.iter().copied().collect::<HashSet<_>>());
         let preview_ids = preview_ids.iter().copied().collect::<HashSet<_>>();
         let block_sources = preview == Some(ObjectSelectionFilter::BlockEditSources);
@@ -410,6 +419,11 @@ impl Viewport {
             let Some(layer) = document.layer(attributes.layer_id()) else {
                 continue;
             };
+            // A command filter can hide a visible object for several frames.
+            // Keep its tessellation so switching filters does not restage it.
+            if layer.is_visible() && attributes.is_visible() {
+                visible.insert(object.id());
+            }
             if !layer.is_visible() || (preview.is_some() && !block_sources && layer.is_locked()) {
                 continue;
             }
@@ -642,10 +656,25 @@ impl Viewport {
             objects,
         };
         let mut cached = self.cached_scene.borrow_mut();
-        if let Some(previous) = cached.as_ref()
-            && previous.key == key
-        {
-            return Arc::clone(&previous.scene);
+        if let Some(previous) = cached.as_mut() {
+            if previous.key == key {
+                return Arc::clone(&previous.scene);
+            }
+            if previous.key.mode == key.mode
+                && previous.key.objects == key.objects
+                && let Some(uniform) = previous
+                    .reprojection
+                    .as_ref()
+                    .and_then(|r| r.uniform(self, rect))
+            {
+                let scene = Arc::new(GpuViewportScene {
+                    uniform,
+                    geometry: Arc::clone(&previous.scene.geometry),
+                });
+                previous.key = key;
+                previous.scene = Arc::clone(&scene);
+                return scene;
+            }
         }
         let mut scene = GpuSceneBuilder::new();
         for object in &key.objects {
@@ -776,10 +805,15 @@ impl Viewport {
                 }
             }
         }
+        let reprojection = scene
+            .complete
+            .then(|| Reprojection::new(self, &key.objects, scene.depth_range()))
+            .flatten();
         let scene = Arc::new(scene.finish(self, rect, self.display_mode == DisplayMode::Ghosted));
         *cached = Some(CachedScene {
             key,
             scene: Arc::clone(&scene),
+            reprojection,
         });
         scene
     }
@@ -792,13 +826,15 @@ impl Viewport {
         radius: f32,
         color: Color32,
     ) {
-        let Some(projected) = self.project(point, rect) else {
-            return;
-        };
-        if !rect.expand(radius).contains(projected) {
+        if !self
+            .project(point, rect)
+            .is_some_and(|p| rect.expand(radius).contains(p))
+        {
+            scene.complete = false;
             return;
         }
         let Some(position) = self.gpu_position(point) else {
+            scene.complete = false;
             return;
         };
         let depth = self.view_depth(point);
@@ -821,15 +857,20 @@ impl Viewport {
         width: f32,
         color: Color32,
     ) {
+        let original = [start, end];
         let Some([start, end]) = self.clip_segment(start, end) else {
+            scene.complete = false;
             return;
         };
+        scene.complete &= original == [start, end];
         if self.project(start, rect).is_none() || self.project(end, rect).is_none() {
+            scene.complete = false;
             return;
         }
         let (Some(start_position), Some(end_position)) =
             (self.gpu_position(start), self.gpu_position(end))
         else {
+            scene.complete = false;
             return;
         };
         let depths = [self.view_depth(start), self.view_depth(end)];

@@ -49,23 +49,23 @@ impl OffscreenRenderer {
     }
 
     pub(crate) fn render(&mut self, scene: &ViewportScene) -> Vec<[u8; 4]> {
+        self.render_at(0, scene)
+    }
+
+    pub(crate) fn render_at(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
         assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
-        self.renderer.prepare(0, scene, &self.device, &self.queue);
-        self.read_pixels()
+        self.read_pixels(index, scene)
     }
 
     pub(crate) fn render_cached(&mut self, scene: &Arc<ViewportScene>) -> Vec<[u8; 4]> {
-        assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
-        self.renderer
-            .prepare_cached(0, scene, &self.device, &self.queue);
-        self.read_pixels()
+        self.render(scene)
     }
 
     pub(crate) fn preparations(&self) -> usize {
         self.renderer.viewports[0].preparations
     }
 
-    fn read_pixels(&mut self) -> Vec<[u8; 4]> {
+    fn read_pixels(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
         let extent = wgpu::Extent3d {
             width: SIZE,
             height: SIZE,
@@ -81,18 +81,7 @@ impl OffscreenRenderer {
             usage: wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::COPY_SRC,
             view_formats: &[],
         });
-        let depth = self.device.create_texture(&wgpu::TextureDescriptor {
-            label: Some("viewport test depth"),
-            size: extent,
-            mip_level_count: 1,
-            sample_count: 1,
-            dimension: wgpu::TextureDimension::D2,
-            format: DEPTH_FORMAT,
-            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
-            view_formats: &[],
-        });
         let color_view = texture.create_view(&Default::default());
-        let depth_view = depth.create_view(&Default::default());
         let readback = self.device.create_buffer(&wgpu::BufferDescriptor {
             label: Some("viewport test readback"),
             size: u64::from(SIZE * SIZE * 4),
@@ -100,6 +89,14 @@ impl OffscreenRenderer {
             mapped_at_creation: false,
         });
         let mut encoder = self.device.create_command_encoder(&Default::default());
+        self.renderer.prepare_image(
+            index,
+            scene,
+            [SIZE; 2],
+            &self.device,
+            &self.queue,
+            &mut encoder,
+        );
         {
             let mut pass = encoder
                 .begin_render_pass(&wgpu::RenderPassDescriptor {
@@ -113,18 +110,12 @@ impl OffscreenRenderer {
                             store: wgpu::StoreOp::Store,
                         },
                     })],
-                    depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
-                        view: &depth_view,
-                        depth_ops: Some(wgpu::Operations {
-                            load: wgpu::LoadOp::Clear(1.0),
-                            store: wgpu::StoreOp::Store,
-                        }),
-                        stencil_ops: None,
-                    }),
                     ..Default::default()
                 })
                 .forget_lifetime();
-            self.renderer.paint(0, &mut pass);
+            if let Some(image) = &self.renderer.viewports[index].image {
+                self.renderer.composite.paint(image, &mut pass);
+            }
         }
         encoder.copy_texture_to_buffer(
             texture.as_image_copy(),

@@ -2,21 +2,20 @@
 
 [Project overview](../README.md) · [Viewport controls](interface.md)
 
-The four viewports share camera-independent display geometry: sampled curves,
+Viewports share camera-independent display geometry: sampled curves,
 surface/B-rep wire curves, mesh edges, tessellated faces, and smooth corner
 normals. Wireframe views generate only wires; shaded faces and normals are lazy.
 Click and window selection reuse this data. Point-cloud click picking retains
 its existing spatial index and rejects clipped candidates during that search,
 so a hidden or clipped nearest member cannot suppress a visible farther member.
 
-Each viewport also retains its last prepared GPU scene. Unchanged geometry,
-styles, camera, viewport rectangle, and display mode reuse that scene. The GPU
-camera key includes restored screen axes, lens settings, frustum shifts, and
-near/far planes, so imported views cannot retain a previous camera's buffers.
-The GPU renderer retains the scene identity alongside its buffers and skips all buffer
-uploads when it receives the same scene again. Orbiting one view rebuilds only
-that view's scene, while sharing the existing tessellation and curve samples.
-Drafting/grid/selection overlays still update independently through egui.
+Each viewport retains its GPU buffers and the most recent rendering of its
+model. A stationary viewport composites that image while egui draws its grid
+and overlays. Camera changes usually update only the view uniform. The renderer
+restages primitives when the camera crosses geometry or the previous position
+encoding would lose precision. A moving Ghosted perspective camera also
+restages faces for depth sorting. Tessellation and curve samples survive
+navigation in each case.
 
 Documents, history, and display caches share immutable `GeometrySnapshot` handles.
 The UI checks snapshot storage identity in constant time per object, without
@@ -30,18 +29,19 @@ Even an explicit equal-geometry replacement may invalidate display data safely.
 
 Wire density and model tolerance also participate in invalidation. Display colors,
 visibility, locking, selection, and object order are checked separately from geometry, so
-style-only changes do not repeat tessellation. Deleted or hidden objects are
-removed from the shared cache on the next scene preparation. Each viewport and
-GPU slot retains at most its most recent scene.
+style-only changes do not repeat tessellation. Deleted and hidden objects are
+removed from the shared cache on the next scene preparation. Visible objects
+temporarily excluded by a command's selection filter retain their samples.
+Each viewport retains one rendered image and its associated depth attachment.
 
 `Object::geometry()` still borrows the geometry; `geometry_snapshot()` exposes
 the shared immutable handle. There is no mutable snapshot access or geometry
 revision counter. History and cloned documents also avoid copying unchanged
 geometry payloads, at the cost of one shared allocation/indirection per new value.
 Metadata, object iteration, and per-object cache lookup remain work on every repaint.
-Other costs include per-primitive camera/depth preparation and uploads for a moving
-view, triangle sorting in ghosted mode, tessellation memory, and four prepared
-scenes. Geometry stays alive while history, a reader, or a cached scene owns it.
+Other costs include first-frame tessellation, triangle sorting in Ghosted mode,
+and the cached geometry and image storage for each view. Geometry stays alive
+while history, a reader, or a cached scene owns it.
 
 [Move/Copy](commands/move-copy.md#live-previews), [Mirror](commands/mirror.md),
 and [Scale/Rotate/Shear](commands/affine-previews.md) preview affine instances of
@@ -76,10 +76,6 @@ keep their colors and mesh vertex colors, including while selected.
 boundary variant is retained beside the Wireframe variant, sharing source cages
 and one mapped surface per cursor point. Invalid through points clear Bend's
 pending display; Twist keeps its last valid angle.
-
-This is not an asynchronous mesher or a camera-uniform-only renderer:
-current large-coordinate precision guarantees require view-dependent f64
-rebasing and depth encoding before f32 GPU submission.
 
 ## Verification
 

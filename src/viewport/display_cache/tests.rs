@@ -189,15 +189,21 @@ fn four_views_share_geometry_and_reuse_unchanged_scenes() {
             &view.object_scene(rect(), &document)
         ));
     }
-    // Navigation rebuilds only that view; geometry and the other scenes survive.
+    // Navigation updates the camera while retaining the uploaded geometry.
     views[1].orbit_yaw += 0.1;
-    assert!(!Arc::ptr_eq(
-        &first[1],
-        &views[1].object_scene(rect(), &document)
-    ));
+    let orbited = views[1].object_scene(rect(), &document);
+    assert!(!Arc::ptr_eq(&first[1], &orbited));
+    assert!(Arc::ptr_eq(&first[1].geometry, &orbited.geometry));
+    assert_ne!(first[1].uniform, orbited.uniform);
+    views[0].pixels_per_unit *= 0.5;
+    views[0].pan.x += 30.0;
+    let zoomed = views[0].object_scene(rect(), &document);
+    assert!(!Arc::ptr_eq(&first[0], &zoomed,));
+    assert!(Arc::ptr_eq(&first[0].geometry, &zoomed.geometry));
+    assert_ne!(first[0].uniform, zoomed.uniform);
     assert!(Arc::ptr_eq(
-        &first[0],
-        &views[0].object_scene(rect(), &document)
+        &first[2],
+        &views[2].object_scene(rect(), &document)
     ));
     let cache = views[0].display_cache.borrow();
     for entry in &entries {

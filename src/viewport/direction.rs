@@ -138,7 +138,7 @@ impl Viewport {
             else {
                 continue;
             };
-            let length = 36. / f64::from(self.pixels_per_model_unit_at_origin(rect)).max(1e-12);
+            let length = 36. / self.model_to_view_scale(rect).max(1e-12);
             for (index, axis) in marker.axes.iter().enumerate() {
                 let enabled = if marker.surface {
                     [options.u, options.v, options.direction][index]

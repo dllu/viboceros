@@ -5,11 +5,16 @@ mod history;
 #[cfg(test)]
 pub(super) use completion::command_completions;
 
+pub(super) fn input_id() -> egui::Id {
+    egui::Id::new("main_command_input")
+}
+
 #[derive(Default)]
 pub(super) struct CommandLineState {
     history: history::History,
     completion: completion::CompletionState,
     completion_cursor: Option<usize>,
+    pub(super) file_path: Option<shortcuts::FileAction>,
 }
 
 impl CommandLineState {
@@ -130,7 +135,7 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.command_line_idle() {
+        if self.command_line_idle() && self.command_line.file_path.is_none() {
             let older = root.input_mut(|input| {
                 consume_exact_key(input, egui::Modifiers::NONE, egui::Key::ArrowUp)
             });
@@ -173,6 +178,24 @@ impl VibocerosApp {
         self.command_focus_requested = true;
     }
 
+    pub(super) fn reset_file_path_input(&mut self) {
+        self.command_input.clear();
+        self.command_line.completion.reset();
+        self.command_line.completion_cursor = None;
+    }
+
+    fn refresh_command_completion(&mut self, idle: bool) {
+        if self.command_line.file_path.is_some() {
+            self.command_line
+                .completion
+                .refresh_path(&self.command_input);
+        } else {
+            self.command_line
+                .completion
+                .refresh(&self.commands, &self.command_input, idle);
+        }
+    }
+
     pub(super) fn show_command_line(&mut self, root: &mut egui::Ui) {
         egui::Panel::bottom("command_line")
             .resizable(true)
@@ -193,11 +216,12 @@ impl VibocerosApp {
                     .as_ref()
                     .filter(|_| self.set_view_options_active())
                     .map(|session| session.prompt);
-                self.command_line
-                    .completion
-                    .refresh(&self.commands, &self.command_input, idle);
+                self.refresh_command_completion(idle);
+                let file_path = self.command_line.file_path;
                 ui.horizontal(|ui| {
-                    let label = if self.use_extrusions_prompt {
+                    let label = if let Some(action) = file_path {
+                        action.label()
+                    } else if self.use_extrusions_prompt {
                         "UseExtrusions"
                     } else if self.remember_copy_prompt {
                         "RememberCopyOptions"
@@ -264,8 +288,11 @@ impl VibocerosApp {
                             .map_or("Command", InteractiveCommand::name)
                     };
                     ui.label(RichText::new(format!("{label}:")).strong());
-                    let id = ui.make_persistent_id("main_command_input");
+                    let id = input_id();
                     let focused = ui.memory(|memory| memory.focused() == Some(id));
+                    let submit = focused && ui.input_mut(|input| {
+                        consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Enter)
+                    });
                     let (tab, reverse, older, newer) = if focused && (idle || (self.active_command.is_none() && self.command_input.is_empty())) {
                         ui.input_mut(|input| {
                             // Consume Shift+Tab first: plain Tab must not steal it.
@@ -273,9 +300,9 @@ impl VibocerosApp {
                                 consume_exact_key(input, egui::Modifiers::SHIFT, egui::Key::Tab);
                             let tab = reverse
                                 || consume_exact_key(input, egui::Modifiers::NONE, egui::Key::Tab);
-                            let older = idle &&
+                            let older = idle && file_path.is_none() &&
                                 consume_exact_key(input, egui::Modifiers::NONE, egui::Key::ArrowUp);
-                            let newer = idle && consume_exact_key(
+                            let newer = idle && file_path.is_none() && consume_exact_key(
                                 input,
                                 egui::Modifiers::NONE,
                                 egui::Key::ArrowDown,
@@ -298,7 +325,7 @@ impl VibocerosApp {
                             self.command_line.completion.reset();
                             self.command_focus_requested = true;
                         }
-                    } else if tab && !reverse && self.command_input.is_empty() {
+                    } else if tab && !reverse && file_path.is_none() && self.command_input.is_empty() {
                         self.apply_interface_command(viboceros_command::interface::InterfaceCommand::SubDDisplayToggle);
                         self.command_focus_requested=true;
                     } else if tab && let Some(text) = self.command_line.completion.cycle(reverse) {
@@ -311,8 +338,11 @@ impl VibocerosApp {
                         egui::TextEdit::singleline(&mut self.command_input)
                             .id(id)
                             .lock_focus(true)
+                            .return_key(None)
                             .desired_width(f32::INFINITY)
-                            .hint_text(if self.end_analysis_pick.is_some() {
+                            .hint_text(if file_path.is_some() {
+                                "Path to a 3DM file • Enter to confirm • Esc to cancel"
+                            } else if self.end_analysis_pick.is_some() {
                                 "Pick curves; Enter finishes, Esc cancels"
                             } else if self.snap_size_pending.is_some() {
                                 "Enter a positive grid snap spacing; Enter or Esc cancels"
@@ -423,9 +453,7 @@ impl VibocerosApp {
                         request_command_focus(ui.ctx(), id, &response, cursor);
                         self.command_focus_requested = false;
                     }
-                    if response.lost_focus()
-                        && ui.input(|input| input.key_pressed(egui::Key::Enter))
-                    {
+                    if submit {
                         self.run_command();
                         request_command_focus(
                             ui.ctx(),
@@ -444,9 +472,7 @@ impl VibocerosApp {
                 }
                 self.show_set_view_choices(ui);
                 let idle = self.command_line_idle();
-                self.command_line
-                    .completion
-                    .refresh(&self.commands, &self.command_input, idle);
+                self.refresh_command_completion(idle);
                 let completion = &self.command_line.completion;
                 if !completion.candidates.is_empty() {
                     let mut chosen = None;

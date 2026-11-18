@@ -303,7 +303,7 @@ impl Viewport {
         position[axis] = sign * encoded;
     }
 
-    fn perspective_near_floor(&self) -> Real {
+    pub(super) fn perspective_near_floor(&self) -> Real {
         (self.perspective_camera_distance * 1e-6).max(1e-6)
     }
 
@@ -784,14 +784,64 @@ impl Viewport {
         viewport_height / (2.0 * (self.perspective_fov_radians / 2.0).tan())
     }
 
-    pub(super) fn pixels_per_model_unit_at_origin(&self, rect: Rect) -> f32 {
+    pub(super) fn screen_axes(&self) -> (NaVector3<Real>, NaVector3<Real>, NaVector3<Real>) {
+        let frame = match self.kind {
+            ViewKind::Perspective => return self.perspective_basis(),
+            ViewKind::Plan => self.plan_frame,
+            kind => Self::default_plane(kind),
+        };
+        (
+            NaVector3::from(frame.x_axis().as_vector().to_array()),
+            NaVector3::from(frame.y_axis().as_vector().to_array()),
+            -NaVector3::from(frame.z_axis().as_vector().to_array()),
+        )
+    }
+
+    pub(super) fn model_to_view_scale(&self, rect: Rect) -> Real {
         match self.kind {
             ViewKind::Perspective => {
-                (self.perspective_focal_length_pixels(rect) / self.perspective_camera_distance)
-                    as f32
+                self.perspective_focal_length_pixels(rect) / self.perspective_camera_distance
             }
-            _ => self.pixels_per_unit as f32,
+            _ => self.pixels_per_unit,
         }
+    }
+
+    pub(super) fn adapt_display_scale(&mut self, pixels_per_point: f32) {
+        let Some(previous) = self.last_pixels_per_point.replace(pixels_per_point) else {
+            return;
+        };
+        if previous == pixels_per_point {
+            return;
+        }
+        // Keep a parallel view's model scale and pan stable in physical
+        // pixels as the window's logical coordinate system changes.
+        let ratio = Real::from(previous) / Real::from(pixels_per_point);
+        let rescale = |camera: &mut CameraSnapshot| {
+            if camera.kind.is_parallel() {
+                let pan = camera.pan * ratio as f32;
+                if pan.is_finite() {
+                    camera.pan = pan;
+                    camera.pixels_per_unit *= ratio;
+                }
+            }
+        };
+        let mut current = self.camera_snapshot();
+        rescale(&mut current);
+        self.restore_camera(current);
+        for camera in self.view_undo.iter_mut().chain(&mut self.view_redo) {
+            rescale(camera);
+        }
+        if let Some(camera) = &mut self.navigation_drag_start {
+            rescale(camera);
+        }
+        if let Some((camera, _)) = &mut self.title_reference {
+            rescale(camera);
+        }
+    }
+
+    #[cfg(test)]
+    pub(super) fn pixels_per_model_unit_at_origin(&self, rect: Rect) -> f32 {
+        self.model_to_view_scale(rect) as f32
     }
 
     pub(super) fn zoom_by(&mut self, factor: f32, pointer: Option<Pos2>, rect: Rect) {
@@ -1023,6 +1073,16 @@ impl Viewport {
         rect: Rect,
         depth_range: Option<(Real, Real)>,
     ) -> GpuViewUniform {
+        self.gpu_view_uniform_rebased(rect, depth_range, NaVector3::zeros(), 1.0)
+    }
+
+    pub(super) fn gpu_view_uniform_rebased(
+        &self,
+        rect: Rect,
+        depth_range: Option<(Real, Real)>,
+        target_delta: NaVector3<Real>,
+        parallel_zoom: Real,
+    ) -> GpuViewUniform {
         let width = Real::from(rect.width().max(1.0));
         let height = Real::from(rect.height().max(1.0));
         let pan = if self.kind.is_parallel() {
@@ -1039,15 +1099,15 @@ impl Viewport {
                     right.x,
                     right.y,
                     right.z,
-                    0.0,
+                    right.dot(&target_delta),
                     up.x,
                     up.y,
                     up.z,
-                    0.0,
+                    up.dot(&target_delta),
                     forward.x,
                     forward.y,
                     forward.z,
-                    self.perspective_camera_distance,
+                    self.perspective_camera_distance + forward.dot(&target_delta),
                     0.0,
                     0.0,
                     0.0,
@@ -1078,12 +1138,12 @@ impl Viewport {
             ViewKind::Plan => {
                 // Plan vertices are already in camera-local coordinates.
                 NaMatrix4::new(
-                    2.0 / width,
+                    2.0 * parallel_zoom / width,
                     0.0,
                     0.0,
                     offset_x,
                     0.0,
-                    2.0 / height,
+                    2.0 * parallel_zoom / height,
                     0.0,
                     offset_y,
                     0.0,
@@ -1109,8 +1169,8 @@ impl Viewport {
                 let up = basis(axes.up);
                 let forward = basis(axes.forward);
                 // Parallel vertex positions already contain pixels_per_unit.
-                let horizontal_scale = 2.0 / width;
-                let vertical_scale = 2.0 / height;
+                let horizontal_scale = 2.0 * parallel_zoom / width;
+                let vertical_scale = 2.0 * parallel_zoom / height;
                 NaMatrix4::new(
                     horizontal_scale * right.x,
                     horizontal_scale * right.y,
@@ -1280,6 +1340,26 @@ mod tests {
         let window = Rect::from_min_max(Pos2::new(100.0, 100.0), Pos2::new(300.0, 300.0));
         assert!(parallel.zoom_window(window, rect).is_err());
         assert_eq!((parallel.pan, parallel.pixels_per_unit), before);
+    }
+
+    #[test]
+    fn display_scale_preserves_parallel_zoom_and_view_history_in_physical_pixels() {
+        let mut view = Viewport::new(ViewKind::Top);
+        view.adapt_display_scale(1.0);
+        view.pan = Vec2::new(30., 60.);
+        let original = view.camera_snapshot();
+        view.pixels_per_unit *= 2.0;
+        view.record_camera_change(original);
+        view.adapt_display_scale(1.5);
+        assert_eq!(view.pan * 1.5, original.pan);
+        assert!((view.pixels_per_unit * 1.5 - original.pixels_per_unit * 2.0).abs() < 1e-10);
+        assert!(view.undo_view());
+        assert!((view.pixels_per_unit * 1.5 - original.pixels_per_unit).abs() < 1e-10);
+        view.adapt_display_scale(1.0);
+        assert!((view.pixels_per_unit - original.pixels_per_unit).abs() < 1e-10);
+        assert_eq!(view.pan, original.pan);
+        assert!(view.redo_view());
+        assert!((view.pixels_per_unit - original.pixels_per_unit * 2.0).abs() < 1e-10);
     }
 
     #[test]

@@ -67,6 +67,31 @@ fn typing_outside_the_command_box_queues_focus_and_text() {
 }
 
 #[test]
+fn enter_submits_the_focused_command_after_processing_text_from_the_same_frame() {
+    let context = egui::Context::default();
+    let mut app = test_app();
+    app.command_focus_requested = true;
+    command_line_frame(&context, &mut app, Vec::new());
+    command_line_frame(
+        &context,
+        &mut app,
+        vec![
+            egui::Event::Text("Point 7,8,9".into()),
+            egui::Event::Key {
+                key: egui::Key::Enter,
+                physical_key: Some(egui::Key::Enter),
+                pressed: true,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            },
+        ],
+    );
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(app.command_input.is_empty());
+    assert!(context.text_edit_focused());
+}
+
+#[test]
 fn first_type_to_command_character_stays_at_the_start() {
     let context = egui::Context::default();
     let mut app = test_app();

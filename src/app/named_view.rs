@@ -313,8 +313,14 @@ impl VibocerosApp {
         if name.eq_ignore_ascii_case("Import3dm") {
             return Some((|| {
                 let path = viboceros_command::parse_3dm_path(tail)?;
+                let was_empty = self.document.objects().len() == 0;
                 let (message, views, cplanes) =
                     viboceros_command::import_3dm_with_views_and_cplanes(&mut self.document, path)?;
+                if was_empty {
+                    for viewport in &mut self.viewports {
+                        let _ = viewport.zoom_extents(&self.document, self.zoom_extents_borders);
+                    }
+                }
                 let imported = add_file_views(&mut self.named_views, views);
                 let imported_cplanes = add_file_cplanes(&mut self.named_cplanes, cplanes);
                 Ok(format!(

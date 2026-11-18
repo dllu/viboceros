@@ -37,12 +37,14 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
             viewport_size: [SIZE as f32; 2],
             clip_depth: [0., 1.],
         },
-        triangles,
-        lines,
-        points,
-        overlay_line_start,
-        overlay_point_start,
-        transparent: false,
+        geometry: Arc::new(ViewportGeometry {
+            triangles,
+            lines,
+            points,
+            overlay_line_start,
+            overlay_point_start,
+            transparent: false,
+        }),
     };
     let triangle = vec![
         vertex([-0.8, -0.8, 0.5]),
@@ -58,8 +60,18 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
         position_size: [0., 0.3, 0.9, 8.],
         color: [0., 0., 1., 1.],
     };
-    let expected = renderer.render(&scene(triangle.clone(), vec![line], vec![point], 0, 0));
+    let first = scene(triangle.clone(), vec![line], vec![point], 0, 0);
+    let expected = renderer.render(&first);
     assert!(expected.iter().any(|p| p[3] > 0));
+    assert_eq!(renderer.render_at(4, &first), expected);
+    let uploaded = renderer.preparations();
+    let mut camera = ViewportScene {
+        uniform: first.uniform,
+        geometry: Arc::clone(&first.geometry),
+    };
+    camera.uniform.view_projection[3][0] = 0.2;
+    assert_ne!(renderer.render(&camera), expected);
+    assert_eq!(renderer.preparations(), uploaded);
     // All three buffers exceed the actual device limit; visible primitives land
     // after a chunk boundary. Overlay ranges cross those boundaries as well.
     let mut triangles = vec![vertex([2., 2., 0.5]); 30_000];

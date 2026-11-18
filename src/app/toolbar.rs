@@ -22,6 +22,21 @@ impl VibocerosApp {
     pub(super) fn show_toolbar(&mut self, root: &mut egui::Ui) {
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
+                egui::containers::menu::MenuButton::new("File").ui(ui, |ui| {
+                    for action in shortcuts::FileAction::ALL {
+                        let shortcut = ui.ctx().format_shortcut(&action.shortcut());
+                        if ui
+                            .add_enabled(
+                                self.file_action_enabled(action),
+                                egui::Button::new(action.label()).shortcut_text(shortcut),
+                            )
+                            .clicked()
+                        {
+                            self.file_action(action);
+                            ui.close();
+                        }
+                    }
+                });
                 let idle = self.active_command.is_none()
                     && self.plane_prompt.is_none()
                     && self.set_view_prompt.is_none()
@@ -95,6 +110,16 @@ impl VibocerosApp {
                     });
                 }
                 egui::containers::menu::MenuButton::new("View options").ui(ui, |ui| {
+                    let system_scale = ui.ctx().native_pixels_per_point().unwrap_or(1.0);
+                    let effective_scale = ui.ctx().pixels_per_point();
+                    ui.menu_button(
+                        format!("UI scale · {:.0}%", effective_scale * 100.0),
+                        |ui| {
+                            ui.label(format!("System scale {:.0}%", system_scale * 100.0));
+                            egui::gui_zoom::zoom_menu_buttons(ui);
+                        },
+                    );
+                    ui.separator();
                     ui.checkbox(
                         &mut self.named_view_policy.set_cplane,
                         "Named views set CPlane",

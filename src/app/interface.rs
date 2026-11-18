@@ -1176,6 +1176,7 @@ impl VibocerosApp {
         self.handle_plane_shortcuts(ui);
         if !ui.ctx().egui_wants_keyboard_input()
             && self.command_input.is_empty()
+            && self.command_line.file_path.is_none()
             && self.active_command.is_none()
             && ui.input_mut(|i| {
                 super::command_line::consume_exact_key(i, egui::Modifiers::NONE, egui::Key::Tab)

@@ -3,19 +3,21 @@ use std::sync::Arc;
 use bytemuck::{Pod, Zeroable};
 use eframe::{egui, egui_wgpu, wgpu};
 
+mod composite;
+use composite::{Composite, ViewportImage};
+
 #[cfg(test)]
 pub(crate) mod readback;
 #[cfg(test)]
 mod tests;
 
-const VIEWPORT_COUNT: usize = 4;
 const DEPTH_FORMAT: wgpu::TextureFormat = wgpu::TextureFormat::Depth32Float;
 const INITIAL_BUFFER_SIZE: wgpu::BufferAddress = 4;
 // Keep individual allocations bounded even on devices with very large limits.
 const DISPLAY_BUFFER_CHUNK_BYTES: u64 = 64 * 1024 * 1024;
 
 #[repr(C)]
-#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+#[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable)]
 pub(crate) struct ViewUniform {
     pub view_projection: [[f32; 4]; 4],
     pub viewport_size: [f32; 2],
@@ -48,12 +50,25 @@ pub(crate) struct PointInstance {
 
 pub(crate) struct ViewportScene {
     pub uniform: ViewUniform,
+    pub geometry: Arc<ViewportGeometry>,
+}
+
+pub(crate) struct ViewportGeometry {
     pub triangles: Vec<TriangleVertex>,
     pub lines: Vec<LineInstance>,
     pub points: Vec<PointInstance>,
     pub overlay_line_start: usize,
     pub overlay_point_start: usize,
     pub transparent: bool,
+}
+
+#[cfg(test)]
+impl std::ops::Deref for ViewportScene {
+    type Target = ViewportGeometry;
+
+    fn deref(&self) -> &Self::Target {
+        &self.geometry
+    }
 }
 
 pub(crate) fn install(render_state: &egui_wgpu::RenderState) {
@@ -63,6 +78,17 @@ pub(crate) fn install(render_state: &egui_wgpu::RenderState) {
         .write()
         .callback_resources
         .insert(resources);
+}
+
+pub(crate) fn set_viewport_count(render_state: &egui_wgpu::RenderState, count: usize) {
+    if let Some(renderer) = render_state
+        .renderer
+        .write()
+        .callback_resources
+        .get_mut::<ViewportRenderer>()
+    {
+        renderer.viewports.truncate(count);
+    }
 }
 
 pub(crate) fn paint(
@@ -76,6 +102,7 @@ pub(crate) fn paint(
         ViewportCallback {
             viewport_index,
             scene,
+            rect,
         },
     );
     painter.add(callback);
@@ -84,6 +111,7 @@ pub(crate) fn paint(
 struct ViewportCallback {
     viewport_index: usize,
     scene: Arc<ViewportScene>,
+    rect: egui::Rect,
 }
 
 impl egui_wgpu::CallbackTrait for ViewportCallback {
@@ -91,12 +119,24 @@ impl egui_wgpu::CallbackTrait for ViewportCallback {
         &self,
         device: &wgpu::Device,
         queue: &wgpu::Queue,
-        _screen_descriptor: &egui_wgpu::ScreenDescriptor,
-        _egui_encoder: &mut wgpu::CommandEncoder,
+        screen: &egui_wgpu::ScreenDescriptor,
+        encoder: &mut wgpu::CommandEncoder,
         callback_resources: &mut egui_wgpu::CallbackResources,
     ) -> Vec<wgpu::CommandBuffer> {
         if let Some(renderer) = callback_resources.get_mut::<ViewportRenderer>() {
-            renderer.prepare_cached(self.viewport_index, &self.scene, device, queue);
+            let rect = egui::epaint::ViewportInPixels::from_points(
+                &self.rect,
+                screen.pixels_per_point,
+                screen.size_in_pixels,
+            );
+            renderer.prepare_image(
+                self.viewport_index,
+                &self.scene,
+                [rect.width_px as u32, rect.height_px as u32],
+                device,
+                queue,
+                encoder,
+            );
         }
         Vec::new()
     }
@@ -107,8 +147,13 @@ impl egui_wgpu::CallbackTrait for ViewportCallback {
         render_pass: &mut wgpu::RenderPass<'static>,
         callback_resources: &egui_wgpu::CallbackResources,
     ) {
-        if let Some(renderer) = callback_resources.get::<ViewportRenderer>() {
-            renderer.paint(self.viewport_index, render_pass);
+        if let Some(renderer) = callback_resources.get::<ViewportRenderer>()
+            && let Some(image) = renderer
+                .viewports
+                .get(self.viewport_index)
+                .and_then(|viewport| viewport.image.as_ref())
+        {
+            renderer.composite.paint(image, render_pass);
         }
     }
 }
@@ -120,7 +165,9 @@ struct ViewportRenderer {
     point_pipeline: wgpu::RenderPipeline,
     overlay_line_pipeline: wgpu::RenderPipeline,
     overlay_point_pipeline: wgpu::RenderPipeline,
-    viewports: [PreparedViewport; VIEWPORT_COUNT],
+    uniform_layout: wgpu::BindGroupLayout,
+    composite: Composite,
+    viewports: Vec<PreparedViewport>,
 }
 
 impl ViewportRenderer {
@@ -295,68 +342,54 @@ impl ViewportRenderer {
             point_pipeline,
             overlay_line_pipeline,
             overlay_point_pipeline,
-            viewports: std::array::from_fn(|_| PreparedViewport::new(device, &uniform_layout)),
+            uniform_layout,
+            composite: Composite::new(device, target_format),
+            viewports: Vec::new(),
         }
     }
 
-    fn prepare_cached(
-        &mut self,
-        viewport_index: usize,
-        scene: &Arc<ViewportScene>,
-        device: &wgpu::Device,
-        queue: &wgpu::Queue,
-    ) {
-        let Some(viewport) = self.viewports.get(viewport_index) else {
-            return;
-        };
-        if viewport
-            .scene
-            .as_ref()
-            .is_some_and(|previous| Arc::ptr_eq(previous, scene))
-        {
-            return;
+    fn viewport(&mut self, index: usize, device: &wgpu::Device) -> &mut PreparedViewport {
+        if index >= self.viewports.len() {
+            self.viewports.resize_with(index + 1, || {
+                PreparedViewport::new(device, &self.uniform_layout)
+            });
         }
-        self.prepare(viewport_index, scene, device, queue);
-        self.viewports[viewport_index].scene = Some(Arc::clone(scene));
+        &mut self.viewports[index]
     }
 
-    fn prepare(
+    fn prepare_image(
         &mut self,
         viewport_index: usize,
         scene: &ViewportScene,
+        size: [u32; 2],
         device: &wgpu::Device,
         queue: &wgpu::Queue,
+        encoder: &mut wgpu::CommandEncoder,
     ) {
-        let Some(viewport) = self.viewports.get_mut(viewport_index) else {
-            return;
-        };
-        #[cfg(test)]
+        let viewport = self.viewport(viewport_index, device);
+        let changed = viewport.prepare(scene, device, queue);
+        if size.contains(&0)
+            || (scene.geometry.triangles.is_empty()
+                && scene.geometry.lines.is_empty()
+                && scene.geometry.points.is_empty())
         {
-            viewport.preparations += 1;
+            viewport.image = None;
+            return;
         }
-        viewport.scene = None;
-        queue.write_buffer(
-            &viewport.uniform_buffer,
-            0,
-            bytemuck::bytes_of(&scene.uniform),
-        );
-        viewport
-            .triangle_buffer
-            .upload(device, queue, &scene.triangles);
-        viewport.line_buffer.upload(device, queue, &scene.lines);
-        viewport.point_buffer.upload(device, queue, &scene.points);
-        viewport.overlay_line_start = scene.overlay_line_start.min(scene.lines.len());
-        viewport.overlay_point_start = scene.overlay_point_start.min(scene.points.len());
-        viewport.opaque_vertices = if scene.transparent {
-            scene
-                .triangles
-                .chunks_exact(3)
-                .take_while(|t| t.iter().all(|v| v.color[3] >= 1.))
-                .count()
-                * 3
+        if viewport
+            .image
+            .as_ref()
+            .is_some_and(|image| image.size == size)
+        {
+            if !changed {
+                return;
+            }
         } else {
-            scene.triangles.len()
-        };
+            self.viewports[viewport_index].image = Some(self.composite.new_image(device, size));
+        }
+        let image = self.viewports[viewport_index].image.as_ref().unwrap();
+        let mut pass = image.begin(encoder);
+        self.paint(viewport_index, &mut pass);
     }
 
     fn paint(&self, viewport_index: usize, render_pass: &mut wgpu::RenderPass<'static>) {
@@ -396,7 +429,9 @@ impl ViewportRenderer {
 struct PreparedViewport {
     #[cfg(test)]
     preparations: usize,
-    scene: Option<Arc<ViewportScene>>,
+    geometry: Option<Arc<ViewportGeometry>>,
+    uniform: Option<ViewUniform>,
+    image: Option<ViewportImage>,
     uniform_buffer: wgpu::Buffer,
     uniform_bind_group: wgpu::BindGroup,
     triangle_buffer: ChunkedBuffer,
@@ -426,7 +461,9 @@ impl PreparedViewport {
         Self {
             #[cfg(test)]
             preparations: 0,
-            scene: None,
+            geometry: None,
+            uniform: None,
+            image: None,
             uniform_buffer,
             uniform_bind_group,
             triangle_buffer: ChunkedBuffer::new("viboceros triangle vertex buffer", 3),
@@ -436,6 +473,49 @@ impl PreparedViewport {
             overlay_point_start: 0,
             opaque_vertices: 0,
         }
+    }
+
+    fn prepare(
+        &mut self,
+        scene: &ViewportScene,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+    ) -> bool {
+        let uniform_changed = self.uniform != Some(scene.uniform);
+        if uniform_changed {
+            queue.write_buffer(&self.uniform_buffer, 0, bytemuck::bytes_of(&scene.uniform));
+            self.uniform = Some(scene.uniform);
+        }
+        if self
+            .geometry
+            .as_ref()
+            .is_some_and(|g| Arc::ptr_eq(g, &scene.geometry))
+        {
+            return uniform_changed;
+        }
+        #[cfg(test)]
+        {
+            self.preparations += 1;
+        }
+        let geometry = &scene.geometry;
+        self.triangle_buffer
+            .upload(device, queue, &geometry.triangles);
+        self.line_buffer.upload(device, queue, &geometry.lines);
+        self.point_buffer.upload(device, queue, &geometry.points);
+        self.overlay_line_start = geometry.overlay_line_start.min(geometry.lines.len());
+        self.overlay_point_start = geometry.overlay_point_start.min(geometry.points.len());
+        self.opaque_vertices = if geometry.transparent {
+            geometry
+                .triangles
+                .chunks_exact(3)
+                .take_while(|t| t.iter().all(|v| v.color[3] >= 1.))
+                .count()
+                * 3
+        } else {
+            geometry.triangles.len()
+        };
+        self.geometry = Some(Arc::clone(geometry));
+        true
     }
 }
 

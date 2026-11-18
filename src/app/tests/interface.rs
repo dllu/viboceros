@@ -204,6 +204,7 @@ fn frame(
         },
         |ui| {
             app.handle_interface_shortcuts(ui);
+            app.handle_document_shortcuts(ui);
             app.show_toolbar(ui);
             height = ui.available_rect_before_wrap().top();
             app.capture_global_command_typing(ui);

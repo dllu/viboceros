@@ -228,6 +228,7 @@ mod loft;
 mod match_surface;
 mod prompt_cancel;
 mod selection_input;
+mod shortcuts;
 mod sidebar;
 mod sweep;
 mod ui;
@@ -745,6 +746,9 @@ impl VibocerosApp {
     }
 
     fn run_command_input(&mut self) {
+        if self.run_file_path_action() {
+            return;
+        }
         let input = self.command_input.trim().to_owned();
         self.remember_command_input(&input);
         if self.command_file_input(&input) || self.continue_layer_prompt(&input) {

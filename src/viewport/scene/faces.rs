@@ -69,6 +69,7 @@ impl Viewport {
                 }
             }
             let clipped = self.clip_triangle(points);
+            scene.complete &= clipped[0] == Some(points) && clipped[1].is_none();
             if clipped[0].is_none() {
                 continue;
             }
@@ -78,6 +79,7 @@ impl Viewport {
             let [Some(first), Some(second), Some(third)] =
                 points.map(|point| self.gpu_position(point))
             else {
+                scene.complete = false;
                 continue;
             };
             let vertex_colors = if let Some(colors) = appearance.analysis_colors.as_ref() {
