@@ -1,7 +1,7 @@
 //! Extensible command registry, shared parsing and model-editing adapters.
 
 mod add_objects_to_block;
-mod align;
+pub mod align;
 mod apply_curves;
 pub mod arc_blend;
 pub mod array_curve_surface;
@@ -144,6 +144,7 @@ mod block_instance_tests;
 mod layout_units;
 #[cfg(test)]
 mod morph_test_support;
+pub mod placement;
 #[cfg(test)]
 mod transform_default_tests;
 pub use align::{AlignmentMode, AlignmentOptions};

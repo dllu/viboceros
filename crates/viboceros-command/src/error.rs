@@ -1082,6 +1082,8 @@ pub enum CommandError {
 
     #[error("Align ToFitPlane requires at least three selected objects; found {actual}")]
     InsufficientPlaneAlignmentObjects { actual: usize },
+    #[error("Align inputs or target changed; select the inputs again")]
+    AlignStale,
 
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,

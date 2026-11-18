@@ -11,7 +11,9 @@ impl VibocerosApp {
         input: &str,
         picked_sources: Option<Vec<ObjectId>>,
     ) -> bool {
-        if self.start_distribute(input, picked_sources.is_some()) {
+        if self.start_align(input, picked_sources.is_some())
+            || self.start_distribute(input, picked_sources.is_some())
+        {
             return true;
         }
         if self.start_curve_chamfer(input) || self.start_curve_fillet(input) {
@@ -308,11 +310,6 @@ impl VibocerosApp {
                 initial: None,
                 options,
             }
-        } else if normalized == "align" {
-            let Some(command) = self.start_align(input) else {
-                return false;
-            };
-            command
         } else if normalized == "evaluateuvpt" {
             let Some(command) = self.start_evaluate_uv(input) else {
                 return false;

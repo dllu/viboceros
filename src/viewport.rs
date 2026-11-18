@@ -31,7 +31,7 @@ mod curve_offset;
 pub(crate) use curve_offset::OffsetDraft;
 mod cutting;
 pub(crate) mod direction;
-mod distribution;
+mod placement;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -380,8 +380,10 @@ pub struct ViewportInput<'a> {
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
-    pub distribution_preview: Option<&'a viboceros_command::distribute::Layout>,
+    pub placement_preview: Option<&'a viboceros_command::placement::Placement>,
     pub distribution_source_pick: bool,
+    pub alignment_curve_pick: Option<&'a viboceros_command::align::AlignmentSources>,
+    pub alignment_plane_preview: Option<viboceros_command::rectangle_input::RectangleDefinition>,
     pub offset_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub inset_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
@@ -555,8 +557,10 @@ impl Default for ViewportInput<'_> {
             insert_edges: None,
             insert_mesh: None,
             offset_mesh_preview: None,
-            distribution_preview: None,
+            placement_preview: None,
             distribution_source_pick: false,
+            alignment_curve_pick: None,
+            alignment_plane_preview: None,
             offset_subd_edges: None,
             inset_edges: None,
             extrude_subd_edges: None,
@@ -726,6 +730,7 @@ pub struct ViewportOutput {
     /// the model. Commands can use it for cursor-dependent options.
     pub drafting_hover: Option<Point3>,
     pub drafting_resolved_hover: Option<Point3>,
+    pub alignment_curve_hover: Option<ObjectId>,
     pub drafting_hover_is_free: bool,
     /// Outer Some means the hovered viewport evaluated the current cursor;
     /// inner None means no valid reflection has been previewed yet.
@@ -1493,13 +1498,13 @@ impl Viewport {
         let previous_maelstrom = input
             .maelstrom_preview
             .and_then(|p| p.resolve(None, document, &self.display_cache).0);
-        let distribution = input
-            .distribution_preview
-            .map(|layout| self.distribution_objects(document, layout));
+        let placement = input
+            .placement_preview
+            .map(|layout| self.placement_objects(document, layout));
         let previous_preview = previous_preview
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
-                distribution
+                placement
                     .as_ref()
                     .map(object_preview::ObjectPreview::Deformed)
             })
@@ -2257,7 +2262,7 @@ impl Viewport {
             .or(affine_preview)
             .map(object_preview::ObjectPreview::Affine)
             .or_else(|| {
-                distribution
+                placement
                     .as_ref()
                     .map(object_preview::ObjectPreview::Deformed)
             })
@@ -2357,6 +2362,9 @@ impl Viewport {
                         input
                             .selection_allowed_objects
                             .is_none_or(|ids| ids.contains(id))
+                            && input
+                                .alignment_curve_pick
+                                .is_none_or(|sources| !sources.includes_owner(*id))
                     })
                     .collect::<Vec<_>>(),
                 )
@@ -2410,6 +2418,18 @@ impl Viewport {
                 },
             ),
         );
+        if let Some(rectangle) = input.alignment_plane_preview {
+            let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
+            for (a, b) in rectangle
+                .corners
+                .into_iter()
+                .zip(rectangle.corners.into_iter().cycle().skip(1))
+            {
+                if let Some(segment) = self.project_selection_segment(a, b, rect) {
+                    painter.line_segment(segment, stroke);
+                }
+            }
+        }
         self.paint_component_previews(&painter, rect, document, input.component_previews);
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         if (input.chain_pick || input.length_pick)
@@ -3597,6 +3617,21 @@ impl Viewport {
                         .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
                 })
                 .map(|cursor| cursor.point),
+            alignment_curve_hover: input
+                .alignment_curve_pick
+                .filter(|_| selecting && !modifiers.any())
+                .and_then(|sources| {
+                    self.pick_object_candidates_matching_preview_excluding(
+                        response.hover_pos()?,
+                        rect,
+                        document,
+                        ObjectSelectionFilter::Curves,
+                        None,
+                        None,
+                    )
+                    .into_iter()
+                    .find(|id| !sources.includes_owner(*id))
+                }),
             drafting_hover_is_free: response.hovered()
                 && input.point_filter.is_none()
                 && input.point_constraint.is_none()

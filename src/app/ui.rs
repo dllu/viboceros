@@ -60,6 +60,7 @@ impl VibocerosApp {
         self.validate_curve_chamfer();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
+        self.validate_align();
         self.validate_distribute();
         self.validate_offset_mesh();
         self.validate_offset_surface();
@@ -1223,6 +1224,24 @@ impl VibocerosApp {
                     .map_or(&[], refinement::Prompt::guides)
             });
         let distribution_source_pick = self.selecting_distribution_sources();
+        let alignment_curve_pick = self
+            .align_session
+            .as_ref()
+            .filter(|_| self.picking_alignment_curve())
+            .map(align::Session::sources);
+        let placement_preview = if model_input_active && self.plane_prompt.is_none() {
+            self.align_session
+                .as_ref()
+                .and_then(align::Session::preview)
+                .or_else(|| {
+                    self.distribute_session
+                        .as_ref()
+                        .and_then(distribute::Session::layout_preview)
+                        .map(viboceros_command::distribute::Layout::placement)
+                })
+        } else {
+            None
+        };
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1262,11 +1281,13 @@ impl VibocerosApp {
                                 .offset_mesh_session
                                 .as_ref()
                                 .and_then(|s| s.preview()),
-                            distribution_preview: self
-                                .distribute_session
+                            placement_preview,
+                            alignment_curve_pick,
+                            alignment_plane_preview: self
+                                .align_session
                                 .as_ref()
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
-                                .and_then(distribute::Session::layout_preview),
+                                .and_then(align::Session::rectangle_preview),
                             distribution_source_pick,
                             offset_subd_edges: self.offset_subd_session.as_ref().map(|s| s.edges()),
                             inset_edges: self.inset_session.as_ref().map(|s| s.edges()),
@@ -1690,6 +1711,22 @@ impl VibocerosApp {
                     .drafting_hover
                     .map(|point| (point, viewport, output.drafting_hover_is_free))
             });
+        let alignment_hover = viewport_outputs
+            .iter()
+            .enumerate()
+            .find_map(|(viewport, output)| {
+                (output.drafting_resolved_hover.is_some() || output.alignment_curve_hover.is_some())
+                    .then_some((
+                        output.drafting_resolved_hover,
+                        output.alignment_curve_hover,
+                        viewport,
+                    ))
+            });
+        let (align_point, align_curve, align_view) =
+            alignment_hover.unwrap_or((None, None, self.active_viewport));
+        if self.update_align_preview(align_point, align_curve, align_view) {
+            ui.ctx().request_repaint();
+        }
         let distribution_hover = viewport_outputs
             .iter()
             .find_map(|output| output.drafting_resolved_hover);

@@ -2,8 +2,9 @@
 
 [Command reference](README.md) · [Transforms](transforms.md) · [Distribute](distribute.md)
 
-`Align` translates selected objects or rigid group units by their tight bounding
-boxes. It supports `Left`, `Right`, `Top`, `Bottom`, `HorizCenter`, `VertCenter`,
+`Align` positions selected objects, grips, and SubD components. It uses tight
+bounding boxes for whole objects and rigid group units. It supports
+`Left`, `Right`, `Top`, `Bottom`, `HorizCenter`, `VertCenter`,
 and `Concentric`, plus `ToLine`, `ToPlane`, `ToFitPlane` and `ToCurve` alignment, using
 `AlignTo=CPlane` (initial default) or `AlignTo=World`.
 The coordinate choice is remembered by the command registry, outside undo
@@ -46,7 +47,11 @@ same in world coordinates. Group memberships and unselected peers are unchanged.
   their connecting line and parallel to the chosen system's Z axis. Equivalently,
   its normal is `(end - start) × Z`. Translation preserves that Z component.
 - `ToPlane 3Point` uses the plane through three noncollinear world points.
-  The target plane itself is independent of `AlignTo`.
+  The target plane itself is independent of `AlignTo`. At the first reference
+  prompt, `EdgeMidpoint` switches the first pick to the middle of the edge.
+  You can enter an edge length or a width at the corresponding point prompt,
+  then pick its direction. Enter at the width prompt uses the edge length
+  as the width.
 - `ToFitPlane` fits a least-squares plane to the individual bottom-center
   anchors of at least three selected objects. It needs no reference picks.
   See [best-fit plane design and evidence](../plane-fit.md).
@@ -70,6 +75,10 @@ the previous points available for correction. Changing mode discards staged
 references; cancellation discards the entire pending edit. Fully typed calls
 execute directly. `3Point=Yes|No` is also accepted for typed selection options.
 
+The viewport previews the transformed geometry as you move the cursor over a
+reference point or target curve. In `3Point` mode it also shows the rectangle
+defining the plane. The preview uses the same placement as the committed edit.
+
 ## Input and document behavior
 
 ```text
@@ -91,6 +100,13 @@ memberships do not recursively combine units, and unselected members do not
 move. Normal grouped viewport selection may select peers; the command's unit
 builder only consumes the selection it receives. Partial selections made by
 Rhino's `SelID` prompt action remain partial in the oracle fixtures.
+
+With grips displayed, select individual grips before or during `Align`. SubD
+vertices, edges, and faces can also be selected. A SubD edge or face contributes
+its incident control points, and shared points move once. For a selected grip
+or SubD control point, alignment uses its own position as its anchor. With
+exactly three grips and no whole objects, `ToFitPlane` completes without moving
+the grips.
 
 Preselected objects remain selected. Objects selected after starting `Align`
 are deselected after success, and after a terminal `ToFitPlane` failure caused
@@ -123,6 +139,10 @@ The Rhino batch worker conservatively rejects tiny/near-degenerate references
 before executing, to prevent an incomplete interactive macro. Rhino's precise
 near-degeneracy prompt thresholds have not been matched.
 
+Selecting `3Point` after the first point of a two-point plane keeps that
+reference and asks for two more points in Viboceros. Rhino 8.32 completed
+the command using its current cursor position in the scripted probe.
+
 `cargo run --release -p viboceros-geometry --example profile_point_projection`
 measures prepared query cost, excluding construction. One DGX Spark release run
 measured approximately 3.6 ns for axis-aligned lines, 13–14 µs for ordinary
@@ -136,10 +156,6 @@ segments and arc endpoints use exact distance ordering of evaluated points.
 General [NURBS closest-point search](../curve-closest-point.md) is bounded,
 not a certified global minimum. Finite-range and extreme coefficient failures
 remain explicit errors. Curve-alignment performance parity with Rhino is unmeasured.
-
-Other plane-creation options, control-point/grip editing, and SubD
-component alignment are not implemented. They are not aliases for bounding-box
-translation. No preview of the prospective transformed geometry is provided.
 
 ## Oracle evidence
 
@@ -156,6 +172,9 @@ have a [separate record](../../tools/rhino_oracle/observations/align_postselecti
 checking actual command-first selection, including cleanup and partial groups.
 These probes run in an owned private Xvfb session and restore their objects,
 groups, selection and construction planes. They are untimed command probes.
+The [21 grip and SubD cases](../../src/app/tests/align/rhino_grips.json)
+also cover mixed whole-object and grip selection, projection to a curve, and
+three-point plane input with numeric dimensions.
 
 Acceptance for these fixtures is absolute `1e-8`, relative `1e-12`; the largest
 observed passing coordinate difference is below `7.5e-10`. Native tests also

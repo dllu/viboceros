@@ -938,7 +938,8 @@ impl VibocerosApp {
             .count();
         let selected_grips = if matches!(
             description.command,
-            "Circle FitPoints"
+            "Align"
+                | "Circle FitPoints"
                 | "Cone FitPoints"
                 | "Cylinder FitPoints"
                 | "Tube FitPoints"
@@ -993,7 +994,9 @@ impl VibocerosApp {
                 .count()
                 == 2
         } else {
-            selected_objects + selected_grips >= required || length_edges
+            selected_objects + selected_grips >= required
+                || length_edges
+                || (description.command == "Align" && self.has_alignment_components())
         };
         if description.command == "Smooth"
             && preselected
@@ -1445,9 +1448,12 @@ impl VibocerosApp {
                     return true;
                 }
                 let graph_allowed = self.curvature_graph_selection_ids(pending.description.command);
-                let has_eligible_picks = (pending.description.command == "Length"
-                    && !pending.subcurve_measurement
-                    && self.has_length_edges())
+                let has_eligible_picks = (pending.description.command == "Align"
+                    && (self.document.selected_control_points().next().is_some()
+                        || self.has_alignment_components()))
+                    || (pending.description.command == "Length"
+                        && !pending.subcurve_measurement
+                        && self.has_length_edges())
                     || self.document.selected_objects().any(|o| {
                         Some(o.id()) != pending.excluded_object
                             && pending.description.filter.accepts_object(o)
@@ -1651,15 +1657,9 @@ impl VibocerosApp {
             }
             if pending.description.command == "Align" {
                 self.object_prompt = None;
-                if self.try_start_interactive_command(&command) {
-                    if let Some(InteractiveCommand::Align { postselected, .. }) =
-                        &mut self.active_command
-                    {
-                        *postselected = pending.postselected;
-                    }
+                if self.start_align(&command, pending.postselected) {
                     return true;
                 }
-                // No-point modes execute directly after selection acceptance.
             }
             if pending.description.command == "EvaluateUVPt" && self.evaluate_uv_can_pick() {
                 self.object_prompt = None;
@@ -1811,7 +1811,8 @@ impl VibocerosApp {
                 self.select_prompt_objects(ids, SelectionMode::Add);
                 if matches!(
                     pending.description.command,
-                    "Circle FitPoints"
+                    "Align"
+                        | "Circle FitPoints"
                         | "Cone FitPoints"
                         | "Cylinder FitPoints"
                         | "Tube FitPoints"
@@ -1929,6 +1930,13 @@ impl VibocerosApp {
             return true;
         }
         let update = if pending.description.command == "Align" {
+            let choice;
+            let input = if let ObjectPromptPhase::Choice(index) = pending.phase {
+                choice = format!("{}={input}", pending.description.choices[index].name);
+                &choice
+            } else {
+                input
+            };
             self.update_align_selection(&pending.description, input)
                 .map(|description| pending.description = description)
         } else {

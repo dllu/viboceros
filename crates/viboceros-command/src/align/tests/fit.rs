@@ -80,6 +80,10 @@ fn insufficient_objects_release_only_postselection_without_consuming_redo() {
                 .contains("World")
         );
     }
+    assert!(matches!(
+        registry.execute(&mut doc, "Align ToFitPlane"),
+        Err(CommandError::InsufficientPlaneAlignmentObjects { actual: 0 })
+    ));
 }
 
 #[test]

@@ -1,79 +1,19 @@
-//! Projection modes translate each selected object's own bottom-center anchor.
+//! Align world stations to a curve, line, or plane.
 use super::*;
-use viboceros_geometry::PointProjection3;
+use viboceros_document::Geometry;
+use viboceros_geometry::{PointProjection3, Tolerance};
 
-pub(super) fn run(
-    document: &mut Document,
+pub(super) fn destinations(
+    anchors: &[Point3],
     options: AlignmentOptions,
-    context: CommandContext,
-) -> Result<String, CommandError> {
-    if !options.ready() {
-        return Err(CommandError::Usage(USAGE));
-    }
-    let orientation = if options.world {
-        CommandContext::default()
-    } else {
-        context
-    }
-    .construction_plane;
-    let objects = document
-        .selected_objects()
-        .filter(|o| o.geometry().bounds().is_some())
-        .collect::<Vec<_>>();
-    let count = objects.len();
-    if options.mode == Some(AlignmentMode::ToFitPlane) {
-        if count < 3 {
-            return Err(CommandError::InsufficientPlaneAlignmentObjects { actual: count });
-        }
-        if count > viboceros_geometry::MAX_PLANE_FIT_POINTS {
-            return Err(viboceros_geometry::GeometryError::PlaneFitResourceLimit {
-                maximum: viboceros_geometry::MAX_PLANE_FIT_POINTS,
-            }
-            .into());
-        }
-    }
-    let anchors = objects
-        .iter()
-        .map(|object| {
-            // Each object gets a geometry-local arithmetic origin, independently
-            // of the display CPlane and of other selected objects.
-            let frame = orientation.with_origin(
-                object
-                    .geometry()
-                    .bounds()
-                    .ok_or(viboceros_geometry::GeometryError::EmptyPointSet)?
-                    .center()?,
-            );
-            let bounds = crate::object_bounds::local_bounds(
-                [object.geometry()],
-                frame,
-                document.tolerance(),
-            )?;
-            let mut local = bounds.center()?.to_array();
-            local[2] = bounds.min().z();
-            frame.point_at(local)
-        })
-        .collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?;
-    let curve = options
-        .curve
-        .map(|id| {
-            if document.is_selected(id) {
-                return Err(CommandError::AlignmentTargetSelected);
-            }
-            document
-                .object(id)
-                .ok_or(viboceros_document::DocumentError::ObjectNotFound(id).into())
-                .and_then(|object| {
-                    object
-                        .geometry()
-                        .curve_ref()
-                        .ok_or(CommandError::AlignmentTargetNotCurve)
-                })
-        })
-        .transpose()?;
+    orientation: Frame3,
+    target: Option<&Geometry>,
+    tolerance: Tolerance,
+) -> Result<Vec<Point3>, CommandError> {
+    let curve = target.and_then(Geometry::curve_ref);
     let projector = match options.mode {
         Some(AlignmentMode::ToCurve) => None,
-        Some(AlignmentMode::ToFitPlane) => Some(PointProjection3::onto_best_fit_plane(&anchors)?),
+        Some(AlignmentMode::ToFitPlane) => Some(PointProjection3::onto_best_fit_plane(anchors)?),
         Some(AlignmentMode::ToLine) => Some(PointProjection3::onto_line(
             options.references[0].unwrap(),
             options.references[1].unwrap(),
@@ -90,30 +30,17 @@ pub(super) fn run(
         }
         _ => return Err(CommandError::Usage(USAGE)),
     };
-    let mut replacements = Vec::new();
-    for (object, anchor) in objects.iter().zip(anchors) {
-        let projected = if let Some(curve) = curve {
-            curve.evaluate(curve.closest_parameter(anchor, document.tolerance())?)?
-        } else {
-            projector.as_ref().unwrap().project(anchor)?
-        };
-        if projected == anchor {
-            continue;
-        }
-        let transform = AffineTransform3::from_translation(anchor.vector_to(projected)?);
-        replacements.push((
-            object.id(),
-            object
-                .geometry()
-                .transformed(transform, document.tolerance())?,
-        ));
-    }
-    if count == 0 {
-        return Err(CommandError::NoObjectsSelected);
-    }
-    let changed = document.replace_object_geometries(replacements)?;
-    Ok(format!(
-        "Aligned {count} object(s) {}; moved {changed} object(s)",
-        options.mode.unwrap().label()
-    ))
+    anchors
+        .iter()
+        .map(|&point| {
+            Ok(if let Some(curve) = curve {
+                curve.evaluate(curve.closest_parameter(point, tolerance)?)?
+            } else {
+                projector
+                    .as_ref()
+                    .ok_or(CommandError::Usage(USAGE))?
+                    .project(point)?
+            })
+        })
+        .collect()
 }

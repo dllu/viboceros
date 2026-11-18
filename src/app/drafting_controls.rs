@@ -17,6 +17,7 @@ impl VibocerosApp {
                 && !self.picking_scale_by_plane_view()
                 && (self.remap_cplane_session.is_none() || self.plane_prompt.is_some())
                 && !self.picking_extract_faces()
+                && (self.align_session.is_none() || self.align_wants_point())
                 && self
                     .distribute_session
                     .as_ref()

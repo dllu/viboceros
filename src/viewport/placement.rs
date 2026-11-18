@@ -2,13 +2,13 @@
 use super::object_preview::PreviewObject;
 use super::*;
 use std::collections::BTreeMap;
-use viboceros_command::distribute::Layout;
+use viboceros_command::placement::Placement;
 
 impl Viewport {
-    pub(super) fn distribution_objects(
+    pub(super) fn placement_objects(
         &self,
         document: &Document,
-        layout: &Layout,
+        layout: &Placement,
     ) -> BTreeMap<ObjectId, PreviewObject> {
         let mut cache = self.display_cache.borrow_mut();
         let tolerance = document.tolerance();

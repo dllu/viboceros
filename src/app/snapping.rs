@@ -77,6 +77,9 @@ fn parse_one_shot(input: &str) -> Option<ObjectSnapModes> {
 
 impl VibocerosApp {
     fn model_requests_point(&self) -> bool {
+        if self.align_session.is_some() {
+            return self.align_wants_point();
+        }
         if let Some(session) = &self.distribute_session {
             return session.wants_point();
         }

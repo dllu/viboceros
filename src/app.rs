@@ -495,6 +495,7 @@ pub struct VibocerosApp {
     orient_edge_session: Option<orient_edge::Session>,
     surface_offset_session: Option<surface_curve_offset::Session>,
     short_path_session: Option<short_path::Session>,
+    align_session: Option<align::Session>,
     distribute_session: Option<distribute::Session>,
     distribute_settings: viboceros_command::DistributionSettings,
     offset_mesh_session: Option<offset_mesh::Session>,
@@ -703,6 +704,7 @@ impl VibocerosApp {
             orient_edge_session: None,
             surface_offset_session: None,
             short_path_session: None,
+            align_session: None,
             distribute_session: None,
             distribute_settings: Default::default(),
             offset_mesh_session: None,
@@ -914,6 +916,7 @@ impl VibocerosApp {
         if self.continue_inset(&input)
             || self.continue_ribbon(&input)
             || self.continue_extrude_subd(&input)
+            || self.try_continue_align(&input)
             || self.continue_distribute(&input)
             || self.continue_offset_mesh(&input)
             || self.continue_offset_subd(&input)
@@ -1112,7 +1115,6 @@ impl VibocerosApp {
             || self.try_continue_circle(&input)
             || self.try_continue_pipe(&input)
             || self.try_continue_evaluate_uv(&input)
-            || self.try_continue_align(&input)
         {
             return;
         }

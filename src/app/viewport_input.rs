@@ -207,7 +207,8 @@ impl VibocerosApp {
             let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
                 matches!(
                     prompt.description.command,
-                    "Circle FitPoints"
+                    "Align"
+                        | "Circle FitPoints"
                         | "Cone FitPoints"
                         | "Cylinder FitPoints"
                         | "Tube FitPoints"
@@ -465,7 +466,8 @@ impl VibocerosApp {
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
                     (matches!(
                         prompt.description.command,
-                        "Circle FitPoints"
+                        "Align"
+                            | "Circle FitPoints"
                             | "Cone FitPoints"
                             | "Cylinder FitPoints"
                             | "Tube FitPoints"
