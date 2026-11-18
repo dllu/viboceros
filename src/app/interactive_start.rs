@@ -80,13 +80,14 @@ impl VibocerosApp {
         if self.start_subd_sphere(input) {
             return true;
         }
-        if self.start_solid_axial(input)
+        if self.try_start_pipe(input)
+            || self.start_solid_axial(input)
             || self.start_subd_axial(input)
             || self.try_start_pyramid(input)
         {
             return true;
         }
-        if self.start_subd_primitive(input) {
+        if self.start_rectangle_primitive(input) {
             return true;
         }
         if self.start_surface_point_grid(input)
@@ -374,105 +375,6 @@ impl VibocerosApp {
                 width: None,
                 options,
             }
-        } else if normalized == "meshbox" {
-            let mut x_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut y_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut z_count = DEFAULT_MESH_BOX_FACE_COUNT;
-            let mut seen = [false; 3];
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let Ok(count) = value.parse::<usize>() else {
-                    return false;
-                };
-                if count == 0 {
-                    return false;
-                }
-                let option_index = if name.eq_ignore_ascii_case("XCount") {
-                    0
-                } else if name.eq_ignore_ascii_case("YCount") {
-                    1
-                } else if name.eq_ignore_ascii_case("ZCount") {
-                    2
-                } else {
-                    return false;
-                };
-                if seen[option_index] {
-                    return false;
-                }
-                match option_index {
-                    0 => x_count = count,
-                    1 => y_count = count,
-                    2 => z_count = count,
-                    _ => unreachable!("mesh-box option index is in range"),
-                }
-                seen[option_index] = true;
-            }
-            if x_count
-                .checked_mul(y_count)
-                .and_then(|xy| {
-                    x_count
-                        .checked_mul(z_count)
-                        .and_then(|xz| xy.checked_add(xz))
-                })
-                .and_then(|xy_xz| {
-                    y_count
-                        .checked_mul(z_count)
-                        .and_then(|yz| xy_xz.checked_add(yz))
-                })
-                .and_then(|half| half.checked_mul(2))
-                .is_none_or(|face_count| face_count > MAX_MESH_BOX_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
-            }
-        } else if normalized == "meshplane" {
-            let mut x_count = DEFAULT_MESH_PLANE_FACE_COUNT;
-            let mut y_count = DEFAULT_MESH_PLANE_FACE_COUNT;
-            let mut x_seen = false;
-            let mut y_seen = false;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                let Ok(count) = value.parse::<usize>() else {
-                    return false;
-                };
-                if count == 0 {
-                    return false;
-                }
-                if name.eq_ignore_ascii_case("XCount") && !x_seen {
-                    x_count = count;
-                    x_seen = true;
-                } else if name.eq_ignore_ascii_case("YCount") && !y_seen {
-                    y_count = count;
-                    y_seen = true;
-                } else {
-                    return false;
-                }
-            }
-            if x_count
-                .checked_mul(y_count)
-                .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
-            {
-                return false;
-            }
-            InteractiveCommand::MeshPlane {
-                first: None,
-                x_count,
-                y_count,
-            }
         } else if matches!(normalized.as_str(), "interpcrv" | "interpcurve") {
             let Ok(options) = parse_interp_curve_options(&arguments) else {
                 return false;
@@ -738,110 +640,6 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::WeldEdge
-        } else if normalized == "pipe" {
-            let mut cap_flat = true;
-            let mut cap_round = false;
-            let mut blend_global = false;
-            let mut fit_rail = None;
-            let mut cap_seen = false;
-            let mut blend_seen = false;
-            let mut thick = None;
-            let mut wall_thickness = None;
-            for argument in &arguments {
-                let Some((name, value)) = argument.split_once('=') else {
-                    return false;
-                };
-                if name.trim_start_matches('_').eq_ignore_ascii_case("Cap") && !cap_seen {
-                    cap_flat = if value.trim_start_matches('_').eq_ignore_ascii_case("Flat") {
-                        true
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("None") {
-                        false
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Round") {
-                        cap_round = true;
-                        false
-                    } else {
-                        return false;
-                    };
-                    cap_seen = true;
-                } else if name
-                    .trim_start_matches('_')
-                    .eq_ignore_ascii_case("ShapeBlending")
-                    && !blend_seen
-                {
-                    blend_global = if value.trim_start_matches('_').eq_ignore_ascii_case("Global") {
-                        true
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("Local") {
-                        false
-                    } else {
-                        return false;
-                    };
-                    blend_seen = true;
-                } else if name.trim_start_matches('_').eq_ignore_ascii_case("FitRail")
-                    && fit_rail.is_none()
-                {
-                    fit_rail = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                        Some(true)
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                        Some(false)
-                    } else {
-                        return false;
-                    };
-                } else if name.trim_start_matches('_').eq_ignore_ascii_case("Thick")
-                    && thick.is_none()
-                {
-                    thick = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
-                        Some(true)
-                    } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
-                        Some(false)
-                    } else {
-                        return false;
-                    };
-                } else if name
-                    .trim_start_matches('_')
-                    .eq_ignore_ascii_case("WallThickness")
-                    && wall_thickness.is_none()
-                {
-                    let Ok(value) = value.parse::<f64>() else {
-                        return false;
-                    };
-                    if !value.is_finite() || value == 0.0 {
-                        return false;
-                    }
-                    wall_thickness = Some(value);
-                } else {
-                    return false;
-                }
-            }
-            if thick == Some(false) && wall_thickness.is_some() {
-                return false;
-            }
-            let pick_second_radius = thick == Some(true) && wall_thickness.is_none();
-            let selected = self
-                .document
-                .selected_object_ids()
-                .take(2)
-                .collect::<Vec<_>>();
-            let source = match selected.as_slice() {
-                [id] if self
-                    .document
-                    .object(*id)
-                    .and_then(|object| object.geometry().curve_ref())
-                    .is_some() =>
-                {
-                    Some(*id)
-                }
-                _ => None,
-            };
-            InteractiveCommand::Pipe {
-                source,
-                cap_flat,
-                cap_round,
-                blend_global,
-                fit_rail: fit_rail.unwrap_or(false),
-                wall_thickness,
-                pick_second_radius,
-                first_radius: None,
-            }
         } else if matches!(
             normalized.as_str(),
             "weldvertices" | "weldvertex" | "weldmeshvertex"
@@ -1537,10 +1335,6 @@ impl VibocerosApp {
                     clockwise: true,
                 },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
-                "box" => InteractiveCommand::Box {
-                    base: None,
-                    opposite: None,
-                },
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,

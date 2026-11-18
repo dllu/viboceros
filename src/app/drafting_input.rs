@@ -104,13 +104,16 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_pipe_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_solid_axial_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_subd_axial_point(point) {
             return accepted;
         }
-        if let Some(accepted) = self.accept_subd_primitive_point(point) {
+        if let Some(accepted) = self.accept_rectangle_primitive_point(point) {
             return accepted;
         }
         if let Some(accepted) = self.accept_rectangle_point(point) {
@@ -238,7 +241,7 @@ impl VibocerosApp {
             | InteractiveCommand::SubDCone { .. }
             | InteractiveCommand::SolidAxial { .. }
             | InteractiveCommand::SubDCylinder { .. }
-            | InteractiveCommand::SubDPrimitive { .. }
+            | InteractiveCommand::RectanglePrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
             | InteractiveCommand::Plane { .. }
             | InteractiveCommand::SurfaceFlow { .. }
@@ -610,81 +613,7 @@ impl VibocerosApp {
                 self.push_log("Select a closed mesh or polysurface first".to_owned());
                 return false;
             }
-            InteractiveCommand::Pipe { source: None, .. } => {
-                self.push_log("Select a rail curve first".to_owned());
-                return false;
-            }
-            InteractiveCommand::Pipe {
-                source: Some(source),
-                cap_flat,
-                cap_round,
-                blend_global,
-                fit_rail,
-                wall_thickness,
-                pick_second_radius,
-                first_radius,
-            } => {
-                let radius = self
-                    .document
-                    .object(source)
-                    .and_then(|object| object.geometry().curve_ref())
-                    .and_then(|curve| {
-                        let parameter = curve
-                            .closest_parameter(point, self.document.tolerance())
-                            .ok()?;
-                        let nearest = curve.evaluate(parameter).ok()?;
-                        point.distance_to(nearest).ok()
-                    });
-                let Some(radius) = radius.filter(|radius| *radius > 0.0) else {
-                    self.push_log("Error: pipe radius must be positive".to_owned());
-                    return false;
-                };
-                if pick_second_radius && first_radius.is_none() {
-                    let command = InteractiveCommand::Pipe {
-                        source: Some(source),
-                        cap_flat,
-                        cap_round,
-                        blend_global,
-                        fit_rail,
-                        wall_thickness,
-                        pick_second_radius,
-                        first_radius: Some(radius),
-                    };
-                    self.active_command = Some(command);
-                    self.push_log(command.prompt().to_owned());
-                    return true;
-                }
-                let start_radius = first_radius.unwrap_or(radius);
-                let wall_thickness = if pick_second_radius {
-                    Some(radius - start_radius)
-                } else {
-                    wall_thickness
-                };
-                if wall_thickness
-                    .is_some_and(|thickness| thickness == 0.0 || start_radius + thickness <= 0.0)
-                {
-                    self.push_log(
-                        "Error: second pipe radius must be positive and distinct".to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "Pipe {source} {start_radius} Cap={} ShapeBlending={} FitRail={}{}",
-                    if cap_round {
-                        "Round"
-                    } else if cap_flat {
-                        "Flat"
-                    } else {
-                        "None"
-                    },
-                    if blend_global { "Global" } else { "Local" },
-                    if fit_rail { "Yes" } else { "No" },
-                    wall_thickness.map_or_else(String::new, |thickness| {
-                        format!(" WallThickness={thickness}")
-                    })
-                ));
-            }
+            InteractiveCommand::Pipe { .. } => return false,
             InteractiveCommand::ArcCenter {
                 center: None,
                 start: None,
@@ -1129,141 +1058,12 @@ impl VibocerosApp {
                 ));
                 self.push_log(command.prompt().to_owned());
             }
-            InteractiveCommand::MeshPlane {
-                first: None,
-                x_count,
-                y_count,
-            } => {
-                let command = InteractiveCommand::MeshPlane {
-                    first: Some(point),
-                    x_count,
-                    y_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("First corner: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshPlane {
-                first: Some(first),
-                x_count,
-                y_count,
-            } => {
-                if !plane_rectangle_exceeds_tolerance(
-                    plane,
-                    first,
-                    point,
-                    self.document.tolerance(),
-                ) {
-                    self.push_log(
-                        "Error: mesh-plane width and height must both exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshPlane {} {} XCount={} YCount={}",
-                    format_model_point(first),
-                    format_model_point(point),
-                    x_count,
-                    y_count
-                ));
-            }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                let command = InteractiveCommand::MeshBox {
-                    base: Some(point),
-                    opposite: None,
-                    x_count,
-                    y_count,
-                    z_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!("First base corner: {}", format_model_point(point)));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshBox {
-                base: Some(base),
-                opposite: None,
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                if !plane_rectangle_exceeds_tolerance(plane, base, point, self.document.tolerance())
-                {
-                    self.push_log(
-                        "Error: mesh-box base width and depth must both exceed model tolerance"
-                            .to_owned(),
-                    );
-                    return false;
-                }
-                let local_plane = plane.with_origin(base);
-                let Ok(opposite) = local_plane
-                    .coordinates_of(point)
-                    .and_then(|[x, y, _]| local_plane.point_at([x, y, 0.0]))
-                else {
-                    self.push_log("Error: mesh-box base corner is not finite".to_owned());
-                    return false;
-                };
-                let command = InteractiveCommand::MeshBox {
-                    base: Some(base),
-                    opposite: Some(opposite),
-                    x_count,
-                    y_count,
-                    z_count,
-                };
-                self.active_command = Some(command);
-                self.push_log(format!(
-                    "Opposite base corner: {}",
-                    format_model_point(opposite)
-                ));
-                self.push_log(command.prompt().to_owned());
-            }
-            InteractiveCommand::MeshBox {
-                base: Some(base),
-                opposite: Some(opposite),
-                x_count,
-                y_count,
-                z_count,
-            } => {
-                if !plane
-                    .with_origin(base)
-                    .coordinates_of(point)
-                    .is_ok_and(|p| p[2].abs() > self.document.tolerance().absolute())
-                {
-                    self.push_log("Error: mesh-box height must exceed model tolerance".to_owned());
-                    return false;
-                }
-                self.active_command = None;
-                self.execute_command(&format!(
-                    "MeshBox {} {} {} XCount={} YCount={} ZCount={}",
-                    format_model_point(base),
-                    format_model_point(opposite),
-                    format_model_point(point),
-                    x_count,
-                    y_count,
-                    z_count
-                ));
-            }
-            InteractiveCommand::MeshBox {
-                base: None,
-                opposite: Some(_),
-                ..
-            } => unreachable!("mesh-box opposite corner requires a base corner"),
-            InteractiveCommand::Box { base, opposite } => {
-                return self.apply_box_point(plane, base, opposite, point, None);
-            }
             InteractiveCommand::SelBox {
                 base,
                 opposite,
                 mode,
             } => {
-                return self.apply_box_point(plane, base, opposite, point, Some(mode));
+                return self.apply_selection_box_point(plane, base, opposite, point, mode);
             }
             command @ InteractiveCommand::PointGrid { .. } => {
                 return self.apply_point_grid_point(plane, command, point);

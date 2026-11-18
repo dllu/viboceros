@@ -6,6 +6,7 @@ B-rep output for eligible creators.
 [All commands](README.md) · [Command input](../command-line.md)
 
 - [Torus construction modes and live previews](torus.md)
+- [Box construction modes and live previews](box.md)
 - [Cone and Cylinder bases, direction constraints and live previews](cone-cylinder.md)
 - [TruncatedCone base and top-circle input](truncated-cone.md)
 - [Tube base, second wall and height input](tube.md)

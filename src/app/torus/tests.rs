@@ -1,6 +1,6 @@
 use super::*;
 use crate::app::subd_native_tests as subd_native;
-use crate::app::subd_primitives::tests::native as box_native;
+use crate::app::rectangle_primitives::tests::native as box_native;
 use crate::app::tests::test_app;
 #[path = "../../../crates/viboceros-command/tests/support/subd_torus.rs"]
 mod native;

@@ -425,6 +425,7 @@ impl VibocerosApp {
             || self.picking_arc_extension_curve()
             || self.picking_tangent_curve()
             || self.picking_circle_around_curve()
+            || self.picking_pipe_rail()
             || self.picking_splop_reference_curve())
             && self.plane_prompt.is_none()
             && model_input_active
@@ -488,9 +489,9 @@ impl VibocerosApp {
                     .as_ref()
                     .or_else(|| self.plane_surface_session.as_ref().map(|s| &s.rectangle))
                     .or_else(|| {
-                        self.subd_primitive_session
+                        self.rectangle_primitive_session
                             .as_ref()
-                            .filter(|s| s.base.is_none())
+                            .filter(|s| s.building_rectangle())
                             .map(|s| &s.rectangle)
                     })
                     .or_else(|| self.surface_flow_session.as_ref()?.plane.as_ref())
@@ -577,6 +578,7 @@ impl VibocerosApp {
             .edge_prompt
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
+        edge_highlights.extend(self.pipe_edge_highlights());
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
@@ -711,12 +713,10 @@ impl VibocerosApp {
         let curve_region_pick = model_input_active
             && (fence_curve_pick
                 || self.boundary_selection.is_some()
+                || (self.picking_pipe_rail() && !self.picking_pipe_chain())
                 || matches!(
                     self.active_command,
-                    Some(
-                        InteractiveCommand::SelVolumePipe { source: None, .. }
-                            | InteractiveCommand::Pipe { source: None, .. }
-                    )
+                    Some(InteractiveCommand::SelVolumePipe { source: None, .. })
                 ));
         let volume_object_pick = model_input_active
             && matches!(
@@ -786,6 +786,7 @@ impl VibocerosApp {
                 || self.picking_arc_extension_curve()
                 || self.picking_tangent_curve()
                 || self.picking_circle_around_curve()
+                || (self.picking_pipe_rail() && !self.picking_pipe_chain())
                 || self.picking_splop_reference_curve());
         let document = surface_rebuild::viewport_document(
             &self.document,
@@ -902,6 +903,11 @@ impl VibocerosApp {
         let solid_axial_input = (model_input_active && self.plane_prompt.is_none())
             .then(|| self.solid_axial_preview_input())
             .flatten();
+        let pipe_preview = self
+            .pipe_session
+            .as_ref()
+            .filter(|_| model_input_active && self.plane_prompt.is_none())
+            .and_then(pipe::Session::preview);
         let pyramid_input = self
             .pyramid_session
             .as_ref()
@@ -1357,9 +1363,9 @@ impl VibocerosApp {
                                         .map(subd_axial::Session::preview_curves)
                                 })
                                 .or_else(|| {
-                                    self.subd_primitive_session
+                                    self.rectangle_primitive_session
                                         .as_ref()
-                                        .map(subd_primitives::Session::preview_curves)
+                                        .map(rectangle_primitives::Session::preview_curves)
                                 })
                                 .or_else(|| {
                                     self.surface_offset_session
@@ -1423,6 +1429,7 @@ impl VibocerosApp {
                             arc_preview,
                             circle_around_input,
                             solid_axial_input,
+                            pipe_preview,
                             pyramid_input,
                             solid_axial_fit,
                             torus_preview_curves: self
@@ -1445,6 +1452,14 @@ impl VibocerosApp {
                             conic_input,
                             conic_reference,
                             rectangle_input,
+                            box_square_plane: rectangle_input.and_then(|_| {
+                                self.rectangle_primitive_session.as_ref()?.square_plane()
+                            }),
+                            rectangle_mesh_counts: rectangle_input.and_then(|_| {
+                                self.rectangle_primitive_session
+                                    .as_ref()?
+                                    .mesh_plane_preview_counts()
+                            }),
                             srf_pt_input,
                             surface_point_grid,
                             surface_flow_preview: self

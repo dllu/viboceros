@@ -46,6 +46,7 @@ mod boolean_split_plane;
 mod boolean_split_topology;
 mod boolean_two;
 mod boolean_union;
+mod box_modes;
 #[path = "../../../crates/viboceros-command/tests/support/brep_comparison.rs"]
 #[allow(dead_code)]
 mod brep_comparison;
@@ -181,6 +182,7 @@ mod merge_surfaces;
 mod mesh_edit_input;
 mod mesh_ellipsoid_getters;
 mod mesh_face_prompt;
+mod mesh_plane_modes;
 mod mesh_primitive_input;
 mod mesh_sphere;
 mod mesh_torus;
@@ -212,6 +214,7 @@ mod orient_surface_grips;
 mod pack_subd_faces;
 mod parabola;
 mod paraboloid;
+mod pipe;
 mod planar_boolean;
 mod plane_arrays;
 mod plane_through_points;

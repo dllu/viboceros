@@ -567,57 +567,6 @@ impl Command for PolygonCommand {
     }
 }
 
-pub(super) struct MeshPlaneCommand;
-
-impl Command for MeshPlaneCommand {
-    fn name(&self) -> &'static str {
-        "MeshPlane"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        self.run_in_context(document, arguments, CommandContext::default())
-    }
-
-    fn run_in_context(
-        &self,
-        document: &mut Document,
-        arguments: &[&str],
-        context: CommandContext,
-    ) -> Result<String, CommandError> {
-        let plane = context.construction_plane;
-        let leading_options = mesh_plane_leading_option_count(arguments);
-        let (first, opposite, options) = if leading_options == 0 {
-            let (first, first_consumed) = parse_point(arguments)?;
-            let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
-            let options =
-                parse_mesh_plane_arguments(&arguments[first_consumed + opposite_consumed..])?;
-            (first, opposite, options)
-        } else {
-            let options = parse_mesh_plane_arguments(&arguments[..leading_options])?;
-            let (first, first_consumed) = parse_point(&arguments[leading_options..])?;
-            let point_start = leading_options + first_consumed;
-            let (opposite, opposite_consumed) = parse_point(&arguments[point_start..])?;
-            require_consumed(arguments, point_start + opposite_consumed, MESH_PLANE_USAGE)?;
-            (first, opposite, options)
-        };
-        let frame = plane.with_origin(first);
-        let [x, y, _] = frame.coordinates_of(opposite)?;
-        let mesh = TriangleMesh::try_plane_grid(
-            frame,
-            [x.min(0.0), x.max(0.0)],
-            [y.min(0.0), y.max(0.0)],
-            options.x_count,
-            options.y_count,
-            document.tolerance(),
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added mesh plane {id} ({} × {} faces)",
-            options.x_count, options.y_count
-        ))
-    }
-}
-
 pub(super) struct MeshBoxCommand;
 
 impl Command for MeshBoxCommand {
@@ -636,6 +585,26 @@ impl Command for MeshBoxCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let plane = context.construction_plane;
+        if arguments
+            .iter()
+            .any(|argument| box_input::is_extended(argument))
+            || matches!(arguments, [count, first, ..]
+                if count.parse::<usize>().is_ok_and(|n| n > 0) && first.contains(','))
+        {
+            let scripted = box_input::from_arguments(document, arguments, plane, Some([10; 3]))?;
+            let counts = scripted.counts.unwrap();
+            let geometry = box_input::mesh(
+                scripted.definition,
+                counts,
+                scripted.ordered_height,
+                document.tolerance(),
+            )?;
+            let id = document.add_geometry(Geometry::Mesh(geometry))?;
+            let [x, y, z] = counts;
+            return Ok(format!(
+                "Added closed mesh box {id} ({x} × {y} × {z} side divisions)"
+            ));
+        }
         let leading_options = mesh_box_leading_option_count(arguments);
         let (base_corner, opposite_corner, height, options) = if leading_options == 0 {
             let (base_corner, base_consumed) = parse_point(arguments)?;
@@ -709,6 +678,17 @@ impl Command for BoxCommand {
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let plane = context.construction_plane;
+        if arguments
+            .iter()
+            .any(|argument| box_input::is_extended(argument))
+        {
+            let scripted = box_input::from_arguments(document, arguments, plane, None)?;
+            let extrusion = self.0.get().0;
+            let geometry = box_input::solid(scripted.definition, extrusion, document.tolerance())?;
+            let id = document.add_geometry(Geometry::Brep(geometry))?;
+            let kind = if extrusion { "extrusion" } else { "B-rep" };
+            return Ok(format!("Added closed {kind} box {id}"));
+        }
         let (base_corner, base_consumed) = parse_point(arguments)?;
         let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
         let option_start = base_consumed + opposite_consumed;

@@ -307,20 +307,10 @@ impl InteractiveCommand {
             Self::SelVolumeObject { .. } => {
                 "SelVolumeObject: select a closed mesh or polysurface (Esc to cancel)"
             }
-            Self::Pipe { source: None, .. } => "Pipe: select a rail curve (Esc to cancel)",
             Self::Pipe {
-                source: Some(_),
-                first_radius: Some(_),
-                ..
-            } => "Pipe: pick the second radius point near the rail (Esc to cancel)",
-            Self::Pipe {
-                source: Some(_),
-                pick_second_radius: true,
-                ..
-            } => "Pipe: pick the first radius point near the rail (Esc to cancel)",
-            Self::Pipe {
-                source: Some(_), ..
-            } => "Pipe: pick a radius point near the rail (Esc to cancel)",
+                selecting: true, ..
+            } => "Select a pipe rail; Esc cancels",
+            Self::Pipe { .. } => "Pick a pipe radius or station; Esc cancels",
             Self::Ellipsoid { mesh: false, .. } => {
                 "Ellipsoid: pick a point or enter a size (Esc cancels)"
             }
@@ -423,23 +413,6 @@ impl InteractiveCommand {
             Self::Rectangle { first: Some(_) } => {
                 "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
             }
-            Self::MeshPlane { first: None, .. } => {
-                "MeshPlane: pick the first corner in the viewport (Esc to cancel)"
-            }
-            Self::MeshPlane { first: Some(_), .. } => {
-                "MeshPlane: pick the opposite corner in the viewport (Esc to cancel)"
-            }
-            Self::MeshBox { base: None, .. } => {
-                "MeshBox: pick the first base corner in the viewport (Esc to cancel)"
-            }
-            Self::MeshBox {
-                base: Some(_),
-                opposite: None,
-                ..
-            } => "MeshBox: pick the opposite base corner in the viewport (Esc to cancel)",
-            Self::MeshBox {
-                opposite: Some(_), ..
-            } => "MeshBox: pick the height in the viewport (Esc to cancel)",
             Self::PointGrid {
                 base: None,
                 options,
@@ -519,22 +492,19 @@ impl InteractiveCommand {
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }
-            Self::SubDPrimitive {
-                kind: subd_primitives::Kind::Box,
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::Box,
                 ..
             } => "SubDBox: pick the base or height; Esc cancels",
-            Self::SubDPrimitive {
-                kind: subd_primitives::Kind::Plane,
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::Plane,
                 ..
             } => "SubDPlane: pick rectangle points; Esc cancels",
-            Self::Box { base: None, .. } => "Box: pick the first base corner (Esc to cancel)",
-            Self::Box {
-                base: Some(_),
-                opposite: None,
-            } => "Box: pick the opposite base corner (Esc to cancel)",
-            Self::Box {
-                opposite: Some(_), ..
-            } => "Box: pick a height point (Esc to cancel)",
+            Self::RectanglePrimitive {
+                kind: rectangle_primitives::Kind::MeshPlane,
+                ..
+            } => "MeshPlane: pick rectangle points or set face counts",
+            Self::RectanglePrimitive { .. } => "Pick a box corner or height; Esc cancels",
             Self::SelBox { base: None, .. } => "SelBox: pick the first base corner (Esc to cancel)",
             Self::SelBox {
                 base: Some(_),

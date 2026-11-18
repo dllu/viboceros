@@ -30,7 +30,9 @@ mod curve_line;
 pub(crate) mod direction;
 mod drafting;
 mod paraboloid;
+mod pipe;
 mod pyramid;
+mod rectangle_grid;
 mod solid_axial;
 pub(crate) use drafting::MAX_DRAFT_MESH_FACES;
 mod ellipsoid;
@@ -429,6 +431,10 @@ pub struct ViewportInput<'a> {
     pub arc_tilted_input: Option<viboceros_command::arc_tilted_input::Input>,
     pub circle_around_input: Option<(viboceros_command::circle_around_input::Input, bool)>,
     pub solid_axial_input: Option<viboceros_command::solid_axial::Input>,
+    pub pipe_preview: Option<(
+        &'a viboceros_command::pipe::Input,
+        &'a [viboceros_command::pipe::Rail],
+    )>,
     pub solid_axial_fit: Option<Circle3>,
     pub torus_preview_curves: &'a [NurbsCurve],
     pub torus_fit_preview: Option<Circle3>,
@@ -451,6 +457,8 @@ pub struct ViewportInput<'a> {
     pub conic_input: Option<viboceros_command::conic::Input>,
     pub conic_reference: Option<&'a viboceros_command::conic::ReferenceInput>,
     pub rectangle_input: Option<viboceros_command::rectangle_input::RectangleInput>,
+    pub box_square_plane: Option<Frame3>,
+    pub rectangle_mesh_counts: Option<[usize; 2]>,
     pub srf_pt_input: Option<viboceros_command::srf_pt::Input>,
     pub surface_point_grid: Option<(&'a [Point3], usize)>,
     pub flow_preview: Option<FlowPreview<'a>>,
@@ -588,6 +596,7 @@ impl Default for ViewportInput<'_> {
             arc_preview: None,
             circle_around_input: None,
             solid_axial_input: None,
+            pipe_preview: None,
             solid_axial_fit: None,
             torus_preview_curves: &[],
             torus_fit_preview: None,
@@ -601,6 +610,8 @@ impl Default for ViewportInput<'_> {
             conic_input: None,
             conic_reference: None,
             rectangle_input: None,
+            box_square_plane: None,
+            rectangle_mesh_counts: None,
             srf_pt_input: None,
             surface_point_grid: None,
             flow_preview: None,
@@ -686,6 +697,7 @@ pub struct ViewportOutput {
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
+    pub square_box_pick: bool,
     /// Snap attached to this accepted point, never a stale hover candidate.
     pub picked_snap: Option<viboceros_drafting::ObjectSnap>,
     /// Resolved hovered drafting location, without accepting a point or editing
@@ -1952,6 +1964,19 @@ impl Viewport {
         } else {
             None
         };
+        let mut square_box = false;
+        if modifiers.shift
+            && let Some(plane) = input.box_square_plane
+            && let Some(cursor) = drafting_cursor.as_mut()
+            && let Ok(corner) = viboceros_command::box_input::square_corner(plane, cursor.point)
+        {
+            square_box = true;
+            cursor.source_point = corner;
+            cursor.point = corner;
+            cursor.object_snap = None;
+            cursor.track = None;
+            cursor.grid_snapped = false;
+        }
         if let Some(target) = input.normal_surface
             && !input
                 .point_filter
@@ -2909,6 +2934,18 @@ impl Viewport {
         if let Some(circle) = input.solid_axial_fit {
             self.paint_curve_draft(&painter, rect, &circle);
         }
+        if let Some((getter, rails)) = input.pipe_preview {
+            let cursor =
+                drafting_cursor.filter(|_| input.point_filter.is_none_or(|f| !f.awaiting_source()));
+            self.paint_pipe_preview(
+                &painter,
+                rect,
+                getter,
+                rails,
+                cursor.map(|p| p.point),
+                document.tolerance(),
+            );
+        }
         for curve in input.torus_preview_curves {
             self.paint_curve_draft(&painter, rect, curve);
         }
@@ -3097,6 +3134,8 @@ impl Viewport {
                         );
                     }
                 }
+            } else if let Some(counts) = input.rectangle_mesh_counts {
+                self.paint_rectangle_mesh_grid(&painter, rect, rectangle.corners, counts);
             } else {
                 for index in 0..4 {
                     if let Some(segment) = self.project_segment(
@@ -3451,6 +3490,7 @@ impl Viewport {
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
+            square_box_pick: square_box && response.clicked_by(PointerButton::Primary),
             picked_snap: (response.clicked_by(PointerButton::Primary)
                 && input.insert_edges.is_none()
                 && !input.parametric_pick

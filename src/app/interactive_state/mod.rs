@@ -271,14 +271,8 @@ pub(super) enum InteractiveCommand {
         mode: RectSelectionMode,
     },
     Pipe {
-        source: Option<ObjectId>,
-        cap_flat: bool,
-        cap_round: bool,
-        blend_global: bool,
-        fit_rail: bool,
-        wall_thickness: Option<f64>,
-        pick_second_radius: bool,
-        first_radius: Option<f64>,
+        selecting: bool,
+        anchor: Option<Point3>,
     },
     Ellipsoid {
         anchor: Option<Point3>,
@@ -384,13 +378,9 @@ pub(super) enum InteractiveCommand {
     SubDCylinder {
         anchor: Option<Point3>,
     },
-    SubDPrimitive {
-        kind: subd_primitives::Kind,
+    RectanglePrimitive {
+        kind: rectangle_primitives::Kind,
         anchor: Option<Point3>,
-    },
-    Box {
-        base: Option<Point3>,
-        opposite: Option<Point3>,
     },
     SelBox {
         base: Option<Point3>,
@@ -403,18 +393,6 @@ pub(super) enum InteractiveCommand {
         third: Option<Point3>,
         width: Option<f64>,
         options: viboceros_command::PointGridOptions,
-    },
-    MeshPlane {
-        first: Option<Point3>,
-        x_count: usize,
-        y_count: usize,
-    },
-    MeshBox {
-        base: Option<Point3>,
-        opposite: Option<Point3>,
-        x_count: usize,
-        y_count: usize,
-        z_count: usize,
     },
     Pyramid {
         kind: viboceros_command::pyramid::Kind,

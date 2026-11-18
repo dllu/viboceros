@@ -21,7 +21,7 @@ fn native_box_getters_match_modes_source_selection_and_grouped_history() {
         app.viewports[app.active_viewport].set_construction_plane(native::plane(value));
         enter(&mut app, &native::header(value));
         assert!(
-            app.subd_primitive_session.is_some(),
+            app.rectangle_primitive_session.is_some(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -33,7 +33,7 @@ fn native_box_getters_match_modes_source_selection_and_grouped_history() {
                 action
             };
             enter(&mut app, if action == "Enter" { "" } else { &action });
-            if app.subd_primitive_session.is_some() {
+            if app.rectangle_primitive_session.is_some() {
                 assert_eq!(
                     app.document.objects().count(),
                     usize::from(scene.source.is_some())
@@ -42,7 +42,7 @@ fn native_box_getters_match_modes_source_selection_and_grouped_history() {
             }
         }
         assert!(
-            app.subd_primitive_session.is_none(),
+            app.rectangle_primitive_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -77,17 +77,17 @@ fn count_options_cancel_preview_and_changed_history_keep_document_staged() {
     for point in ["w0,0,0", "w4,3,0"] {
         enter(&mut app, point);
     }
-    app.update_subd_primitive_hover(Point3::try_new(0., 0., 5.).unwrap());
+    app.update_rectangle_primitive_hover(Point3::try_new(0., 0., 5.).unwrap());
     assert!(
-        !app.subd_primitive_session
+        !app.rectangle_primitive_session
             .as_ref()
             .unwrap()
             .preview_curves()
             .is_empty()
     );
-    app.update_subd_primitive_hover(Point3::try_new(0., 0., -5.).unwrap());
+    app.update_rectangle_primitive_hover(Point3::try_new(0., 0., -5.).unwrap());
     let preview = app
-        .subd_primitive_session
+        .rectangle_primitive_session
         .as_ref()
         .unwrap()
         .preview_curves();
@@ -105,13 +105,13 @@ fn count_options_cancel_preview_and_changed_history_keep_document_staged() {
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w4,3,0");
     enter(&mut app, "0");
-    assert!(app.subd_primitive_session.is_some());
+    assert!(app.rectangle_primitive_session.is_some());
     assert_eq!(app.document.redo_label(), Some("Point"));
     app.document
         .add_geometry(Geometry::Point(Point3::try_new(2., 3., 4.).unwrap()))
         .unwrap();
     enter(&mut app, "5");
-    assert!(app.subd_primitive_session.is_none());
+    assert!(app.rectangle_primitive_session.is_none());
     assert_eq!(app.document.objects().count(), 1);
 }
 
@@ -130,7 +130,7 @@ fn plane_getters_match_native_tags_and_complete_without_a_height_prompt() {
         std::mem::swap(&mut scene.document, &mut app.document);
         app.viewports[app.active_viewport].set_construction_plane(plane_native::plane(value));
         enter(&mut app, &plane_native::header(value));
-        assert!(app.subd_primitive_session.is_some());
+        assert!(app.rectangle_primitive_session.is_some());
         for action in plane_native::actions(value, scene.source) {
             let action = if action.contains(',') {
                 format!("w{action}")
@@ -138,7 +138,7 @@ fn plane_getters_match_native_tags_and_complete_without_a_height_prompt() {
                 action
             };
             enter(&mut app, &action);
-            if app.subd_primitive_session.is_some() {
+            if app.rectangle_primitive_session.is_some() {
                 assert_eq!(
                     app.document.objects().count(),
                     usize::from(scene.source.is_some())
@@ -147,7 +147,7 @@ fn plane_getters_match_native_tags_and_complete_without_a_height_prompt() {
             }
         }
         assert!(
-            app.subd_primitive_session.is_none(),
+            app.rectangle_primitive_session.is_none(),
             "{} {:?}",
             row["id"],
             app.command_log
@@ -179,7 +179,7 @@ fn plane_counts_are_independent_and_cancellation_preserves_redo() {
     enter(&mut app, "3");
     enter(&mut app, "YCount=4");
     enter(&mut app, "ZCount=5");
-    assert!(app.subd_primitive_session.is_some());
+    assert!(app.rectangle_primitive_session.is_some());
     enter(&mut app, "w0,0,0");
     enter(&mut app, "Cancel");
     assert_eq!(app.document.objects().count(), 0);
@@ -193,7 +193,7 @@ fn plane_counts_are_independent_and_cancellation_preserves_redo() {
             .set_tolerance(Tolerance::try_new(1e-4, 1e-8, 1e-6).unwrap())
     );
     enter(&mut app, "w4,3,0");
-    assert!(app.subd_primitive_session.is_none());
+    assert!(app.rectangle_primitive_session.is_none());
     assert_eq!(app.document.objects().count(), 0);
 }
 #[test]
@@ -204,7 +204,7 @@ fn failed_plane_admission_ends_the_draft_without_consuming_redo() {
     enter(&mut app, "SubDPlane XCount=100000 YCount=100000");
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w4,3,0");
-    assert!(app.subd_primitive_session.is_none());
+    assert!(app.rectangle_primitive_session.is_none());
     assert!(app.active_command.is_none());
     assert_eq!(app.document.objects().count(), 0);
     assert_eq!(app.document.redo_label(), Some("Point"));

@@ -50,9 +50,9 @@ impl VibocerosApp {
             .as_ref()
             .or_else(|| self.plane_surface_session.as_ref().map(|s| &s.rectangle))
             .or_else(|| {
-                self.subd_primitive_session
+                self.rectangle_primitive_session
                     .as_ref()
-                    .filter(|s| s.base.is_none())
+                    .filter(|s| s.building_rectangle())
                     .map(|s| &s.rectangle)
             })
             .or_else(|| self.surface_flow_session.as_ref()?.plane.as_ref())
@@ -63,9 +63,9 @@ impl VibocerosApp {
         } else if let Some(s) = &mut self.plane_surface_session {
             Some(&mut s.rectangle)
         } else if let Some(s) = self
-            .subd_primitive_session
+            .rectangle_primitive_session
             .as_mut()
-            .filter(|s| s.base.is_none())
+            .filter(|s| s.building_rectangle())
         {
             Some(&mut s.rectangle)
         } else {
@@ -136,8 +136,8 @@ impl VibocerosApp {
             self.plane_surface_prompt();
             return;
         }
-        if self.subd_primitive_session.is_some() {
-            self.subd_primitive_prompt();
+        if self.rectangle_primitive_session.is_some() {
+            self.rectangle_primitive_prompt();
             return;
         }
         let Some(s) = self.rectangle_getter() else {
@@ -184,8 +184,8 @@ impl VibocerosApp {
         if self.plane_surface_session.is_some() {
             return self.finish_plane_surface(definition);
         }
-        if self.subd_primitive_session.is_some() {
-            return self.accept_subd_primitive_base(definition);
+        if self.rectangle_primitive_session.is_some() {
+            return self.accept_rectangle_primitive_base(definition);
         }
         if self.rectangle_session.is_some() {
             // Route the completed construction through the public command so
@@ -229,7 +229,13 @@ impl VibocerosApp {
     }
     pub(super) fn accept_rectangle_point(&mut self, point: Point3) -> Option<bool> {
         self.rectangle_getter()?;
-        if !self.validate_plane_surface() || self.plane_surface_setting_pending() {
+        if !self.validate_plane_surface()
+            || self.plane_surface_setting_pending()
+            || self
+                .rectangle_primitive_session
+                .as_ref()
+                .is_some_and(|s| s.setting_count())
+        {
             return Some(false);
         }
         self.validate_rectangle_curve();
@@ -294,7 +300,12 @@ impl VibocerosApp {
             return true;
         }
         let prior_mode = self.rectangle_getter().unwrap().input.mode();
-        if self.rectangle_getter_mut().unwrap().input.option(word) {
+        if !self
+            .rectangle_primitive_session
+            .as_ref()
+            .is_some_and(|s| s.uses_primitive_modes())
+            && self.rectangle_getter_mut().unwrap().input.option(word)
+        {
             if self.rectangle_getter().unwrap().input.mode() != prior_mode {
                 self.rectangle_getter_mut().unwrap().curve = None;
                 self.plane_surface_curve_mode();

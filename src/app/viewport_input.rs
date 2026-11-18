@@ -183,7 +183,7 @@ impl VibocerosApp {
                 session.input.observe_cursor(point);
             }
             self.update_subd_axial_hover(point);
-            self.update_subd_primitive_hover(point);
+            self.update_rectangle_primitive_hover(point);
             self.update_face_create_hover(point);
             self.update_mesh_polyline_hover(point);
             self.update_surface_interpolation_hover(point);
@@ -345,6 +345,12 @@ impl VibocerosApp {
             if self.pick_face_edge_click(&picks) {
                 return true;
             }
+            if self.picking_pipe_rail() {
+                if let Some(pick) = picks.first() {
+                    self.pick_pipe_rail(pick.object, Some(pick.edge));
+                }
+                return true;
+            }
             if self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
@@ -413,7 +419,14 @@ impl VibocerosApp {
             if self.plane_prompt.is_some() {
                 self.accept_plane_prompt_point(point);
             } else {
-                self.accept_filtered_drafting_snap(point, output.picked_snap);
+                let accepted = self.accept_filtered_drafting_snap(point, output.picked_snap);
+                if accepted
+                    && output.square_box_pick
+                    && let Some(session) = self.rectangle_primitive_session.as_mut()
+                    && session.base.is_some()
+                {
+                    session.square_base = true;
+                }
             }
         } else if let Some(selection) = output.point_cloud_selection {
             self.select_cloud_points(&selection.indices, selection.mode);
