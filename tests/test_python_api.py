@@ -5,7 +5,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from viboceros import CommandError, ENTER, ESCAPE, Pick, PickPoint, Session, SessionError
+from viboceros import (
+    ActivateView, CommandError, ENTER, ESCAPE, Key, Pick, PickPoint, Session,
+    SessionError, TypeText, WidgetAction,
+)
 
 
 class PythonApiTests(unittest.TestCase):
@@ -44,7 +47,8 @@ class PythonApiTests(unittest.TestCase):
         self.assertFalse(result.pending)
         self.assertEqual(len(result.added), 1)
         self.assertEqual(result.deleted, (target, cutter))
-        self.assertEqual(model.objects()[0].bounds, ((0, 0, 0), (10, 10, 5)))
+        measure = model.run("Volume", select=result.added).messages[-1]
+        self.assertAlmostEqual(float(measure.rsplit(" ", 1)[1]), 420.0, places=9)
 
     def test_component_and_grip_identity(self):
         model = self.model
@@ -64,6 +68,25 @@ class PythonApiTests(unittest.TestCase):
         result = model.run("Move 0,0,0 0,0,1")
         self.assertEqual(result.modified, (curve,))
         self.assertEqual(model.grips(curve)[1].point, (1, 3, 1))
+        with self.assertRaisesRegex(SessionError, "geometry has changed"):
+            model.select_grips(grips[1])
+
+    def test_dialog_controls(self):
+        model = self.model
+        line, = model.run("Line 0,0,0 4,0,0").added
+        instance, = model.run("Block 0,0,0 Inspection", select=[line]).added
+        model.select()
+        model.run("BlockManager")
+        row = next(widget for widget in model.widgets() if widget.label == "Inspection")
+        self.assertTrue(row.clickable)
+        result = model.run(WidgetAction(row), WidgetAction("Select top-level instances"))
+        self.assertEqual(result.selected, (instance,))
+        field = next(widget for widget in model.widgets() if widget.value == "Inspection Copy")
+        duplicate = model.run(
+            WidgetAction(field, "focus"), Key("A", command=True),
+            TypeText("Inspection alternate"), WidgetAction("Duplicate definition"),
+        )
+        self.assertIn("Duplicated definition as 'Inspection alternate'", duplicate.messages)
 
     def test_world_view_pick_and_error_recovery(self):
         model = self.model
@@ -84,9 +107,9 @@ class PythonApiTests(unittest.TestCase):
 
     def test_project_and_mesh_io(self):
         model = self.model
-        object_id, = model.run("Box 0,0,0 8,5,0 3").added
-        model.run('SetObjectName "Test model"', select=[object_id])
-        model.run('NamedView Save "Inspection view"')
+        object_id, = model.command("Box", (0, 0, 0), (8, 5, 0), 3).added
+        model.command("SetObjectName", "Test model", select=[object_id])
+        model.run("NamedView Save Inspection view")
         project = self.folder / "test project.3dm"
         model.save(project)
         self.assertEqual(Path(model.info()["path"]), project)
@@ -101,7 +124,7 @@ class PythonApiTests(unittest.TestCase):
         self.assertEqual(model.objects(), ())
         model.open(project)
         self.assertEqual(model.object(object_id).name, "Test model")
-        self.assertIn("Inspection view", model.run("NamedView List").messages[-1])
+        self.assertEqual(model.run("NamedView List").messages[-1], "Named views: Inspection view")
         self.assertEqual(len(model.import_file(stl).added), 1)
         facets = model.import_file(step).added
         self.assertTrue(facets)
@@ -134,6 +157,11 @@ class PythonApiTests(unittest.TestCase):
             self.assertNotEqual(png, blank)
             captures.add(png)
         self.assertEqual(len(captures), 3)
+        wire = model.screenshot(self.folder / "wire.png", view="Top", mode="Wireframe", size=size)
+        self.assertNotIn(wire.read_bytes(), captures)
+        model.run(ActivateView("Perspective"), "NamedView Save Inspection view")
+        named = model.screenshot(self.folder / "named.png", view="Inspection view", size=size)
+        self.assertIn(named.read_bytes(), captures)
 
 
 if __name__ == "__main__":

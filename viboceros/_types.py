@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 from numbers import Real
 from typing import Any, Literal
 from uuid import UUID
@@ -46,10 +47,31 @@ class Object:
 
 
 ObjectLike = Object | str | UUID
+CommandArgument = ObjectLike | Real | XYZ
 
 
 def object_id(obj: ObjectLike) -> str:
     return obj.id if isinstance(obj, Object) else str(obj)
+
+
+def command_token(value: CommandArgument) -> str:
+    """Format one regular command argument using native command syntax."""
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    if isinstance(value, Real):
+        if not isfinite(value):
+            raise ValueError("command numbers must be finite")
+        return str(value)
+    if isinstance(value, (tuple, list)) and len(value) == 3:
+        if any(isinstance(coordinate, bool) or not isinstance(coordinate, Real) for coordinate in value):
+            raise TypeError("point arguments must have three numeric coordinates")
+        return ",".join(map(command_token, value))
+    if isinstance(value, (str, UUID, Object)):
+        token = object_id(value)
+        if any(character in token for character in '"\r\n\0'):
+            raise ValueError("pass arguments with special command syntax directly to run()")
+        return f'"{token}"' if not token or any(character.isspace() for character in token) else token
+    raise TypeError(f"unsupported command argument {value!r}")
 
 
 @dataclass(frozen=True)
@@ -59,6 +81,7 @@ class Component:
     index: int
     points: tuple[XYZ, ...] = ()
     loops: tuple[tuple[int, ...], ...] = ()
+    revision: int | None = None
 
     @classmethod
     def _read(cls, record: dict[str, Any]) -> Component:
@@ -66,10 +89,11 @@ class Component:
             record["object"], record["kind"], record["index"],
             tuple(map(tuple, record.get("points", ()))),
             tuple(map(tuple, record.get("loops", ()))),
+            record.get("revision"),
         )
 
     def _ref(self) -> dict[str, Any]:
-        return {"object": object_id(self.object), "kind": self.kind, "index": self.index}
+        return {"object": object_id(self.object), "kind": self.kind, "index": self.index, "revision": self.revision}
 
 
 @dataclass(frozen=True)
@@ -79,6 +103,8 @@ class Grip:
     point: XYZ | None = None
     selected: bool = False
     hidden: bool = False
+    revision: int | None = None
+    mode: str | None = None
 
     @classmethod
     def _read(cls, record: dict[str, Any]) -> Grip:
@@ -87,7 +113,7 @@ class Grip:
         return cls(**record)
 
     def _ref(self) -> dict[str, Any]:
-        return {"object": object_id(self.object), "index": self.index}
+        return {"object": object_id(self.object), "index": self.index, "revision": self.revision, "mode": self.mode}
 
 
 @dataclass(frozen=True)
@@ -116,6 +142,23 @@ class Viewport:
 
     @classmethod
     def _read(cls, record: dict[str, Any]) -> Viewport:
+        rect = record["rectangle"]
+        return cls(**{**record, "rectangle": tuple(rect) if rect is not None else None})
+
+
+@dataclass(frozen=True)
+class Widget:
+    id: int
+    label: str | None
+    role: str
+    value: str | None
+    enabled: bool
+    clickable: bool
+    focusable: bool
+    rectangle: tuple[float, float, float, float] | None
+
+    @classmethod
+    def _read(cls, record: dict[str, Any]) -> Widget:
         rect = record["rectangle"]
         return cls(**{**record, "rectangle": tuple(rect) if rect is not None else None})
 
@@ -201,10 +244,25 @@ class ActivateView:
     view: View
 
 
+@dataclass(frozen=True)
+class TypeText:
+    """Type into the currently focused widget without submitting a command."""
+
+    text: str
+
+
+@dataclass(frozen=True)
+class WidgetAction:
+    """Click or focus a UI control by its label or widget ID."""
+
+    target: Widget | int | str
+    action: Literal["click", "focus"] = "click"
+
+
 ENTER = None
 ESCAPE = Key("Escape")
 
-Step = str | float | XYZ | Point | Pick | PickPoint | Pointer | Key | ActivateView | None
+Step = str | float | XYZ | Point | Pick | PickPoint | Pointer | Key | ActivateView | TypeText | WidgetAction | None
 
 
 def encode_step(step: Step) -> dict[str, Any]:
@@ -224,6 +282,11 @@ def encode_step(step: Step) -> dict[str, Any]:
         return {"kind": "pick", "id": object_id(step.target), "remove": step.remove}
     if isinstance(step, ActivateView):
         return {"kind": "activate_view", "view": step.view}
+    if isinstance(step, TypeText):
+        return {"kind": "type_text", "text": step.text}
+    if isinstance(step, WidgetAction):
+        target = step.target.id if isinstance(step.target, Widget) else step.target
+        return {"kind": "widget_action", "target": target, "action": step.action}
     if isinstance(step, (PickPoint, Pointer, Key)):
         result: dict[str, Any] = {
             "modifiers": {name: getattr(step, name) for name in ("shift", "ctrl", "alt", "command")},

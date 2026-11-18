@@ -4,14 +4,14 @@ import json
 import os
 import shutil
 import subprocess
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from threading import Event, Lock, Timer
 from typing import Any
 
 from ._types import (
-    CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
-    SessionError, Step, View, Viewport, XYZ, encode_step, object_id,
+    CommandArgument, CommandError, CommandResult, Component, Grip, Object, ObjectLike, Selection,
+    SessionError, Step, View, Viewport, Widget, XYZ, command_token, encode_step, object_id,
 )
 
 PathLike = str | os.PathLike[str]
@@ -163,6 +163,21 @@ class Session:
             raise CommandError(result)
         return result
 
+    def command(
+        self, name: str, *arguments: CommandArgument,
+        options: Mapping[str, CommandArgument] | None = None,
+        select: Sequence[ObjectLike] | None = None,
+    ) -> CommandResult:
+        """Run a command with numbers, points, object IDs, and named options."""
+        if not name or any(character.isspace() or character in '"=\0' for character in name):
+            raise ValueError("pass one command name, with arguments supplied separately")
+        tokens = [name, *map(command_token, arguments)]
+        for key, value in (options or {}).items():
+            if not key or any(character.isspace() or character in '"=\0' for character in key):
+                raise ValueError(f"invalid command option name {key!r}")
+            tokens.append(f"{key}={command_token(value)}")
+        return self.run(" ".join(tokens), select=select)
+
     def objects(
         self, *objects: ObjectLike, kind: str | None = None, name: str | None = None,
         layer: str | None = None,
@@ -246,6 +261,10 @@ class Session:
 
     def viewports(self) -> tuple[Viewport, ...]:
         return tuple(map(Viewport._read, self._request("viewports")))
+
+    def widgets(self) -> tuple[Widget, ...]:
+        """List the current command and dialog controls, including their labels."""
+        return tuple(map(Widget._read, self._request("widgets")))
 
     def project(self, point: XYZ, *, view: View | None = None) -> tuple[float, float]:
         """Project a visible world point into headless window coordinates."""

@@ -17,11 +17,14 @@ from ._types import (
     Pointer,
     Selection,
     SessionError,
+    TypeText,
     Viewport,
+    Widget,
+    WidgetAction,
 )
 
 __all__ = [
     "ActivateView", "CommandError", "CommandResult", "Component", "ENTER", "ESCAPE",
     "Grip", "Key", "Object", "Pick", "PickPoint", "Point", "Pointer", "Selection",
-    "Session", "SessionError", "Viewport",
+    "Session", "SessionError", "TypeText", "Viewport", "Widget", "WidgetAction",
 ]

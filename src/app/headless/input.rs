@@ -48,6 +48,13 @@ pub(super) enum Step {
         key: String,
         modifiers: Modifiers,
     },
+    TypeText {
+        text: String,
+    },
+    WidgetAction {
+        target: super::widgets::Target,
+        action: super::widgets::Action,
+    },
     ActivateView {
         view: ViewRef,
     },
@@ -102,18 +109,23 @@ impl From<Button> for egui::PointerButton {
 }
 
 impl Session {
-    pub(super) fn frame(&mut self, mut events: Vec<egui::Event>, modifiers: egui::Modifiers) {
+    pub(super) fn frame(
+        &mut self,
+        mut events: Vec<egui::Event>,
+        modifiers: egui::Modifiers,
+    ) -> egui::PlatformOutput {
         events.insert(0, egui::Event::ModifiersChanged(modifiers));
-        self.context
-            .run_ui(
-                egui::RawInput {
-                    screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, SCREEN_SIZE)),
-                    events,
-                    ..Default::default()
-                },
-                |ui| self.app.show_frame(ui, None),
-            )
-            .drop_without_applying_deltas();
+        let mut output = self.context.run_ui(
+            egui::RawInput {
+                screen_rect: Some(egui::Rect::from_min_size(egui::Pos2::ZERO, SCREEN_SIZE)),
+                events,
+                ..Default::default()
+            },
+            |ui| self.app.show_frame(ui, None),
+        );
+        let platform = std::mem::take(&mut output.platform_output);
+        output.drop_without_applying_deltas();
+        platform
     }
 
     pub(super) fn step(&mut self, step: Step) -> Result<()> {
@@ -150,7 +162,7 @@ impl Session {
                 point,
                 remove,
             } => {
-                let pick = component.pick()?;
+                let pick = component.pick(|id| model::revision(&self.app.document, id))?;
                 stage_sources(&self.app.document, vec![pick])?;
                 let point = point.map(Point3::try_from).transpose()?;
                 let mut output = ViewportOutput::default();
@@ -195,9 +207,14 @@ impl Session {
                 } else {
                     SelectionMode::Add
                 };
+                let document = &self.app.document;
+                let grip = grip.pick(
+                    |id| model::revision(document, id),
+                    |id| document.grip_mode(id),
+                )?;
                 self.app.handle_viewport_action(ViewportOutput {
                     control_point_selection: Some(ControlPointSelection {
-                        picks: vec![grip.pick()?],
+                        picks: vec![grip],
                         mode,
                     }),
                     ..Default::default()
@@ -245,6 +262,10 @@ impl Session {
                     );
                 }
             }
+            Step::TypeText { text } => {
+                self.frame(vec![egui::Event::Text(text)], egui::Modifiers::NONE);
+            }
+            Step::WidgetAction { target, action } => self.act_on_widget(target, action)?,
             Step::ActivateView { view } => {
                 let index = self.viewport_index(Some(&view))?;
                 self.app.activate_model_viewport(index);

@@ -2,25 +2,33 @@
 use super::*;
 use std::collections::{HashMap, HashSet};
 use viboceros_command::{ComponentSelectionKind, component_selection::ComponentPick};
-use viboceros_document::{ControlPointId, Geometry, Object};
+use viboceros_document::{ControlPointId, Geometry, GripMode, Object};
 
 #[derive(Deserialize)]
 pub(super) struct ComponentRef {
     object: String,
     kind: String,
     index: usize,
+    revision: Option<u64>,
 }
 
 #[derive(Deserialize)]
 pub(super) struct GripRef {
     object: String,
     index: usize,
+    revision: Option<u64>,
+    mode: Option<String>,
 }
 
 impl ComponentRef {
-    pub(super) fn pick(self) -> Result<ComponentPick> {
+    pub(super) fn pick(
+        self,
+        lookup: impl FnOnce(ObjectId) -> Option<u64>,
+    ) -> Result<ComponentPick> {
+        let id = object_id(&self.object)?;
+        validate_revision(id, self.revision, lookup)?;
         Ok(ComponentPick {
-            object: object_id(&self.object)?,
+            object: id,
             kind: component_kind(&self.kind)?,
             index: self.index,
         })
@@ -28,11 +36,58 @@ impl ComponentRef {
 }
 
 impl GripRef {
-    pub(super) fn pick(self) -> Result<ControlPointId> {
+    pub(super) fn pick(
+        self,
+        lookup: impl FnOnce(ObjectId) -> Option<u64>,
+        grip_mode: impl FnOnce(ObjectId) -> Option<GripMode>,
+    ) -> Result<ControlPointId> {
+        let id = object_id(&self.object)?;
+        validate_revision(id, self.revision, lookup)?;
+        if let Some(mode) = self.mode.as_deref()
+            && grip_mode(id).map(grip_mode_name) != Some(mode)
+        {
+            return Err(
+                format!("grip display has changed for object {id}; query grips again").into(),
+            );
+        }
         Ok(ControlPointId {
-            object: object_id(&self.object)?,
+            object: id,
             index: self.index,
         })
+    }
+}
+
+fn validate_revision(
+    id: ObjectId,
+    revision: Option<u64>,
+    lookup: impl FnOnce(ObjectId) -> Option<u64>,
+) -> Result<()> {
+    if let Some(expected) = revision
+        && lookup(id) != Some(expected)
+    {
+        return Err(format!(
+            "geometry has changed for object {id}; query its components or grips again"
+        )
+        .into());
+    }
+    Ok(())
+}
+
+pub(super) fn revision(document: &Document, id: ObjectId) -> Option<u64> {
+    document.object(id).map(Object::runtime_serial_number)
+}
+
+fn revisions(document: &Document) -> HashMap<ObjectId, u64> {
+    document
+        .objects()
+        .map(|o| (o.id(), o.runtime_serial_number()))
+        .collect()
+}
+
+fn grip_mode_name(mode: GripMode) -> &'static str {
+    match mode {
+        GripMode::Control => "control",
+        GripMode::Edit => "edit",
     }
 }
 
@@ -277,13 +332,15 @@ pub(super) fn components(document: &Document, id: String) -> Result<Value> {
     }
     for value in &mut values {
         value["object"] = json!(id);
+        value["revision"] = json!(source.runtime_serial_number());
     }
     Ok(json!(values))
 }
 
 pub(super) fn grips(document: &Document, id: String) -> Result<Value> {
     let object_id = object_id(&id)?;
-    object(document, object_id)?;
+    let revision = object(document, object_id)?.runtime_serial_number();
+    let mode = document.grip_mode(object_id).map(grip_mode_name);
     let hidden = document
         .hidden_control_point_indices(object_id)
         .into_iter()
@@ -296,6 +353,7 @@ pub(super) fn grips(document: &Document, id: String) -> Result<Value> {
             .map(|(grip, point, selected)| json!({
                 "object": id, "index": grip.index, "point": point.to_array(), "selected": selected,
                 "hidden": hidden.contains(&grip.index),
+                "revision": revision, "mode": mode,
             }))
             .collect::<Vec<_>>()
     ))
@@ -304,14 +362,19 @@ pub(super) fn grips(document: &Document, id: String) -> Result<Value> {
 impl Session {
     pub(super) fn selection(&mut self) -> Value {
         let doc = &self.app.document;
-        let components = self.app.component_selection.valid_picks(doc);
+        self.app.component_selection.valid_picks(doc);
+        let components = self
+            .app
+            .component_selection
+            .checked_picks(doc)
+            .unwrap_or_default();
         json!({
             "objects": selected_ids(doc),
             "components": components.iter().map(|c| json!({
                 "object": c.object.to_string(), "kind": component_name(c.kind), "index": c.index,
             })).collect::<Vec<_>>(),
-            "grips": doc.selected_logical_control_points().map(|(g, _)| json!({
-                "object": g.object.to_string(), "index": g.index,
+            "grips": doc.selected_logical_control_points().map(|(g, point)| json!({
+                "object": g.object.to_string(), "index": g.index, "point": point.to_array(), "selected": true,
             })).collect::<Vec<_>>(),
         })
     }
@@ -334,9 +397,10 @@ impl Session {
         if self.pending() {
             return Err("finish the active getter or use a viewport pick".into());
         }
+        let revisions = revisions(&self.app.document);
         let picks = components
             .into_iter()
-            .map(ComponentRef::pick)
+            .map(|component| component.pick(|id| revisions.get(&id).copied()))
             .collect::<Result<Vec<_>>>()?;
         self.app
             .component_selection
@@ -349,9 +413,17 @@ impl Session {
         if self.pending() {
             return Err("finish the active getter or use a viewport pick".into());
         }
+        let document = &self.app.document;
+        let revisions = revisions(document);
+        let modes: HashMap<_, _> = document.control_point_displays().collect();
         let picks = grips
             .into_iter()
-            .map(GripRef::pick)
+            .map(|grip| {
+                grip.pick(
+                    |id| revisions.get(&id).copied(),
+                    |id| modes.get(&id).copied(),
+                )
+            })
             .collect::<Result<Vec<_>>>()?;
         self.app
             .document

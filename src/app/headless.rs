@@ -1,6 +1,7 @@
 //! Persistent, windowless host for the same document, getters and views as the desktop app.
 mod input;
 mod model;
+mod widgets;
 
 use super::*;
 use crate::viewport_gpu::readback::OffscreenRenderer;
@@ -53,6 +54,7 @@ enum Request {
         grips: Vec<GripRef>,
     },
     Viewports,
+    Widgets,
     Project {
         point: [f64; 3],
         view: Option<ViewRef>,
@@ -101,6 +103,7 @@ impl Session {
             renderer: None,
         };
         session.context.set_visuals(egui::Visuals::light());
+        session.context.enable_accesskit();
         session.frame(vec![], egui::Modifiers::NONE);
         session
     }
@@ -165,6 +168,7 @@ impl Session {
                 self.selection()
             }
             Request::Viewports => self.viewports(),
+            Request::Widgets => self.widgets(),
             Request::Project { point, view } => {
                 let position = self.project_point(point, view.as_ref())?;
                 json!([position.x, position.y])

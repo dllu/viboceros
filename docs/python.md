@@ -1,7 +1,8 @@
 # Headless Python modeling
 
-Build Viboceros using the [repository setup instructions](../README.md#build-and-run)
-and run your script from the checkout with Python 3.10 or newer. To import it
+Build Viboceros with `cargo build --release` after following the dependencies
+and submodule setup in the [README](../README.md#build-and-run).
+Run your script from the checkout with Python 3.10 or newer. To import it
 from elsewhere, install the Python package with `python -m pip install -e .`
 and put the built `viboceros` executable on `PATH` or set `VIBOCEROS_BIN` to its
 path. `Session(executable=...)` can select a specific build, including one built
@@ -11,13 +12,11 @@ with `--features native-smlib`.
 from viboceros import ENTER, Pick, Session
 
 with Session() as model:
-    body, tool = model.run(
-        "Box 0,0,0 38,25,0 12",
-        "Box 25,8,-2 42,17,-2 16",
-    ).added
+    body, = model.command("Box", (0, 0, 0), (38, 25, 0), 12).added
+    tool, = model.command("Box", (25, 8, -2), (42, 17, -2), 16).added
     cut = model.run("BooleanDifference", Pick(body), ENTER, Pick(tool), ENTER)
     part, = cut.added
-    model.run('SetObjectName "Housing"', select=[part])
+    model.command("SetObjectName", "Housing", select=[part])
     model.select()
     model.save("housing.3dm")
     model.export("housing.step")
@@ -28,6 +27,8 @@ with Session() as model:
 A session owns a document and all of its command, selection, viewport, and undo
 state. Use `run()` with any supported command line, one line per argument. The
 [command reference](commands/README.md) describes each command's arguments.
+`command()` formats regular arguments and `options={"DeleteInput": False}`
+as command input. Use `run()` to give exact command syntax or answer getters.
 `commands()` reports the application's completion catalog. Sessions can also
 run the application's `ReadCommandFile` command.
 
@@ -45,12 +46,15 @@ run the application's `ReadCommandFile` command.
 - `components(obj)` lists zero-based B-rep, mesh, and SubD topology references.
   `select_components(*refs)` preselects them and `Pick(ref, at=(x, y, z))`
   submits one to the active getter with an optional location. Refresh component
-  references after edits that change topology. `grips(obj)` lists the enabled
+  references after geometry changes. `grips(obj)` lists the enabled
   control or edit points. Use `select_grips(*grips)` or `Pick(grip)`.
 - `PickPoint((x, y, z), view="Top")` projects a point and uses the viewport's
   usual hit testing. `ActivateView`, `Key`, and `Pointer` cover view activation,
   modifier keys, and screen-space clicks or drags. `viewports()` gives each
   viewport's rectangle and `project()` maps a world point to a screen position.
+- Use `widgets()` to inspect dialog controls. `WidgetAction("Label")` clicks a
+  uniquely labeled control. Pass a widget record to target it by ID, or use
+  `WidgetAction(widget, "focus")` followed by `TypeText(text)` to enter values.
 - Results carry the console output in `messages` and the added, deleted, and
   geometry-modified object IDs. Pass `track_changes=False` to omit the object
   comparison for large batches. A reported error raises `CommandError`, with
@@ -71,3 +75,6 @@ shaded mode and fits visible geometry by default. Set `mode="Wireframe"` or
 `mode="Ghosted"`, `fit=False` to keep the camera, or supply `size=(width, height)`
 and an RGBA `background`. Rendering requires a wgpu adapter. A software Vulkan
 adapter works without a desktop session.
+
+Use `model.run("NamedView Save Front detail")` to save the active camera and
+pass `view="Front detail"` to capture it.

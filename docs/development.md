@@ -35,6 +35,10 @@ Application regressions live under `src/app/tests/`, with shared fixtures in its
 `mod.rs`. Command state and dispatch live in focused application modules; see
 the [application module map](architecture/application.md) before adding to the app root.
 
+Build the application and run `python3 -m unittest discover -s tests` to exercise
+the [headless Python API](python.md). Set `VIBOCEROS_TEST_GPU=1` to include view
+captures when a wgpu adapter is available.
+
 Live Rhino oracle testing must run in a separate Xvfb display so it cannot
 interfere with the shared desktop. Use `tools/rhino_oracle/run_headless.sh` for
 captures, including its `exec python3 ...` mode when calling the Python oracle
