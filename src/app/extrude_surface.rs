@@ -6,8 +6,19 @@ use viboceros_command::extrude_surface::{
 
 pub(super) struct SurfaceExtrusionSources {
     pub(super) targets: Vec<(ObjectId, usize)>,
+    pub(super) apex_draft: Option<crate::viewport::surface_apex::SurfaceApexDraft>,
     pub(super) snapshots: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
 }
+impl SurfaceExtrusionSources {
+    pub(super) fn is_current(&self, document: &Document) -> bool {
+        self.snapshots.iter().all(|(id, snapshot)| {
+            document
+                .object(*id)
+                .is_some_and(|object| object.geometry_snapshot() == snapshot)
+        })
+    }
+}
+
 impl VibocerosApp {
     pub(super) fn prepare_surface_extrusion_sources(
         &self,
@@ -55,7 +66,11 @@ impl VibocerosApp {
                 )
             })
             .collect();
-        Ok(Some(SurfaceExtrusionSources { targets, snapshots }))
+        Ok(Some(SurfaceExtrusionSources {
+            targets,
+            snapshots,
+            apex_draft: None,
+        }))
     }
 
     pub(super) fn try_start_surface_extrusion_input(&mut self, input: &str) -> bool {
@@ -101,11 +116,7 @@ impl VibocerosApp {
         let Some(sources) = self.surface_extrusion_sources.take() else {
             return false;
         };
-        if sources.snapshots.iter().any(|(id, s)| {
-            self.document
-                .object(*id)
-                .is_none_or(|o| o.geometry_snapshot() != s)
-        }) {
+        if !sources.is_current(&self.document) {
             self.surface_extrusion_sources = Some(sources);
             self.push_log("Error: surface source changed; select the faces again".into());
             return false;

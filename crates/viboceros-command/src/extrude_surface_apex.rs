@@ -1,8 +1,10 @@
 //! Native surface and original face extrusion to an explicit apex.
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
-pub const USAGE: &str = "ExtrudeSrfToPoint apex [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
-pub(super) struct ExtrudeSurfaceToPointCommand;
+pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+pub(super) struct ExtrudeSurfaceToPointCommand {
+    pub(super) preferences: std::sync::Arc<crate::remembered::Remembered<SurfaceApexOptions>>,
+}
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SurfaceApexOptions {
     pub solid: bool,
@@ -12,32 +14,43 @@ pub struct SurfaceApexOptions {
 impl Default for SurfaceApexOptions {
     fn default() -> Self {
         Self {
-            solid: true,
+            solid: false,
             delete_input: false,
             split_at_tangents: false,
         }
     }
 }
 impl SurfaceApexOptions {
+    pub fn recognizes(word: &str) -> bool {
+        let word = word.trim_start_matches(['_', '-']);
+        let key = word.split_once('=').map_or(word, |(key, _)| key);
+        ["Solid", "DeleteInput", "SplitAtTangents"]
+            .iter()
+            .any(|name| key.eq_ignore_ascii_case(name))
+    }
+
     pub fn update(&mut self, words: &[&str]) -> Result<(), CommandError> {
         let mut next = *self;
         let mut seen = BTreeSet::new();
         for word in words {
+            let word = word.trim_start_matches(['_', '-']);
             let (key, value) = word
-                .trim_start_matches('_')
                 .split_once('=')
-                .ok_or(CommandError::Usage(USAGE))?;
+                .map_or((word, None), |(key, value)| (key, Some(value)));
             let key = key.to_ascii_lowercase();
             if !seen.insert(key.clone()) {
                 return Err(CommandError::Usage(USAGE));
             }
-            let value = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
-            match key.as_str() {
-                "solid" => next.solid = value,
-                "deleteinput" => next.delete_input = value,
-                "splitattangents" => next.split_at_tangents = value,
+            let enabled = match key.as_str() {
+                "solid" => &mut next.solid,
+                "deleteinput" => &mut next.delete_input,
+                "splitattangents" => &mut next.split_at_tangents,
                 _ => return Err(CommandError::Usage(USAGE)),
-            }
+            };
+            *enabled = match value {
+                Some(value) => parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
+                None => !*enabled,
+            };
         }
         *self = next;
         Ok(())
@@ -51,14 +64,50 @@ impl SurfaceApexOptions {
         )
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum ApexPoint {
+    Explicit(Point3),
+    ConstructionPlaneOrigin,
+}
+
+impl ApexPoint {
+    pub fn origin_token(token: &str) -> Option<Self> {
+        let token = token.trim().trim_start_matches('_');
+        if token == "0" {
+            Some(Self::ConstructionPlaneOrigin)
+        } else if token.eq_ignore_ascii_case("w0") {
+            Some(Self::Explicit(
+                Point3::try_new(0., 0., 0.).expect("finite origin"),
+            ))
+        } else {
+            None
+        }
+    }
+
+    pub fn resolve(self, construction_plane: Frame3) -> Point3 {
+        match self {
+            Self::Explicit(point) => point,
+            Self::ConstructionPlaneOrigin => construction_plane.origin(),
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SurfaceApexInput {
     pub options: SurfaceApexOptions,
     pub faces: SurfaceFaces,
-    pub apex: Option<Point3>,
+    pub apex: Option<ApexPoint>,
 }
 impl SurfaceApexInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
+        Self::parse_with_options(words, SurfaceApexOptions::default())
+    }
+
+    pub fn parse_with_options(
+        words: &[&str],
+        mut defaults: SurfaceApexOptions,
+    ) -> Result<Self, CommandError> {
         let (mut faces, mut options, mut positional) = (Vec::new(), Vec::new(), Vec::new());
         for word in words {
             if let Some((key, _)) = word.trim_start_matches('_').split_once('=') {
@@ -70,19 +119,29 @@ impl SurfaceApexInput {
                 } else {
                     options.push(*word);
                 }
+            } else if SurfaceApexOptions::recognizes(word) {
+                options.push(*word);
             } else {
                 positional.push(*word);
             }
         }
+        defaults.update(&options)?;
         let mut result = Self {
             faces: SurfaceExtrusionInput::parse(&faces)?.faces,
+            options: defaults,
             ..Self::default()
         };
         result.options.update(&options)?;
         if !positional.is_empty() {
-            let (apex, count) = parse_point(&positional)?;
-            require_consumed(&positional, count, USAGE)?;
-            result.apex = Some(apex);
+            result.apex = if let [token] = positional.as_slice()
+                && let Some(origin) = ApexPoint::origin_token(token)
+            {
+                Some(origin)
+            } else {
+                let (apex, count) = parse_point(&positional)?;
+                require_consumed(&positional, count, USAGE)?;
+                Some(ApexPoint::Explicit(apex))
+            };
         }
         Ok(result)
     }
@@ -109,8 +168,19 @@ impl Command for ExtrudeSurfaceToPointCommand {
         }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let input = SurfaceApexInput::parse(args)?;
-        let apex = input.apex.ok_or(CommandError::Usage(USAGE))?;
+        self.run_in_context(doc, args, CommandContext::default())
+    }
+    fn run_in_context(
+        &self,
+        doc: &mut Document,
+        args: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        let input = SurfaceApexInput::parse_with_options(args, self.preferences.get())?;
+        let apex = input
+            .apex
+            .ok_or(CommandError::Usage(USAGE))?
+            .resolve(context.construction_plane);
         let count = apply_face_extrusion_products(
             doc,
             &input.faces,
@@ -158,6 +228,7 @@ impl Command for ExtrudeSurfaceToPointCommand {
                 }
             },
         )?;
+        self.preferences.set(input.options);
         Ok(format!("Extruded {count} surface face(s) to the apex"))
     }
 }

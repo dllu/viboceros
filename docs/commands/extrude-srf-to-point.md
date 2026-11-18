@@ -6,8 +6,10 @@ source surface as the base cap, including curved surfaces and trim holes.
 
 Start the command, select surfaces and press Enter, then pick an apex or enter
 its coordinates. Preselected surface objects and B-rep face components work.
+The viewport previews the trimmed boundaries and ruled walls as the apex
+moves. Enter `0` for the active CPlane origin or `w0` for the world origin.
 At the point getter, edit `Solid=Yes|No`, `DeleteInput=Yes|No` and
-`SplitAtTangents=Yes|No`. Typed points
+`SplitAtTangents=Yes|No`, or enter an option name to toggle it. Typed points
 use shared drafting input, including document units, CPlane coordinates and
 object snaps. Failed geometry keeps the getter and frozen face sources for
 retry. Esc/Cancel releases it without editing geometry. A changed source
@@ -28,7 +30,9 @@ object selection. Repeated targets extrude once. Specify faces for a whole
 polysurface; single-face surfaces need no selector. Each selected face produces
 an independent result. Inline face selectors and options survive source picking.
 
-Initial options are `Solid=Yes DeleteInput=No SplitAtTangents=No`.
+Initial options are `Solid=No DeleteInput=No SplitAtTangents=No`. A successful
+extrusion saves those choices for the next invocation. Esc discards provisional
+option changes.
 `Solid=No` omits the source cap
 and creates boundary walls only. DeleteInput removes extruded source faces,
 retaining any remainder's identity, attributes and groups. All output and
@@ -59,10 +63,7 @@ Coplanar targets for planar sources, closed sources without a boundary, invalid
 face indices and unsupported imports decline. General self-intersection,
 folding and near-degenerate cases require broader qualification. Hole walls
 meet at a singular apex; this does not establish vertex-manifold or downstream
-meshing guarantees. Numeric distance shortcuts, ToBoundary,
-live previews, saved option defaults and full native getter behavior
-remain future work. Supply a point explicitly. No continuous error or
-comparative performance certificate is claimed.
+meshing guarantees. `ToBoundary` remains future work.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,
@@ -75,6 +76,8 @@ licensed captures match within an absolute epsilon of 0.000001. Separately,
 preselection and source picking. Rust command and GUI replays check product
 counts, bounds, volumes, retained source identity and Undo/Redo. Selection,
 attributes and full getter equivalence are outside that comparison.
+Private headless Rhino captures also cover mouse input, both origin shortcuts,
+option toggles, and reuse of successful option changes.
 The SDK recipe combines disconnected walls for its geometry comparison;
 the command corpus verifies separate output objects. See
 [native qualification](../surface-apex-native-qualification.json),

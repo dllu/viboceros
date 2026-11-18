@@ -1050,6 +1050,8 @@ pub struct CommandRegistry {
         std::sync::Arc<remembered::Remembered<Option<viboceros_geometry::CurveChainOptions>>>,
     crease_splitting: crease_splitting::Preference,
     curve_extrusion_split: extrude_curve::SplitPreference,
+    surface_apex_options:
+        std::sync::Arc<remembered::Remembered<extrude_surface_apex::SurfaceApexOptions>>,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
@@ -1119,6 +1121,10 @@ impl CommandRegistry {
     /// Application output mode, shared across documents using this registry.
     pub fn use_extrusions(&self) -> bool {
         self.use_extrusions.get().0
+    }
+
+    pub fn surface_apex_options(&self) -> extrude_surface_apex::SurfaceApexOptions {
+        self.surface_apex_options.get()
     }
 
     pub fn curve_extrusion_split_at_tangents(&self) -> bool {
@@ -1627,7 +1633,9 @@ impl CommandRegistry {
             .register(extrude_surface_tapered::ExtrudeSurfaceTaperedCommand)
             .expect("unique built-in command");
         registry
-            .register(extrude_surface_apex::ExtrudeSurfaceToPointCommand)
+            .register(extrude_surface_apex::ExtrudeSurfaceToPointCommand {
+                preferences: registry.surface_apex_options.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(extrude_surface_path::ExtrudeSurfacePathCommand)

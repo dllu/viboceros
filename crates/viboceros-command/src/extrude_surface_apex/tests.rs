@@ -19,7 +19,7 @@ fn patch() -> Geometry {
 #[test]
 fn surface_apex_options_parse_strictly_and_update_atomically() {
     let mut options = SurfaceApexOptions::default();
-    assert!(!options.split_at_tangents);
+    assert!(!options.solid && !options.split_at_tangents);
     options
         .update(&["Solid=No", "DeleteInput=Yes", "SplitAtTangents=Yes"])
         .unwrap();
@@ -39,7 +39,7 @@ fn surface_apex_options_parse_strictly_and_update_atomically() {
     assert_eq!(options, before);
     assert_eq!(
         SurfaceApexInput::parse(&["1,2,3"]).unwrap().apex,
-        Some(p(1., 2., 3.))
+        Some(ApexPoint::Explicit(p(1., 2., 3.)))
     );
     assert!(SurfaceApexInput::parse(&["1,2,3", "4,5,6"]).is_err());
 }
@@ -68,7 +68,10 @@ fn surface_apex_curved_cap_delete_history_and_uncapped_output() {
     let source = doc.object(s).unwrap().clone();
     let registry = CommandRegistry::with_builtins();
     registry
-        .execute(&mut doc, "ExtrudeSrfToPoint 1,1.5,6 DeleteInput=Yes")
+        .execute(
+            &mut doc,
+            "ExtrudeSrfToPoint 1,1.5,6 Solid=Yes DeleteInput=Yes",
+        )
         .unwrap();
     assert!(doc.object(s).is_none());
     let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
