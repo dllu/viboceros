@@ -1235,6 +1235,22 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs an apex-first cone wall on the circular arc-length and
+    /// axial height domains. The frame Z axis points from the apex to the rim.
+    pub fn try_cone_from_apex(
+        frame: Frame3,
+        radius: Real,
+        height: Real,
+    ) -> Result<Self, GeometryError> {
+        if height <= 0. {
+            return Err(GeometryError::Degenerate {
+                context: "cone height",
+            });
+        }
+        let wall = Self::try_cone(frame, radius, height)?;
+        wall.try_reparameterized(0.0..=std::f64::consts::TAU * radius, 0.0..=height)
+    }
+
     /// Constructs Rhino's exact open NURBS paraboloid surface.
     ///
     /// The frame origin is the vertex, frame Z is the opening direction, and

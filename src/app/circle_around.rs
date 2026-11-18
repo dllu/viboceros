@@ -4,6 +4,7 @@ use viboceros_command::{
     circle_around_input::{Input, Preferences},
     circle_input::CircleSizeMode as Mode,
     curve_reference::{CapturedCurve, perpendicular_frame},
+    solid_axial::Kind as AxialKind,
     torus_input::Kind as TorusKind,
 };
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -12,6 +13,7 @@ enum Owner {
     Sphere(sphere::Output),
     SubDSphere,
     Torus(TorusKind),
+    SolidAxial(AxialKind),
 }
 impl Owner {
     fn name(self) -> &'static str {
@@ -20,6 +22,7 @@ impl Owner {
             Self::Sphere(output) => output.name(),
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
+            Self::SolidAxial(kind) => kind.name(),
         }
     }
 }
@@ -40,7 +43,7 @@ impl Session {
     pub(super) fn snap_projection_plane(&self) -> Option<Frame3> {
         let input = self.input?;
         let projects_snaps = match self.owner {
-            Owner::Circle => true,
+            Owner::Circle | Owner::SolidAxial(_) => true,
             Owner::Torus(kind) => kind.projects_base_snaps(),
             _ => false,
         };
@@ -54,6 +57,13 @@ impl Session {
             .filter(|_| self.input.is_none())
             .map(CapturedCurve::curve)
     }
+
+    pub(super) fn postselected_object(&self) -> Option<ObjectId> {
+        self.curve
+            .as_ref()
+            .filter(|_| self.postselected)
+            .map(CapturedCurve::object_id)
+    }
 }
 impl VibocerosApp {
     pub(super) fn picking_circle_around_curve(&self) -> bool {
@@ -62,14 +72,13 @@ impl VibocerosApp {
             .is_some_and(|s| s.curve.is_none())
     }
     pub(super) fn release_circle_around_picks(&mut self) {
-        if let Some(s) = &self.circle_around_session
-            && s.postselected
-            && let Some(c) = &s.curve
-            && self.document.is_selected(c.object_id())
+        if let Some(id) = self
+            .circle_around_session
+            .as_ref()
+            .and_then(Session::postselected_object)
+            && self.document.is_selected(id)
         {
-            let _ = self
-                .document
-                .select_object(c.object_id(), SelectionMode::Remove);
+            let _ = self.document.select_object(id, SelectionMode::Remove);
         }
     }
     pub(super) fn start_circle_around(&mut self) {
@@ -90,6 +99,10 @@ impl VibocerosApp {
     pub(super) fn start_torus_around(&mut self, kind: TorusKind) {
         self.start_circle_around_for(Owner::Torus(kind), None);
     }
+    pub(super) fn start_solid_axial_around(&mut self, kind: AxialKind) {
+        self.start_circle_around_for(Owner::SolidAxial(kind), None);
+    }
+
     fn start_circle_around_for(
         &mut self,
         owner: Owner,
@@ -102,6 +115,13 @@ impl VibocerosApp {
             self.commands.circle_preferences()
         } else if let Owner::Sphere(output) = owner {
             output.size_preferences(&self.commands).into()
+        } else if let Owner::SolidAxial(kind) = owner {
+            let p = kind.preferences(&self.commands);
+            Preferences {
+                radius: p.radius,
+                diameter: p.diameter,
+                ..Default::default()
+            }
         } else if let Owner::Torus(kind) = owner {
             let p = self.torus_preferences(kind);
             Preferences {
@@ -144,7 +164,7 @@ impl VibocerosApp {
         self.start_circle_around();
         true
     }
-    fn circle_around_prompt(&mut self) {
+    pub(super) fn circle_around_prompt(&mut self) {
         let Some(s) = &self.circle_around_session else {
             return;
         };
@@ -171,6 +191,9 @@ impl VibocerosApp {
                 input.size_mode().label(),
                 default
             )
+        } else if matches!(s.owner, Owner::SolidAxial(_)) {
+            let input = self.solid_axial_session.as_ref().unwrap().input;
+            format!("{}; pick center on curve", input.prompt())
         } else {
             "center on curve".into()
         };
@@ -185,6 +208,10 @@ impl VibocerosApp {
                 anchor: center,
             },
             Owner::SubDSphere => InteractiveCommand::SubDSphere { anchor: center },
+            Owner::SolidAxial(kind) => InteractiveCommand::SolidAxial {
+                kind,
+                anchor: center,
+            },
         });
         self.drafting_plane = s.input.map(Input::frame);
         let name = s.owner.name();
@@ -212,6 +239,13 @@ impl VibocerosApp {
                 let s = self.circle_around_session.as_mut().unwrap();
                 s.postselected = edge.is_none() && !self.document.is_selected(id);
                 s.curve = Some(curve);
+                if matches!(s.owner, Owner::SolidAxial(_)) {
+                    self.solid_axial_session
+                        .as_mut()
+                        .unwrap()
+                        .input
+                        .select_guide();
+                }
                 if edge.is_none() {
                     self.document
                         .select_object(id, SelectionMode::Add)
@@ -225,6 +259,15 @@ impl VibocerosApp {
         true
     }
     pub(super) fn validate_circle_around_curve(&mut self) -> bool {
+        if self
+            .circle_around_session
+            .as_ref()
+            .is_some_and(|s| matches!(s.owner, Owner::SolidAxial(_)))
+            && !self.valid_solid_axial()
+        {
+            return false;
+        }
+
         if self
             .circle_around_session
             .as_ref()
@@ -295,6 +338,18 @@ impl VibocerosApp {
     fn commit_circle_around(&mut self, circle: viboceros_geometry::Circle3) -> bool {
         let s = self.circle_around_session.as_ref().unwrap();
         let curve = s.curve.as_ref().unwrap();
+        if matches!(s.owner, Owner::SolidAxial(_)) {
+            let release = s
+                .postselected
+                .then(|| curve.object_id())
+                .into_iter()
+                .collect();
+            let preferences = s.input.unwrap().preferences(circle);
+            if let Some(parent) = self.solid_axial_session.as_mut() {
+                parent.input.preferences.diameter = preferences.diameter;
+            }
+            return self.accept_solid_axial_reference(circle, release);
+        }
         if matches!(s.owner, Owner::Torus(_)) {
             let release = if s.postselected {
                 vec![curve.object_id()]
@@ -394,6 +449,13 @@ impl VibocerosApp {
             return false;
         }
         if !self.validate_circle_around_curve() {
+            return true;
+        }
+        let session = self.circle_around_session.as_ref().unwrap();
+        if matches!(session.owner, Owner::SolidAxial(_))
+            && session.input.is_none()
+            && self.try_edit_solid_axial_guide(text, session.curve.is_some())
+        {
             return true;
         }
         if self.try_continue_circle_snap_projection(text) {

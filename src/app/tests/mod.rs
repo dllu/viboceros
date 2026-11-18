@@ -231,6 +231,7 @@ mod ribbon;
 mod round_primitive_input;
 mod selection_sidebar;
 mod short_span_extrusions;
+mod solid_axial;
 mod subd_area;
 mod subd_direction;
 #[path = "../../../crates/viboceros-oracle/tests/support/subd_direction.rs"]

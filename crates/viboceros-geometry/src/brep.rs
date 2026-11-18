@@ -10,9 +10,9 @@ use crate::MeshFace;
 use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
     AffineTransform3, BoundingBox3, CurveCurveIntersectionEvent, CurveCurveOverlap, Frame3,
-    GeometryError, LineSegment, MAX_REGULAR_POLYGON_SIDES, NurbsCurve,
-    NurbsCurve2, NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint2, WeightedPoint3, require_finite,
+    GeometryError, LineSegment, MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsCurve2, NurbsSurface,
+    Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint2,
+    WeightedPoint3, require_finite,
 };
 
 mod extrusion;
@@ -2422,6 +2422,20 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs a cone with its apex at the frame origin and a planar
+    /// optional cap at positive height. The side retains one rim and a shared
+    /// meridian seam.
+    pub fn try_cone_from_apex(
+        apex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_cone_from_apex(apex_frame, radius, height)?;
+        Self::try_apex_surface(wall, apex_frame, radius, height, solid, tolerance)
+    }
+
     /// Constructs Rhino's exact finite paraboloid B-rep.
     ///
     /// The frame origin is the vertex, frame Z is the opening direction, and
@@ -2437,6 +2451,17 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
         let wall = NurbsSurface::try_paraboloid(vertex_frame, radius, height)?;
+        Self::try_apex_surface(wall, vertex_frame, radius, height, solid, tolerance)
+    }
+
+    fn try_apex_surface(
+        wall: NurbsSurface,
+        vertex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let domain_u = wall.domain_u();
         let domain_v = wall.domain_v();
         let vertex = vertex_frame.origin();

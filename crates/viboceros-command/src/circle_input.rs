@@ -189,6 +189,10 @@ impl CircleInput {
     pub const fn at_start(self) -> bool {
         matches!(self.state, State::Center { center: None, .. })
     }
+    pub(crate) fn is_two_point(self) -> bool {
+        matches!(self.state, State::TwoPoint { .. })
+    }
+
     pub fn remembers_radius(self) -> bool {
         !matches!(
             self.state,

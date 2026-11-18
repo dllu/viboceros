@@ -97,6 +97,7 @@ impl InteractiveCommand {
             Self::SubDSphere { .. } => "SubDSphere",
             Self::Torus { kind, .. } => kind.name(),
             Self::SubDEllipsoid { .. } => "SubDEllipsoid",
+            Self::SolidAxial { kind, .. } => kind.name(),
             Self::SubDCylinder { .. } => "SubDCylinder",
             Self::SubDCone { .. } => "SubDCone",
             Self::SubDTruncatedCone { .. } => "SubDTruncatedCone",
@@ -203,6 +204,7 @@ impl InteractiveCommand {
             | Self::SubDSphere { anchor: base }
             | Self::SubDTruncatedCone { anchor: base }
             | Self::SubDCone { anchor: base }
+            | Self::SolidAxial { anchor: base, .. }
             | Self::SubDCylinder { anchor: base }
             | Self::SubDPrimitive { anchor: base, .. } => base,
             Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,

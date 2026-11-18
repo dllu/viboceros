@@ -57,6 +57,7 @@ pub mod replace_block;
 pub mod rigid_groups;
 pub mod section;
 pub mod soft_crease;
+pub mod solid_axial;
 pub mod sphere_command;
 pub mod sphere_input;
 pub mod subd_axial;
@@ -1037,6 +1038,9 @@ pub struct CommandRegistry {
     ellipsoid_mark_foci: std::sync::Arc<remembered::Remembered<bool>>,
     mesh_sphere_preferences: std::sync::Arc<remembered::Remembered<mesh_sphere::Topology>>,
     mesh_torus_preferences: std::sync::Arc<remembered::Remembered<mesh_torus::Settings>>,
+    solid_cylinder_preferences:
+        std::sync::Arc<remembered::Remembered<solid_axial::CylinderSettings>>,
+    solid_cone_preferences: std::sync::Arc<remembered::Remembered<solid_axial::ConeSettings>>,
     torus_preferences: std::sync::Arc<remembered::Remembered<torus::Settings>>,
     mesh_ellipsoid_preferences: std::sync::Arc<remembered::Remembered<mesh_ellipsoid::Preferences>>,
     curvature_graph: std::sync::Arc<curvature_graph::Session>,
@@ -1509,10 +1513,15 @@ impl CommandRegistry {
             ))
             .expect("unique built-in command");
         registry
-            .register(CylinderCommand(registry.use_extrusions.clone()))
+            .register(CylinderCommand(
+                registry.use_extrusions.clone(),
+                registry.solid_cylinder_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
-            .register(ConeCommand)
+            .register(solid_axial::ConeCommand(
+                registry.solid_cone_preferences.clone(),
+            ))
             .expect("unique built-in command");
         registry
             .register(parabola::ParabolaCommand::new(parabola::Kind::Axis))
@@ -5710,14 +5719,12 @@ pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
 pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
-const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT: usize = 10;
 const MESH_TRUNCATED_CONE_USAGE: &str = "MeshTruncatedCone base-center base-radius height end-radius | MeshTruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
-const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
@@ -7214,40 +7221,6 @@ impl Command for MeshTruncatedConeCommand {
             options.around_count,
             options.vertical_count
         ))
-    }
-}
-
-struct ConeCommand;
-
-impl Command for ConeCommand {
-    fn name(&self) -> &'static str {
-        "Cone"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_axial_primitive_options(arguments, CONE_USAGE, false)?;
-        let tolerance = document.tolerance();
-        let (base_frame, radius) =
-            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        if options.solid {
-            let brep = Brep::try_cone(base_frame, radius, options.height, tolerance)?;
-            let id = document.add_geometry(Geometry::Brep(brep))?;
-            Ok(format!(
-                "Added closed B-rep cone {id} (radius {radius:.6}, height {:.6})",
-                options.height
-            ))
-        } else {
-            let apex = options
-                .center
-                .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
-            let apex_frame = base_frame.with_origin(apex);
-            let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
-            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-            Ok(format!(
-                "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
-                options.height
-            ))
-        }
     }
 }
 

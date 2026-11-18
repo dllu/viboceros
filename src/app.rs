@@ -293,6 +293,7 @@ mod short_path;
 mod silhouette;
 mod smooth;
 mod snapping;
+mod solid_axial;
 mod sphere;
 mod spiral;
 mod srf_pt;
@@ -524,6 +525,7 @@ pub struct VibocerosApp {
     srf_pt_session: Option<srf_pt::Session>,
     surface_point_grid_session: Option<surface_point_grid::Session>,
     subd_primitive_session: Option<subd_primitives::Session>,
+    solid_axial_session: Option<solid_axial::Session>,
     subd_axial_session: Option<subd_axial::Session>,
     subd_sphere_session: Option<subd_sphere::Session>,
     torus_session: Option<torus::Session>,
@@ -718,6 +720,7 @@ impl VibocerosApp {
             srf_pt_session: None,
             surface_point_grid_session: None,
             subd_primitive_session: None,
+            solid_axial_session: None,
             subd_axial_session: None,
             subd_sphere_session: None,
             torus_session: None,
@@ -904,6 +907,7 @@ impl VibocerosApp {
             || self.try_continue_parabola(&input)
             || self.continue_torus(&input)
             || self.continue_subd_sphere(&input)
+            || self.continue_solid_axial(&input)
             || self.continue_subd_axial(&input)
             || self.continue_subd_primitive(&input)
             || self.continue_surface_point_grid(&input)
@@ -1156,6 +1160,7 @@ impl VibocerosApp {
             || self.start_subd_ellipsoid(&input)
             || self.start_torus(&input)
             || self.start_subd_sphere(&input)
+            || self.start_solid_axial(&input)
             || self.start_subd_axial(&input)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)

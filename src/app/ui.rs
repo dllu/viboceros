@@ -898,10 +898,20 @@ impl VibocerosApp {
                     .as_ref()
                     .and_then(|s| s.input.mouse_plane())
             });
+        let solid_axial_input = (model_input_active && self.plane_prompt.is_none())
+            .then(|| self.solid_axial_preview_input())
+            .flatten();
+        let solid_axial_fit = model_input_active
+            .then(|| self.solid_axial_fit_preview())
+            .flatten();
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
                     .or_else(|| self.line_axis_constraint())
+                    .or_else(|| {
+                        solid_axial_input
+                            .and_then(viboceros_command::solid_axial::Input::height_constraint)
+                    })
                     .or_else(|| {
                         self.refinement_prompt
                             .as_ref()
@@ -1395,6 +1405,8 @@ impl VibocerosApp {
                             arc_output,
                             arc_preview,
                             circle_around_input,
+                            solid_axial_input,
+                            solid_axial_fit,
                             torus_preview_curves: self
                                 .torus_session
                                 .as_ref()

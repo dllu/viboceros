@@ -374,6 +374,10 @@ pub(super) enum InteractiveCommand {
     SubDCone {
         anchor: Option<Point3>,
     },
+    SolidAxial {
+        kind: viboceros_command::solid_axial::Kind,
+        anchor: Option<Point3>,
+    },
     SubDCylinder {
         anchor: Option<Point3>,
     },

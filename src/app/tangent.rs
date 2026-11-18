@@ -1,6 +1,8 @@
 //! Circle, Arc and Splop share one read-only tangent-contact picker.
 use super::*;
-use viboceros_command::{circle_tangent_input::Input, torus_input::Kind as TorusKind};
+use viboceros_command::{
+    circle_tangent_input::Input, solid_axial::Kind as AxialKind, torus_input::Kind as TorusKind,
+};
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Kind {
     Circle,
@@ -12,6 +14,7 @@ enum Kind {
     SubDTruncatedCone,
     SubDSphere,
     Torus(TorusKind),
+    SolidAxial(AxialKind),
 }
 impl Kind {
     fn name(self) -> &'static str {
@@ -25,6 +28,7 @@ impl Kind {
             Self::SubDTruncatedCone => "SubDTruncatedCone",
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
+            Self::SolidAxial(kind) => kind.name(),
         }
     }
 }
@@ -65,6 +69,9 @@ impl VibocerosApp {
     pub(super) fn start_subd_sphere_tangent(&mut self) {
         self.start_tangent(Kind::SubDSphere, None);
     }
+    pub(super) fn start_solid_axial_tangent(&mut self, kind: AxialKind) {
+        self.start_tangent(Kind::SolidAxial(kind), None);
+    }
     pub(super) fn start_subd_axial_tangent(&mut self) {
         let kind = match self.subd_axial_session.as_ref().map(|s| s.kind()) {
             Some(viboceros_command::subd_axial::Kind::Cone) => Kind::SubDCone,
@@ -100,11 +107,19 @@ impl VibocerosApp {
                 | Kind::SubDTruncatedCone
                 | Kind::SubDSphere
                 | Kind::Torus(_)
+                | Kind::SolidAxial(_)
         ) {
             self.cancel_interactive_command(false);
         }
         let preferences = if let Kind::Torus(kind) = kind {
             let p = self.torus_preferences(kind);
+            viboceros_command::circle_around_input::Preferences {
+                radius: p.radius,
+                diameter: p.diameter,
+                ..Default::default()
+            }
+        } else if let Kind::SolidAxial(kind) = kind {
+            let p = kind.preferences(&self.commands);
             viboceros_command::circle_around_input::Preferences {
                 radius: p.radius,
                 diameter: p.diameter,
@@ -193,6 +208,7 @@ impl VibocerosApp {
             Kind::SubDTruncatedCone => InteractiveCommand::SubDTruncatedCone { anchor },
             Kind::SubDSphere => InteractiveCommand::SubDSphere { anchor },
             Kind::Torus(kind) => InteractiveCommand::Torus { kind, anchor },
+            Kind::SolidAxial(kind) => InteractiveCommand::SolidAxial { kind, anchor },
         });
         self.drafting_plane = s
             .support
@@ -215,6 +231,15 @@ impl VibocerosApp {
         self.push_log(format!("{} Tangent: {prompt}; Esc cancels", s.kind.name()));
     }
     pub(super) fn validate_tangent_sources(&mut self) -> bool {
+        if self
+            .tangent_session
+            .as_ref()
+            .is_some_and(|s| matches!(s.kind, Kind::SolidAxial(_)))
+            && !self.valid_solid_axial()
+        {
+            return false;
+        }
+
         if self
             .tangent_session
             .as_ref()
@@ -264,6 +289,15 @@ impl VibocerosApp {
     }
     fn finish_tangent(&mut self, choice: Option<Point3>) -> bool {
         let s = self.tangent_session.as_ref().unwrap();
+        if matches!(s.kind, Kind::SolidAxial(_)) {
+            return match s.input.finish() {
+                Ok(circle) => self.accept_solid_axial_reference(circle, vec![]),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    false
+                }
+            };
+        }
         if matches!(s.kind, Kind::Torus(_)) {
             return match s.input.finish().and_then(|c| {
                 viboceros_command::circle_input::CircleDefinition::from_circle(c)

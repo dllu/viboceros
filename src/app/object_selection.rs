@@ -299,6 +299,8 @@ impl PendingObjectCommand {
         if matches!(
             self.description.command,
             "Circle FitPoints"
+                | "Cone FitPoints"
+                | "Cylinder FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
@@ -406,6 +408,8 @@ impl VibocerosApp {
                 && (matches!(
                     p.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
@@ -880,6 +884,8 @@ impl VibocerosApp {
                 }
             }
             "Circle FitPoints"
+            | "Cone FitPoints"
+            | "Cylinder FitPoints"
             | "SubDCylinder FitPoints"
             | "SubDCone FitPoints"
             | "SubDTruncatedCone FitPoints"
@@ -909,6 +915,8 @@ impl VibocerosApp {
         let selected_grips = if matches!(
             description.command,
             "Circle FitPoints"
+                | "Cone FitPoints"
+                | "Cylinder FitPoints"
                 | "SubDCylinder FitPoints"
                 | "SubDCone FitPoints"
                 | "SubDTruncatedCone FitPoints"
@@ -1096,6 +1104,8 @@ impl VibocerosApp {
                     | "Sweep1"
                     | "Circle FitPoints"
                     | "MeshSphere FitPoints"
+                    | "Cone FitPoints"
+                    | "Cylinder FitPoints"
                     | "SubDCylinder FitPoints"
                     | "SubDCone FitPoints"
                     | "SubDTruncatedCone FitPoints"
@@ -1402,6 +1412,8 @@ impl VibocerosApp {
                     || (matches!(
                         pending.description.command,
                         "Circle FitPoints"
+                            | "Cone FitPoints"
+                            | "Cylinder FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"
@@ -1487,6 +1499,14 @@ impl VibocerosApp {
             }
             if pending.description.command == "SubDSphere FitPoints" {
                 self.accept_subd_sphere_fit(pending.postselected);
+                self.command_input.clear();
+                return true;
+            }
+            if matches!(
+                pending.description.command,
+                "Cone FitPoints" | "Cylinder FitPoints"
+            ) {
+                self.accept_solid_axial_fit(pending.postselected);
                 self.command_input.clear();
                 return true;
             }
@@ -1728,6 +1748,8 @@ impl VibocerosApp {
                 if matches!(
                     pending.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
@@ -2054,6 +2076,14 @@ impl VibocerosApp {
                 self.drafting_plane = None;
             }
 
+            if matches!(
+                pending.description.command,
+                "Cone FitPoints" | "Cylinder FitPoints"
+            ) {
+                self.solid_axial_session = None;
+                self.active_command = None;
+                self.drafting_plane = None;
+            }
             if matches!(
                 pending.description.command,
                 "SubDCylinder FitPoints" | "SubDCone FitPoints" | "SubDTruncatedCone FitPoints"

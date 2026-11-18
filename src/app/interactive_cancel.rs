@@ -112,6 +112,7 @@ impl VibocerosApp {
         self.srf_pt_session = None;
         self.surface_point_grid_session = None;
         self.subd_primitive_session = None;
+        self.solid_axial_session = None;
         self.subd_axial_session = None;
         self.subd_sphere_session = None;
         self.torus_session = None;

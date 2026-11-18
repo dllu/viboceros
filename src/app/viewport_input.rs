@@ -176,6 +176,7 @@ impl VibocerosApp {
             self.update_subd_sphere_hover(point);
             self.update_torus_hover(point);
             self.update_subd_ellipsoid_hover(point);
+            self.observe_solid_axial_cursor(point);
             self.update_subd_axial_hover(point);
             self.update_subd_primitive_hover(point);
             self.update_face_create_hover(point);
@@ -200,6 +201,8 @@ impl VibocerosApp {
                 matches!(
                     prompt.description.command,
                     "Circle FitPoints"
+                        | "Cone FitPoints"
+                        | "Cylinder FitPoints"
                         | "SubDCylinder FitPoints"
                         | "SubDCone FitPoints"
                         | "SubDTruncatedCone FitPoints"
@@ -433,6 +436,8 @@ impl VibocerosApp {
                     (matches!(
                         prompt.description.command,
                         "Circle FitPoints"
+                            | "Cone FitPoints"
+                            | "Cylinder FitPoints"
                             | "SubDCylinder FitPoints"
                             | "SubDCone FitPoints"
                             | "SubDTruncatedCone FitPoints"

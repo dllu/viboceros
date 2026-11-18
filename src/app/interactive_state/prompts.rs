@@ -506,6 +506,7 @@ impl InteractiveCommand {
                 "SubDTruncatedCone: pick a base circle, height and end size; Esc cancels"
             }
             Self::SubDCone { .. } => "SubDCone: pick a base circle or cone end; Esc cancels",
+            Self::SolidAxial { .. } => "Pick the base circle or specify the height (Esc cancels)",
             Self::SubDCylinder { .. } => {
                 "SubDCylinder: pick a base circle or cylinder end; Esc cancels"
             }

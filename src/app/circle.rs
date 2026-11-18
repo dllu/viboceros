@@ -354,6 +354,9 @@ impl VibocerosApp {
         if let Some(session) = &self.circle_around_session {
             return session.snap_projection_plane();
         }
+        if let Some(session) = &self.solid_axial_session {
+            return session.input.snap_projection_plane();
+        }
         if let Some(session) = &self.torus_session {
             return session.input.snap_projection_plane();
         }

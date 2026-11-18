@@ -98,6 +98,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_subd_sphere_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_solid_axial_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_subd_axial_point(point) {
             return accepted;
         }
@@ -225,6 +228,7 @@ impl VibocerosApp {
             | InteractiveCommand::SubDSphere { .. }
             | InteractiveCommand::SubDTruncatedCone { .. }
             | InteractiveCommand::SubDCone { .. }
+            | InteractiveCommand::SolidAxial { .. }
             | InteractiveCommand::SubDCylinder { .. }
             | InteractiveCommand::SubDPrimitive { .. }
             | InteractiveCommand::Rectangle { .. }
