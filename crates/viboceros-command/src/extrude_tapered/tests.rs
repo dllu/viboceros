@@ -58,16 +58,18 @@ fn tapered_command_stages_deletion_and_replays_history() {
         .unwrap();
     assert_eq!(doc.objects().count(), 1);
     assert!(doc.object(source.id()).is_none());
-    assert_eq!(doc.selected_object_count(), 1);
-    let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
+    assert_eq!(doc.selected_object_count(), 0);
+    let Geometry::Brep(b) = doc.objects().next().unwrap().geometry() else {
         panic!()
     };
     assert!(b.is_solid());
     assert_eq!(doc.undo_label(), Some("ExtrudeCrvTapered"));
     registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(doc.object(source.id()), Some(&source));
+    assert!(doc.is_selected(source.id()));
     registry.execute(&mut doc, "Redo").unwrap();
     assert!(doc.object(source.id()).is_none());
+    assert_eq!(doc.selected_object_count(), 0);
 }
 #[cfg(feature = "native-smlib")]
 #[test]

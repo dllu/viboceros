@@ -158,6 +158,14 @@ impl VibocerosApp {
         success
     }
     pub(super) fn finish_surface_face_command(&mut self, command: &str) -> bool {
+        self.finish_surface_face_command_with_plane(command, None)
+    }
+
+    pub(super) fn finish_surface_face_command_with_plane(
+        &mut self,
+        command: &str,
+        captured_plane: Option<Frame3>,
+    ) -> bool {
         let Some(sources) = self.surface_extrusion_sources.take() else {
             return false;
         };
@@ -175,7 +183,8 @@ impl VibocerosApp {
         let command = format!("{command} FaceRefs={refs}");
         let saved = self.active_command;
         let plane = self.drafting_plane;
-        let command_plane = sources.linear.as_ref().map(|session| session.plane);
+        let command_plane =
+            captured_plane.or_else(|| sources.linear.as_ref().map(|session| session.plane));
         let constraint = self.point_constraint.take();
         let filter = self.point_filter.take();
         if self.try_execute_command_with_plane(&command, command_plane) {

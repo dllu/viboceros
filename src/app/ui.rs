@@ -1055,10 +1055,21 @@ impl VibocerosApp {
         let solid_axial_fit = model_input_active
             .then(|| self.solid_axial_fit_preview())
             .flatten();
+        #[cfg(feature = "native-smlib")]
+        let tapered_extrusion = self
+            .tapered_extrusion_session
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.nested_measurement.is_none()
+            })
+            .and_then(|session| session.preview_edges(&self.document, self.active_command));
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
                     .or_else(|| surface_extrusion.map(|preview| preview.constraint))
+                    .or_else(|| self.tapered_distance_constraint())
                     .or_else(|| self.line_axis_constraint())
                     .or_else(|| pyramid_input?.point_constraint())
                     .or_else(|| {
@@ -1370,6 +1381,8 @@ impl VibocerosApp {
                                 .map(direction::Session::overlay),
                             surface_apex,
                             surface_extrusion,
+                            #[cfg(feature = "native-smlib")]
+                            tapered_extrusion,
                             surface_path_extrusion,
                             #[cfg(feature = "native-smlib")]
                             surface_path_boundary,
@@ -1881,6 +1894,10 @@ impl VibocerosApp {
         if self.update_surface_apex_hover(apex_hover) {
             ui.ctx().request_repaint();
         }
+        #[cfg(feature = "native-smlib")]
+        self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
+        #[cfg(not(feature = "native-smlib"))]
+        self.update_tapered_hover(apex_hover);
         if self.observe_surface_extrusion_hover(apex_hover) {
             ui.ctx().request_repaint();
         }

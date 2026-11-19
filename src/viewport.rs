@@ -383,6 +383,8 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
+    #[cfg(feature = "native-smlib")]
+    pub(crate) tapered_extrusion: Option<(Real, &'a [NurbsCurve])>,
     pub(crate) surface_path_extrusion: Option<surface_extrusion::SurfacePathPreview<'a>>,
     #[cfg(feature = "native-smlib")]
     pub(crate) surface_path_boundary: Option<(Real, &'a [NurbsCurve])>,
@@ -569,6 +571,8 @@ impl Default for ViewportInput<'_> {
             direction: None,
             surface_apex: None,
             surface_extrusion: None,
+            #[cfg(feature = "native-smlib")]
+            tapered_extrusion: None,
             surface_path_extrusion: None,
             #[cfg(feature = "native-smlib")]
             surface_path_boundary: None,
@@ -2890,6 +2894,22 @@ impl Viewport {
                     .map(|cursor| cursor.point),
                 document.tolerance(),
             );
+        }
+        #[cfg(feature = "native-smlib")]
+        if let Some((height, curves)) = input.tapered_extrusion
+            && let Some(constraint) = input.translation_constraint
+            && drafting_cursor
+                .and_then(|cursor| surface_extrusion::signed_height(constraint, cursor.point))
+                == Some(height)
+        {
+            let mut projected = ProjectedPrimitives::default();
+            for curve in curves {
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            }
+            let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+            for segment in projected.segments {
+                painter.line_segment(segment, stroke);
+            }
         }
         if let (Some(preview), Some(parameter)) = (input.surface_path_extrusion, edge_parameter) {
             self.paint_surface_path_extrusion(

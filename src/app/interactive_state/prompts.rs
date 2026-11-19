@@ -867,12 +867,7 @@ impl InteractiveCommand {
             Self::ExtrudeCurve { base: Some(_), .. } => {
                 "ExtrudeCrv: pick the direction target (Output, Solid, BothSides, DeleteInput; Esc cancels)"
             }
-            Self::ExtrudeCurveTapered { base: None, .. } => {
-                "ExtrudeCrvTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"
-            }
-            Self::ExtrudeCurveTapered { base: Some(_), .. } => {
-                "ExtrudeCrvTapered: pick the direction target (Esc to cancel)"
-            }
+            Self::ExtrudeTapered { stage, .. } => stage.prompt(),
             Self::ExtrudeSurface { stage, .. } => match stage {
                 extrude_surface::Stage::Distance => {
                     "Extrusion distance (Direction, BothSides, Solid, DeleteInput, ToBoundary, SplitAtTangents, SetBasePoint)"
@@ -882,12 +877,6 @@ impl InteractiveCommand {
                 extrude_surface::Stage::DirectionStart { .. } => "Base point for direction",
                 extrude_surface::Stage::DirectionEnd { .. } => "Second direction point",
             },
-            Self::ExtrudeSurfaceTapered { base: None, .. } => {
-                "ExtrudeSrfTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"
-            }
-            Self::ExtrudeSurfaceTapered { base: Some(_), .. } => {
-                "ExtrudeSrfTapered: pick the direction target (Esc to cancel)"
-            }
             Self::ExtrudeSurfaceToPoint { .. } => {
                 "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput, ToBoundary, SplitAtTangents; Esc to cancel)"
             }

@@ -23,7 +23,11 @@ impl VibocerosApp {
                     || !matches!(
                         self.active_command,
                         Some(
-                            InteractiveCommand::Radius { .. }
+                            InteractiveCommand::ExtrudeTapered {
+                                stage: extrude_tapered::Stage::Angle
+                                    | extrude_tapered::Stage::Corners,
+                                ..
+                            } | InteractiveCommand::Radius { .. }
                                 | InteractiveCommand::Curvature { .. }
                         )
                     ))
