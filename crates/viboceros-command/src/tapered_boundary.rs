@@ -227,7 +227,11 @@ fn extrude(
             reached_boundary: true,
         });
     }
-    let filled = if draft < 0. {
+    let oblique_surface = curve.is_none()
+        && draft != 0.
+        && direction.cross(reference)?.length()? > tolerance.angular()
+        && stock.single_face_plane_normal(tolerance)?.is_some();
+    let filled = if draft < 0. && !oblique_surface {
         source_holes::fill_collapsed(&original, length * (-draft).to_radians().tan(), tolerance)?
     } else {
         None
@@ -262,6 +266,29 @@ fn extrude(
         Err(viboceros_smlib::Error::Kernel(_)) => return Err(REJECTED),
         Err(error) => return Err(error.into()),
     };
+    if oblique_surface && !stock.is_solid() {
+        // A naked edge reaching the base is a gap between adjacent walls.
+        // A closed lateral shell can instead be trimmed and capped by a cutter.
+        let plane = original.faces()[0]
+            .surface()
+            .plane(tolerance)?
+            .ok_or(REJECTED)?;
+        let mut wall_gap = false;
+        for curve in stock.naked_boundary_curve_components()?.iter().flatten() {
+            let domain = curve.domain();
+            for t in [*domain.start(), *domain.end()] {
+                wall_gap |=
+                    plane.signed_distance_to(curve.evaluate(t)?)?.abs() <= tolerance.absolute();
+            }
+        }
+        if !wall_gap {
+            return Err(REJECTED);
+        }
+        return Ok(Product {
+            brep: stock.transformed(to_world, tolerance)?,
+            reached_boundary: false,
+        });
+    }
     let base_face = source.faces()[0].surface();
     let end = temporary_end(&stock, direction, tolerance)?.clone();
     let coincident = cutter.faces()[0]

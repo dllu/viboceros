@@ -98,7 +98,7 @@ fn surface_taper_curved_base_delete_history_and_explicit_displacement() {
     assert!(doc.object(s).is_none());
 }
 #[test]
-fn surface_taper_later_oblique_face_preserves_batch_and_redo() {
+fn surface_taper_later_in_plane_axis_preserves_batch_and_redo() {
     let mut doc = Document::default();
     let registry = CommandRegistry::with_builtins();
     let a = doc.add_geometry(patch(false)).unwrap();

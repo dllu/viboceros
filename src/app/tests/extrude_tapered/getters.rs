@@ -115,6 +115,97 @@ fn result(app: &VibocerosApp, source: ObjectId) -> &viboceros_geometry::Brep {
 }
 
 #[test]
+fn tapered_oblique_direction_points_preview_and_commit_the_rhino_rectangle() {
+    use std::time::{Duration, Instant};
+
+    for surface in [false, true] {
+        let mut app = test_app();
+        let source = raised_profile(&mut app, surface);
+        enter(
+            &mut app,
+            &format!(
+                "{} DraftAngle=-10 Solid=Yes Corners=Round",
+                command(surface)
+            ),
+        );
+        enter(&mut app, "Direction");
+        assert!(app.accept_drafting_point(point(3., 2., 2.)));
+        assert!(app.accept_drafting_point(point(4., 2., 4.)));
+        let target = point(3.894427190999916, 2., 3.788854381999832);
+        let corner = point(7.209850483105053, 4., 3.631142735947263);
+        let context = egui::Context::default();
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            app.update_tapered_extrusion_preview(Some(target), &context);
+            if let Some((height, edges)) = app
+                .tapered_extrusion_session
+                .as_ref()
+                .and_then(|session| session.preview_edges(&app.document, app.active_command))
+            {
+                assert!((height - 2.).abs() < 1e-8);
+                assert_eq!(edges.len(), 16);
+                assert!(edges.iter().any(|edge| {
+                    let domain = edge.domain();
+                    [*domain.start(), *domain.end()]
+                        .into_iter()
+                        .any(|parameter| {
+                            edge.evaluate(parameter)
+                                .unwrap()
+                                .is_near(corner, app.document.tolerance())
+                        })
+                }));
+                break;
+            }
+            assert!(Instant::now() < deadline, "oblique taper did not preview");
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(app.document.objects().count(), 1);
+        assert!(app.accept_drafting_point(target), "{:?}", app.command_log);
+        let brep = result(&app, source);
+        assert!(!brep.is_solid());
+        assert_eq!((brep.faces().len(), brep.edges().len()), (5, 16));
+        assert!(
+            brep.vertices()
+                .iter()
+                .any(|vertex| vertex.point().is_near(corner, app.document.tolerance()))
+        );
+        assert_eq!(app.document.selected_object_count(), 1);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().count(), 1);
+        enter(&mut app, "Redo");
+        assert_eq!(result(&app, source).faces().len(), 5);
+
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        enter(
+            &mut app,
+            &format!(
+                "{} 2 Direction=1,0,2 Solid=No DraftAngle=10",
+                command(surface)
+            ),
+        );
+        let face_counts: Vec<_> = app
+            .document
+            .objects()
+            .skip(2)
+            .map(|object| {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!()
+                };
+                brep.faces().len()
+            })
+            .collect();
+        assert_eq!(
+            face_counts,
+            if surface { vec![1, 1, 1, 1] } else { vec![4] },
+            "{:?}",
+            app.command_log
+        );
+    }
+}
+
+#[test]
 fn tapered_distance_and_reverse_direction_match_rhino_signed_draft_and_selection() {
     for surface in [false, true] {
         for reverse in [false, true] {

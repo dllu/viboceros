@@ -66,6 +66,13 @@ impl VibocerosApp {
         else {
             return;
         };
-        self.finish_tapered_input(surface, &format!("ToBoundary={reference}"), options);
+        let before = self.document.objects().len();
+        if !self.finish_tapered_input(surface, &format!("ToBoundary={reference}"), options)
+            && self.document.objects().len() > before
+        {
+            // A failed cut can commit a fallback sweep. Complete that pick
+            // while retaining the command error and its replayable result.
+            self.cancel_interactive_command(false);
+        }
     }
 }

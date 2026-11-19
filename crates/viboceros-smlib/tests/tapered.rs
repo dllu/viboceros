@@ -151,7 +151,7 @@ fn native_tapered_declines_invalid_and_disconnected_profiles_without_reusing_sou
     let before = profile.to_nurbs().unwrap();
     for (direction, angle) in [
         (v(0., 0., 0.), 10.),
-        (v(1., 0., 2.), 10.),
+        (v(1., 0., 0.), 10.),
         (v(0., 0., 2.), 90.),
         (v(0., 0., 2.), f64::NAN),
         (v(0., 0., 2.), f64::from_bits(1)),
@@ -173,6 +173,59 @@ fn native_tapered_declines_invalid_and_disconnected_profiles_without_reusing_sou
             .unwrap()
             .is_solid()
     );
+}
+
+#[test]
+fn native_oblique_circle_tapers_each_arc_at_matched_parameters() {
+    let profile = circle();
+    let curve = profile.to_nurbs().unwrap();
+    let direction = v(1., 0., 2.).normalized_nonzero().unwrap().as_vector();
+    let pull = direction.scaled(2.).unwrap();
+    let result = Shape::tapered_extrusion(&profile, pull, -10., false, true, tol())
+        .unwrap()
+        .to_brep(tol())
+        .unwrap();
+    assert!(!result.is_solid());
+    assert_eq!((result.faces().len(), result.edges().len()), (5, 12));
+    for (start, end) in curve.spans() {
+        for fraction in [0.13, 0.25, 0.5, 0.79] {
+            let parameter = start + (end - start) * fraction;
+            let (point, tangent) = curve.evaluate_with_derivative(parameter).unwrap();
+            let offset = tangent
+                .cross(direction)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap()
+                .as_vector()
+                .scaled(2. * 10_f64.to_radians().tan())
+                .unwrap();
+            let expected = point.translated(pull).unwrap().translated(offset).unwrap();
+            assert!(
+                result.faces().iter().any(|face| {
+                    let surface = face.surface();
+                    let (u, v) = (surface.domain_u(), surface.domain_v());
+                    [
+                        (*u.start(), parameter),
+                        (*u.end(), parameter),
+                        (parameter, *v.start()),
+                        (parameter, *v.end()),
+                    ]
+                    .into_iter()
+                    .filter(|(s, t)| u.contains(s) && v.contains(t))
+                    .any(|(u, v)| {
+                        surface
+                            .evaluate(u, v)
+                            .unwrap()
+                            .distance_to(expected)
+                            .unwrap()
+                            < 1e-6
+                    })
+                }),
+                "offset point {expected:?} at {parameter}"
+            );
+        }
+    }
+    assert_eq!(profile.to_nurbs().unwrap(), curve);
 }
 
 #[test]

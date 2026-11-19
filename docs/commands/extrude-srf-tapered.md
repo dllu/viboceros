@@ -26,7 +26,9 @@ cutter or a collapsing inward taper can fail even close to the source.
 A cutter hole inside the section leaves an opening. One that crosses the
 rim can leave the full temporary sweep and report a failed cut. A contracting
 source opening certified to collapse during the temporary sweep is filled by
-a separate face at the base.
+a separate face at the base. An oblique sweep with gaps between adjacent walls
+retains its base-capped temporary sweep and reports a failed cut. Cutting and
+capping an oblique sweep with a continuous rim still needs qualification.
 
 With source objects selected:
 
@@ -51,17 +53,19 @@ and its signed distance. Numeric
 distance uses the native plane normal of a planar face, oriented toward its
 largest positive world component. Curved faces use the active CPlane normal.
 An explicit direction overrides this policy. Reversing the axis with
-`Direction` reverses the draft. Nonzero draft on a planar face
-currently requires extrusion normal to its plane. Zero draft uses the existing
-exact face translation, including oblique sweeps and curved end caps.
+`Direction` reverses the draft. Slanted sweeps of planar faces offset each
+boundary span in the direction perpendicular to its tangent and the sweep axis.
+`Solid=Yes` keeps the actual source face at the base and leaves the far end open.
+`Solid=No` creates separate objects for walls that have no shared edges. Zero
+draft uses the exact face translation, including oblique sweeps and curved end caps.
 
 `Corners=Sharp` extends the offset segments, `Round` joins them with circular
 arcs, and `Smooth` uses cubic tangent joins. Each source
 loop is tapered separately, with reversed draft for holes. With Solid=Yes,
 source faces copy as the base, stitching joins their boundaries to the walls,
 and the native planar-face builder caps the remaining nested top loops together.
-The top must be planar for nonzero draft. Solid=No creates walls only and also
-supports nonplanar source boundaries. A requested solid must close as a manifold.
+The top must be planar to receive a cap. `Solid=No` creates walls only and also
+supports nonplanar source boundaries.
 
 DeleteInput removes extruded source faces; any remainder retains its object
 identity, attributes and groups. All output and remainders stage before document
@@ -73,8 +77,9 @@ tolerance and control/face resource checks; input geometry stays unchanged.
 
 Nonplanar offset ends cannot currently be capped for nonzero draft. Seam/vertex
 loops, unsupported imports, zero displacement and invalid angles decline.
-Angles must be finite and strictly between -90 and 90 degrees. Nonzero oblique
-sweeps of planar sources remain future work. Self-intersecting offsets,
+Angles must be finite and strictly between -90 and 90 degrees. Axes in the
+profile plane and corner treatment near the normal still need qualification.
+Self-intersecting offsets,
 collapsing profiles, touching holes and near-degenerate cases require broader
 qualification. Native UV trims can be closed within tolerance without identical
 endpoint coordinates; the pure certified trimmed-bounds query can decline those

@@ -23,7 +23,8 @@ planar profiles with `Solid=Yes` retain the base and cutter caps. `Solid=No`
 leaves the trimmed walls, and open planar profiles produce sheets. For an
 outward convex line-and-arc profile and a parallel rectangular cutter, the
 cutter must span the section. Other cuts use a temporary taper whose length
-comes from the combined bounds.
+comes from the combined bounds. `ToBoundary` with a slanted extrusion axis
+still needs qualification.
 
 Headless examples, with curves selected:
 
@@ -31,7 +32,7 @@ Headless examples, with curves selected:
 ExtrudeCrvTapered 2 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered -2 DraftAngle=-10 Corners=Round DeleteInput=Yes
 ExtrudeCrvTapered 0,0,0 0,0,2 DraftAngle=10 Solid=Yes
-ExtrudeCrvTapered 2 Direction=0,0,1 DraftAngle=10 Solid=Yes
+ExtrudeCrvTapered 2 Direction=1,0,2 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered ToBoundary=cutter-id:face-index DraftAngle=-10 Solid=Yes
 ExtrudeCrvTapered 1 DraftAngle=-8 Solid=Yes SplitAtTangents=Yes
 ```
@@ -45,21 +46,26 @@ plane's normal, oriented toward its largest positive world component.
 A line uses the active CPlane normal. Angles must be finite and strictly
 between -90 and 90 degrees. Zero draft uses the native linear sweep.
 
+A slanted `Direction` offsets each profile span perpendicular to its tangent
+and the chosen axis. Sharp corners can leave gaps between adjacent walls, and
+`Solid=Yes` keeps the base cap of a closed profile with the far end open.
+The slanted sweep uses the same span breaks for both `SplitAtTangents` settings.
+
 Each selected curve produces one independent B-rep. `Corners=Sharp` extends the
 offset segments, `Round` joins them with circular arcs, and `Smooth` uses cubic
-tangent joins. `Solid=Yes` caps closed planar curves
-and requires a closed manifold result; open curves produce sheets. Native
-construction copies its profiles. All sources complete before document edits.
+tangent joins. `Solid=Yes` caps closed planar curves on normal sweeps. Open
+curves produce sheets. Native construction copies its profiles. All sources
+complete before document edits.
 Results use the current layer and form one Undo/Redo step.
 Retained curves stay selected after extrusion and are released on replay.
 `DeleteInput=Yes` deletes sources in that same operation.
 
-Nonzero draft currently requires connected planar profiles and extrusion normal
-to their plane. Oblique directions, nonplanar profiles and some automatic seams
-on fitted rational offsets still need qualification. Nested closed objects are
-extruded independently. Existing native curve-import degree, knot and rational
-weight limits apply. Complex self-intersecting offsets and collapsing profiles
-require broader qualification. No continuous error or performance certificate is
+Nonzero draft currently requires connected planar profiles. Axes in the
+profile plane and Rhino's corner treatment very close to the normal still
+need qualification, as do some automatic seams on fitted rational offsets.
+Nested closed objects are extruded independently. Existing native curve-import
+degree, knot and rational weight limits apply. Complex self-intersecting offsets
+and collapsing profiles require broader qualification. No continuous error or performance certificate is
 claimed.
 
 The adapter sets the native B-rep tolerance explicitly. The upstream producer

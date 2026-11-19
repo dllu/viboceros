@@ -159,7 +159,7 @@ fn native_surface_taper_invalid_input_declines_without_editing_source() {
     assert!(
         source
             .tapered_face(
-                Vector3::try_new(1., 0., 2.).unwrap(),
+                Vector3::try_new(1., 0., 0.).unwrap(),
                 10.,
                 false,
                 true,
@@ -168,6 +168,41 @@ fn native_surface_taper_invalid_input_declines_without_editing_source() {
             .is_err()
     );
     assert_eq!(source.to_brep(tol()).unwrap(), before);
+}
+
+#[test]
+fn native_surface_taper_oblique_disk_keeps_its_base_and_four_arc_walls() {
+    let circle = Circle3::try_new(
+        p(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., tol()).unwrap(),
+        tol(),
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let disk = Brep::try_planar_face(&circle, tol()).unwrap();
+    let direction = Vector3::try_new(1., 0., 2.)
+        .unwrap()
+        .normalized_nonzero()
+        .unwrap();
+    let pull = direction.as_vector().scaled(2.).unwrap();
+    let shape = Shape::from_brep(&disk, tol()).unwrap();
+    let output = shape
+        .tapered_face(pull, -10., false, true, tol())
+        .unwrap()
+        .to_brep(tol())
+        .unwrap();
+    assert!(!output.is_solid());
+    assert_eq!((output.faces().len(), output.edges().len()), (5, 12));
+    assert_eq!(output.edge_connected_face_components().len(), 1);
+    let borders = output.naked_boundary_curve_components().unwrap();
+    assert_eq!(borders.len(), 1);
+    assert!(
+        borders[0]
+            .iter()
+            .all(|edge| edge.control_points().iter().all(|p| p.point().z() > 1.6))
+    );
 }
 
 #[test]

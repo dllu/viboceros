@@ -9,6 +9,7 @@ unsafe extern "C" {
         angle_degrees: f64,
         corners: c_int,
         cap_ends: c_int,
+        oblique: c_int,
         tolerance: f64,
         cuts: *const f64,
         cut_count: usize,
@@ -34,12 +35,28 @@ impl From<bool> for TaperCorner {
     }
 }
 
+pub(super) fn oblique_axis(
+    direction: viboceros_geometry::Vector3,
+    plane_normal: Option<viboceros_geometry::Vector3>,
+    tolerance: viboceros_geometry::Tolerance,
+) -> Result<bool, Error> {
+    let Some(normal) = plane_normal else {
+        return Ok(false);
+    };
+    if direction.dot(normal)?.abs() <= tolerance.angular() {
+        return Err(Error::Kernel(
+            "The taper direction lies in the profile plane".into(),
+        ));
+    }
+    Ok(direction.cross(normal)?.length()? > tolerance.angular())
+}
+
 impl Shape {
     /// Extrude a connected planar profile with a signed draft angle in degrees.
     /// Positive angles shrink a closed profile; negative angles expand it.
     /// Round uses circular fillets and Smooth uses cubic tangent joins.
-    /// Nonzero draft requires a planar profile and extrusion normal to its plane.
-    /// Source geometry is copied. A requested cap must produce a manifold solid.
+    /// A planar profile swept obliquely has independent offset walls and can
+    /// retain a base cap. Normal capped sweeps must form a manifold solid.
     pub fn tapered_extrusion(
         profile: &KernelCurve,
         displacement: viboceros_geometry::Vector3,
@@ -101,13 +118,11 @@ impl Shape {
         }
         let height = displacement.length()?;
         let direction = displacement.normalized_nonzero()?.as_vector();
-        if let Some(normal) = KernelCurve::parallel_plane_normal(&[profile], tolerance)?
-            && direction.cross(normal)?.length()? > tolerance.angular()
-        {
-            return Err(Error::Kernel(
-                "Nonzero draft currently requires extrusion normal to the profile plane".into(),
-            ));
-        }
+        let oblique = oblique_axis(
+            direction,
+            KernelCurve::parallel_plane_normal(&[profile], tolerance)?,
+            tolerance,
+        )?;
         let direction = direction.to_array();
         let (cuts, cut_count) =
             cuts.map_or((std::ptr::null(), 0), |cuts| (cuts.as_ptr(), cuts.len()));
@@ -120,6 +135,7 @@ impl Shape {
                 angle_degrees,
                 corners as c_int,
                 c_int::from(cap_ends),
+                c_int::from(oblique),
                 tolerance.absolute(),
                 cuts,
                 cut_count,

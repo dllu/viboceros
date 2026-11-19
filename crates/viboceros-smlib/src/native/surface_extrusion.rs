@@ -1,5 +1,5 @@
 //! Native topology sweep preserves the source faces as curved or trimmed caps.
-use super::tapered::TaperCorner;
+use super::tapered::{TaperCorner, oblique_axis};
 use super::*;
 unsafe extern "C" {
     fn vb_shape_tapered_face(
@@ -9,6 +9,7 @@ unsafe extern "C" {
         angle_degrees: f64,
         corners: c_int,
         cap_ends: c_int,
+        oblique: c_int,
         tolerance: f64,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
@@ -55,8 +56,9 @@ unsafe extern "C" {
 impl Shape {
     /// Draft a single face's boundary, preserving its actual base and trim holes.
     /// Positive draft contracts the material; hole boundaries expand. Nonzero
-    /// draft can cap an offset end only when its curves are coplanar. The source
-    /// remains unchanged. Zero draft delegates to the exact face translation.
+    /// draft can cap an offset end only when its curves are coplanar. Oblique
+    /// planar sweeps retain the base cap when requested. Zero draft delegates
+    /// to the exact face translation.
     pub fn tapered_face(
         &self,
         displacement: viboceros_geometry::Vector3,
@@ -65,23 +67,38 @@ impl Shape {
         cap_ends: bool,
         tolerance: viboceros_geometry::Tolerance,
     ) -> Result<Self, Error> {
+        Ok(self
+            .tapered_face_with_obliquity(displacement, angle_degrees, corners, cap_ends, tolerance)?
+            .0)
+    }
+
+    /// Also reports whether this used the independent walls of an oblique draft.
+    pub fn tapered_face_with_obliquity(
+        &self,
+        displacement: viboceros_geometry::Vector3,
+        angle_degrees: f64,
+        corners: impl Into<TaperCorner>,
+        cap_ends: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<(Self, bool), Error> {
         if !angle_degrees.is_finite() || angle_degrees.abs() >= 90. {
             return Err(Error::Kernel(
                 "Draft angle must be finite and between -90 and 90 degrees".into(),
             ));
         }
         if angle_degrees == 0. {
-            return self.extruded_faces(displacement, cap_ends, tolerance);
+            return Ok((
+                self.extruded_faces(displacement, cap_ends, tolerance)?,
+                false,
+            ));
         }
         let height = displacement.length()?;
         let direction = displacement.normalized_nonzero()?.as_vector();
-        if let Some(normal) = self.single_face_plane_normal(tolerance)?
-            && direction.cross(normal)?.length()? > tolerance.angular()
-        {
-            return Err(Error::Kernel(
-                "Nonzero draft requires extrusion normal to a planar source face".into(),
-            ));
-        }
+        let oblique = oblique_axis(
+            direction,
+            self.single_face_plane_normal(tolerance)?,
+            tolerance,
+        )?;
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
             vb_shape_tapered_face(
@@ -91,18 +108,22 @@ impl Shape {
                 angle_degrees,
                 corners.into() as c_int,
                 c_int::from(cap_ends),
+                c_int::from(oblique),
                 tolerance.absolute(),
                 &mut pointer,
                 error,
                 capacity,
             )
         })?;
-        Ok(Self {
-            model: Solid {
-                handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
-                _thread_local: PhantomData,
+        Ok((
+            Self {
+                model: Solid {
+                    handle: NonNull::new(pointer).ok_or(Error::InvalidOutput)?,
+                    _thread_local: PhantomData,
+                },
             },
-        })
+            oblique,
+        ))
     }
 
     /// Sweep an open sheet's boundary to an apex using native ruled surfaces.

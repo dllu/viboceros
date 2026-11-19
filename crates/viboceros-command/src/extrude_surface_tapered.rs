@@ -131,13 +131,22 @@ impl Command for ExtrudeSurfaceTaperedCommand {
         let mut products = Vec::with_capacity(count);
         for &(id, face) in &targets {
             let source = capture_source_face(doc, id, face)?;
-            products.push(Geometry::Brep(produce_surface(
+            let (brep, oblique) = produce_surface_with_obliquity(
                 &source,
                 distance,
                 input.options,
                 context.construction_plane,
                 tolerance,
-            )?));
+            )?;
+            if oblique && !input.options.solid {
+                products.extend(
+                    brep.into_edge_connected_components(tolerance)?
+                        .into_iter()
+                        .map(Geometry::Brep),
+                );
+            } else {
+                products.push(Geometry::Brep(brep));
+            }
         }
         let selection = doc.selected_object_ids().collect::<Vec<_>>();
         if !input.options.delete_input {
@@ -167,6 +176,16 @@ pub fn produce_surface(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
+    Ok(produce_surface_with_obliquity(brep, distance, options, cplane, tolerance)?.0)
+}
+
+fn produce_surface_with_obliquity(
+    brep: &Brep,
+    distance: Distance,
+    options: TaperedExtrusionOptions,
+    cplane: Frame3,
+    tolerance: Tolerance,
+) -> Result<(Brep, bool), CommandError> {
     let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
     let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
     let (displacement, draft) =
@@ -175,16 +194,17 @@ pub fn produce_surface(
         })?;
     let restore =
         AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
-    Ok(shape
-        .tapered_face(
-            displacement,
-            draft,
-            options.corners.kernel(),
-            options.solid,
-            tolerance,
-        )?
-        .to_brep(tolerance)?
-        .transformed(restore, tolerance)?)
+    let (shape, oblique) = shape.tapered_face_with_obliquity(
+        displacement,
+        draft,
+        options.corners.kernel(),
+        options.solid,
+        tolerance,
+    )?;
+    Ok((
+        shape.to_brep(tolerance)?.transformed(restore, tolerance)?,
+        oblique,
+    ))
 }
 
 #[cfg(test)]

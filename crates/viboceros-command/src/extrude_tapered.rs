@@ -421,7 +421,7 @@ pub fn produce_curve(
         Ok(profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector()))
     })?;
     let cap = options.solid && curve.is_closed()?;
-    let brep = produce_curve_shape(
+    Ok(produce_curve_shape(
         curve,
         &profile,
         displacement,
@@ -434,13 +434,7 @@ pub fn produce_curve(
     .transformed(
         AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?),
         tolerance,
-    )?;
-    if cap && !brep.is_solid() {
-        return Err(CommandError::Usage(
-            "Tapered extrusion did not produce a closed solid",
-        ));
-    }
-    Ok(brep)
+    )?)
 }
 
 pub(super) fn produce_curve_shape(

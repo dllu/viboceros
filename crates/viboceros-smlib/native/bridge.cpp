@@ -2206,8 +2206,102 @@ extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const Vb
     });
 }
 
+namespace {
+// An oblique draft refits one offset rail per active input span.
+void append_oblique_taper_spans(const SmBSplineCurve &curve, SmTArray<SmBSplineCurve *> &spans) {
+    const auto domain = curve.GetNaturalInterval();
+    const auto knots = vb_curve_full_knots(curve);
+    std::vector<double> ends;
+    for (double knot : knots)
+        if (knot > domain.GetMin() && knot < domain.GetMax() &&
+            (ends.empty() || knot > ends.back())) ends.push_back(knot);
+    ends.push_back(domain.GetMax());
+    require(ends.size() <= 100000 - spans.GetSize() &&
+        curve.GetNumberControlPoints() <= 16000000 / ends.size(), "Oblique taper span resource limit");
+
+    auto &context = *SmApiGetOrCreateContext();
+    double start = domain.GetMin();
+    for (double end : ends) {
+        std::unique_ptr<SmBSplineCurve> piece(new (context) SmBSplineCurve(curve));
+        vb_preserve_curve_basis(*piece, knots);
+        if (ends.size() > 1) {
+            SmExtent1d interval(start, end);
+            check(piece->Trim(interval, FALSE), "extract oblique taper profile span");
+        }
+        spans.Add(piece.release());
+        start = end;
+    }
+}
+
+// An oblique draft offsets each smooth rail in its tangent cross the pull
+// direction. At kinks the resulting rails may end at different points. Keep
+// the independent walls rather than intersecting or filling those gaps.
+void add_oblique_taper_walls(SmBrep &output, SmTArray<SmCurve *> &profiles,
+    const SmVector3d &direction, double height, double offset, double tolerance,
+    bool closed, size_t &control_count) {
+    auto &context = *SmApiGetOrCreateContext();
+    double distance = -offset;
+    if (closed) {
+        SmVector3d winding;
+        check(SmCurve::ComputeCrvsNormal(profiles, winding), "orient tapered profile");
+        if (winding.Dot(direction) < 0.) distance = offset;
+    }
+    for (ULONG i = 0; i < profiles.GetSize(); ++i) {
+        const auto &profile = *static_cast<const SmBSplineCurve *>(profiles[i]);
+        const auto domain = profile.GetNaturalInterval();
+        SmOffsetCurve offset_curve(3, profile, domain, direction, distance);
+        std::unique_ptr<SmBSplineCurve> rail;
+        SmAxis2Placement translate;
+        SmVector3d displacement = height * direction;
+        if (profile.IsLinear()) {
+            // Translation keeps the original basis and parameter speed of an
+            // exact line, even if it uses more than two control points.
+            SmPoint3d base, end;
+            check(profile.EvaluatePoint(domain.GetMin(), base), "evaluate taper profile start");
+            check(offset_curve.EvaluatePoint(domain.GetMin(), end), "evaluate offset start");
+            displacement += end - base;
+            rail.reset(new (context) SmBSplineCurve(profile));
+            vb_preserve_curve_basis(*rail, vb_curve_full_knots(profile));
+        } else {
+            SmTArray<double> breaks;
+            breaks.Add(domain.GetMin());
+            breaks.Add(domain.GetMax());
+            SmBSplineCurve *fitted = nullptr;
+            double gap = 0.;
+            const auto status = offset_curve.ApproximateCurve(
+                context, breaks, 0.01 * tolerance, gap, fitted, FALSE, TRUE);
+            rail.reset(fitted);
+            check(status, "fit oblique taper offset with matched parameters");
+            require(rail && std::isfinite(gap) && gap <= tolerance,
+                "Oblique taper offset exceeds tolerance");
+        }
+        translate.Translate(displacement);
+        check(rail->Transform(translate), "translate oblique taper offset");
+        const auto lower = profile.GetNumberControlPoints();
+        const auto upper = rail->GetNumberControlPoints();
+        require(lower <= limit && upper <= limit && control_count <= limit - lower
+            && control_count + lower <= limit - upper, "Oblique taper control-net resource limit");
+        control_count += lower + upper;
+        SmBSplineSurface *wall = nullptr;
+        const auto ruled = SmBSplineSurface::CreateRuledSurface(
+            context, profile, *rail, SM_SP_U, wall);
+        std::unique_ptr<SmBSplineSurface> owner(wall);
+        check(ruled, "create oblique taper wall");
+        require(wall && wall->GetNumberControlPoints(SM_SP_V) > 0
+            && wall->GetNumberControlPoints(SM_SP_U) <= limit / wall->GetNumberControlPoints(SM_SP_V),
+            "Oblique taper wall control-net resource limit");
+        SmFace *face = nullptr;
+        const auto status = output.CreateFaceFromSurface(wall, wall->GetNaturalUVDomain(), face);
+        if (wall->GetOwner()) owner.release();
+        check(status, "add oblique taper wall");
+        require(face, "Missing oblique taper wall");
+        owner.release();
+    }
+}
+} // namespace
+
 extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction[3],
-    double height,double angle_degrees,int corners,int cap_ends,double tolerance,
+    double height,double angle_degrees,int corners,int cap_ends,int oblique,double tolerance,
     VbSolid **out,char *error,size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
@@ -2225,7 +2319,7 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
         auto *source=source_faces[0];SmTArray<SmLoop*> loops;source->GetLoops(loops);
         require(loops.GetSize()>0 && loops.GetSize()<=100000,"Surface taper loop resource limit");
         auto owner=std::make_unique<VbSolid>();owner->value.reset(new (*context) SmBrep());
-        owner->value->SetTolerance(tolerance,FALSE);size_t controls=0,total_faces=0;
+        owner->value->SetTolerance(tolerance,FALSE);size_t controls=0,total_faces=0,oblique_controls=0;
         for(ULONG i=0;i<loops.GetSize();++i) {
             SmTArray<SmEdge*> edges;loops[i]->GetEdges(edges);
             require(edges.GetSize()>0,"Surface taper does not support vertex loops");
@@ -2247,6 +2341,19 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
             boundary_cleanup.Clear();SmObjsDelete<SmCurve*> input_cleanup(&profiles);
             SmTArray<ULONG> chains;
             require(SmCurve::FixChainCurvesList(profiles,chains,2*tolerance,TRUE)==1,"Surface taper boundary must be one closed chain");
+            if (oblique) {
+                SmTArray<SmBSplineCurve *> spans;
+                SmObjsDelete<SmBSplineCurve *> span_cleanup(&spans);
+                for (ULONG j = 0; j < profiles.GetSize(); ++j)
+                    append_oblique_taper_spans(*static_cast<SmBSplineCurve *>(profiles[j]), spans);
+                require(spans.GetSize() <= 100000 - total_faces, "Surface taper wall resource limit");
+                total_faces += spans.GetSize();
+                SmTArray<SmCurve *> rails;
+                for (ULONG j = 0; j < spans.GetSize(); ++j) rails.Add(spans[j]);
+                add_oblique_taper_walls(*owner->value, rails, normal, height,
+                    orientation == SM_OT_OPPOSITE ? -offset : offset, tolerance, true, oblique_controls);
+                continue;
+            }
             std::unique_ptr<SmBrep> walls(new (*context) SmBrep());walls->SetTolerance(tolerance,FALSE);
             SmPrimitiveCreation producer(walls->GetInfiniteRegion(),0,TRUE);
             SmVector3d loop_normal=normal;
@@ -2259,6 +2366,8 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
         }
         if(cap_ends) {
             check(shape->value->CopyFaces(source_faces,owner->value.get(),nullptr,FALSE),"retain original taper base cap");
+        }
+        if(cap_ends && !oblique) {
             check(owner->value->StitchAndOrient(),"stitch surface taper base");
             // With the actual base attached, only the offset end stays naked.
             // The native planar-face builder classifies nested top loops together.
@@ -2291,13 +2400,13 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
         check(owner->value->StitchAndOrient(),"stitch tapered surface extrusion");
         SmTArray<SmFace*> result_faces;owner->value->GetFaces(result_faces);
         require(result_faces.GetSize()>0 && result_faces.GetSize()<=100000,"Surface taper output resource limit");
-        require(!cap_ends || owner->value->IsManifoldSolid(),"Tapered surface extrusion did not close");
+        require(!cap_ends || oblique || owner->value->IsManifoldSolid(),"Tapered surface extrusion did not close");
         check(SmApiTurnToNurbs(owner->value.get()),"convert surface taper to NURBS");*out=owner.release();
     });
 }
 
 extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
-    double height, double angle_degrees, int corners, int cap_ends, double tolerance,
+    double height, double angle_degrees, int corners, int cap_ends, int oblique, double tolerance,
     const double *cuts, size_t cut_count, VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
@@ -2322,7 +2431,9 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         auto *context=SmApiGetOrCreateContext();
         SmTArray<SmBSplineCurve*> segments;
         SmObjsDelete<SmBSplineCurve*> segment_cleanup(&segments);
-        if (cuts) {
+        if (oblique) {
+            append_oblique_taper_spans(*curve->value, segments);
+        } else if (cuts) {
             const auto domain = curve->value->GetNaturalInterval();
             double start = domain.GetMin();
             for (size_t i = 0; i <= cut_count; ++i) {
@@ -2350,16 +2461,46 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         auto owner=std::make_unique<VbSolid>();
         owner->value.reset(new (*context) SmBrep());
         owner->value->SetTolerance(tolerance,FALSE);
-        SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
-        // On failure before caps the upstream producer retains these profiles.
-        // Success consumes them; clear the guard before further validation.
-        SmTemporaryChangeValue<bool> partitions(vb_taper_use_supplied_partitions, cuts != nullptr);
-        check(producer.CreateTaperExtrude(profiles,height,angle_degrees,cap_ends?3:0,normal,
-            corner_type),"create tapered extrusion");
-        input_cleanup.Clear();
+        if (oblique) {
+            size_t controls = 0;
+            add_oblique_taper_walls(*owner->value, profiles, normal, height, offset, tolerance,
+                curve->value->IsClosed(curve->value->GetNaturalInterval()), controls);
+            if (cap_ends) {
+                SmFace *base = nullptr;
+                const auto status = owner->value->CreatePlanarFaceWith3DCurves(
+                    owner->value->GetInfiniteRegion(), profiles, tolerance, base);
+                if (status == SM_SUCCESS) {
+                    input_cleanup.Clear();
+                } else {
+                    // Keep failure cleanup single-owner even after a partial cap.
+                    SmTArray<SmEdge *> edges;
+                    owner->value->GetEdges(edges);
+                    for (ULONG i = 0; i < edges.GetSize(); ++i) {
+                        auto *edge = edges[i];
+                        for (ULONG j = 0; j < profiles.GetSize(); ++j) {
+                            if (edge->GetCurve() == profiles[j]) {
+                                edge->SetCurve(nullptr, FALSE, FALSE, FALSE);
+                                break;
+                            }
+                        }
+                    }
+                }
+                check(status, "cap oblique taper base");
+                require(base, "Missing oblique taper base cap");
+            }
+            check(owner->value->StitchAndOrient(), "stitch oblique taper walls");
+        } else {
+            SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
+            // On failure before caps the upstream producer retains these profiles.
+            // Success consumes them; clear the guard before further validation.
+            SmTemporaryChangeValue<bool> partitions(vb_taper_use_supplied_partitions, cuts != nullptr);
+            check(producer.CreateTaperExtrude(profiles,height,angle_degrees,cap_ends?3:0,normal,
+                corner_type),"create tapered extrusion");
+            input_cleanup.Clear();
+        }
         SmTArray<SmFace*> faces;owner->value->GetFaces(faces);
         require(faces.GetSize()>0,"Empty tapered extrusion");
-        require(!cap_ends || owner->value->IsManifoldSolid(),"Tapered extrusion did not close");
+        require(!cap_ends || oblique || owner->value->IsManifoldSolid(),"Tapered extrusion did not close");
         check(SmApiTurnToNurbs(owner->value.get()),"convert tapered extrusion to NURBS");
         *out=owner.release();
     });

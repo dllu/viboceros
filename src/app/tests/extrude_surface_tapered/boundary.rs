@@ -71,6 +71,56 @@ fn surface_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion
 }
 
 #[test]
+fn surface_taper_oblique_boundary_pick_replays_rhinos_open_fallback() {
+    let mut app = test_app();
+    let source = rectangle(&mut app, [0., 0., 6., 4.], 2.);
+    let cutter = rectangle(&mut app, [-9., -9., 15., 13.], 5.);
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeSrfTapered ToBoundary DraftAngle=-10 DeleteInput=Yes Solid=No",
+    );
+    enter(&mut app, "Direction");
+    assert!(app.accept_drafting_point(point(0., 0., 0.)));
+    assert!(app.accept_drafting_point(point(1., 0., 6.)));
+    assert!(app.picking_tapered_boundary());
+    enter(&mut app, &cutter.to_string());
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(app.document.object(source).is_some());
+    assert!(app.document.is_selected(source));
+    assert!(app.document.is_selected(cutter));
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|o| o.id() != source && o.id() != cutter)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected the fallback sweep");
+    };
+    assert!(!result.is_solid());
+    assert_eq!((result.faces().len(), result.edges().len()), (5, 16));
+    let bounds = result.bounds();
+    assert!((bounds.max().z() - 35.19848539598654).abs() < 1e-6);
+    assert!((bounds.min().y() + 5.765110338097707).abs() < 1e-6);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 2);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [source]
+    );
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 3);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [source]
+    );
+}
+
+#[test]
 fn curve_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion() {
     let mut app = test_app();
     let cutter = rectangle(&mut app, [-8., -8., 13., 11.], 5.);
