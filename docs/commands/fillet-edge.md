@@ -22,6 +22,9 @@ works when starting the interactive command. The preview updates as picks,
 radius or corner treatment change. Enter applies the matching staged result.
 Use `FromTwoPoints` to set the radius with two viewport picks or typed
 coordinates. With preview enabled, the second point updates the wireframe.
+`FromCurve` takes the local curvature radius at a picked or typed curve
+location. Hovering with preview enabled shows the resulting blend. Esc returns
+to edge selection, and a straight location leaves the curve picker active.
 Use `FaceEdges` to add the sharp boundary edges of one or more faces. Enter
 keeps those picks and returns to edge selection. Esc restores the prior edge
 set. Tangent edges and same-face seams are excluded.

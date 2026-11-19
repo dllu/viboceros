@@ -370,6 +370,8 @@ impl VibocerosApp {
                         "ChainEdges"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"
+                    } else if self.measuring_edge_blend_radius() {
+                        "FromCurve"
                     } else if let Some(kind) = self.nested_measurement_kind() {
                         kind.name()
                     } else if let Some(p) = &self.edge_pattern_prompt {

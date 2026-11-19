@@ -23,6 +23,7 @@ struct Hover {
     hit: RadiusHit,
     source: GeometrySnapshot,
     value: String,
+    model_radius: Option<f64>,
 }
 
 impl Hover {
@@ -113,6 +114,13 @@ impl VibocerosApp {
             .map(|hover| hover.value.as_str())
     }
 
+    pub(super) fn model_radius_hover(&self) -> Option<f64> {
+        let hover = self.radius_session.as_ref()?.hover.as_ref()?;
+        hover.model_radius.filter(|&radius| {
+            radius.is_finite() && radius > 0. && hover.source_current(&self.document)
+        })
+    }
+
     pub(super) fn update_radius_hover(
         &mut self,
         hit: Option<(usize, egui::Pos2, RadiusHit)>,
@@ -150,6 +158,7 @@ impl VibocerosApp {
                 hit,
                 source,
                 value: format!("{} = {value}", name(diameter)),
+                model_radius: measurement.model_value(false).ok().flatten(),
             })
         });
         let changed = session.hover.is_some() || hover.is_some();

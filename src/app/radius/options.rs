@@ -87,6 +87,8 @@ impl VibocerosApp {
         let custom = self.radius_session.as_ref().is_some_and(|s| s.selecting);
         let text = if custom {
             "Select a curve or press Enter to measure any curve".to_owned()
+        } else if self.measuring_edge_blend_radius() {
+            edge_fillet::FROM_CURVE_HINT.to_owned()
         } else {
             let units = if self.document.selected_object_count() == 0 {
                 " / Units"

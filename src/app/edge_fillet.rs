@@ -1,5 +1,6 @@
 //! Shared original-edge picking and confirmation for native fillets, chamfers and G2 blends.
 use super::*;
+use nested_measurement::Kind as Measurement;
 use viboceros_command::blend_edge::BlendOptions;
 use viboceros_command::chamfer_edge::ChamferOptions;
 use viboceros_command::{
@@ -14,6 +15,8 @@ pub(super) use preview::Preview;
 pub(super) use previous::EdgeSelectionHistory;
 
 pub(super) const FACE_EDGES_HINT: &str = "Select faces to add their sharp boundary edges. Enter keeps the picks. Esc discards these face picks.";
+pub(super) const FROM_CURVE_HINT: &str =
+    "Pick a curve location or type its coordinates. Esc returns to edge selection.";
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Prompt {
@@ -44,13 +47,13 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromCurve, FromTwoPoints, Corner=Automatic|Ball or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance=value, FromCurve, FromTwoPoints, RailType or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromCurve, FromTwoPoints, RailType or Preview."
                 }
             }
         }
@@ -67,6 +70,17 @@ impl Prompt {
         };
         let preview = if self.preview { "Yes" } else { "No" };
         format!("{model} Preview={preview}")
+    }
+}
+
+fn size_measurement(word: &str) -> Option<Measurement> {
+    let word = word.trim_start_matches('_');
+    if word.eq_ignore_ascii_case("FromCurve") {
+        Some(Measurement::Radius)
+    } else if word.eq_ignore_ascii_case("FromTwoPoints") {
+        Some(Measurement::Distance)
+    } else {
+        None
     }
 }
 
@@ -126,6 +140,15 @@ impl VibocerosApp {
                     .eq_ignore_ascii_case("ChainEdges")
             })
             .map(|index| words.split_off(index)[1..].join(" "));
+        let measurement = words
+            .iter()
+            .position(|word| size_measurement(word).is_some())
+            .and_then(|index| size_measurement(words.remove(index)));
+        if chain_options.is_some() && measurement.is_some() {
+            self.command_input.clear();
+            self.push_log("Finish the chain selection before measuring its size".into());
+            return true;
+        }
         let face_edges = words.iter().position(|word| {
             word.trim_start_matches('_')
                 .eq_ignore_ascii_case("FaceEdges")
@@ -206,6 +229,9 @@ impl VibocerosApp {
         } else if face_edges.is_some() {
             self.begin_edge_blend_faces();
         }
+        if let Some(kind) = measurement {
+            self.start_edge_blend_measurement(kind);
+        }
         true
     }
     pub(super) fn try_continue_edge_fillet(&mut self, input: &str) -> bool {
@@ -244,15 +270,8 @@ impl VibocerosApp {
             self.finish_edge_fillet(false);
             return true;
         }
-        if input
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case("FromTwoPoints")
-        {
-            if !self.start_edge_blend_distance() {
-                return false;
-            }
-            self.component_selection.clear_choices();
-            return true;
+        if let Some(kind) = size_measurement(input) {
+            return self.start_edge_blend_measurement(kind);
         }
         if input
             .trim_start_matches('_')

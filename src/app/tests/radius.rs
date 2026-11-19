@@ -137,7 +137,7 @@ fn radius_enter(app: &mut VibocerosApp, command: &str) {
     app.run_command();
 }
 
-fn move_measurement_pointer(
+pub(super) fn move_measurement_pointer(
     app: &mut VibocerosApp,
     ctx: &egui::Context,
     point: Point3,

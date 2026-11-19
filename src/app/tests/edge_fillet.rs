@@ -3,6 +3,7 @@ use crate::viewport::{ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
 mod chain_edges;
 mod face_edges;
+mod from_curve;
 mod previous;
 fn submit(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
@@ -290,7 +291,7 @@ fn edge_fillet_from_two_points_draws_the_trial_blend_and_accepts_viewport_clicks
     viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(second)]);
     let trial = wait(&mut app, &initial);
     assert!(!app.document.can_undo());
-    assert_eq!(app.edge_blend_distance_hover(), Some(2.));
+    assert_eq!(app.edge_blend_size_hover(), Some(2.));
     viewport_click(&mut app, &context, second);
     assert!(app.nested_measurement.is_none());
     assert!(app.command_log.back().unwrap().contains("Distance=2"));

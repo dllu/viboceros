@@ -15,6 +15,9 @@ Cancel/Esc releases it without geometry changes.
 startup and while picking. Changes to the edge set, distance or rail update it.
 `FromTwoPoints` sets the distance from two picked or typed points and previews
 the measurement as you move the second point.
+`FromCurve` uses the local curvature radius at a picked or typed curve
+location for the chamfer distance. With preview enabled, move over the curve
+to preview the chamfer at that value.
 `FaceEdges` adds sharp face-boundary edges. Enter keeps the picks and returns
 to edge selection. Esc restores the prior edge set.
 Use `ChainEdges` for [connected-edge selection](curve-chains.md), or
