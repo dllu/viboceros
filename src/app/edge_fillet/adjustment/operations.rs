@@ -5,7 +5,7 @@ use viboceros_geometry::NurbsCurve;
 
 #[derive(Clone, Copy)]
 pub(super) enum HandleOperation {
-    Place(Option<f64>),
+    Place { size: f64, entering_size: bool },
     Copy,
     Remove,
 }
@@ -17,7 +17,10 @@ impl VibocerosApp {
         option: &str,
     ) -> bool {
         let operation = if option.eq_ignore_ascii_case("AddHandle") {
-            HandleOperation::Place(None)
+            HandleOperation::Place {
+                size: prompt.radius,
+                entering_size: false,
+            }
         } else if option.eq_ignore_ascii_case("CopyHandle") {
             HandleOperation::Copy
         } else if option.eq_ignore_ascii_case("RemoveHandle") {
@@ -50,25 +53,106 @@ impl VibocerosApp {
             })
     }
 
-    pub(in crate::app::edge_fillet) fn edge_handle_operation_hint(&self) -> Option<&'static str> {
-        match self.edge_blend_adjustment.operation? {
-            HandleOperation::Place(_) => {
-                Some("Pick a location on a selected edge. Esc returns to handle adjustment.")
-            }
+    pub(in crate::app::edge_fillet) fn edge_handle_operation_hint(
+        &self,
+        prompt: Prompt,
+    ) -> Option<String> {
+        Some(match self.edge_blend_adjustment.operation? {
+            HandleOperation::Place {
+                size,
+                entering_size: false,
+            } => format!(
+                "Pick locations on the selected edges. {}={size} sets the next size. Enter returns to handle adjustment.",
+                placement_size_option(prompt)
+            ),
+            HandleOperation::Place {
+                entering_size: true,
+                ..
+            } => "Enter the size for the next handle.".into(),
             HandleOperation::Copy => {
-                Some("Pick the size handle to copy. Esc returns to handle adjustment.")
+                "Pick the size handle to copy. Esc returns to handle adjustment.".into()
             }
             HandleOperation::Remove => {
-                Some("Pick an added handle to remove. Esc returns to handle adjustment.")
+                "Pick an added handle to remove. Esc returns to handle adjustment.".into()
             }
+        })
+    }
+
+    pub(in crate::app::edge_fillet) fn continue_edge_placement_size(
+        &mut self,
+        mut prompt: Prompt,
+        input: &str,
+    ) -> bool {
+        let Some(HandleOperation::Place {
+            size,
+            entering_size,
+        }) = self.edge_blend_adjustment.operation
+        else {
+            return false;
+        };
+        if input.is_empty()
+            || ["Enter", "Cancel"]
+                .iter()
+                .any(|option| input.eq_ignore_ascii_case(option))
+        {
+            return false;
         }
+        let (option, value) = input
+            .split_once(|ch: char| ch == '=' || ch.is_whitespace())
+            .unwrap_or((input, ""));
+        let named = option.eq_ignore_ascii_case(placement_size_option(prompt));
+        if !entering_size && !named {
+            return false;
+        }
+        let value = if named { value.trim() } else { input };
+        let operation = if value.is_empty() {
+            HandleOperation::Place {
+                size,
+                entering_size: true,
+            }
+        } else {
+            match size_input::parse_size(value, &self.document) {
+                Ok(size) => HandleOperation::Place {
+                    size,
+                    entering_size: false,
+                },
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.command_input.clear();
+                    return true;
+                }
+            }
+        };
+        self.edge_blend_adjustment.operation = Some(operation);
+        self.edge_blend_adjustment.active = None;
+        prompt.size_input = None;
+        self.edge_fillet_prompt = Some(prompt);
+        self.command_input.clear();
+        self.log_edge_blend_prompt();
+        true
     }
 
     pub(in crate::app) fn dismiss_edge_handle_operation(&mut self) -> bool {
-        if !self.nested_measurement_captures_input()
-            || self.edge_blend_adjustment.operation.take().is_none()
-        {
+        if !self.nested_measurement_captures_input() {
             return false;
+        }
+        let Some(operation) = self.edge_blend_adjustment.operation.take() else {
+            return false;
+        };
+        if let HandleOperation::Place {
+            size,
+            entering_size: true,
+        } = operation
+        {
+            self.edge_blend_adjustment.operation = Some(HandleOperation::Place {
+                size,
+                entering_size: false,
+            });
+        }
+        self.edge_blend_adjustment.active = None;
+        self.edge_blend_adjustment.drag_size = None;
+        if let Some(prompt) = &mut self.edge_fillet_prompt {
+            prompt.size_input = None;
         }
         self.command_input.clear();
         self.log_edge_blend_prompt();
@@ -81,7 +165,10 @@ impl VibocerosApp {
     ) -> Vec<(ComponentPick, &'a NurbsCurve)> {
         if !matches!(
             self.edge_blend_adjustment.operation,
-            Some(HandleOperation::Place(_))
+            Some(HandleOperation::Place {
+                entering_size: false,
+                ..
+            })
         ) {
             return Vec::new();
         }
@@ -106,7 +193,7 @@ impl VibocerosApp {
             None => HandleMode::Edit,
             Some(HandleOperation::Copy) => HandleMode::Copy,
             Some(HandleOperation::Remove) => HandleMode::Remove,
-            Some(HandleOperation::Place(_)) => HandleMode::Place(curves),
+            Some(HandleOperation::Place { .. }) => HandleMode::Place(curves),
         }
     }
 
@@ -141,12 +228,18 @@ impl VibocerosApp {
                 let Some(size) = location.size(&sizes) else {
                     return false;
                 };
-                self.edge_blend_adjustment.operation = Some(HandleOperation::Place(Some(size)));
+                self.edge_blend_adjustment.operation = Some(HandleOperation::Place {
+                    size,
+                    entering_size: false,
+                });
                 self.log_edge_blend_prompt();
                 true
             }
             (
-                HandleOperation::Place(size),
+                HandleOperation::Place {
+                    size,
+                    entering_size: false,
+                },
                 HandleGesture::Place(_),
                 HandleLocation::Interior(t),
             ) if 0. < t && t < 1. => {
@@ -158,14 +251,11 @@ impl VibocerosApp {
                     .get(index)
                     .is_none_or(|(parameter, _)| *parameter != t)
                 {
-                    sizes
-                        .interior
-                        .insert(index, (t, size.unwrap_or(prompt.radius)));
+                    sizes.interior.insert(index, (t, size));
                     self.edge_blend_adjustment
                         .sizes
                         .insert(id.pick, (source, sizes));
                 }
-                self.edge_blend_adjustment.operation = None;
                 self.pick_edge_size_handle(id)
             }
             (HandleOperation::Remove, HandleGesture::Pick(_), HandleLocation::Interior(t)) => {
@@ -177,5 +267,13 @@ impl VibocerosApp {
             }
             _ => false,
         }
+    }
+}
+
+fn placement_size_option(prompt: Prompt) -> &'static str {
+    if matches!(prompt.kind, Kind::Chamfer(_)) {
+        "CurrentChamferDistance"
+    } else {
+        "CurrentRadius"
     }
 }

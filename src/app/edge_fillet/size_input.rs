@@ -22,7 +22,7 @@ pub(super) fn next_size_option(chamfer: bool) -> &'static str {
     }
 }
 
-fn parse_size(input: &str, document: &Document) -> Result<f64, String> {
+pub(super) fn parse_size(input: &str, document: &Document) -> Result<f64, String> {
     let size = viboceros_drafting::PointInput::parse_length_with_units(
         input.trim_start_matches('_'),
         document.units(),

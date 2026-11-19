@@ -217,16 +217,35 @@ fn edge_fillet_places_copies_and_removes_interior_handles_in_the_viewport() {
     assert!((added[0].0 - 0.4).abs() < 1e-5);
     assert_eq!(added[0].1, 2.);
 
+    submit(&mut app, "CurrentRadius");
+    submit(&mut app, "1.5");
+    click(&mut app, point_at(0.55));
+    let placed = interior(&app);
+    assert_eq!(placed.len(), 2);
+    assert_eq!(placed[0], added[0]);
+    assert!((placed[1].0 - 0.55).abs() < 1e-5);
+    assert_eq!(placed[1].1, 1.5);
+    submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
+    assert!(!app.document.can_undo());
+
     submit(&mut app, "CopyHandle");
     click(&mut app, added[0].2);
     click(&mut app, point_at(0.7));
+    click(&mut app, point_at(0.85));
     let copied = interior(&app);
-    assert_eq!(copied.len(), 2);
-    assert!((copied[1].0 - 0.7).abs() < 1e-5);
-    assert_eq!(copied[1].1, 2.);
+    assert_eq!(copied.len(), 4);
+    assert!((copied[2].0 - 0.7).abs() < 1e-5);
+    assert!((copied[3].0 - 0.85).abs() < 1e-5);
+    assert_eq!([copied[2].1, copied[3].1], [2.; 2]);
+    submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
+    assert!(!app.document.can_undo());
 
-    submit(&mut app, "RemoveHandle");
-    click(&mut app, copied[1].2);
+    for (_, _, point) in copied[1..].iter().copied() {
+        submit(&mut app, "RemoveHandle");
+        click(&mut app, point);
+    }
     assert_eq!(interior(&app), added);
     submit(&mut app, "SetAll=1.5");
     assert_eq!(interior(&app)[0].1, 1.5);

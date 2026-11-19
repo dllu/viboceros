@@ -9,8 +9,9 @@ Enter to adjust the selected edges' distances.
 Click or drag a handle to edit it. Shift-click or window-select several
 handles to edit them together. Use `SetAll` for a common distance or
 `SelectEdges` to resume picking. Use `AddHandle`, `CopyHandle` and `RemoveHandle`
-as in [FilletEdge](fillet-edge.md). `LinkHandles=Yes` scales the other handles by
-the same ratio as the edited handle. Varying sizes along an edge require
+as in [FilletEdge](fillet-edge.md). During placement, `CurrentChamferDistance`
+sets the size for subsequent handles. `LinkHandles=Yes` scales the other
+handles by the same ratio as the edited handle. Varying sizes along an edge require
 `RailType=RollingBall`.
 `ShowChamferDistance=No` hides size labels until
 hovered. Press Enter from adjustment to apply. Edge-component preselection,

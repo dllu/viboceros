@@ -15,10 +15,12 @@ to open size adjustment. Click a handle to type a radius, use `FromCurve` or
 `FromTwoPoints`, or drag the handle up or down. Shift-click handles or drag a
 window from empty viewport space to select several. Ctrl-click removes a
 handle from the selection. Edit any selected handle to change the group.
-`AddHandle` places a radius along a selected edge. `CopyHandle` asks for a source handle and a new location.
-`RemoveHandle` deletes a placed handle. SMLib interpolates the radii over the
-edge's curve parameter. An open edge with only endpoint handles varies
-linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the
+`AddHandle` places handles at successive locations along the selected edges.
+Use `CurrentRadius` to set the size for subsequent placements. `CopyHandle`
+starts the same picker with the size of a source handle. Enter returns to
+size adjustment. `RemoveHandle` deletes a placed handle. SMLib interpolates
+the radii over the edge's curve parameter. An open edge with only endpoint
+handles varies linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the
 edited handle. `SetAll=2` sets every radius and the next radius to 2. Use
 `SelectEdges` to resume picking or
 `ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.

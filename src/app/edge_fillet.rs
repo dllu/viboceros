@@ -366,6 +366,9 @@ impl VibocerosApp {
             self.begin_edge_blend_edit(edit.or_else(|| (!options.is_empty()).then_some(options)));
             return true;
         }
+        if self.continue_edge_placement_size(prompt, keyword) {
+            return true;
+        }
         let set_all = option.eq_ignore_ascii_case("SetAll") && prompt.adjusting;
         let current_chamfer = matches!(prompt.kind, Kind::Chamfer(_))
             && prompt.adjusting
@@ -565,12 +568,12 @@ impl VibocerosApp {
     pub(super) fn log_edge_blend_prompt(&mut self) {
         if let Some(prompt) = self.edge_fillet_prompt {
             let hint = if self.picking_edge_blend_edit() {
-                "Select an object with an editable edge blend."
+                "Select an object with an editable edge blend.".into()
             } else if self.picking_edge_blend_faces() {
-                FACE_EDGES_HINT
+                FACE_EDGES_HINT.into()
             } else {
-                self.edge_handle_operation_hint()
-                    .unwrap_or_else(|| prompt.hint())
+                self.edge_handle_operation_hint(prompt)
+                    .unwrap_or_else(|| prompt.hint().into())
             };
             let remove = if prompt.adjusting && self.has_added_edge_handles() {
                 " Use RemoveHandle to delete an added handle."

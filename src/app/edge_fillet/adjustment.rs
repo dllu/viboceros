@@ -447,8 +447,16 @@ impl VibocerosApp {
         prompt.size_input = Some(SizeInput::Edit);
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
+        let placement = if matches!(
+            self.edge_blend_adjustment.operation,
+            Some(HandleOperation::Place { .. })
+        ) {
+            " Pick another location or press Enter when done."
+        } else {
+            ""
+        };
         self.push_log(format!(
-            "Edge {} {} {} = {size}. Enter a size or use FromCurve or FromTwoPoints.",
+            "Edge {} {} {} = {size}. Enter a size or use FromCurve or FromTwoPoints.{placement}",
             id.pick.index,
             id.location.label(),
             prompt.parameter()
