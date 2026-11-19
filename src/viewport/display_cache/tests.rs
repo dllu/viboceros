@@ -183,7 +183,7 @@ fn four_views_share_geometry_and_reuse_unchanged_scenes() {
                 .normals
                 .get()
                 .or_else(|| entry.mesh.get()?.as_ref()?.normals.as_ref());
-            assert_eq!(normals.map(Vec::len), Some(mesh.faces().len()));
+            assert_eq!(normals.map(Vec::len), Some(mesh.triangles().len()));
         }
     }
     for (i, view) in views.iter().enumerate() {
