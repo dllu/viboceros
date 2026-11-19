@@ -4,11 +4,13 @@
 selected-edge fillet executive with a linear cross-section, retaining editable
 B-rep surfaces, trims and topology.
 
-Start `ChamferEdge`, select edges and press Enter to adjust their distances.
+Start `ChamferEdge`, set `NextChamferDistance` for subsequent picks, and press
+Enter to adjust the selected edges' distances.
 Click or drag a handle, use `SetAll` for a common distance, or use
 `SelectEdges` to resume picking. Use `AddHandle`, `CopyHandle` and `RemoveHandle`
-as in [FilletEdge](fillet-edge.md). `LinkHandles=Yes` applies each edit to every
-handle. Varying sizes along an edge require `RailType=RollingBall`.
+as in [FilletEdge](fillet-edge.md). `LinkHandles=Yes` scales the other handles by
+the same ratio as the edited handle. Varying sizes along an edge require
+`RailType=RollingBall`.
 `ShowChamferDistance=No` hides size labels until
 hovered. Press Enter from adjustment to apply. Edge-component preselection,
 click/window selection and component ambiguity choices work. Enter `Distance`

@@ -211,6 +211,21 @@ impl VibocerosApp {
             p.session
                 .cancel(&mut self.document, self.commands.component_selection())
         };
+        if result.is_ok() && accept && p.edge_blend() {
+            self.track_edge_blend_picks(
+                p.session.targets().into_iter().filter_map(|target| {
+                    let Target::Edge(object, index) = target else {
+                        return None;
+                    };
+                    Some(crate::viewport::ComponentPick {
+                        object,
+                        index,
+                        kind: viboceros_command::ComponentSelectionKind::BrepEdge,
+                    })
+                }),
+                viboceros_command::component_selection::ComponentAction::Add,
+            );
+        }
         match result {
             Ok(()) => self.push_log(if accept {
                 format!("Selected {} chain segment(s)", p.session.targets().len())

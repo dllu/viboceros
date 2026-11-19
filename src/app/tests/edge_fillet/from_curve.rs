@@ -101,11 +101,18 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
     app.document.clear_history().unwrap();
     submit(
         &mut app,
-        "ChamferEdge Distance=2 Preview=Yes LinkHandles=Yes",
+        "ChamferEdge Distance=2 RailType=RollingBall Preview=Yes",
     );
     choose_edge(&mut app, pick);
     submit(&mut app, "");
     assert!(app.adjusting_edge_blend());
+    let start = SizeHandleId {
+        pick,
+        location: HandleLocation::Start,
+    };
+    assert!(app.pick_edge_size_handle(start));
+    submit(&mut app, "3");
+    submit(&mut app, "LinkHandles=Yes");
 
     let context = egui::Context::default();
     viewport_frame(&mut app, &context, vec![]);
@@ -129,20 +136,20 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
         }
     };
     let initial = wait(&mut app, None);
-    assert!(app.pick_edge_size_handle(SizeHandleId {
-        pick,
-        location: HandleLocation::Start
-    }));
+    assert!(app.pick_edge_size_handle(start));
     submit(&mut app, "FromCurve");
     let target = move_measurement_pointer(&mut app, &context, point(24., 10., 0.));
     let radius = app.edge_blend_size_hover().unwrap();
     assert!((radius - 1.).abs() < 1e-7, "measured radius {radius}");
-    let expected = viboceros_command::EdgeBlendSelection::prepare_chamfer(
+    let expected = viboceros_command::EdgeBlendPlan::capture_end_sizes(
         &app.document,
-        [(pick.object, pick.index)],
-        radius,
-        viboceros_command::chamfer_edge::ChamferOptions::default().rail,
+        [(pick.object, pick.index, [radius, 2. * (radius / 3.)])],
+        viboceros_command::EdgeBlendKind::Chamfer(
+            viboceros_command::chamfer_edge::ChamferRailType::RollingBall,
+        ),
     )
+    .unwrap()
+    .solve()
     .unwrap();
     let Geometry::Brep(expected) = &expected.replacements()[0].1 else {
         panic!("expected a chamfer preview");

@@ -33,7 +33,7 @@ impl VibocerosApp {
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
         self.edge_blend_adjustment.operation = Some(operation);
-        prompt.awaiting_value = false;
+        prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.log_edge_blend_prompt();

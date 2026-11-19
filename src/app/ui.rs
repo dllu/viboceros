@@ -738,7 +738,9 @@ impl VibocerosApp {
                 })
                 .or_else(|| {
                     ((self.unjoin_prompt.is_some()
-                        || self.edge_fillet_prompt.is_some() && !self.adjusting_edge_blend())
+                        || self.edge_fillet_prompt.is_some()
+                            && !self.adjusting_edge_blend()
+                            && !self.edge_blend_waiting_for_next_size())
                         && model_input_active
                         && self.plane_prompt.is_none()
                         && self.nested_measurement.is_none()

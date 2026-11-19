@@ -6,6 +6,7 @@ mod chain_edges;
 mod face_edges;
 mod from_curve;
 mod previous;
+mod sizes;
 
 #[test]
 fn edge_fillet_trim_and_join_switches_the_pending_viewport_result() {

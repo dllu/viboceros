@@ -2,7 +2,7 @@
 use super::*;
 use crate::viewport::ComponentPick;
 use std::collections::{BTreeMap, VecDeque};
-use viboceros_command::component_selection::{current, stage_sources};
+use viboceros_command::component_selection::{ComponentAction, current, stage_sources};
 use viboceros_document::GeometrySnapshot;
 
 const LIMIT: usize = 20;
@@ -105,7 +105,7 @@ impl VibocerosApp {
             ));
             return;
         };
-        let picks = edges.iter().map(|(pick, _)| *pick).collect();
+        let picks = edges.iter().map(|(pick, _)| *pick).collect::<Vec<_>>();
         let count = edges.len();
         let choices = (available.len() > 1).then(|| {
             let numbers = available
@@ -115,9 +115,14 @@ impl VibocerosApp {
                 .join(", ");
             format!("Use PreviousEdgeSelection=N to choose another set from {numbers}")
         });
-        match self.component_selection.replace(&self.document, picks) {
+        match self
+            .component_selection
+            .replace(&self.document, picks.clone())
+        {
             Ok(()) => {
-                prompt.awaiting_value = false;
+                self.retain_edge_blend_picks(&picks);
+                self.track_edge_blend_picks(picks, ComponentAction::Add);
+                prompt.size_input = None;
                 self.edge_fillet_prompt = Some(prompt);
                 self.push_log(format!(
                     "Recalled {count} edge(s) from previous set {index}"

@@ -3,6 +3,7 @@ use super::*;
 use nested_measurement::Kind as Measurement;
 use viboceros_command::blend_edge::BlendOptions;
 use viboceros_command::chamfer_edge::ChamferOptions;
+use viboceros_command::component_selection::ComponentAction;
 use viboceros_command::{
     ComponentSelectionKind, EdgeBlendKind as Kind, EdgeBlendPlan, FilletOptions,
 };
@@ -11,10 +12,12 @@ mod adjustment;
 mod face_edges;
 mod preview;
 mod previous;
+mod size_input;
 pub(super) use adjustment::Adjustment;
 pub(super) use face_edges::FaceEdgeSelection;
 pub(super) use preview::Preview;
 pub(super) use previous::EdgeSelectionHistory;
+use size_input::{NextSize, SizeInput, next_size_option, take_next_size};
 
 pub(super) const FACE_EDGES_HINT: &str = "Select faces to add their sharp boundary edges. Enter keeps the picks. Esc discards these face picks.";
 pub(super) const FROM_CURVE_HINT: &str =
@@ -25,10 +28,11 @@ pub(super) struct Prompt {
     radius: f64,
     kind: Kind,
     tolerance: Tolerance,
-    awaiting_value: bool,
+    size_input: Option<SizeInput>,
     adjusting: bool,
     toggles: Toggles,
 }
+
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
         self.kind.command()
@@ -47,8 +51,18 @@ impl Prompt {
             "ShowRadius"
         }
     }
+    fn next_option(self) -> &'static str {
+        next_size_option(matches!(self.kind, Kind::Chamfer(_)))
+    }
     pub(super) fn hint(self) -> &'static str {
-        if self.awaiting_value {
+        if self.size_input.is_some() {
+            if self.size_input == Some(SizeInput::Next) {
+                return if matches!(self.kind, Kind::Chamfer(_)) {
+                    "Enter a distance for the next chamfer edge"
+                } else {
+                    "Enter a radius for the next edge"
+                };
+            }
             if matches!(self.kind, Kind::Chamfer(_)) {
                 "Enter chamfer distance with optional units"
             } else {
@@ -59,26 +73,30 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius, Corner, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a radius."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set NextRadius, Corner, TrimAndJoin or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance, RailType, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a distance."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set NextChamferDistance, RailType, TrimAndJoin or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius, RailType, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a radius."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set NextRadius, RailType, TrimAndJoin or Preview."
                 }
             }
         }
     }
     fn options(self) -> String {
+        let parameter = if self.adjusting {
+            self.parameter()
+        } else {
+            self.next_option()
+        };
         let model = match self.kind {
-            Kind::Fillet(corner) => format!("Radius={} Corner={}", self.radius, corner.token()),
-            Kind::Chamfer(rail) | Kind::Curvature(rail) => format!(
-                "{}={} RailType={}",
-                self.parameter(),
-                self.radius,
-                rail.token()
-            ),
+            Kind::Fillet(corner) => {
+                format!("{parameter}={} Corner={}", self.radius, corner.token())
+            }
+            Kind::Chamfer(rail) | Kind::Curvature(rail) => {
+                format!("{}={} RailType={}", parameter, self.radius, rail.token())
+            }
         };
         let yes_no = |value| if value { "Yes" } else { "No" };
         format!(
@@ -208,6 +226,15 @@ impl VibocerosApp {
         if let Some(index) = face_edges {
             words.remove(index);
         }
+        let next_size = match take_next_size(&mut words, next_size_option(chamfer), &self.document)
+        {
+            Ok(size) => size,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+        };
         let modeling_input = std::iter::once(name)
             .chain(words.iter().copied())
             .collect::<Vec<_>>()
@@ -258,22 +285,23 @@ impl VibocerosApp {
             Kind::Fillet(options.corner)
         };
         self.cancel_interactive_command(false);
-        let prompt = Prompt {
+        let mut prompt = Prompt {
             radius: descriptor.numbers[0].value,
             kind,
             tolerance: self.document.tolerance(),
-            awaiting_value: false,
+            size_input: matches!(next_size, Some(NextSize::Ask)).then_some(SizeInput::Next),
             adjusting: false,
             toggles,
         };
         self.edge_fillet_prompt = Some(prompt);
+        self.track_edge_blend_picks(picks, ComponentAction::Add);
+        if let Some(NextSize::Value(value)) = next_size {
+            prompt.radius = value;
+            self.edge_fillet_prompt = Some(prompt);
+        }
         self.command_input.clear();
         self.document.clear_selection();
-        self.push_log(format!(
-            "{} {}. Select edges, then press Enter to adjust their sizes.",
-            prompt.name(),
-            prompt.options()
-        ));
+        self.log_edge_blend_prompt();
         if let Some(number) = previous {
             self.recall_edge_selection(prompt, number);
         }
@@ -298,6 +326,14 @@ impl VibocerosApp {
             .unwrap_or((keyword, ""));
         let (option, inline_value) = name.split_once('=').unwrap_or((name, options));
         let set_all = option.eq_ignore_ascii_case("SetAll") && prompt.adjusting;
+        let current_chamfer = matches!(prompt.kind, Kind::Chamfer(_))
+            && prompt.adjusting
+            && option.eq_ignore_ascii_case("CurrentChamferDistance");
+        if current_chamfer && self.edge_blend_adjustment.active.is_none() {
+            self.command_input.clear();
+            self.push_log("Select a chamfer distance handle first.".into());
+            return true;
+        }
         if prompt.adjusting && self.start_edge_handle_operation(prompt, keyword) {
             return true;
         }
@@ -353,13 +389,17 @@ impl VibocerosApp {
             return self.start_edge_blend_measurement(kind);
         }
         if keyword.eq_ignore_ascii_case(prompt.parameter())
-            || (set_all && inline_value.trim().is_empty())
+            || ((set_all || current_chamfer) && inline_value.trim().is_empty())
         {
             if set_all {
                 self.edge_blend_adjustment.active = None;
                 self.edge_blend_adjustment.drag_size = None;
             }
-            prompt.awaiting_value = true;
+            prompt.size_input = Some(if set_all {
+                SizeInput::All
+            } else {
+                SizeInput::Edit
+            });
             self.edge_fillet_prompt = Some(prompt);
             self.component_selection.clear_choices();
             self.command_input.clear();
@@ -378,8 +418,12 @@ impl VibocerosApp {
             self.finish_edge_fillet(false);
             return false;
         }
-        let input = if set_all { inline_value.trim() } else { input };
-        let (modeling, toggles) = match toggle_options(
+        let input = if set_all || current_chamfer {
+            inline_value.trim()
+        } else {
+            input
+        };
+        let (mut modeling, toggles) = match toggle_options(
             input.split_whitespace(),
             prompt.toggles,
             prompt.show_option(),
@@ -391,6 +435,9 @@ impl VibocerosApp {
                 return true;
             }
         };
+        if self.try_next_edge_blend_size(prompt, &mut modeling, toggles) {
+            return true;
+        }
         let mut words = Vec::new();
         for word in modeling {
             let (key, value) = word
@@ -456,10 +503,14 @@ impl VibocerosApp {
             Ok(()) => {
                 prompt.toggles = toggles;
                 if edits_size {
-                    self.store_edge_blend_size(&mut prompt, default, set_all);
+                    if let Err(error) = self.store_edge_blend_size(&mut prompt, default, set_all) {
+                        self.push_log(format!("Error: {error}"));
+                        self.command_input.clear();
+                        return true;
+                    }
                 }
                 if !words.is_empty() {
-                    prompt.awaiting_value = false;
+                    prompt.size_input = None;
                 }
                 self.edge_fillet_prompt = Some(prompt);
                 self.log_edge_blend_prompt();
@@ -499,18 +550,13 @@ impl VibocerosApp {
         if prompt.tolerance != self.document.tolerance() {
             return Err("tolerance changed; select edges again".into());
         }
+        let edit = self.edge_blend_trial(prompt, trial_size);
         let picks = self
             .component_selection
             .checked_picks(&self.document)?
             .into_iter()
             .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
-            .map(|p| {
-                (
-                    p.object,
-                    p.index,
-                    self.edge_blend_sizes(prompt, p, trial_size),
-                )
-            });
+            .map(|p| (p.object, p.index, self.edge_blend_sizes(prompt, p, edit)));
         EdgeBlendPlan::capture_profiles(&self.document, picks, prompt.kind)
             .map(|plan| plan.with_trim_and_join(prompt.toggles.trim_and_join))
             .map_err(|error| error.to_string())

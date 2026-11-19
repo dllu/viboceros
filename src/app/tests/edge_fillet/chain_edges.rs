@@ -24,7 +24,15 @@ fn edge_fillet_chain_edges_uses_the_parent_picker_and_commits_its_preview() {
         let edge = box_pick(&mut app);
         let original = app.document.object(edge.object).unwrap().geometry().clone();
         app.document.clear_history().unwrap();
-        submit(&mut app, &format!("{command} 1 Preview=Yes _ChainEdges"));
+        let next = if command == "ChamferEdge" {
+            "NextChamferDistance"
+        } else {
+            "NextRadius"
+        };
+        submit(
+            &mut app,
+            &format!("{command} {next}=1 Preview=Yes _ChainEdges"),
+        );
         assert!(app.picking_edge_blend_chain(), "{:?}", app.command_log);
         pick(&mut app, edge);
         assert_eq!(selected(&app), [edge]);
@@ -42,8 +50,14 @@ fn edge_fillet_chain_edges_uses_the_parent_picker_and_commits_its_preview() {
         assert!(!app.picking_edge_blend_chain());
         assert!(app.edge_fillet_prompt.is_some());
         assert!(!app.document.can_undo());
+        submit(&mut app, &format!("{next}=2"));
         submit(&mut app, "");
         assert!(app.adjusting_edge_blend());
+        assert!(
+            app.edge_blend_size_handles()
+                .iter()
+                .all(|handle| handle.size == 1.)
+        );
         submit(&mut app, "");
         let Geometry::Brep(rounded) = app.document.object(edge.object).unwrap().geometry() else {
             panic!("expected rounded geometry");

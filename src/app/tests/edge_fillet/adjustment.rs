@@ -62,6 +62,8 @@ fn edge_fillet_adjustment_edits_viewport_handles_and_returns_to_select_edges() {
     submit(&mut app, "");
     assert!(app.adjusting_edge_blend());
     assert_eq!(sizes(&app).get(&first), Some(&[1.; 2]));
+    submit(&mut app, "CurrentChamferDistance=2");
+    assert_eq!(sizes(&app).get(&first), Some(&[1.; 2]));
     click(&mut app, second);
     assert_eq!(sizes(&app).len(), 1);
 
@@ -73,7 +75,7 @@ fn edge_fillet_adjustment_edits_viewport_handles_and_returns_to_select_edges() {
     let pixel = screen_point(&app, handle_point(&app));
     viewport_click(&mut app, &context, pixel);
     assert!(app.command_log.back().unwrap().contains("Enter a size"));
-    submit(&mut app, "2");
+    submit(&mut app, "CurrentChamferDistance=2");
     assert_eq!(sizes(&app).get(&first), Some(&[2., 1.]));
 
     viewport_frame(&mut app, &context, vec![]);
@@ -114,7 +116,7 @@ fn edge_fillet_adjustment_edits_viewport_handles_and_returns_to_select_edges() {
     submit(&mut app, "1.25");
     assert_eq!(
         sizes(&app),
-        [(first, [1.25; 2]), (second, [1.25; 2])].into()
+        [(first, [1.25, 0.625]), (second, [0.625; 2])].into()
     );
     submit(&mut app, "LinkHandles=No");
     submit(&mut app, "SetAll");

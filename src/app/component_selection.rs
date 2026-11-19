@@ -43,6 +43,9 @@ impl ComponentSelection {
     pub(super) fn has_choices(&self) -> bool {
         !self.candidates.is_empty()
     }
+    pub(super) fn contains(&self, pick: ComponentPick) -> bool {
+        self.shared.contains(&pick)
+    }
     pub(super) fn valid_picks(&mut self, doc: &Document) -> Vec<ComponentPick> {
         let picks = self.shared.valid_picks(doc);
         if !self.raw_mesh_faces.is_empty() {
@@ -245,7 +248,7 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
-        if self.adjusting_edge_blend() {
+        if self.adjusting_edge_blend() || self.edge_blend_waiting_for_next_size() {
             return;
         }
         if self.picking_edge_blend_chain() {
@@ -673,11 +676,15 @@ impl VibocerosApp {
             })
             .map(|pick| pick.object)
             .collect::<Vec<_>>();
+        let edge_blend_picks = self.edge_fillet_prompt.is_some().then(|| picks.clone());
         match self
             .component_selection
             .apply(&self.document, picks, action)
         {
             Ok(()) => {
+                if let Some(picks) = edge_blend_picks {
+                    self.track_edge_blend_picks(picks, action);
+                }
                 for mode in [SelectionMode::Add, SelectionMode::Remove] {
                     let selected = mode == SelectionMode::Add;
                     let ids = grips
@@ -705,7 +712,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
-        if self.picking_edge_blend_chain() || self.adjusting_edge_blend() {
+        if self.picking_edge_blend_chain()
+            || self.adjusting_edge_blend()
+            || self.edge_blend_waiting_for_next_size()
+        {
             return;
         }
         if (self.arc_blend_session.is_some() || self.blend_curve_session.is_some())

@@ -2,12 +2,13 @@
 use super::*;
 use crate::viewport::ComponentPick;
 use std::collections::BTreeMap;
-use viboceros_command::component_selection::{current, stage_sources};
+use viboceros_command::component_selection::{ComponentAction, current, stage_sources};
 use viboceros_command::edge_blend_face_edges;
 use viboceros_document::GeometrySnapshot;
 
 pub(in crate::app) struct FaceEdgeSelection {
     prior: Vec<(ComponentPick, GeometrySnapshot)>,
+    sizes: adjustment::EdgeSizes,
 }
 
 impl VibocerosApp {
@@ -20,7 +21,12 @@ impl VibocerosApp {
                 .checked_picks(&self.document)
                 .and_then(|picks| stage_sources(&self.document, picks));
             match prior {
-                Ok(prior) => self.edge_blend_faces = Some(FaceEdgeSelection { prior }),
+                Ok(prior) => {
+                    self.edge_blend_faces = Some(FaceEdgeSelection {
+                        prior,
+                        sizes: self.edge_blend_adjustment.sizes.clone(),
+                    })
+                }
                 Err(error) => {
                     self.push_log(format!("Error: {error}"));
                     return;
@@ -49,9 +55,17 @@ impl VibocerosApp {
                 .filter_map(|(pick, snapshot)| {
                     current(&self.document, pick, &snapshot).then_some(pick)
                 })
-                .collect();
-            if let Err(error) = self.component_selection.replace(&self.document, prior) {
-                self.push_log(format!("Error: {error}"));
+                .collect::<Vec<_>>();
+            match self
+                .component_selection
+                .replace(&self.document, prior.clone())
+            {
+                Ok(()) => {
+                    self.edge_blend_adjustment.sizes = selection.sizes;
+                    self.retain_edge_blend_picks(&prior);
+                    self.track_edge_blend_picks(prior, ComponentAction::Add);
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
             }
         }
         self.component_selection.clear_choices();

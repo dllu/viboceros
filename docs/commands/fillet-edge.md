@@ -4,19 +4,21 @@
 fillets using usd-brep.
 
 ```text
-FilletEdge Radius=1
+FilletEdge NextRadius=1
 FilletEdge 1 object-id 0,3,5
 FilletEdge Radius=1 All=Yes
 ```
 
-The first form starts viewport edge picking. Select edges and press Enter to
-open size adjustment. Click a handle to type a radius, use `FromCurve` or
+The first form starts viewport edge picking. `NextRadius` sets the size for
+subsequent picks, including chains and face edges. Select edges and press Enter
+to open size adjustment. Click a handle to type a radius, use `FromCurve` or
 `FromTwoPoints`, or drag the handle up or down. `AddHandle` places a radius
 along a selected edge. `CopyHandle` asks for a source handle and a new location.
 `RemoveHandle` deletes a placed handle. SMLib interpolates the radii over the
 edge's curve parameter. An open edge with only endpoint handles varies
-linearly. `LinkHandles=Yes` makes any size edit apply to every handle. Use
-`SetAll=2` to set all radii to 2, `SelectEdges` to resume picking, or
+linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the
+edited handle. `SetAll=2` sets every radius and the next radius to 2. Use
+`SelectEdges` to resume picking or
 `ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.
 Esc leaves an active size getter or cancels the command from the handle prompt.
 Component preselection is retained for confirmation. The indexed form accepts

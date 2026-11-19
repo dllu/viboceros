@@ -52,6 +52,7 @@ fn edge_fillet_face_edges_selects_viewport_faces_and_restores_prior_edges_on_esc
     assert_eq!(picks(&app), BTreeSet::from([prior]));
 
     let context = egui::Context::default();
+    submit(&mut app, "NextRadius=2");
     submit(&mut app, "FaceEdges");
     viewport_frame(&mut app, &context, vec![]);
     viewport_frame(&mut app, &context, vec![]);
@@ -72,6 +73,14 @@ fn edge_fillet_face_edges_selects_viewport_faces_and_restores_prior_edges_on_esc
     assert!(!app.picking_edge_blend_faces());
     assert!(app.edge_fillet_prompt.is_some());
     assert_eq!(picks(&app), top.into_iter().chain([prior]).collect());
+    submit(&mut app, "NextRadius=3");
+    submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
+    assert!(
+        app.edge_blend_size_handles()
+            .iter()
+            .all(|handle| { handle.size == if handle.id.pick == prior { 1. } else { 2. } })
+    );
     assert_eq!(app.document.object(source).unwrap().geometry(), &original);
     assert!(!app.document.can_undo());
 }

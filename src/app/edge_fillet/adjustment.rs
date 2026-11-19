@@ -6,15 +6,17 @@ use crate::viewport::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 use viboceros_command::EdgeBlendSizes;
-use viboceros_command::component_selection::current;
+use viboceros_command::component_selection::{ComponentAction, current};
 use viboceros_document::GeometrySnapshot;
 
 mod operations;
 use operations::HandleOperation;
 
+pub(super) type EdgeSizes = BTreeMap<ComponentPick, (GeometrySnapshot, EdgeBlendSizes)>;
+
 #[derive(Default)]
 pub(in crate::app) struct Adjustment {
-    sizes: BTreeMap<ComponentPick, (GeometrySnapshot, EdgeBlendSizes)>,
+    pub(super) sizes: EdgeSizes,
     pub(super) active: Option<(SizeHandleId, GeometrySnapshot)>,
     pub(super) drag_size: Option<f64>,
     operation: Option<HandleOperation>,
@@ -52,14 +54,95 @@ impl HandleLocation {
     }
 }
 
-fn set_profile_size(sizes: &mut EdgeBlendSizes, size: f64) {
-    sizes.ends = [size; 2];
-    for (_, value) in &mut sizes.interior {
-        *value = size;
+#[derive(Clone, Copy)]
+pub(super) enum ProfileEdit {
+    All(f64),
+    Handle {
+        id: SizeHandleId,
+        size: f64,
+    },
+    Linked {
+        id: SizeHandleId,
+        size: f64,
+        ratio: f64,
+    },
+}
+
+impl ProfileEdit {
+    fn apply(self, pick: ComponentPick, sizes: &mut EdgeBlendSizes) {
+        match self {
+            Self::All(size) => {
+                sizes.ends = [size; 2];
+                for (_, value) in &mut sizes.interior {
+                    *value = size;
+                }
+            }
+            Self::Handle { id, size } => {
+                if id.pick == pick {
+                    id.location.set_size(sizes, size);
+                }
+            }
+            Self::Linked { id, size, ratio } => {
+                for value in sizes
+                    .ends
+                    .iter_mut()
+                    .chain(sizes.interior.iter_mut().map(|s| &mut s.1))
+                {
+                    *value *= ratio;
+                }
+                if id.pick == pick {
+                    id.location.set_size(sizes, size);
+                }
+            }
+        }
     }
 }
 
 impl VibocerosApp {
+    /// Keep the size an edge was picked with, even as the next size changes.
+    pub(in crate::app) fn track_edge_blend_picks(
+        &mut self,
+        picks: impl IntoIterator<Item = ComponentPick>,
+        action: ComponentAction,
+    ) {
+        let Some(prompt) = self.edge_fillet_prompt else {
+            return;
+        };
+        let sizes = &mut self.edge_blend_adjustment.sizes;
+        for pick in picks
+            .into_iter()
+            .filter(|pick| pick.kind == ComponentSelectionKind::BrepEdge)
+        {
+            let selected = match action {
+                ComponentAction::Add => true,
+                ComponentAction::Remove => false,
+                ComponentAction::Toggle => self.component_selection.contains(pick),
+            };
+            if !selected {
+                sizes.remove(&pick);
+                continue;
+            }
+            if let Some(object) = self.document.object(pick.object) {
+                let source = object.geometry_snapshot();
+                let entry = sizes
+                    .entry(pick)
+                    .or_insert_with(|| (source.clone(), [prompt.radius; 2].into()));
+                if entry.0 != *source {
+                    *entry = (source.clone(), [prompt.radius; 2].into());
+                }
+            }
+        }
+    }
+
+    pub(super) fn retain_edge_blend_picks(&mut self, picks: &[ComponentPick]) {
+        let picks = picks.iter().copied().collect::<BTreeSet<_>>();
+        self.edge_blend_adjustment
+            .sizes
+            .retain(|pick, (snapshot, _)| {
+                picks.contains(pick) && current(&self.document, *pick, snapshot)
+            });
+    }
+
     pub(in crate::app) fn adjusting_edge_blend(&self) -> bool {
         self.edge_fillet_prompt
             .is_some_and(|prompt| prompt.adjusting)
@@ -74,14 +157,10 @@ impl VibocerosApp {
             .component_selection
             .checked_picks(&self.document)
             .unwrap_or_default();
-        let picks = picks.into_iter().collect::<BTreeSet<_>>();
-        self.edge_blend_adjustment
-            .sizes
-            .retain(|pick, (snapshot, _)| {
-                picks.contains(pick) && current(&self.document, *pick, snapshot)
-            });
+        self.retain_edge_blend_picks(&picks);
+        self.track_edge_blend_picks(picks, ComponentAction::Add);
         prompt.adjusting = true;
-        prompt.awaiting_value = false;
+        prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.log_edge_blend_prompt();
@@ -92,7 +171,7 @@ impl VibocerosApp {
         self.edge_blend_adjustment.drag_size = None;
         self.edge_blend_adjustment.operation = None;
         prompt.adjusting = false;
-        prompt.awaiting_value = false;
+        prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.log_edge_blend_prompt();
@@ -102,15 +181,14 @@ impl VibocerosApp {
         if !self.nested_measurement_captures_input() {
             return false;
         }
-        let Some(mut prompt) = self
-            .edge_fillet_prompt
-            .filter(|p| p.adjusting && p.awaiting_value)
-        else {
+        let Some(mut prompt) = self.edge_fillet_prompt.filter(|p| {
+            p.size_input.is_some() && (p.adjusting || p.size_input == Some(SizeInput::Next))
+        }) else {
             return false;
         };
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
-        prompt.awaiting_value = false;
+        prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.log_edge_blend_prompt();
@@ -121,7 +199,7 @@ impl VibocerosApp {
         &self,
         prompt: Prompt,
         pick: ComponentPick,
-        trial: Option<f64>,
+        edit: Option<ProfileEdit>,
     ) -> EdgeBlendSizes {
         let mut sizes = self
             .edge_blend_adjustment
@@ -130,21 +208,54 @@ impl VibocerosApp {
             .filter(|(snapshot, _)| current(&self.document, pick, snapshot))
             .map(|(_, sizes)| sizes.clone())
             .unwrap_or_else(|| [prompt.radius; 2].into());
-        if let Some(trial) = trial {
-            match &self.edge_blend_adjustment.active {
-                None => set_profile_size(&mut sizes, trial),
-                Some((id, source))
-                    if prompt.toggles.link_handles && current(&self.document, id.pick, source) =>
-                {
-                    set_profile_size(&mut sizes, trial);
-                }
-                Some((id, source)) if id.pick == pick && current(&self.document, pick, source) => {
-                    id.location.set_size(&mut sizes, trial);
-                }
-                Some(_) => {}
-            }
+        if let Some(edit) = edit {
+            edit.apply(pick, &mut sizes);
         }
         sizes
+    }
+
+    fn edge_blend_edit(
+        &self,
+        prompt: Prompt,
+        size: f64,
+        set_all: bool,
+    ) -> Result<ProfileEdit, &'static str> {
+        let Some((id, source)) = self
+            .edge_blend_adjustment
+            .active
+            .as_ref()
+            .filter(|_| !set_all && prompt.size_input != Some(SizeInput::All))
+        else {
+            return Ok(ProfileEdit::All(size));
+        };
+        let stale = "The edge source changed. Use SelectEdges to pick it again.";
+        if !current(&self.document, id.pick, source) {
+            return Err(stale);
+        }
+        if !prompt.toggles.link_handles {
+            return Ok(ProfileEdit::Handle { id: *id, size });
+        }
+        let old_size = id
+            .location
+            .size(&self.edge_blend_sizes(prompt, id.pick, None))
+            .ok_or(stale)?;
+        Ok(ProfileEdit::Linked {
+            id: *id,
+            size,
+            ratio: size / old_size,
+        })
+    }
+
+    pub(super) fn edge_blend_trial(
+        &self,
+        prompt: Prompt,
+        size: Option<f64>,
+    ) -> Option<ProfileEdit> {
+        let size = size.filter(|size| size.is_finite() && *size > 0.)?;
+        if prompt.size_input == Some(SizeInput::Next) {
+            return None;
+        }
+        self.edge_blend_edit(prompt, size, false).ok()
     }
 
     pub(super) fn store_edge_blend_size(
@@ -152,42 +263,52 @@ impl VibocerosApp {
         prompt: &mut Prompt,
         default: f64,
         set_all: bool,
-    ) {
-        if !prompt.adjusting {
-            return;
-        }
+    ) -> Result<(), &'static str> {
         self.edge_blend_adjustment.drag_size = None;
-        if let Some((id, source)) = self
+        let size = prompt.radius;
+        let old = Prompt {
+            radius: default,
+            ..*prompt
+        };
+        let edit = self.edge_blend_edit(old, size, set_all)?;
+        let picks = self.component_selection.checked_picks(&self.document)?;
+        let updated = picks
+            .into_iter()
+            .filter(|pick| match edit {
+                ProfileEdit::Handle { id, .. } => id.pick == *pick,
+                _ => true,
+            })
+            .map(|pick| {
+                let source = self
+                    .document
+                    .object(pick.object)
+                    .unwrap()
+                    .geometry_snapshot()
+                    .clone();
+                (pick, (source, self.edge_blend_sizes(old, pick, Some(edit))))
+            })
+            .collect::<Vec<_>>();
+        if updated.iter().any(|(_, (_, sizes))| !sizes.is_valid()) {
+            return Err("Linked handle sizes must all be finite and positive");
+        }
+        self.edge_blend_adjustment.sizes.extend(updated);
+        if !matches!(edit, ProfileEdit::All(_)) {
+            prompt.radius = default;
+        }
+        if let Some((id, _)) = self
             .edge_blend_adjustment
             .active
             .take()
             .filter(|_| !set_all)
         {
-            if !current(&self.document, id.pick, &source) {
-                prompt.radius = default;
-                self.push_log("The edge source changed. Use SelectEdges to pick it again.".into());
-                return;
-            }
-            if !prompt.toggles.link_handles {
-                let size = std::mem::replace(&mut prompt.radius, default);
-                let mut sizes = self.edge_blend_sizes(*prompt, id.pick, None);
-                id.location.set_size(&mut sizes, size);
-                self.edge_blend_adjustment
-                    .sizes
-                    .insert(id.pick, (source, sizes));
-                self.push_log(format!(
-                    "Edge {} {} {} = {size}",
-                    id.pick.index,
-                    id.location.label(),
-                    prompt.parameter()
-                ));
-                return;
-            }
+            self.push_log(format!(
+                "Edge {} {} {} = {size}",
+                id.pick.index,
+                id.location.label(),
+                prompt.parameter()
+            ));
         }
-        self.edge_blend_adjustment.sizes.retain(|_, (_, profile)| {
-            set_profile_size(profile, prompt.radius);
-            !profile.interior.is_empty()
-        });
+        Ok(())
     }
 
     pub(in crate::app) fn edge_blend_size_handles(&self) -> Vec<SizeHandle> {
@@ -199,6 +320,7 @@ impl VibocerosApp {
             .checked_picks(&self.document)
             .unwrap_or_default();
         let mut handles = Vec::new();
+        let trial = self.edge_blend_trial(prompt, self.edge_blend_adjustment.drag_size);
         for pick in picks {
             let Some(Geometry::Brep(brep)) =
                 self.document.object(pick.object).map(|o| o.geometry())
@@ -216,7 +338,7 @@ impl VibocerosApp {
             };
             let curve = edge.curve();
             let domain = curve.domain();
-            let sizes = self.edge_blend_sizes(prompt, pick, self.edge_blend_adjustment.drag_size);
+            let sizes = self.edge_blend_sizes(prompt, pick, trial);
             for ((location, fraction), size) in ends
                 .iter()
                 .copied()
@@ -287,7 +409,7 @@ impl VibocerosApp {
         }
         self.edge_blend_adjustment.active = Some((id, object.geometry_snapshot().clone()));
         self.edge_blend_adjustment.drag_size = None;
-        prompt.awaiting_value = true;
+        prompt.size_input = Some(SizeInput::Edit);
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.push_log(format!(
