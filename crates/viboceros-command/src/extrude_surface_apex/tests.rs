@@ -322,6 +322,165 @@ fn planar_rectangle(x: f64, z: f64) -> Geometry {
 
 #[cfg(feature = "native-smlib")]
 #[test]
+fn surface_apex_planar_boundaries_cut_flat_and_shallow_sweeps() {
+    for (height, normal, native_vertices) in [
+        (
+            0.,
+            [1., -0.25, 0.4],
+            [
+                p(3.333333333333333, 0.833333333333333, 0.),
+                p(3.2413793103448265, 0.4655172413793099, 0.),
+                p(3.714285714285714, 2.3571428571428577, 0.),
+                p(3.6470588235294112, 2.0882352941176463, 0.),
+            ],
+        ),
+        (
+            1e-8,
+            [1., 0., 0.],
+            [
+                p(3.5, 0.875, 5.8333333333333335e-9),
+                p(3.5, 0.5625, 3.75e-9),
+                p(3.5, 2.4375, 3.75e-9),
+                p(3.5, 2.125, 5.8333333333333335e-9),
+            ],
+        ),
+        (
+            0.,
+            [1., 0., 0.],
+            [
+                p(3.5, 0.875, 0.),
+                p(3.5, 0.5625, 0.),
+                p(3.5, 2.4375, 0.),
+                p(3.5, 2.125, 0.),
+            ],
+        ),
+    ] {
+        let mut doc = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let t = doc.tolerance();
+        let source = doc.add_geometry(planar_rectangle(0., 0.)).unwrap();
+        let normal = UnitVector3::try_new(normal[0], normal[1], normal[2], t).unwrap();
+        let frame = Frame3::try_from_unit_normal(p(3.5, 1.5, 0.), normal).unwrap();
+        let surface = |extent: f64| {
+            let corners = [
+                [-extent, -extent],
+                [extent, -extent],
+                [extent, extent],
+                [-extent, extent],
+            ]
+            .map(|[x, y]| frame.point_at([x, y, 0.]).unwrap());
+            Geometry::NurbsSurface(NurbsSurface::try_bilinear(corners).unwrap())
+        };
+        let boundary = doc.add_geometry(surface(10.)).unwrap();
+        let narrow = doc.add_geometry(surface(0.3)).unwrap();
+        doc.clear_history().unwrap();
+        let before = format!("{doc:?}");
+        assert!(
+            registry
+                .execute(
+                    &mut doc,
+                    &format!("ExtrudeSrfToPoint 6,1.5,{height} FaceRefs={source}:0 ToBoundary={narrow} DeleteInput=Yes"),
+                )
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+        registry
+            .execute(
+                &mut doc,
+                &format!("ExtrudeSrfToPoint 6,1.5,{height} FaceRefs={source}:0 ToBoundary={boundary} DeleteInput=Yes"),
+            )
+            .unwrap();
+        let Geometry::Brep(brep) = doc.selected_objects().next().unwrap().geometry() else {
+            panic!("expected truncated sweep")
+        };
+        assert_eq!(
+            [
+                brep.faces().len(),
+                brep.edges().len(),
+                brep.vertices().len()
+            ],
+            [6, 12, 8]
+        );
+        assert!(brep.is_closed());
+        for point in native_vertices {
+            assert!(
+                brep.vertices()
+                    .iter()
+                    .any(|v| v.point().distance_to(point).unwrap() < 1e-12),
+                "{point:?}"
+            );
+        }
+        assert!(doc.object(source).is_none());
+        assert!(doc.object(boundary).is_some());
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert!(doc.object(source).is_some());
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert!(doc.object(source).is_none());
+    }
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn surface_apex_flat_boundary_keeps_rational_source_loops_and_checks_picked_holes() {
+    let mut doc = Document::default();
+    let t = doc.tolerance();
+    let circle = |center, radius, normal| {
+        Circle3::try_new(center, radius, normal, t)
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+    };
+    let source_normal = UnitVector3::try_new(0., 0., 1., t).unwrap();
+    let outer = circle(p(0., 0., 0.), 3., source_normal);
+    let inner = circle(p(0., 0., 0.), 1., source_normal);
+    let base = Brep::try_planar_face_with_holes(&outer, &[inner], t).unwrap();
+    let source = doc.add_geometry(Geometry::Brep(base)).unwrap();
+    let normal = UnitVector3::try_new(1., -0.2, 0.6, t).unwrap();
+    let frame = Frame3::try_from_unit_normal(p(4., 0., 0.), normal).unwrap();
+    let outer = circle(frame.origin(), 10., normal);
+    let make_cutter = |hole_center| {
+        let hole = circle(hole_center, 0.2, normal);
+        Geometry::Brep(Brep::try_planar_face_with_holes(&outer, &[hole], t).unwrap())
+    };
+    let crossing = doc.add_geometry(make_cutter(frame.origin())).unwrap();
+    let clear = doc
+        .add_geometry(make_cutter(frame.point_at([0., 5., 0.]).unwrap()))
+        .unwrap();
+    doc.clear_history().unwrap();
+    let before = format!("{doc:?}");
+    let registry = CommandRegistry::with_builtins();
+    assert!(
+        registry
+            .execute(
+                &mut doc,
+                &format!("ExtrudeSrfToPoint 8,0,0 FaceRefs={source}:0 ToBoundary={crossing}"),
+            )
+            .is_err()
+    );
+    assert_eq!(format!("{doc:?}"), before);
+    registry
+        .execute(
+            &mut doc,
+            &format!("ExtrudeSrfToPoint 8,0,0 FaceRefs={source}:0 ToBoundary={clear}"),
+        )
+        .unwrap();
+    let Geometry::Brep(brep) = doc.selected_objects().next().unwrap().geometry() else {
+        panic!("expected a truncated rational sweep")
+    };
+    assert!(brep.is_closed());
+    assert_eq!(brep.faces().len(), 4);
+    assert_eq!(brep.faces()[0].loops().len(), 2);
+    assert_eq!(brep.faces()[3].loops().len(), 2);
+    assert!(brep.faces()[1..3].iter().all(|face| {
+        face.surface()
+            .control_points()
+            .iter()
+            .any(|control| control.weight() != 1.)
+    }));
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
 fn surface_apex_later_boundary_miss_preserves_batch_and_redo() {
     let mut doc = Document::default();
     let registry = CommandRegistry::with_builtins();

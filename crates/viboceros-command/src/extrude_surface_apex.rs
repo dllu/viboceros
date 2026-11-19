@@ -348,19 +348,35 @@ fn native_extrusion(
     let shift = AffineTransform3::from_translation(origin.vector_to(zero)?);
     let local = brep.transformed(shift, tolerance)?;
     let apex = shift.transform_point(apex)?;
-    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-        .extruded_faces_to_point_with_tangents(
+    let boundary = boundary
+        .map(|face| face.transformed(shift, tolerance))
+        .transpose()?;
+    let shallow_cut = if let Some(boundary) = &boundary {
+        local.try_shallow_apex_to_planar_boundary(
             apex,
-            options.solid || boundary.is_some(),
+            boundary,
             options.split_at_tangents,
             tolerance,
         )?
-        .to_brep(tolerance)?;
-    let result = if let Some(boundary) = boundary {
-        let boundary = boundary.transformed(shift, tolerance)?;
-        boundary::truncate(&result, &boundary, apex, tolerance)?
     } else {
-        result
+        None
+    };
+    let result = if let Some(cut) = shallow_cut {
+        cut
+    } else {
+        let sweep = viboceros_smlib::Shape::from_brep(&local, tolerance)?
+            .extruded_faces_to_point_with_tangents(
+                apex,
+                options.solid || boundary.is_some(),
+                options.split_at_tangents,
+                tolerance,
+            )?
+            .to_brep(tolerance)?;
+        if let Some(boundary) = &boundary {
+            boundary::truncate(&sweep, boundary, apex, tolerance)?
+        } else {
+            sweep
+        }
     };
     Ok(result.transformed(
         AffineTransform3::from_translation(zero.vector_to(origin)?),

@@ -485,6 +485,77 @@ fn surface_apex_boundary_getter_picks_a_face_and_previews_only_to_the_boundary()
 }
 
 #[test]
+fn surface_apex_boundary_previews_and_accepts_a_coplanar_mouse_target() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    use viboceros_geometry::{Frame3, NurbsSurface, UnitVector3};
+
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    app.grid_snap = false;
+    let source = planar_apex_source(&mut app, 0.);
+    let tolerance = app.document.tolerance();
+    let plane = Frame3::try_from_unit_normal(
+        point(5., 1.5, 0.),
+        UnitVector3::try_new(1., -0.25, 0.4, tolerance).unwrap(),
+    )
+    .unwrap();
+    let corners = [[-6., -6.], [6., -6.], [6., 6.], [-6., 6.]]
+        .map(|[x, y]| plane.point_at([x, y, 0.]).unwrap());
+    let boundary = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(
+            NurbsSurface::try_bilinear(corners).unwrap(),
+        ))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(
+        &mut app,
+        &format!("ExtrudeSrfToPoint ToBoundary={boundary} DeleteInput=Yes"),
+    );
+    let context = egui::Context::default();
+    viewport_frame(&mut app, &context, Vec::new());
+    viewport_frame(&mut app, &context, Vec::new());
+    app.viewports[0]
+        .zoom_extents(&app.document, Default::default())
+        .unwrap();
+    viewport_frame(&mut app, &context, Vec::new());
+    let expected = point(296. / 61., 111. / 122., 0.);
+    let apex = screen_point(&app, point(8., 1.5, 0.));
+    let start = screen_point(&app, point(0., 0., 0.));
+    let cut = screen_point(&app, expected);
+    let preview = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(apex)]);
+    assert!(
+        preview
+            .iter()
+            .any(|[a, b]| a.distance(start) < 1e-3 && b.distance(cut) < 1e-3)
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+    viewport_click(&mut app, &context, apex);
+    if cfg!(feature = "native-smlib") {
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert!(app.document.object(source).is_none());
+        let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("expected truncated extrusion");
+        };
+        assert!(
+            brep.vertices()
+                .iter()
+                .any(|v| v.point().distance_to(expected).unwrap() < 1e-5)
+        );
+        assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
+        enter(&mut app, "Undo");
+    } else {
+        assert!(app.active_command.is_some());
+    }
+    assert!(app.document.object(source).is_some());
+    assert!(app.document.object(boundary).is_some());
+}
+
+#[test]
 fn surface_apex_boundary_selection_and_failed_apex_keep_model_selection_private() {
     let mut app = test_app();
     let source = planar_apex_source(&mut app, 0.);
