@@ -1,5 +1,5 @@
 use super::*;
-use crate::{SurfaceTessellation, TessellationCorner, tessellation::CornerSampler};
+use crate::{MeshFace, SurfaceTessellation, TessellationCorner, tessellation::CornerSampler};
 
 /// A shaded representation with source-face indices and oriented normals.
 pub struct BrepDisplayMesh {
@@ -10,6 +10,8 @@ pub struct BrepDisplayMesh {
 
 impl Brep {
     /// Sample the source normals at the display mesh's own native UV stations.
+    /// Dense closed bodies share edge samples when the result passes the
+    /// mesh-boundary audit.
     /// Corners without a usable limit, and triangles crossing internal creases
     /// in a sparse display mesh, return no normal for those corners.
     pub fn display_mesh_with_normals(
@@ -113,13 +115,13 @@ impl Brep {
         Ok(SurfaceTessellation { mesh, corners })
     }
 
-    fn sample_tessellation_corners<T>(
+    fn sample_tessellation_corners<T: Send>(
         &self,
         mesh: &TriangleMesh,
         sources: &[usize],
         parameters: &[Point2],
         require_crease_alignment: bool,
-        convert: impl Fn(Option<[TessellationCorner; 3]>) -> T,
+        convert: impl Fn(Option<[TessellationCorner; 3]>) -> T + Sync,
     ) -> Result<Vec<T>, GeometryError> {
         let frames = self
             .faces
@@ -130,42 +132,70 @@ impl Brep {
             .iter()
             .map(|f| creases::parameters(&f.face.surface))
             .collect::<Vec<_>>();
-        let mut corners = Vec::with_capacity(mesh.triangles().len());
-        let sources = mesh
-            .faces()
-            .iter()
-            .zip(sources)
-            .flat_map(|(face, &source)| {
+        let sample = |triangles: &[[u32; 3]], faces: &[MeshFace], sources: &[usize]| {
+            let sources = faces.iter().zip(sources).flat_map(|(face, &source)| {
                 std::iter::repeat_n(source, if face.is_quad() { 2 } else { 1 })
             });
-        let mut sampler = CornerSampler::default();
-        for (triangle, source) in mesh.triangles().iter().zip(sources) {
-            if let Err(error) = creases::validate(
-                parameters,
-                std::slice::from_ref(triangle),
-                &creases[source],
-                source,
-            ) {
-                if require_crease_alignment {
-                    return Err(error);
+            let mut sampler = CornerSampler::default();
+            let mut previous = None;
+            let mut corners = Vec::with_capacity(triangles.len());
+            for (triangle, source) in triangles.iter().zip(sources) {
+                if previous != Some(source) {
+                    sampler = CornerSampler::default();
+                    previous = Some(source);
                 }
-                corners.push(convert(None));
-                continue;
+                if let Err(error) = creases::validate(
+                    parameters,
+                    std::slice::from_ref(triangle),
+                    &creases[source],
+                    source,
+                ) {
+                    if require_crease_alignment {
+                        return Err(error);
+                    }
+                    corners.push(convert(None));
+                    continue;
+                }
+                let frame = &frames[source];
+                let face = frame.face.as_ref();
+                let mut samples = sampler.corners(
+                    &face.surface,
+                    *triangle,
+                    triangle.map(|i| parameters[i as usize]),
+                    Some(source),
+                    face.reversed,
+                );
+                for sample in &mut samples {
+                    sample.uv_origin = frame.origin;
+                }
+                corners.push(convert(Some(samples)));
             }
-            let frame = &frames[source];
-            let face = frame.face.as_ref();
-            let mut samples = sampler.corners(
-                &face.surface,
-                *triangle,
-                triangle.map(|i| parameters[i as usize]),
-                Some(source),
-                face.reversed,
-            );
-            for sample in &mut samples {
-                sample.uv_origin = frame.origin;
-            }
-            corners.push(convert(Some(samples)));
+            Ok(corners)
+        };
+        let workers = std::thread::available_parallelism()
+            .map_or(1, usize::from)
+            .min(8);
+        if require_crease_alignment || workers == 1 || mesh.faces().len() < 80_000 {
+            return sample(mesh.triangles(), mesh.faces(), sources);
         }
-        Ok(corners)
+        // The mesh keeps triangles grouped by source face. Work in contiguous
+        // ranges and collect them in mesh order to retain corner provenance.
+        let chunk = mesh.faces().len().div_ceil(workers);
+        std::thread::scope(|scope| {
+            let mut triangles = mesh.triangles();
+            let mut tasks = Vec::new();
+            for (faces, sources) in mesh.faces().chunks(chunk).zip(sources.chunks(chunk)) {
+                let count = faces.len() + faces.iter().filter(|face| face.is_quad()).count();
+                let (indices, remaining) = triangles.split_at(count);
+                triangles = remaining;
+                let sample = &sample;
+                tasks.push(scope.spawn(move || sample(indices, faces, sources)));
+            }
+            let mut corners = Vec::with_capacity(mesh.triangles().len());
+            for task in tasks {
+                corners.extend(task.join().expect("corner sampler panicked")?);
+            }
+            Ok(corners)
+        })
     }
 }

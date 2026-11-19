@@ -83,7 +83,17 @@ impl Brep {
             tolerance.angular(),
         )?;
         let mut edge_resolution = vec![samples_per_span; self.edges.len()];
-        if sampling.has_per_face_grids() {
+        if let Some(samples) = sampling.display_edge_samples {
+            // Keep simple curved boundaries smooth without multiplying the
+            // authored span count of already finely segmented display edges.
+            for (edge, resolution) in self.edges.iter().zip(&mut edge_resolution) {
+                *resolution = if edge.curve.degree() > 1 {
+                    samples.div_ceil(edge.curve.spans().count().max(1))
+                } else {
+                    1
+                };
+            }
+        } else if sampling.has_per_face_grids() {
             edge_resolution.fill(1);
             for (index, frame) in frames.iter().enumerate() {
                 let grid = sampling.grid(index);
@@ -214,16 +224,7 @@ impl Brep {
                     };
                     let edge = &self.edges[edge_index];
                     let image = LiftedTrim::new(trim, &face.surface)?;
-                    let seeds = sample_spans(trim.curve.spans(), 8)?
-                        .into_iter()
-                        .map(|t| {
-                            Ok((
-                                t,
-                                ParameterSide::Right,
-                                image.point(t, ParameterSide::Right)?,
-                            ))
-                        })
-                        .collect::<Result<Vec<_>, GeometryError>>()?;
+                    let mut seeds = None;
                     let samples = &edge_samples[edge_index];
                     let mut previous = *domain.start();
                     for i in 0..samples.len() - 1 {
@@ -249,7 +250,22 @@ impl Brep {
                             {
                                 direct
                             } else {
-                                image.distance_witness(point, &seeds, search.absolute())?.1
+                                let seeds = match &mut seeds {
+                                    Some(seeds) => seeds,
+                                    empty @ None => empty.insert(
+                                        sample_spans(trim.curve.spans(), 8)?
+                                            .into_iter()
+                                            .map(|t| {
+                                                Ok((
+                                                    t,
+                                                    ParameterSide::Right,
+                                                    image.point(t, ParameterSide::Right)?,
+                                                ))
+                                            })
+                                            .collect::<Result<Vec<_>, GeometryError>>()?,
+                                    ),
+                                };
+                                image.distance_witness(point, seeds, search.absolute())?.1
                             }
                         };
                         if i != 0 && (t <= previous || t >= *domain.end()) {
@@ -277,7 +293,7 @@ impl Brep {
                 sampling.grid(index),
                 sampling.axis_limit,
             )?;
-            let face_triangles = if retain_parameters {
+            let face_triangles = if retain_parameters && sampling.display_edge_samples.is_none() {
                 creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
             } else {
                 trim_region::triangulate(&mut parameters, &lengths, &[])?
