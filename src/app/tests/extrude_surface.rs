@@ -3,7 +3,7 @@ use super::*;
 mod boundary;
 mod distance_preview;
 mod point_getters;
-mod tangents;
+pub(super) mod tangents;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

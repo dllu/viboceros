@@ -27,6 +27,7 @@ unsafe extern "C" {
         shape: *const NativeSolid,
         path: *const NativeCurve,
         cap_ends: c_int,
+        split_at_tangents: c_int,
         tolerance: f64,
         out: *mut *mut NativeSolid,
         error: *mut c_char,
@@ -153,12 +154,24 @@ impl Shape {
         cap_ends: bool,
         tolerance: viboceros_geometry::Tolerance,
     ) -> Result<Self, Error> {
+        self.extruded_faces_along_curve_with_tangents(path, cap_ends, false, tolerance)
+    }
+
+    /// Preserve wall seams at geometric curvature breaks on the profile.
+    pub fn extruded_faces_along_curve_with_tangents(
+        &self,
+        path: &KernelCurve,
+        cap_ends: bool,
+        split_at_tangents: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
             vb_shape_extrude_faces_along_curve(
                 self.model.handle.as_ptr(),
                 path.handle.as_ptr(),
                 c_int::from(cap_ends),
+                c_int::from(split_at_tangents),
                 tolerance.absolute(),
                 &mut pointer,
                 error,

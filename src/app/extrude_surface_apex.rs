@@ -1,64 +1,14 @@
 //! Frozen face sources, optional boundary selection, and shared apex drafting.
+use super::extrude_surface::Boundary;
 use super::*;
 use crate::viewport::surface_apex::SurfaceApexDraft;
 use viboceros_command::extrude_surface_apex::{
     ApexPoint, BoundaryInput, BoundaryRef, SurfaceApexInput, SurfaceApexOptions,
 };
-use viboceros_document::GeometrySnapshot;
-use viboceros_geometry::Brep;
 
 pub(super) struct Session {
     draft: Option<SurfaceApexDraft>,
     boundary: Boundary,
-}
-
-enum Boundary {
-    None,
-    Selecting,
-    Picked {
-        reference: BoundaryRef,
-        source: GeometrySnapshot,
-        face: Box<Brep>,
-    },
-}
-
-impl Boundary {
-    fn capture(
-        document: &Document,
-        reference: BoundaryRef,
-    ) -> Result<Self, viboceros_command::CommandError> {
-        let face = reference.capture(document)?;
-        Ok(Self::Picked {
-            reference,
-            source: document
-                .object(reference.object)
-                .unwrap()
-                .geometry_snapshot()
-                .clone(),
-            face: Box::new(face),
-        })
-    }
-
-    fn is_current(&self, document: &Document) -> bool {
-        match self {
-            Self::Picked {
-                reference, source, ..
-            } => {
-                document.is_object_selectable(reference.object)
-                    && document
-                        .object(reference.object)
-                        .is_some_and(|object| object.geometry_snapshot() == source)
-            }
-            _ => true,
-        }
-    }
-
-    fn face(&self) -> Option<&Brep> {
-        match self {
-            Self::Picked { face, .. } => Some(face),
-            _ => None,
-        }
-    }
 }
 
 impl super::extrude_surface::SurfaceExtrusionSources {

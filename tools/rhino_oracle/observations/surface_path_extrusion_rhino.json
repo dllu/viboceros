@@ -1,0 +1,183 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "iterations": 1,
+  "protocol_version": 1,
+  "results": [
+    {
+      "elapsed_ns": 29617310,
+      "id": "path_planar",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.5,
+                2.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.00000000000005
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 10627747,
+      "id": "path_warped",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.5,
+                3.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.00000000000005
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 9719849,
+      "id": "path_reversed",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                -2.0
+              ],
+              [
+                2.0,
+                3.5,
+                1.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 12.000000000000052
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 34057617,
+      "id": "path_ring_hole",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.5,
+                2.0
+              ]
+            ],
+            "face_count": 4,
+            "is_solid": true,
+            "volume": 50.265483271905794
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 816345,
+      "id": "path_ring_walls",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                -3.0,
+                -3.0,
+                0.0
+              ],
+              [
+                3.0,
+                3.5,
+                2.0
+              ]
+            ],
+            "face_count": 3,
+            "is_solid": false,
+            "volume": null
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 6652832,
+      "id": "path_half_line",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                0.0,
+                0.0,
+                0.0
+              ],
+              [
+                2.0,
+                3.0,
+                1.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 6.000000000000007
+          }
+        ]
+      }
+    },
+    {
+      "elapsed_ns": 6813049,
+      "id": "path_shifted",
+      "value": {
+        "breps": [
+          {
+            "bounds": [
+              [
+                10000.0,
+                -30000.0,
+                50000.0
+              ],
+              [
+                10002.0,
+                -29996.5,
+                50002.0
+              ]
+            ],
+            "face_count": 6,
+            "is_solid": true,
+            "volume": 11.999999999973323
+          }
+        ]
+      }
+    }
+  ]
+}

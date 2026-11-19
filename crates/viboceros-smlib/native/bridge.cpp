@@ -21,6 +21,7 @@
 #include <SmFace.h>
 #include <SmLoop.h>
 #include <SmEdge.h>
+#include <SmEdgeuse.h>
 #include <SmFaceuse.h>
 #include <SmRegion.h>
 #include <SmShell.h>
@@ -176,6 +177,28 @@ std::unique_ptr<VbSolid> capped_surface(std::unique_ptr<SmBSplineSurface> surfac
     return owner;
 }
 
+std::unique_ptr<SmBSplineSurface> exact_translational_surface(
+    const SmBSplineCurve &profile, const SmBSplineCurve &relative_path,
+    const std::array<std::vector<double>, 2> &knots) {
+    SmBSplineSurface *raw = nullptr;
+    const auto status = SmBSplineSurface::CreateSweepSurface(*SmApiGetOrCreateContext(),
+        &profile, &relative_path, nullptr, TRUE, 0, raw);
+    std::unique_ptr<SmBSplineSurface> result(raw);
+    check(status, "create exact translational sweep");
+    require(raw, "Missing translational sweep surface");
+    vb_preserve_surface_basis(*raw, knots);
+    return result;
+}
+
+std::unique_ptr<SmBSplineCurve> sweep_path_at_origin(const VbCurve &path) {
+    const auto start = curve_start(path);
+    auto shifted = copy_curve(path);
+    const SmAxis2Placement translation(SmPoint3d(-start.x, -start.y, -start.z),
+                                      SmVector3d(1, 0, 0), SmVector3d(0, 1, 0));
+    check(shifted->Transform(translation), "translate sweep path to its start");
+    return shifted;
+}
+
 std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, const VbCurve &path) {
     require(profile.points.size() / 4 <= limit / (path.points.size() / 4),
             "Translational sweep control-net resource limit");
@@ -184,19 +207,8 @@ std::unique_ptr<SmBSplineSurface> translational_sweep(const VbCurve &profile, co
         for (size_t axis = 0; axis < 3; ++axis)
             nonconstant = nonconstant || path.points[i + axis] != path.points[axis];
     require(nonconstant, "Constant translational sweep path");
-    const auto start = curve_start(path);
-    auto shifted = copy_curve(path);
-    const SmAxis2Placement translation(SmPoint3d(-start.x, -start.y, -start.z),
-                                      SmVector3d(1, 0, 0), SmVector3d(0, 1, 0));
-    check(shifted->Transform(translation), "translate sweep path to its start");
-    SmBSplineSurface *raw = nullptr;
-    const auto status = SmBSplineSurface::CreateSweepSurface(*SmApiGetOrCreateContext(),
-        profile.value.get(), shifted.get(), nullptr, TRUE, 0, raw);
-    std::unique_ptr<SmBSplineSurface> result(raw);
-    check(status, "create exact translational sweep");
-    require(raw, "Missing translational sweep surface");
-    vb_preserve_surface_basis(*raw, {profile.knots, path.knots});
-    return result;
+    auto shifted = sweep_path_at_origin(path);
+    return exact_translational_surface(*profile.value, *shifted, {profile.knots, path.knots});
 }
 
 std::unique_ptr<SmBSplineSurface> apex_ruled_surface(const SmBSplineCurve &curve,const SmPoint3d &point) {
@@ -2119,14 +2131,16 @@ extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displac
 }
 
 #include "surface_apex_extrusion.h"
+#include "surface_path_walls.h"
 
 extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const VbCurve *path,
-    int cap_ends, double tolerance, VbSolid **out, char *error, size_t capacity) {
+    int cap_ends, int split_at_tangents, double tolerance, VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
         require(shape && shape->value && path && path->value && out
             && (cap_ends==0 || cap_ends==1) && std::isfinite(tolerance) && tolerance>0,
             "Invalid surface path extrusion input");
+        require(split_at_tangents == 0 || split_at_tangents == 1, "Invalid surface path wall split option");
         require(!shape->value->IsManifoldSolid(),"Surface path extrusion requires an open sheet");
         require(!path->value->IsDegenerate(tolerance),"Degenerate surface extrusion path");
         require(!path->value->IsClosed(path->value->GetNaturalInterval()),"Closed surface extrusion paths are not supported");
@@ -2147,24 +2161,17 @@ extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const Vb
             edges.Add(all_edges[i]);
         }
         require(edges.GetSize()>0,"Surface path extrusion requires a boundary");
-        // The producer combines each chain into one NURBS before sweeping.
-        // Budget all chains conservatively, including Bezier decomposition and
-        // elevation to a common degree, before allocating tensor-product nets.
-        require(profile_controls<=limit/path_controls/(max_degree+1),
-                "Surface path extrusion control-net resource limit");
+        // Budget the joined tensor-product net before curve decomposition and
+        // degree elevation. The wall builder also budgets the actual segments.
+        if (!split_at_tangents)
+            require(profile_controls <= limit / path_controls / (max_degree + 1),
+                    "Surface path extrusion control-net resource limit");
         auto owner=std::make_unique<VbSolid>();
         owner->value.reset(new (*SmApiGetOrCreateContext()) SmBrep());
         owner->value->SetTolerance(tolerance,FALSE);
-        SmSweepOptions options;
-        options.bTranslationalSweep=TRUE;options.bMoveToProfile=TRUE;
-        // Build only walls here; the primitive cap builder fits planar regions.
-        // Copy actual source faces below to retain curved caps and trim holes.
-        options.bCapEndsArg=FALSE;
-        SmTArray<SmFace*> start,side,end;
-        auto working_path=copy_curve(*path);
-        SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
-        check(producer.CreateCurveSweepFromEdges(edges,working_path.get(),nullptr,nullptr,tolerance,
-              &options,start,side,end),"create translational surface path walls");
+        const auto *sheet = source_faces.GetSize() == 1 ? source_faces[0] : nullptr;
+        vb_create_surface_path_walls(*owner->value, edges, sheet, *path,
+                                     split_at_tangents != 0, tolerance);
         SmPoint3d a,b;
         const auto interval=path->value->GetNaturalInterval();
         check(path->value->EvaluatePoint(interval.GetMin(),a),"evaluate surface path start");

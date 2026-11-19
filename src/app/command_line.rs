@@ -271,8 +271,8 @@ impl VibocerosApp {
             } else {
                 "Select faces to remove; Thickness / DeleteInput; Enter applies, Esc cancels"
             }
-        } else if self.surface_path_prompt.is_some() {
-            "Select path curve; Solid / DeleteInput / Reverse / PathLength; Esc cancels"
+        } else if let Some(prompt) = &self.surface_path_prompt {
+            prompt.hint()
         } else if self.planar_boolean_prompt.is_some() {
             "Pick a planar surface; Esc cancels"
         } else if let Some(prompt) = &self.boolean_two_prompt {

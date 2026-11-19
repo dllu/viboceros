@@ -3,6 +3,14 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        self.apply_viewport_selection_click(click, None);
+    }
+
+    pub(super) fn apply_viewport_selection_click(
+        &mut self,
+        click: SelectionClick,
+        pick: Option<(usize, egui::Pos2)>,
+    ) {
         if self.picking_surface_boundary() {
             if let Some(object) = click.object_id {
                 self.pick_surface_boundary(viboceros_command::surface_reference::BoundaryRef {
@@ -78,7 +86,7 @@ impl VibocerosApp {
         if self.remap_cplane_session.is_some() && self.plane_prompt.is_none() {
             return;
         }
-        if self.pick_surface_extrusion_path(click.object_id) {
+        if self.pick_surface_extrusion_path(click.object_id, pick) {
             return;
         }
         if self.blend_surface_prompt.is_some()

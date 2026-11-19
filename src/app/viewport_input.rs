@@ -429,7 +429,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_temporary_subcurve_parameter(parameter)
+            if self.accept_surface_path_parameter(parameter)
+                || self.accept_temporary_subcurve_parameter(parameter)
                 || self.accept_surface_offset_parameter(parameter)
                 || self.accept_conic_parameter(parameter)
                 || self.accept_rectangle_parameter(parameter)
@@ -474,7 +475,10 @@ impl VibocerosApp {
         } else if let Some((point, viewport, mode)) = output.fence_point {
             self.add_fence_point(point, viewport, mode);
         } else if let Some(click) = output.selection_click {
-            self.apply_selection_click(click);
+            let pick = output
+                .selection_pointer
+                .map(|pointer| (self.active_viewport, pointer));
+            self.apply_viewport_selection_click(click, pick);
         } else if let Some(selection) = output.selection_window {
             if self.circular_selection.take().is_some() {
                 self.apply_selection_region(selection, true);

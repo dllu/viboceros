@@ -383,6 +383,9 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
+    pub(crate) surface_path_extrusion: Option<surface_extrusion::SurfacePathPreview<'a>>,
+    #[cfg(feature = "native-smlib")]
+    pub(crate) surface_path_boundary: Option<(Real, &'a [NurbsCurve])>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
@@ -566,6 +569,9 @@ impl Default for ViewportInput<'_> {
             direction: None,
             surface_apex: None,
             surface_extrusion: None,
+            surface_path_extrusion: None,
+            #[cfg(feature = "native-smlib")]
+            surface_path_boundary: None,
             insert_edges: None,
             insert_mesh: None,
             offset_mesh_preview: None,
@@ -734,6 +740,8 @@ pub struct ViewportOutput {
     pub edge_contacts: Vec<(EdgePick, Point3)>,
     pub mesh_boundary_edge_click: Option<Vec<usize>>,
     pub edge_parameter: Option<Real>,
+    #[cfg(feature = "native-smlib")]
+    pub(crate) edge_hover_parameter: Option<Real>,
     pub face_click: Option<(ObjectId, usize)>,
     pub face_hit_point: Option<Point3>,
     pub parametric_click: Option<Vec<ParametricPick>>,
@@ -2915,6 +2923,28 @@ impl Viewport {
                 document.tolerance(),
             );
         }
+        if let (Some(preview), Some(parameter)) = (input.surface_path_extrusion, edge_parameter) {
+            self.paint_surface_path_extrusion(
+                &painter,
+                rect,
+                preview,
+                parameter,
+                document.tolerance(),
+            );
+        }
+        #[cfg(feature = "native-smlib")]
+        if let Some((parameter, curves)) = input.surface_path_boundary
+            && edge_parameter == Some(parameter)
+        {
+            let mut projected = ProjectedPrimitives::default();
+            for curve in curves {
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            }
+            let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+            for segment in projected.segments {
+                painter.line_segment(segment, stroke);
+            }
+        }
         if let Some(draft) = input.surface_apex
             && let Some(apex) = drafting_cursor
                 .filter(|_| {
@@ -3661,6 +3691,8 @@ impl Viewport {
                     && response.drag_stopped_by(PointerButton::Primary))
             .then_some(edge_parameter)
             .flatten(),
+            #[cfg(feature = "native-smlib")]
+            edge_hover_parameter: edge_parameter,
             mesh_boundary_edge_click: input
                 .mesh_boundary_edges
                 .filter(|_| {
