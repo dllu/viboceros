@@ -83,7 +83,6 @@ fn surface_extrusion_failure_and_stale_sources_keep_the_getter() {
     assert_eq!(format!("{:?}", app.document), before);
     assert!(app.command_log.back().unwrap().contains("source changed"));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
     for numeric in [false, true] {
@@ -129,7 +128,6 @@ fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_component_preselection_uses_original_face_indices() {
     let mut app = test_app();

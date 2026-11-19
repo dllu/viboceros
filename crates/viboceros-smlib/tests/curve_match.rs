@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{
     CircularArc3, Curve3, CurveBlendContinuity, CurveMatchPreserveEnd, LineSegment, NurbsCurve,

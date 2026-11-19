@@ -3,8 +3,8 @@
 [Surfaces](surfaces.md) · [Matching geometry](../smlib-surface-matching.md)
 
 `MatchSrf` changes one complete boundary of an open, untrimmed NURBS surface to
-match another single untrimmed surface. Both portable and `native-smlib` builds
-support position, tangency and curvature matching.
+match another single untrimmed surface with position, tangency or curvature
+continuity.
 
 Enter `MatchSrf`, pick the source edge, then pick the target edge near the
 corresponding end. Picking opposite ends reverses correspondence. The preview

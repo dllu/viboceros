@@ -182,12 +182,6 @@ fn replays_compound_sets_common_intersection_metadata_and_history() {
         }
     }
     assert_eq!((matched, failures), (31, 1));
-    #[cfg(not(feature = "native-smlib"))]
-    let expected: Vec<Value> = serde_json::from_str(include_str!(
-        "../../../../../docs/compound-intersection-partitions.json"
-    ))
-    .unwrap();
-    #[cfg(feature = "native-smlib")]
     let expected: Vec<Value> = serde_json::from_str::<Value>(include_str!(
         "../../../../../docs/smlib-intersection-representation.json"
     ))

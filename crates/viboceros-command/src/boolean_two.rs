@@ -5,7 +5,6 @@ use viboceros_geometry::{
     BrepBooleanOperation, BrepPolyhedralBooleanComponent, BrepPolyhedralBooleanPlan,
 };
 
-#[cfg(feature = "native-smlib")]
 mod native;
 #[cfg(test)]
 mod tests;
@@ -72,7 +71,6 @@ pub fn prepare(
     second: &Brep,
     tolerance: Tolerance,
 ) -> Result<Candidates, CommandError> {
-    #[cfg(feature = "native-smlib")]
     if first.is_solid() && second.is_solid() {
         return native::prepare(first, second, tolerance);
     }
@@ -85,22 +83,7 @@ fn prepare_planar(
     tolerance: Tolerance,
 ) -> Result<Candidates, GeometryError> {
     let sheets = !first.is_solid() || !second.is_solid();
-    #[cfg(feature = "native-smlib")]
     let mut plan = BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[first, second], tolerance)?;
-    #[cfg(not(feature = "native-smlib"))]
-    let mut plan = if sheets {
-        BrepPolyhedralBooleanPlan::try_with_planar_sheets(&[first, second], tolerance)?
-    } else {
-        if boolean_solids::interactions(&[first, second], tolerance, false)?
-            .1
-            .is_empty()
-        {
-            return Err(GeometryError::UnsupportedPolyhedralBrepBoolean {
-                context: "two boundary-crossing operands required",
-            });
-        }
-        BrepPolyhedralBooleanPlan::try_new(&[first, second], tolerance)?
-    };
     if sheets && plan.inputs_are_coplanar(0, 1)? {
         let agrees = plan.coplanar_input_normals_agree(0, 1)?;
         let partition = plan

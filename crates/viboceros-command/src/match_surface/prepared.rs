@@ -25,10 +25,7 @@ pub fn prepare(
             SurfaceExtensionEdge::West | SurfaceExtensionEdge::North
         );
     let (surface, target) = if options.average {
-        #[cfg(feature = "native-smlib")]
         let operation = viboceros_smlib::average_match_surface_supports;
-        #[cfg(not(feature = "native-smlib"))]
-        let operation = viboceros_geometry::try_average_match_nurbs_surfaces;
         let values = operation(
             edges[0].surface(),
             edges[0].side,
@@ -47,10 +44,7 @@ pub fn prepare(
         let [a, b] = values;
         (a, Some(b))
     } else {
-        #[cfg(feature = "native-smlib")]
         let operation = viboceros_smlib::match_surface_supports;
-        #[cfg(not(feature = "native-smlib"))]
-        let operation = viboceros_geometry::try_match_nurbs_surfaces;
         (
             operation(
                 edges[0].surface(),

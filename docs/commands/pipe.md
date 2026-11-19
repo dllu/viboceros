@@ -23,7 +23,7 @@ Straight constant-radius surface results follow [UseExtrusions](use-extrusions.m
 Open thick pipes create two separate walls. In Surface mode, flat-capped thick
 pipes create one hollow extrusion when extrusion output is enabled.
 
-Linux `native-smlib` builds use the shared [native sweep fitting and interpolation](../smlib-sweep-interpolation.md)
+Viboceros uses the shared [native sweep fitting and interpolation](../smlib-sweep-interpolation.md)
 for retained/refitted rails and continuous-model wall construction.
 
 `Pipe [curve-id] start-radius [end-radius] [Stations=fraction:radius,...] [Output=Surface|SubD] [Cap=None|Flat|Round] [ShapeBlending=Local|Global] [FitRail=Yes|No] [Thick=Yes|No] [WallThickness=signed-distance]`

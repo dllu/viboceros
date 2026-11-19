@@ -52,6 +52,6 @@ Strict comparisons require matching connector incidence.
 
 ```sh
 cargo test -p viboceros-oracle --test inset_surface
-cargo test -p viboceros-oracle --features native-smlib --test inset_surface
+cargo test -p viboceros-oracle --test inset_surface
 python3 -m unittest tools.rhino_oracle.test_inset_multiedge tools.rhino_oracle.test_inset_continuity
 ```

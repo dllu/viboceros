@@ -253,35 +253,25 @@ fn construct(
     options: RailRevolveOptions,
     tolerance: Tolerance,
 ) -> Result<Geometry, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        if options.split_at_tangents {
-            Ok(Geometry::Brep(viboceros_smlib::rail_revolved_brep(
+    if options.split_at_tangents {
+        Ok(Geometry::Brep(viboceros_smlib::rail_revolved_brep(
+            profile,
+            rail,
+            origin,
+            axis,
+            options.scale_height,
+            tolerance,
+        )?))
+    } else {
+        Ok(Geometry::NurbsSurface(
+            viboceros_smlib::rail_revolved_surface(
                 profile,
                 rail,
                 origin,
                 axis,
                 options.scale_height,
                 tolerance,
-            )?))
-        } else {
-            Ok(Geometry::NurbsSurface(
-                viboceros_smlib::rail_revolved_surface(
-                    profile,
-                    rail,
-                    origin,
-                    axis,
-                    options.scale_height,
-                    tolerance,
-                )?,
-            ))
-        }
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (profile, rail, origin, axis, options, tolerance);
-        Err(CommandError::Usage(
-            "RailRevolve requires the native-smlib feature",
+            )?,
         ))
     }
 }

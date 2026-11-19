@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::*;
 use viboceros_smlib::offset_surface;
 

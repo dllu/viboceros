@@ -98,7 +98,6 @@ fn surface_path_invalid_curve_and_changed_sources_keep_the_picker() {
     assert_eq!(format!("{:?}", app.document), before);
     assert!(app.command_log.back().unwrap().contains("source changed"));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_component_sources_and_clicked_path_commit_one_history_entry() {
     let (mut app, s, path) = setup();
@@ -132,20 +131,4 @@ fn surface_path_component_sources_and_clicked_path_commit_one_history_entry() {
     assert_eq!(app.document.object(s), Some(&original));
     enter(&mut app, "Redo");
     assert!(app.document.object(s).is_none());
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_path_kernel_decline_retains_source_picks_and_getter() {
-    let (mut app, s, path) = setup();
-    app.document
-        .select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "ExtrudeSrfAlongCrv");
-    let before = format!("{:?}", app.document);
-    app.apply_selection_click(SelectionClick {
-        object_id: Some(path),
-        mode: SelectionMode::Replace,
-    });
-    assert!(app.surface_path_prompt.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
 }

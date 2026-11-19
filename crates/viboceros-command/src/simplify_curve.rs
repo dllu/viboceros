@@ -97,19 +97,12 @@ pub(super) fn simplified(
     curve: &Curve3,
     tolerance: Tolerance,
 ) -> Result<viboceros_geometry::CurveSimplification, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_geometry::simplify_curve_with_split(
-            curve,
-            tolerance,
-            &mut viboceros_smlib::split_curve,
-        )
-        .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::simplify_curve(curve, tolerance)?)
-    }
+    viboceros_geometry::simplify_curve_with_split(
+        curve,
+        tolerance,
+        &mut viboceros_smlib::split_curve,
+    )
+    .map_err(knot_refinement::native_geometry_error)
 }
 
 #[cfg(test)]

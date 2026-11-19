@@ -202,11 +202,7 @@ impl Input {
             bulges: self.bulges,
             endpoint_specific: true,
         };
-        #[cfg(feature = "native-smlib")]
         let curve = viboceros_smlib::blend_curve_from_endpoint_jets(jets, options, self.tolerance)?;
-        #[cfg(not(feature = "native-smlib"))]
-        let curve =
-            viboceros_geometry::try_blend_curve_from_endpoint_jets(jets, options, self.tolerance)?;
         // The resulting parameter domain is a numerical length measurement,
         // not a modelling predicate. A coarse document tolerance must not
         // coarsen the script-visible knot interval of a high-degree blend.

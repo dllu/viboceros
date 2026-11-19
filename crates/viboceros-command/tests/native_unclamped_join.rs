@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 use viboceros_command::CommandRegistry;
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, SelectionMode};
 use viboceros_geometry::{Brep, NurbsSurface, Point3, Tolerance};

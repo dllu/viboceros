@@ -1,9 +1,9 @@
 # Pull
 
 `Pull` creates curves and points at the target's closest surface locations.
-Curved surface paths use the [usd-brep normal-drop producer](../smlib-surface-pull.md)
-when `native-smlib` is enabled. Planar curves use exact normal projection;
-points use the existing bounded surface/face and indexed mesh closest queries.
+Curved surface paths use the [usd-brep normal-drop producer](../smlib-surface-pull.md).
+Planar curves use exact normal projection.
+Points use the existing bounded surface/face and indexed mesh closest queries.
 Mesh curves return polylines using [closest-path tracing](pull-mesh.md).
 All results stage before one Undo/Redo edit.
 
@@ -62,10 +62,10 @@ kernel output; that historical record intentionally keeps both cylinder-seam
 witnesses. The command operation tests their spatial admission separately.
 
 ```sh
-cargo test -p viboceros-command --features native-smlib pull::tests
+cargo test -p viboceros-command pull::tests
 cargo test -p viboceros app::tests::project::pull
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/pull_curve_surface_command.json --native-smlib
+  tools/rhino_oracle/fixtures/pull_curve_surface_command.json
 ```
 
 See [qualification](../pull-command-qualification.json) and the

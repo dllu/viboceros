@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use std::process::Command;
 use std::sync::LazyLock;
 use viboceros_geometry::{NurbsCurve, Point3, WeightedPoint3};

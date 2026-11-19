@@ -92,22 +92,6 @@ fn surface_taper_changed_source_preserves_the_getter() {
     assert_eq!(format!("{:?}", app.document), before);
     assert!(app.command_log.back().unwrap().contains("source changed"));
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_taper_portable_decline_retains_frozen_faces() {
-    let mut app = test_app();
-    let s = source(&mut app);
-    app.document
-        .select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "ExtrudeSrfTapered");
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "2");
-    assert!(app.active_command.is_some());
-    assert!(app.surface_extrusion_sources.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_numeric_and_two_point_input_commit_from_component_sources() {
     for numeric in [true, false] {
@@ -173,7 +157,6 @@ fn surface_taper_numeric_and_two_point_input_commit_from_component_sources() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_failed_direction_can_be_repaired_with_the_same_source_getter() {
     let mut app = test_app();

@@ -133,8 +133,7 @@ class PythonApiTests(unittest.TestCase):
 
     def test_native_step_round_trip(self):
         model = self.model
-        if not model.info()["native_smlib"]:
-            self.skipTest("requires native-smlib")
+        self.assertIs(model.info()["native_smlib"], True)
         model.run("Box 0,0,0 8,5,0 3")
         step = self.folder / "native model.step"
         model.export(step, native_step=True)

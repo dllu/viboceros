@@ -37,21 +37,6 @@ fn surface_taper_options_and_face_selectors_are_strict() {
     assert!(SurfaceTaperedInput::parse(&["Face=0", "Faces=All"]).is_err());
     assert!(!SurfaceTaperedInput::default().options.solid);
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_taper_portable_decline_is_atomic() {
-    let mut doc = Document::default();
-    let s = doc.add_geometry(patch(true)).unwrap();
-    doc.select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins().execute(&mut doc, "ExtrudeSrfTapered 2 DeleteInput=Yes"),
-        Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_curved_base_delete_history_and_explicit_displacement() {
     let mut doc = Document::default();
@@ -111,7 +96,6 @@ fn surface_taper_curved_base_delete_history_and_explicit_displacement() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert!(doc.object(s).is_none());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_later_oblique_face_preserves_batch_and_redo() {
     let mut doc = Document::default();
@@ -138,7 +122,6 @@ fn surface_taper_later_oblique_face_preserves_batch_and_redo() {
     assert_eq!(format!("{doc:?}"), before);
     assert!(doc.can_redo());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_deleting_a_face_keeps_remainder_groups_and_zero_draft() {
     let mut doc = Document::default();
@@ -173,7 +156,6 @@ fn surface_taper_deleting_a_face_keeps_remainder_groups_and_zero_draft() {
     assert_eq!(doc.object(s), Some(&original));
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_numeric_direction_uses_the_face_plane_independently_of_cplane() {
     let mut doc = Document::default();

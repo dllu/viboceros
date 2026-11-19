@@ -43,8 +43,8 @@ retains its explicit parameter-axis meaning and target-multiplicity support.
 See [NURBS scripting](nurbs.md). Interactive preferences belong to InsertKnot
 and are independent of InsertKink preferences.
 
-Both builds use the shared exact refinement policy. `native-smlib` delegates
-curve, standalone-surface and single-face B-rep insertion to usd-brep. B-reps
+InsertKnot delegates curve, standalone-surface and single-face B-rep insertion
+to usd-brep. B-reps
 retain vertices, edges and UV trims without refitting unchanged boundaries.
 Source identity, object attributes and groups survive replacement. Curve and
 untrimmed-surface edits clear geometry user text; trimmed B-reps retain it.
@@ -71,7 +71,7 @@ samples do not certify a continuous error bound.
 ```sh
 cargo test -p viboceros-command --test insert_knot_command
 cargo test -p viboceros app::tests::insert_
-cargo test -p viboceros --features native-smlib app::tests::insert_
+cargo test -p viboceros app::tests::insert_
 python3 -m unittest tools.rhino_oracle.test_insert_knot_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_insert_knot_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_insert_knot_followup

@@ -18,10 +18,7 @@ fn curvature_refinement_keeps_knots_in_the_source_parameter_domain() {
         ..Default::default()
     };
     let tolerance = Tolerance::try_new(0.001, 1e-9, 0.1).unwrap();
-    #[cfg(feature = "native-smlib")]
     let operation = viboceros_smlib::match_surface_supports;
-    #[cfg(not(feature = "native-smlib"))]
-    let operation = try_match_nurbs_surfaces;
     let mut reference: Option<NurbsSurface> = None;
     for (id, domain) in [
         ("negative", -3.0..=-1.0),

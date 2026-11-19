@@ -51,7 +51,6 @@ fn rail_revolve_picker_keeps_a_preselected_profile_filters_geometry_and_cancels(
     assert!(app.active_command.is_none());
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rail_revolve_preselection_and_postselection_axes_commit_one_undoable_surface() {
     for pre in [false, true] {
@@ -99,7 +98,6 @@ fn rail_revolve_preselection_and_postselection_axes_commit_one_undoable_surface(
         assert_eq!(app.document.object(output.id()), Some(&output));
     }
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rail_revolve_typed_axes_and_named_rail_survive_postselection_option_edits() {
     let mut app = test_app();
@@ -122,19 +120,4 @@ fn rail_revolve_typed_axes_and_named_rail_survive_postselection_option_edits() {
             .objects()
             .any(|o| matches!(o.geometry(), Geometry::NurbsSurface(_)))
     );
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn rail_revolve_without_native_keeps_model_after_finishing_axis_input() {
-    let mut app = test_app();
-    let ids = sources(&mut app);
-    app.document
-        .select_objects_direct(ids, SelectionMode::Replace)
-        .unwrap();
-    let before = app.document.objects().cloned().collect::<Vec<_>>();
-    enter(&mut app, "RailRevolve");
-    enter(&mut app, "0,0,0");
-    enter(&mut app, "");
-    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-    assert!(app.command_log.iter().any(|s| s.contains("native-smlib")));
 }

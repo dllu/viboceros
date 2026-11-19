@@ -50,7 +50,7 @@ pub(super) fn run(
         Ok(json!({"breps":outputs}))
     })
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

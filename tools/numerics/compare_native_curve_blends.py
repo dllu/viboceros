@@ -48,7 +48,7 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--timeout", type=float, default=1800.)
     args = parser.parse_args()
-    client = OracleClient(native_smlib=True)
+    client = OracleClient()
     sources = ["crates/viboceros-geometry/src/endpoint_interpolation.rs",
                "crates/viboceros-geometry/src/curve_blend_pair.rs",
                "crates/viboceros-smlib/src/native/knot_refinement.rs",

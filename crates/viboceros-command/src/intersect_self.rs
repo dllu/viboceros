@@ -131,7 +131,6 @@ impl SelfContacts {
     }
 
     fn search(&mut self, curve: &NurbsCurve) -> Result<(), CommandError> {
-        #[cfg(feature = "native-smlib")]
         if let Some(events) =
             viboceros_smlib::curve_self_intersection_events(curve, self.tolerance)?
         {

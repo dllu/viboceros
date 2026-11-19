@@ -102,7 +102,6 @@ fn selected_face_getter_rejects_stale_tolerance_and_other_objects() {
     assert!(app.merge_face_prompt.is_none());
     assert!(app.command_line_idle());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn selected_brep_face_clicks_use_original_source_indices() {
     let mut app = super::super::tests::test_app();

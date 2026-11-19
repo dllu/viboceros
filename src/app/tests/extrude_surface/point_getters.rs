@@ -65,7 +65,7 @@ fn surface_extrusion_enter_resumes_the_parent_picker_with_the_current_axis() {
                     options.direction
                 );
                 enter(&mut app, "w4,4,8");
-                if cfg!(feature = "native-smlib") {
+                {
                     let Geometry::Brep(result) =
                         app.document.selected_objects().next().unwrap().geometry()
                     else {

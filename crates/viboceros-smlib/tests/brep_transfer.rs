@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Brep, Point3, Tolerance};
 use viboceros_smlib::{BooleanOperation, Solid};
 

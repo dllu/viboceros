@@ -115,19 +115,9 @@ fn construct(
     sections: &[NurbsCurve],
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Ok(viboceros_smlib::two_rail_sweep_surface(
-            first, second, sections, tolerance,
-        )?)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (first, second, sections, tolerance);
-        Err(CommandError::Usage(
-            "Sweep2 requires the native-smlib feature",
-        ))
-    }
+    Ok(viboceros_smlib::two_rail_sweep_surface(
+        first, second, sections, tolerance,
+    )?)
 }
 
 #[cfg(test)]

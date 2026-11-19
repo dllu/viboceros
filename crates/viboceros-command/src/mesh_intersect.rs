@@ -2,7 +2,6 @@
 use super::mesh_boolean::Options;
 use super::*;
 use std::{borrow::Cow, sync::Arc};
-#[cfg(feature = "native-smlib")]
 mod geometry;
 const USAGE: &str = "MeshIntersect [Tolerance=Auto|Document|Zero] [CoplanarFaces=Drop|Mesh|Polylines]; select at least two meshes, surfaces or polysurfaces";
 
@@ -155,20 +154,6 @@ impl Command for MeshIntersectCommand {
         self.execute(doc, args, true)
     }
 }
-#[cfg(not(feature = "native-smlib"))]
-fn compute(
-    _: &[&TriangleMesh],
-    _: Options,
-    _: Tolerance,
-    self_intersections: bool,
-) -> Result<Vec<viboceros_geometry::Polyline3>, CommandError> {
-    Err(if self_intersections {
-        CommandError::MeshSelfIntersectRequiresNativeKernel
-    } else {
-        CommandError::MeshIntersectRequiresNativeKernel
-    })
-}
-#[cfg(feature = "native-smlib")]
 fn compute(
     meshes: &[&TriangleMesh],
     options: Options,

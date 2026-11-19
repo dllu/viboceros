@@ -98,12 +98,5 @@ fn storage(geometry: &Geometry) -> usize {
 }
 
 fn edit_point_solver() -> Option<viboceros_geometry::CurveEditPointSolver> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Some(viboceros_smlib::curve_edit_point_interpolation)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        None
-    }
+    Some(viboceros_smlib::curve_edit_point_interpolation)
 }

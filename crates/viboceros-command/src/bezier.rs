@@ -153,29 +153,15 @@ impl ConvertToBeziersCommand {
 }
 
 fn curve_pieces(curve: &NurbsCurve) -> Result<Vec<NurbsCurve>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::curve_bezier_spans(curve).map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(curve.try_bezier_spans()?)
-    }
+    viboceros_smlib::curve_bezier_spans(curve).map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn single_span_pieces(
     surface: &NurbsSurface,
     direction: SurfaceKnotDirection,
 ) -> Result<Vec<NurbsSurface>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::surface_single_span_patches(surface, direction)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(surface.try_single_span_patches(direction)?)
-    }
+    viboceros_smlib::surface_single_span_patches(surface, direction)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 fn surface_pieces(surface: &NurbsSurface) -> Result<Vec<Geometry>, CommandError> {

@@ -27,8 +27,7 @@ For selected inputs the complete command API accepts:
 MergeSrf Smooth=Yes Tolerance=0.0001 Roundness=0.5
 ```
 
-The portable build uses exact NURBS basis conversion and homogeneous seam
-averaging; the native build uses owned SMLib operands. Smooth moves the seam
+MergeSrf uses owned SMLib operands. Smooth moves the seam
 knots and changes the surface image. Joining tolerance bounds boundary admission,
 not the shape change caused by smoothing.
 

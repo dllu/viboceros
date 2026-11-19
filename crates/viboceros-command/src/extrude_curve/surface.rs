@@ -99,29 +99,22 @@ pub(super) fn construct(
     ))
 }
 fn surface(curve: &NurbsCurve, start: Vector3, end: Vector3) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
+    let p = curve.degree();
+    let knots = curve.knots();
+    let domain = curve.domain();
+    if knots[1..=p].iter().any(|k| k != domain.start())
+        || knots[knots.len() - p - 1..knots.len() - 1]
+            .iter()
+            .any(|k| k != domain.end())
     {
-        let p = curve.degree();
-        let knots = curve.knots();
-        let domain = curve.domain();
-        if knots[1..=p].iter().any(|k| k != domain.start())
-            || knots[knots.len() - p - 1..knots.len() - 1]
-                .iter()
-                .any(|k| k != domain.end())
-        {
-            return Ok(NurbsSurface::try_extruded_curve(curve, start, end)?);
-        }
-        let displacement = Vector3::try_from(std::array::from_fn(|i| {
-            end.to_array()[i] - start.to_array()[i]
-        }))?;
-        Ok(
-            viboceros_smlib::KernelCurve::from_nurbs_for_modeling(curve)?
-                .extruded_surface(displacement)?
-                .transformed(AffineTransform3::from_translation(start))?,
-        )
+        return Ok(NurbsSurface::try_extruded_curve(curve, start, end)?);
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(NurbsSurface::try_extruded_curve(curve, start, end)?)
-    }
+    let displacement = Vector3::try_from(std::array::from_fn(|i| {
+        end.to_array()[i] - start.to_array()[i]
+    }))?;
+    Ok(
+        viboceros_smlib::KernelCurve::from_nurbs_for_modeling(curve)?
+            .extruded_surface(displacement)?
+            .transformed(AffineTransform3::from_translation(start))?,
+    )
 }

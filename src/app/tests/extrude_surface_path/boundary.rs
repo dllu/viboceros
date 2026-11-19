@@ -80,7 +80,6 @@ fn surface_path_boundary_picker_releases_changed_face_and_cancels_cleanly() {
     assert!(app.document.is_selected(source));
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_boundary_viewport_picks_show_the_clipped_subcurve_preview() {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};

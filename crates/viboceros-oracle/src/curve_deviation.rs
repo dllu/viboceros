@@ -38,7 +38,6 @@ pub(super) fn run(
     if let Some(keep) = f.keep_marks {
         return run_command(f, keep, iterations, tolerance);
     }
-    #[cfg(feature = "native-smlib")]
     {
         let a = f.curves[0].geometry()?;
         let b = f.curves[1].geometry()?;
@@ -64,13 +63,6 @@ pub(super) fn run(
                 "sdk":{"created":report.is_some(),"maximum":report.as_ref().map(|r|witness(&r.maximum)),"minimum":report.as_ref().map(|r|witness(&r.minimum))}}),
             )
         })
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (f, iterations, tolerance);
-        Err(ProbeError::FixtureInvariant(
-            "curve distance queries require native-smlib",
-        ))
     }
 }
 
@@ -141,7 +133,7 @@ fn run_command(
         Ok(value)
     })
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

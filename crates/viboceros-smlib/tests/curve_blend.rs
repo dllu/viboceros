@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     CircularArc3, Curve3, CurveBlendContinuity as G, CurveBlendOptions, LineSegment, NurbsCurve,
     Point3, Tolerance, WeightedPoint3, try_blend_curve,

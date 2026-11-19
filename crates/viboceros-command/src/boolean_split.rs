@@ -3,7 +3,6 @@ use super::*;
 use std::borrow::Cow;
 
 const USAGE: &str = "BooleanSplit [DeleteInput=Yes|No] FirstSet=ids SecondSet=ids";
-#[cfg(feature = "native-smlib")]
 mod native;
 #[cfg(test)]
 mod tests;
@@ -177,14 +176,11 @@ impl BooleanSplitCommand {
             }
             Ok((copies, changed))
         };
-        #[cfg(feature = "native-smlib")]
         let (copies, changed) = if refs.iter().all(|b| b.is_solid()) {
             native::split(&refs, &objects, &ids, &first, &second, doc.tolerance())?
         } else {
             legacy()?
         };
-        #[cfg(not(feature = "native-smlib"))]
-        let (copies, changed) = legacy()?;
         doc.clear_selection();
         doc.release_command_selection_on_history_replay(ids)?;
         let outputs = doc.copy_object_pieces_with_metadata_into_source_groups(copies)?;

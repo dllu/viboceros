@@ -34,15 +34,6 @@ pub(super) fn construct(
             options.point_count,
         )?
     } else {
-        #[cfg(not(feature = "native-smlib"))]
-        let exact = NurbsSurface::try_revolved_curve(
-            &curve,
-            origin,
-            axis,
-            if sweep < 0. { start + sweep } else { start },
-            sweep.abs(),
-        )?;
-        #[cfg(feature = "native-smlib")]
         let exact = native::revolve(&curve, origin, axis, start, sweep)?;
         exact
     };

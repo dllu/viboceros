@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 #[allow(dead_code)]
 #[path = "support/mesh_boolean.rs"]
 mod boolean;

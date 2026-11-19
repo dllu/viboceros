@@ -58,7 +58,7 @@ Fresh Rhino captures remain blocked by the existing [Wine SSPI issue](../oracle-
 cargo test -p viboceros-geometry --lib curve_edit_points
 cargo test -p viboceros-command --lib project_loose
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/projection_loose.json --native-smlib
+  tools/rhino_oracle/fixtures/projection_loose.json
 ```
 
 See [qualification](../projection-loose-qualification.json), and Rhino's

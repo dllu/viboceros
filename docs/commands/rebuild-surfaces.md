@@ -8,7 +8,7 @@ surfaces, bare `Rebuild` opens an options prompt. Starting it without selection
 asks for surfaces first; Enter then opens options. A complete inline invocation
 accepts after picking, or runs directly on preselected surfaces.
 
-Linux `native-smlib` builds use usd-brep isocurves and batched banded solving
+Viboceros uses usd-brep isocurves and batched banded solving
 for both open and periodic surface Rebuild, including the command preview.
 See [native qualification](../smlib-surface-rebuild.md) for coverage and limits.
 

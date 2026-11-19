@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsCurve, Point3, WeightedPoint3};
 use viboceros_smlib::{BooleanOperation, KernelCurve, Solid};
 

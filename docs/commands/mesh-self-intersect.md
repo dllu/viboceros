@@ -8,7 +8,7 @@ Sources remain unchanged. Output uses the current layer and default attributes.
 Sources and results remain selected after execution; Undo and Redo clear those
 transient selections. An empty result creates no geometry history entry.
 
-Build with `native-smlib`. The command reuses usd-brep/SMLib's spatial index and
+The command reuses usd-brep/SMLib's spatial index and
 independent triangle-pair imprints. Each unordered pair is queried once. Ordinary
 noncoplanar shared edges and coplanar triangulation seams are omitted; genuine
 crossings through shared vertices remain. Coplanar regions union actual pairwise

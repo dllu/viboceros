@@ -134,32 +134,24 @@ pub fn produce_surface(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
-        let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
-        let (displacement, draft) =
-            crate::extrude_tapered::displacement_and_draft(distance, options, || {
-                crate::extrude_surface::face_extrusion_direction(&shape, None, cplane, tolerance)
-            })?;
-        let restore =
-            AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
-        Ok(shape
-            .tapered_face(
-                displacement,
-                draft,
-                options.round_corners,
-                options.solid,
-                tolerance,
-            )?
-            .to_brep(tolerance)?
-            .transformed(restore, tolerance)?)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (brep, distance, options, cplane, tolerance);
-        Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel)
-    }
+    let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
+    let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
+    let (displacement, draft) =
+        crate::extrude_tapered::displacement_and_draft(distance, options, || {
+            crate::extrude_surface::face_extrusion_direction(&shape, None, cplane, tolerance)
+        })?;
+    let restore =
+        AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
+    Ok(shape
+        .tapered_face(
+            displacement,
+            draft,
+            options.round_corners,
+            options.solid,
+            tolerance,
+        )?
+        .to_brep(tolerance)?
+        .transformed(restore, tolerance)?)
 }
 
 #[cfg(test)]

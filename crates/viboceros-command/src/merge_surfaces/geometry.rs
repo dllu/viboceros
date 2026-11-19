@@ -139,7 +139,6 @@ pub fn merge(
         };
         (incoming, first.clone())
     };
-    #[cfg(feature = "native-smlib")]
     let surface = viboceros_smlib::merge_surface_supports(
         &left,
         &right,
@@ -150,8 +149,6 @@ pub fn merge(
             roundness: options.roundness,
         },
     )?;
-    #[cfg(not(feature = "native-smlib"))]
-    let surface = super::portable::join(&left, &right, direction, options)?;
     let mut brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(
         surface.clone(),
         surface.domain_u(),

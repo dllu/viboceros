@@ -2,7 +2,6 @@
 use crate::*;
 mod arguments;
 mod execute;
-#[cfg(feature = "native-smlib")]
 mod geometry;
 use arguments::Arguments;
 pub(super) use arguments::Options;

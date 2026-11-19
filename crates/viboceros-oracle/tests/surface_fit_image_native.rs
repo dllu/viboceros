@@ -11,14 +11,7 @@ fn fit(
     options: SurfaceFitOptions,
     limit: f64,
 ) -> Option<BoundedSurfaceImageFit> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::fit_surface_image_with_bound(source, options, limit).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_fit_surface_image_with_bound(source, options, limit).unwrap()
-    }
+    viboceros_smlib::fit_surface_image_with_bound(source, options, limit).unwrap()
 }
 
 #[test]

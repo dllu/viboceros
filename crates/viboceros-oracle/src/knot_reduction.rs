@@ -42,7 +42,6 @@ pub(super) fn run(
     // Some(0) strict; only this SDK-facing protocol translates the sentinel.
     let bound = (limit > 0.).then_some(limit);
     let build = || -> Result<viboceros_geometry::KnotReduction, ProbeError> {
-        #[cfg(feature = "native-smlib")]
         {
             viboceros_smlib::reduce_curve_knots_in_range(
                 &source,
@@ -52,10 +51,6 @@ pub(super) fn run(
             )
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(source.try_reduce_knots_in_range(fixture.minimum_multiplicity, maximum, bound)?)
         }
     };
     let mut result = build()?;

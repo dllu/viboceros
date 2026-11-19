@@ -40,8 +40,7 @@ including numerical near-full remainders on rational curves. These near-full
 outputs are compared at the model tolerance rather than treated as exact
 cancellation or certified empty geometry.
 
-Both builds share the command policy. NURBS trimming uses the existing Rust
-splitter or usd-brep with `native-smlib`. The shared curve getter provides source
+NURBS trimming uses usd-brep. The shared curve getter provides source
 picking, point constraints, numeric units, direction locking and portion previews.
 The current source getter accepts standalone curves.
 
@@ -63,7 +62,7 @@ for [polycurve leaves and B-rep edges](../nested-rational-3dm.md).
 
 ```sh
 cargo test -p viboceros-command --test delete_subcurve
-cargo test -p viboceros-command --features native-smlib --test delete_subcurve
+cargo test -p viboceros-command --test delete_subcurve
 cargo test -p viboceros app::tests::delete_subcurve
 ```
 

@@ -4,17 +4,21 @@
 
 [Limitations and bugs found during integration](usd-brep-limitations.md)
 
+USD BRep is required in current builds. The former Cargo feature names
+`native-smlib` and `native` are accepted for scripts written before the
+migration. Portable-build results in qualification records describe older
+revisions.
+
 NVIDIA's [USD BRep](https://github.com/NVIDIA-Omniverse/usd-brep) is pinned as
 `third_party/usd-brep` at [release 1.0.1](https://github.com/NVIDIA-Omniverse/usd-brep/releases/tag/v1.0.1), commit
 `3fd5b9548d19aa8c12c29bc9637a96d42a06f8a5`. The Apache-2.0 SMLib kernel offers
 NURBS solid modeling, curved booleans, fillets, offsets, healing and tessellation.
 The native `SM_API` is a C++ API with opaque topology pointers, C++ argument
-types and overloads; an [optional Rust C ABI bridge](smlib-bridge.md) now exposes
+types and overloads; a [Rust C ABI bridge](smlib-bridge.md) now exposes
 native solids, copied-operand booleans, native mass queries, mesh output and
-[validated NURBS B-rep transfer](smlib-brep-transfer.md). Application builds with
-`--features native-smlib` use the kernel directly for [BooleanDifference](smlib-import.md),
-and also enable curved union/intersection, split, edge fillets and STEP material
-regions, plus [native surface joining](smlib-joining.md) and
+[validated NURBS B-rep transfer](smlib-brep-transfer.md). Viboceros uses the
+kernel for [solid Booleans](smlib-import.md), edge fillets, STEP material regions,
+[native surface joining](smlib-joining.md) and
 [curve extrusion](smlib-extrusion.md), [revolution](smlib-revolution.md) and
 [planar surfaces](smlib-planar-surfaces.md), [apex extrusion](smlib-apex.md) and
 [exact curve-path extrusion](smlib-translational-sweep.md).
@@ -221,8 +225,8 @@ default mass properties on some circular trims, and tessellation winding defects
 near fillets. The trial tightens property accuracy and uses 15° tessellation
 angles. Healing, fillets, imported periodic topology, tangent/coincident cases,
 scale extremes and broader Rust round trips still need qualification. The
-application now uses the [optional Rust bridge](smlib-bridge.md) for supported
-curved Boolean commands when built with `--features native-smlib`.
+application now uses the [Rust bridge](smlib-bridge.md) for supported
+curved Boolean commands in all builds.
 
 ## Licensing
 

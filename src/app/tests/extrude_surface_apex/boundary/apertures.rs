@@ -114,7 +114,7 @@ fn surface_apex_previews_shallow_cutter_holes_and_retries_a_crossing() {
         preview.len()
     );
     viewport_click(&mut app, &context, inside);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         let Geometry::Brep(cut) = app.document.selected_objects().next().unwrap().geometry() else {
             panic!("expected a truncated sweep");
@@ -123,8 +123,6 @@ fn surface_apex_previews_shallow_cutter_holes_and_retries_a_crossing() {
         assert!(cut.faces().iter().any(|face| face.loops().len() == 2));
         assert!(app.document.object(source).is_none());
         enter(&mut app, "Undo");
-    } else {
-        assert!(app.active_command.is_some());
     }
     assert!(app.document.object(source).is_some());
     assert!(app.document.object(boundary).is_some());

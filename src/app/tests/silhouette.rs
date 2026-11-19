@@ -61,7 +61,6 @@ fn silhouette_source_picker_retains_picks_when_perspective_cannot_be_accepted() 
     assert_eq!(format!("{:?}", app.document), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn silhouette_picker_uses_camera_direction_independently_of_cplane_and_replays_history() {
     let mut app = test_app();

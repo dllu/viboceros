@@ -121,7 +121,6 @@ fn fixture_surface(
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, ProbeError> {
     if let Some(fit_tolerance) = fixture.refit_tolerance {
-        #[cfg(feature = "native-smlib")]
         {
             return match fixture.refit_angle_tolerance {
                 Some(angle) => viboceros_smlib::loft_surface_refitted_with_angle(
@@ -143,42 +142,15 @@ fn fixture_surface(
             .map_err(CommandError::from)
             .map_err(ProbeError::from);
         }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            return Ok(match fixture.refit_angle_tolerance {
-                Some(angle) => viboceros_geometry::try_loft_nurbs_curves_refitted_with_angle(
-                    curves,
-                    style,
-                    closed,
-                    ends,
-                    fit_tolerance,
-                    angle,
-                )?,
-                None => viboceros_geometry::try_loft_nurbs_curves_refitted(
-                    curves,
-                    style,
-                    closed,
-                    ends,
-                    fit_tolerance,
-                )?,
-            });
-        }
     }
     let rebuild = fixture.rebuild_point_count;
     if rebuild != 0 {
-        #[cfg(feature = "native-smlib")]
         {
             return viboceros_smlib::loft_surface_rebuilt(
                 curves, style, closed, ends, rebuild, tolerance,
             )
             .map_err(CommandError::from)
             .map_err(ProbeError::from);
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            return Ok(viboceros_geometry::try_loft_nurbs_curves_rebuilt(
-                curves, style, closed, ends, rebuild, tolerance,
-            )?);
         }
     }
     if ends.is_empty() {
@@ -189,17 +161,10 @@ fn fixture_surface(
             "closed Loft cannot have point ends",
         ));
     }
-    #[cfg(feature = "native-smlib")]
     {
         viboceros_smlib::loft_surface_with_end_points(curves, style, ends)
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_loft_nurbs_curves_with_end_points(
-            curves, style, ends,
-        )?)
     }
 }
 
@@ -208,18 +173,9 @@ fn surface(
     style: viboceros_geometry::LoftStyle,
     closed: bool,
 ) -> Result<NurbsSurface, ProbeError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::loft_surface(curves, style, closed)
-            .map_err(CommandError::from)
-            .map_err(ProbeError::from)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_loft_nurbs_curves(
-            curves, style, closed,
-        )?)
-    }
+    viboceros_smlib::loft_surface(curves, style, closed)
+        .map_err(CommandError::from)
+        .map_err(ProbeError::from)
 }
 
 fn surface_record(surface: &NurbsSurface, samples: bool) -> Result<Value, ProbeError> {

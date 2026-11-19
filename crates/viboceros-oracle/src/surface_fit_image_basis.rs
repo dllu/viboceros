@@ -24,17 +24,10 @@ pub(super) fn run(
     let maps = fixture.correspondence.each_ref().map(Vec::as_slice);
     let limit = fixture.absolute_tolerance.unwrap_or(tolerance.absolute());
     let build = || -> Result<_, ProbeError> {
-        #[cfg(feature = "native-smlib")]
         {
             viboceros_smlib::fit_surface_image_in_basis(&source, degree, knots, maps, limit)
                 .map_err(CommandError::from)
                 .map_err(ProbeError::from)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(viboceros_geometry::try_fit_surface_image_in_basis(
-                &source, degree, knots, maps, limit,
-            )?)
         }
     };
     let mut result = build()?;

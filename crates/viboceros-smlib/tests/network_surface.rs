@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{AffineTransform3, NurbsCurve, Point3, Tolerance, Vector3};
 use viboceros_smlib::gordon_network_surface;
 fn p(x: f64, y: f64, z: f64) -> Point3 {

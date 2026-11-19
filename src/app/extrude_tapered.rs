@@ -7,7 +7,6 @@ use viboceros_command::{
 };
 use viboceros_geometry::Vector3;
 
-#[cfg(feature = "native-smlib")]
 mod preview;
 mod sources;
 use sources::Sources;
@@ -40,7 +39,6 @@ pub(super) struct Session {
     plane: Frame3,
     base: Option<Point3>,
     hover: Option<f64>,
-    #[cfg(feature = "native-smlib")]
     preview: preview::Preview,
 }
 
@@ -106,7 +104,6 @@ impl VibocerosApp {
             plane: self.viewports[self.active_viewport].construction_plane(),
             base: None,
             hover: None,
-            #[cfg(feature = "native-smlib")]
             preview: preview::Preview::default(),
         });
         self.command_input.clear();

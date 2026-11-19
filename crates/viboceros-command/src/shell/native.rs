@@ -1,14 +1,5 @@
 //! Native positive-thickness walls, localized and staged before admission.
 use super::*;
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn stage_positive_shell(
-    _doc: &Document,
-    _sources: &BTreeMap<ObjectId, Vec<usize>>,
-    _thickness: f64,
-) -> Result<Vec<(ObjectId, Geometry)>, CommandError> {
-    Err(CommandError::ShellRequiresNativeKernel)
-}
-#[cfg(feature = "native-smlib")]
 pub(super) fn stage_positive_shell(
     doc: &Document,
     sources: &BTreeMap<ObjectId, Vec<usize>>,

@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     CurveInterpolationOptions, CurveKnotSpacing, GeometryError, InterpolatedCurveClosure,
     NurbsCurve, Point3, Tolerance, Vector3,

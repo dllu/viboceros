@@ -28,20 +28,6 @@ fn replay(family: &str, count: usize) {
             .execute(&mut doc, &format!("UseExtrusions {mode}"))
             .unwrap();
         assert_eq!(doc.undo_label(), None);
-        if !cfg!(feature = "native-smlib") && v["input"]["command"] == "ExtrudeSrf" {
-            assert!(
-                commands
-                    .execute_in_context(
-                        &mut doc,
-                        v["input"]["application"].as_str().unwrap(),
-                        context
-                    )
-                    .is_err()
-            );
-            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), original);
-            assert_eq!(doc.undo_label(), None);
-            continue;
-        }
         commands
             .execute_in_context(
                 &mut doc,

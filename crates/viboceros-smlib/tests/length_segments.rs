@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{Curve3, NurbsCurve, Point3, Tolerance, WeightedPoint3};
 use viboceros_smlib::subcurve_at_arc_length;

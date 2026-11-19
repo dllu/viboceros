@@ -76,16 +76,10 @@ pub(super) fn build(
     } else {
         None
     };
-    #[cfg(feature = "native-smlib")]
     let solver = Some(
         viboceros_smlib::curve_edit_point_interpolation as viboceros_geometry::CurveEditPointSolver,
     );
-    #[cfg(not(feature = "native-smlib"))]
-    let solver = None;
-    #[cfg(feature = "native-smlib")]
     let mut ruled = viboceros_smlib::ruled_surface;
-    #[cfg(not(feature = "native-smlib"))]
-    let mut ruled = NurbsSurface::try_ruled_from_curves;
     if options.loose {
         if matches!(curve, CurveRef::PolyCurve(_)) && options.both_sides {
             return Err(CommandError::RibbonSourceUnavailable);
@@ -111,10 +105,7 @@ pub(super) fn build(
                 &mut ruled,
             )
         };
-        #[cfg(feature = "native-smlib")]
         let b = b.map_err(CommandError::from)?;
-        #[cfg(not(feature = "native-smlib"))]
-        let b = b?;
         return Ok(vec![b]);
     }
     if fixed && !parallel {

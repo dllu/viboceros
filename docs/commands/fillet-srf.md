@@ -2,7 +2,7 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/filletsrf.htm)
 
-With `native-smlib`, run `FilletSrf` and pick two single-face surfaces on the
+run `FilletSrf` and pick two single-face surfaces on the
 sides to keep. Click inside each face, or type `object-id u,v` using the
 surface's original parameter coordinates. The second pick must belong to a
 different object. The viewport shows a temporary result after both picks.

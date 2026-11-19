@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{
     AffineTransform3, NurbsCurve, Point3, Tolerance, Vector3, WeightedPoint3,

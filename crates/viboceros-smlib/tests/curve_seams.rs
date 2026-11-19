@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{GeometryError, NurbsCurve, WeightedPoint3};
 use viboceros_smlib::{Error, change_curve_seam};

@@ -272,16 +272,11 @@ pub fn prepare(
         } else {
             ranges[axis] = start..=(end - (end - start) * options.trims[i]);
         }
-        #[cfg(feature = "native-smlib")]
         let surface = viboceros_smlib::trim_blend_parent(
             face.surface(),
             ranges[0].clone(),
             ranges[1].clone(),
         )?;
-        #[cfg(not(feature = "native-smlib"))]
-        let surface = face
-            .surface()
-            .try_trimmed(ranges[0].clone(), ranges[1].clone())?;
         let parent = if options.trims[i] > 0. {
             let b = Brep::try_rectangular_surface_face_with_orientation(
                 surface.clone(),
@@ -298,10 +293,7 @@ pub fn prepare(
         surfaces.push(surface);
         breps.push(parent);
     }
-    #[cfg(feature = "native-smlib")]
     let construct = viboceros_smlib::blend_surfaces;
-    #[cfg(not(feature = "native-smlib"))]
-    let construct = viboceros_geometry::try_blend_nurbs_surfaces;
     let result = construct(
         &surfaces[0],
         edges[0],

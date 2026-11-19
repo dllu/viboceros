@@ -9,7 +9,6 @@ mod support;
 fn loose_edit_point_coefficients_match_native_source_basis() {
     replay(None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn loose_edit_point_coefficients_with_usd_brep_match_native_source_basis() {
     replay(Some(viboceros_smlib::curve_edit_point_interpolation));

@@ -4,7 +4,6 @@ mod options;
 mod subd;
 mod surface;
 pub use options::Options;
-#[cfg(feature = "native-smlib")]
 mod native;
 
 const EXTRUDE_CURVE_TO_POINT_USAGE: &str = "ExtrudeCrvToPoint apex [DeleteInput=Yes|No] [Output=Surface|SubD] [Solid=Yes|No] [SplitAtTangents=Yes|No]";

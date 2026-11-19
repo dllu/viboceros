@@ -351,8 +351,7 @@ python3 -m tools.rhino_oracle replay \
   --absolute-epsilon 1e-8 --relative-epsilon 1e-12
 ```
 
-Add `--native-smlib` to replay with the optional backend. To regenerate the
-owned Rhino capture and its 3DM inputs:
+To regenerate the owned Rhino capture and its 3DM inputs, run:
 
 ```sh
 tools/rhino_oracle/run_headless.sh exec \

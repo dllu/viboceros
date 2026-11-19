@@ -76,47 +76,14 @@ pub enum CommandError {
     SurfaceFlowNormalRequired,
     #[error("Flow TargetSurface requires a NURBS surface or an explicit B-rep face")]
     FlowTargetSurfaceNotSurface,
-    #[error("Silhouette requires the native kernel; build with --features native-smlib")]
-    SilhouetteRequiresNativeKernel,
-    #[error("Mesh Boolean commands require the native kernel; build with --features native-smlib")]
-    MeshBooleanRequiresNativeKernel,
-    #[error("MeshIntersect requires the native kernel; build with --features native-smlib")]
-    MeshIntersectRequiresNativeKernel,
-    #[error("MeshSelfIntersect requires the native kernel; build with --features native-smlib")]
-    MeshSelfIntersectRequiresNativeKernel,
-    #[error("MeshSplit requires the native kernel; build with --features native-smlib")]
-    MeshSplitRequiresNativeKernel,
-    #[error("MeshTrim requires the native kernel; build with --features native-smlib")]
-    MeshTrimRequiresNativeKernel,
     #[error("Mesh Boolean commands require meshes, surfaces or polysurfaces in the requested sets")]
     MeshBooleanRequiresObjects,
     #[error("Mesh Boolean operation produced no result")]
     MeshBooleanNoResult,
-    #[error("ExtrudeCrvTapered requires the native kernel; build with --features native-smlib")]
-    TaperedExtrusionRequiresNativeKernel,
-    #[error("ExtrudeSrf requires the native kernel; build with --features native-smlib")]
-    SurfaceExtrusionRequiresNativeKernel,
     #[error("The selected surface doesn't form a boundary for the extrusion.")]
     SurfaceExtrusionBoundaryRejected,
-    #[error("ExtrudeSrfAlongCrv requires the native kernel; build with --features native-smlib")]
-    SurfacePathExtrusionRequiresNativeKernel,
-    #[error("ExtrudeSrfToPoint requires the native-smlib kernel feature")]
-    SurfaceApexExtrusionRequiresNativeKernel,
-    #[error("ExtrudeSrfTapered requires the native-smlib kernel feature")]
-    SurfaceTaperedExtrusionRequiresNativeKernel,
-    #[error("Shell requires the native-smlib kernel feature")]
-    ShellRequiresNativeKernel,
-    #[error("FilletEdge requires the native kernel; build with --features native-smlib")]
-    FilletEdgeRequiresNativeKernel,
-    #[error("ChamferEdge requires the native kernel; build with --features native-smlib")]
-    ChamferEdgeRequiresNativeKernel,
-    #[error("Coplanar B-rep face merging requires the native-smlib feature")]
-    CoplanarMergeRequiresNativeKernel,
     #[error("Coplanar face merging requires meshes, surfaces or polysurfaces")]
     UnsupportedCoplanarMergeGeometry,
-    #[error("BlendEdge requires the native-smlib feature")]
-    BlendEdgeRequiresNativeKernel,
-    #[cfg(feature = "native-smlib")]
     #[error(transparent)]
     NativeSmlib(#[from] viboceros_smlib::Error),
     #[error("Contour exceeds the limit of 100000 planes; increase spacing or restrict Range")]

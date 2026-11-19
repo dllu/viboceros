@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsSurface, Point3, SurfaceSurfaceIntersectionEvent, Tolerance};
 use viboceros_smlib::surface_intersection_events;
 #[path = "surface_intersections/trim.rs"]

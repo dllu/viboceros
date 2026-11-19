@@ -234,27 +234,14 @@ fn rebuild_backend(
     preserve_end_tangents: bool,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::rebuild_curve(
-            source,
-            point_count,
-            degree,
-            preserve_end_tangents,
-            tolerance,
-        )
-        .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_rebuild_curve(
-            source,
-            point_count,
-            degree,
-            preserve_end_tangents,
-            tolerance,
-        )?)
-    }
+    viboceros_smlib::rebuild_curve(
+        source,
+        point_count,
+        degree,
+        preserve_end_tangents,
+        tolerance,
+    )
+    .map_err(knot_refinement::native_geometry_error)
 }
 
 #[cfg(test)]

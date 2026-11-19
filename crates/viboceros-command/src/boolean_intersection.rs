@@ -131,13 +131,6 @@ impl BooleanIntersectionCommand {
                 return Err(CommandError::NothingIntersected);
             }
             let mut copies = Vec::new();
-            #[cfg(not(feature = "native-smlib"))]
-            let staged = if common {
-                Some(boolean_solids::common_intersection(&refs, doc.tolerance())?)
-            } else {
-                boolean_solids::compound_intersection(&refs, doc.tolerance(), first.len(), kernel)?
-            };
-            #[cfg(feature = "native-smlib")]
             let staged =
                 boolean_solids::compound_intersection(&refs, doc.tolerance(), first.len(), kernel)?;
             if let Some(results) = staged {
@@ -195,7 +188,6 @@ impl BooleanIntersectionCommand {
             }
             Ok(copies)
         };
-        #[cfg(feature = "native-smlib")]
         let copies = if common || refs.iter().all(|b| b.is_solid()) {
             boolean_solids::native::intersection(
                 &refs,
@@ -207,8 +199,6 @@ impl BooleanIntersectionCommand {
         } else {
             legacy()?
         };
-        #[cfg(not(feature = "native-smlib"))]
-        let copies = legacy()?;
         // First-set picks stay selected through the second phase. Geometry and
         // metadata are completely staged before this transactional model edit.
         doc.select_command_results(ids.iter().copied())?;

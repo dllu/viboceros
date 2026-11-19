@@ -62,7 +62,7 @@ speed remain unqualified.
 
 ```sh
 cargo test -p viboceros-oracle --test revolve_deformable --test revolve_splitting
-cargo test -p viboceros-oracle --features native-smlib --test revolve_deformable --test revolve_splitting
+cargo test -p viboceros-oracle --test revolve_deformable --test revolve_splitting
 cargo test -p viboceros revolve_
 python3 -m unittest tools.rhino_oracle.test_revolve_splitting tools.rhino_oracle.test_revolve_deformable
 ```

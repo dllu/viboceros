@@ -1,6 +1,6 @@
 # BooleanSplit
 
-Linux builds with `--features native-smlib` use
+Viboceros uses
 [usd-brep directly](../smlib-boolean-split.md) when all operands are closed planar
 or curved solids. Finite-plane and open-sheet operands use the qualified Rust
 paths. Native failures propagate before model edits.

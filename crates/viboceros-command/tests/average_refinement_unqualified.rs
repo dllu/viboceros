@@ -47,7 +47,6 @@ fn refinement_rejects_every_discovery_case_before_backend_work() {
                 },
             );
             assert_rejected(result, &row["id"]);
-            #[cfg(feature = "native-smlib")]
             assert_rejected(
                 viboceros_smlib::average_match_surface_supports(
                     &a,

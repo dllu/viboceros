@@ -30,19 +30,6 @@ fn source(doc: &mut Document, size: f64) -> ObjectId {
     ))
     .unwrap()
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn blend_portable_decline_preserves_document() {
-    let mut doc = Document::default();
-    let id = source(&mut doc, 10.);
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins().execute(&mut doc, &format!("BlendEdge Radius=1 {id} 0")),
-        Err(CommandError::BlendEdgeRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn blend_preserves_identity_attributes_groups_and_history() {
     let mut doc = Document::default();
@@ -75,7 +62,6 @@ fn blend_preserves_identity_attributes_groups_and_history() {
     r.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.object(id), Some(&after));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn blend_later_kernel_failure_and_stale_sources_preserve_history() {
     let mut doc = Document::default();

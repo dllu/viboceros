@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsCurve, NurbsSurface, Point3, SurfaceKnotDirection, WeightedPoint3};
 use viboceros_smlib::{
     change_curve_degree, change_surface_degree, insert_curve_knot, insert_surface_knot,

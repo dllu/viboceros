@@ -4,7 +4,6 @@ use super::*;
 mod analytic;
 mod geometry;
 mod loose;
-#[cfg(feature = "native-smlib")]
 mod native;
 mod options;
 mod prepare;
@@ -24,13 +23,9 @@ pub fn loose_available(geometry: &Geometry, tolerance: Tolerance) -> bool {
         .is_ok_and(|axes| axes.iter().all(Vec::is_empty))
 }
 pub use through_point::through_distance;
-#[cfg(any(not(feature = "native-smlib"), test))]
-mod planar;
 #[cfg(test)]
 mod tests;
 use analytic::*;
-#[cfg(any(not(feature = "native-smlib"), test))]
-use planar::*;
 
 const USAGE: &str = "OffsetSrf [distance|Distance=value] [Corner=Sharp] [ThroughPoint=x,y,z] [Solid=Yes|No] [BothSides=Yes|No] [Loose=Yes|No] [Tolerance=value|Default] [DeleteInput=Yes|No] [FlipAll]";
 
@@ -63,11 +58,7 @@ impl Command for OffsetSurfaceCommand {
         )?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
-            filter: if cfg!(feature = "native-smlib") {
-                ObjectSelectionFilter::SurfaceComponents
-            } else {
-                ObjectSelectionFilter::Surfaces
-            },
+            filter: ObjectSelectionFilter::SurfaceComponents,
             workflow: ObjectSelectionWorkflow::ConfirmAfterSelection,
             menus: vec![],
             choices: vec![],

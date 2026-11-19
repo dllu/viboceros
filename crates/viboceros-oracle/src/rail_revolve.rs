@@ -67,7 +67,7 @@ pub(super) fn run(
     })
 }
 
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

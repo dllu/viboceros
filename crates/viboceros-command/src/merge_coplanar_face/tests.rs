@@ -91,7 +91,6 @@ fn selected_coplanar_parser_and_frozen_sources_are_strict() {
     assert!(staged.commit(&mut d).is_err());
     assert_eq!(format!("{d:?}"), before);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn selected_brep_indices_and_region_seed_keep_unrelated_components() {
     let mut d = Document::default();
@@ -130,17 +129,4 @@ fn selected_brep_indices_and_region_seed_keep_unrelated_components() {
         .count();
     assert_eq!(left, 3);
     assert_eq!(brep.faces().len(), 6);
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn selected_brep_requires_native_and_preserves_redo() {
-    let mut d = Document::default();
-    let b = Brep::try_from_mesh(&grid(0.), true, d.tolerance()).unwrap();
-    let id = d.add_geometry(Geometry::Brep(b)).unwrap();
-    let before = format!("{d:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins().execute(&mut d, &format!("MergeCoplanarFace {id} 0,1")),
-        Err(CommandError::CoplanarMergeRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{d:?}"), before);
 }

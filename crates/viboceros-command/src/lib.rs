@@ -106,37 +106,16 @@ pub mod twist;
 use rotation_policy::command_rotation;
 /// Native preview preparation and extraction, when that feature is enabled.
 pub fn morph_preview_operations() -> Option<viboceros_geometry::MorphPreviewOperations> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Some(viboceros_smlib::morph_preview_operations())
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        None
-    }
+    Some(viboceros_smlib::morph_preview_operations())
 }
 
 pub fn prepare_morph_preview_curve(source: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::prepare_morph_preview_curve(source)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        source.try_change_degree(source.degree().max(3), false)
-    }
+    viboceros_smlib::prepare_morph_preview_curve(source)
 }
 
 /// Shared producer selected for command execution and readonly morph previews.
 pub fn morph_interpolation_solver() -> Option<viboceros_geometry::MorphInterpolationSolver> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Some(viboceros_smlib::morph_interpolation)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        None
-    }
+    Some(viboceros_smlib::morph_interpolation)
 }
 
 #[cfg(test)]
@@ -336,7 +315,6 @@ mod intersect_self;
 mod intersect_two_sets;
 mod mesh_intersect;
 mod mesh_outline;
-#[cfg(feature = "native-smlib")]
 mod mesh_partition;
 mod mesh_split;
 mod mesh_trim;

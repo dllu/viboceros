@@ -55,8 +55,7 @@ Both builds support planar sheets and exact canonical spheres, cylinders, cones
 and ring tori, including supported single-face B-reps. Analytic offsets retain
 their rational control nets and parameter domains; collapsing or inverting radii
 are rejected. Planar rectangles make six-face walls, while other supported closed
-profiles make exact ruled walls and caps. With `Loose=No`, portable builds reject other nonplanar
-surfaces, polysurfaces and planar walls with multiple boundary loops.
+profiles make exact ruled walls and caps.
 
 `Loose=Yes` adds original-basis offsets of free-form single surfaces in both
 builds, including supported trimmed faces, rational weights and periodic charts.
@@ -64,7 +63,7 @@ It interpolates normal offsets at Greville stations; the surface between those
 stations approximates a true offset. See [Loose geometry and validation](../offset-srf-loose.md).
 Loose is unavailable when an input has multiple faces or interior creases.
 
-Linux `--features native-smlib` adds [usd-brep offsets](../smlib-offset-surfaces.md)
+OffsetSrf uses [usd-brep offsets](../smlib-offset-surfaces.md)
 for general trimmed sheets, free-form surfaces and polysurfaces. Its broad corner,
 collapse and self-intersection behavior remains separately qualified. The getter
 captures establish finite workflows, not complete curved-surface parity.

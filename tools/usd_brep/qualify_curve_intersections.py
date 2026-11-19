@@ -79,7 +79,7 @@ def main():
         for op in load_request(ROOT/path)['operations']:
             op=copy.deepcopy(op);op['id']=fixture+'/'+op['id'];operations.append(op)
     request=dict(protocol_version=1,iterations=1,operations=operations)
-    native_client=OracleClient(native_smlib=True)
+    native_client=OracleClient()
     native=native_client.run_viboceros(request,timeout=1800)
     portable=OracleClient().run_viboceros(request,timeout=1800)
     producer_checks=compare(native,portable,1e-7)

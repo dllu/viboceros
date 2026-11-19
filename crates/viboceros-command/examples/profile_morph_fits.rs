@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         times.sort_unstable();
         println!(
             "{}",
-            serde_json::json!({"id":op["id"],"iterations":iterations,"median_ns":times[times.len()/2],"minimum_ns":times[0],"maximum_native_error":maximum_native_error,"native_smlib":cfg!(feature="native-smlib")})
+            serde_json::json!({"id":op["id"],"iterations":iterations,"median_ns":times[times.len()/2],"minimum_ns":times[0],"maximum_native_error":maximum_native_error,"native_smlib":true})
         );
     }
     Ok(())

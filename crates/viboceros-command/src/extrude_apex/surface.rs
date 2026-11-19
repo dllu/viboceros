@@ -103,30 +103,21 @@ fn surface(
     apex: Point3,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
+    let degree = curve.degree();
+    let knots = curve.knots();
+    let domain = curve.domain();
+    // The kernel importer clamps active ends. Retain the original basis
+    // for unclamped (including periodic) command profiles instead.
+    if knots[1..=degree].iter().any(|k| k != domain.start())
+        || knots[knots.len() - degree - 1..knots.len() - 1]
+            .iter()
+            .any(|k| k != domain.end())
     {
-        let degree = curve.degree();
-        let knots = curve.knots();
-        let domain = curve.domain();
-        // The kernel importer clamps active ends. Retain the original basis
-        // for unclamped (including periodic) command profiles instead.
-        if knots[1..=degree].iter().any(|k| k != domain.start())
-            || knots[knots.len() - degree - 1..knots.len() - 1]
-                .iter()
-                .any(|k| k != domain.end())
-        {
-            return Ok(NurbsSurface::try_extruded_curve_to_point(curve, apex)?);
-        }
-        let Geometry::NurbsSurface(surface) =
-            super::native::extrude(curve, apex, false, tolerance)?
-        else {
-            unreachable!()
-        };
-        Ok(surface)
+        return Ok(NurbsSurface::try_extruded_curve_to_point(curve, apex)?);
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = tolerance;
-        Ok(NurbsSurface::try_extruded_curve_to_point(curve, apex)?)
-    }
+    let Geometry::NurbsSurface(surface) = super::native::extrude(curve, apex, false, tolerance)?
+    else {
+        unreachable!()
+    };
+    Ok(surface)
 }

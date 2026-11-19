@@ -33,7 +33,6 @@ def main() -> int:
     parser.add_argument("--launcher", type=Path)
     parser.add_argument("--repo-root", type=Path)
     parser.add_argument("--scheme", help="private Rhino settings scheme (VibocerosOracle...)")
-    parser.add_argument("--native-smlib", action="store_true", help="enable the optional native geometry kernel for Viboceros")
     parser.add_argument("--output", type=Path, help="write the JSON response to this file")
     arguments = parser.parse_args()
     if (arguments.mode == "replay") != (arguments.observations is not None):
@@ -49,8 +48,7 @@ def main() -> int:
     try:
         request = load_request(arguments.request)
         client = OracleClient(arguments.repo_root, arguments.launcher,
-                              settings_scheme=arguments.scheme,
-                              native_smlib=arguments.native_smlib)
+                              settings_scheme=arguments.scheme)
         if arguments.mode == "audit":
             output = client.run_viboceros_audit(request, arguments.timeout)
             passed = all(o["status"] == "success" for o in output["outcomes"])

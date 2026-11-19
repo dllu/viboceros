@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Brep, Frame3, NurbsCurve, Point3, Tolerance, Vector3, WeightedPoint3};
 use viboceros_smlib::{BooleanOperation, KernelCurve, Solid, Tessellation};
 

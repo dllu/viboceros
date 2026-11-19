@@ -51,7 +51,6 @@ pub(super) fn run(
     let build = || -> Result<viboceros_geometry::SurfaceKnotReduction, ProbeError> {
         // The SDK-facing zero sentinel is separate from the kernel's strict Some(0).
         let bound = (limit > 0.).then_some(limit);
-        #[cfg(feature = "native-smlib")]
         {
             viboceros_smlib::reduce_surface_knots_in_range(
                 &source,
@@ -62,15 +61,6 @@ pub(super) fn run(
             )
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(source.try_reduce_knots_in_range(
-                fixture.direction.geometry(),
-                fixture.minimum_multiplicity,
-                maximum,
-                bound,
-            )?)
         }
     };
     let mut result = build()?;

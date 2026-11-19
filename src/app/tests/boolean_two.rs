@@ -3,7 +3,6 @@ use super::*;
 use serde_json::Value;
 use viboceros_command::boolean_two::Mode;
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn curved_cycles_reuse_preview_geometry_and_accept_or_cancel_without_source_edits() {
     for cancel in [true, false] {

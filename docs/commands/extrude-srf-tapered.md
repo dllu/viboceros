@@ -1,6 +1,6 @@
 # ExtrudeSrfTapered
 
-Build with `--features native-smlib`. `ExtrudeSrfTapered` uses usd-brep's native
+`ExtrudeSrfTapered` uses usd-brep's native
 draft-extrusion producer for surface boundaries. It retains the actual source
 face as the base cap, including curved surfaces with planar boundaries and trim
 holes. Positive draft contracts material: outer loops shrink and holes expand.
@@ -87,6 +87,6 @@ inward draft in the capture subdivides its walls into more faces. See
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_tapered_extrusion
-cargo test -p viboceros-command -p viboceros --features native-smlib extrude_surface_tapered
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_tapered_extrusion.json --native-smlib
+cargo test -p viboceros-command -p viboceros extrude_surface_tapered
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_tapered_extrusion.json
 ```

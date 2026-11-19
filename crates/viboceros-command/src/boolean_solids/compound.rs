@@ -56,14 +56,6 @@ fn original_shells(
     Ok(originals)
 }
 
-#[cfg(not(feature = "native-smlib"))]
-fn contact(plan: &mut Plan<'_>, a: &Region, b: &Region) -> Result<bool, GeometryError> {
-    if plan.covered_by(a, b)? && plan.covered_by(b, a)? {
-        return Ok(false);
-    }
-    Ok(plan.boundary_interacts(a, b)? || plan.boundaries_share_line(a, b)?)
-}
-
 /// Prune boundary-enclosed objects, union each set, and retain participating
 /// original shells of consumed objects. Independent objects remain separate.
 /// Metadata belongs to the connected original-object union, even if one input
@@ -317,76 +309,4 @@ pub(super) fn sets(
         }
     }
     Ok(result)
-}
-
-/// Common intersection constructs material once, exports participating
-/// connected boundaries, and turns inward solid cavities outward. Enclosing
-/// inactive inputs do not supply result metadata. Nonmanifold boundaries retain
-/// their winding and have no declared solid orientation.
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn common(
-    breps: &[&Brep],
-    tolerance: Tolerance,
-) -> Result<Vec<ShellIntersection>, GeometryError> {
-    let mut plan = Plan::try_new(breps, tolerance)?;
-    let inputs = (0..breps.len())
-        .map(|i| plan.input(i))
-        .collect::<Result<Vec<_>, _>>()?;
-    let indices = (0..breps.len()).collect::<Vec<_>>();
-    let originals = original_shells(&mut plan, breps, &inputs, &indices, tolerance)?;
-    let mut active = breps
-        .iter()
-        .map(|b| vec![false; b.faces().len()])
-        .collect::<Vec<_>>();
-    let mut owners = BTreeSet::new();
-    for a in 0..breps.len() {
-        for b in a + 1..breps.len() {
-            for left in &originals[a] {
-                for right in &originals[b] {
-                    if contact(&mut plan, &left.region, &right.region)? {
-                        owners.extend([a, b]);
-                        for (owner, shell) in [(a, left), (b, right)] {
-                            for [source, face] in plan.boundary_faces(&shell.region)? {
-                                if source == owner {
-                                    active[source][face] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    let Some(&first) = owners.first() else {
-        return Ok(Vec::new());
-    };
-    let region = plan.combine(Op::Intersection, &inputs.iter().collect::<Vec<_>>())?;
-    let mut outputs = plan.export_boundary(&region)?;
-    outputs.retain(|o| o.boundary_faces.iter().any(|s| active[s[0]][s[1]]));
-    let geometry_owner = if outputs.len() == 1 {
-        owners.last().copied()
-    } else {
-        None
-    };
-    outputs
-        .into_iter()
-        .map(|output| {
-            let owner = output
-                .boundary_equal_inputs
-                .into_iter()
-                .find(|i| owners.contains(i))
-                .unwrap_or(first);
-            let brep = if output.brep.solid_orientation()? == BrepSolidOrientation::Inward {
-                output.brep.reversed()
-            } else {
-                output.brep
-            };
-            let face_sources = output.face_sources;
-            Ok(ShellIntersection {
-                component: BrepPolyhedralBooleanComponent { brep, face_sources },
-                owner,
-                geometry_owner,
-            })
-        })
-        .collect()
 }

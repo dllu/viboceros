@@ -1,7 +1,5 @@
 use super::curve_join_close::CurveInput;
 use super::*;
-#[cfg(not(feature = "native-smlib"))]
-use viboceros_geometry::Sweep1;
 use viboceros_geometry::{SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
 #[cfg(test)]
@@ -191,7 +189,6 @@ pub(super) fn run(
         if fixture.command {
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
-            #[cfg(feature = "native-smlib")]
             let rebuilt = if fixture.rebuild_point_count > 1 {
                 Some(
                     viboceros_smlib::rebuild_sweep_sections(
@@ -204,18 +201,7 @@ pub(super) fn run(
             } else {
                 None
             };
-            #[cfg(not(feature = "native-smlib"))]
-            let rebuilt = if fixture.rebuild_point_count > 1 {
-                Some(Sweep1::rebuild_sections(
-                    &sections,
-                    fixture.rebuild_point_count,
-                    tolerance,
-                )?)
-            } else {
-                None
-            };
             let sections = rebuilt.as_deref().unwrap_or(&sections);
-            #[cfg(feature = "native-smlib")]
             let model = viboceros_smlib::sweep_model_with_point_ends(
                 rail.as_ref(),
                 sections,
@@ -225,20 +211,8 @@ pub(super) fn run(
                 tolerance,
             )
             .map_err(CommandError::from)?;
-            #[cfg(not(feature = "native-smlib"))]
-            let model = Sweep1::try_new_with_point_ends(
-                rail.as_ref(),
-                sections,
-                ends,
-                style,
-                blend,
-                tolerance,
-            )?;
-            #[cfg(feature = "native-smlib")]
             let surface =
                 viboceros_smlib::sweep_surface(&model, true).map_err(CommandError::from)?;
-            #[cfg(not(feature = "native-smlib"))]
-            let surface = model.to_surface()?;
             Ok(vec![surface])
         }
     };

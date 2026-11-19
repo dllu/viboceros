@@ -10,7 +10,6 @@ pub(super) fn material_groups(
     if let Some(order) = brep.certified_convex_solid_shell_order() {
         return Ok(Some(vec![order]));
     }
-    #[cfg(feature = "native-smlib")]
     if brep.is_solid() && count > 1 {
         // Native construction is temporary. Only its material plan is used;
         // source surfaces, edges, trims and component indices remain unchanged.

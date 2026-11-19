@@ -6,7 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
+viboceros-smlib.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
@@ -17,8 +17,8 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [features]
-default = []
-native-smlib = ["dep:viboceros-smlib", "viboceros-command/native-smlib"]
+# Compatibility for existing build commands. USD BRep is always linked.
+native-smlib = []
 
 [dev-dependencies]
 tempfile = "3.27.0"

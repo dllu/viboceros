@@ -64,7 +64,7 @@ sub-object selection are not yet implemented by this prompt.
 
 ## Geometry and verification
 
-Linux `native-smlib` builds use [native decomposition](../smlib-bezier.md),
+Viboceros uses [native decomposition](../smlib-bezier.md),
 preserving independent control-line gauges and complete unselected bases.
 
 `NurbsSurface::try_single_span_patches` returns original span domains; the

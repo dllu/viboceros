@@ -106,17 +106,8 @@ pub(super) fn rebuilt_surface(
     count: usize,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::loft_surface_rebuilt(curves, style, closed, ends, count, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_loft_nurbs_curves_rebuilt(
-            curves, style, closed, ends, count, tolerance,
-        )?)
-    }
+    viboceros_smlib::loft_surface_rebuilt(curves, style, closed, ends, count, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 fn surface_with_end_points(
@@ -124,17 +115,8 @@ fn surface_with_end_points(
     style: LoftStyle,
     ends: LoftEndPoints,
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::loft_surface_with_end_points(curves, style, ends)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_loft_nurbs_curves_with_end_points(
-            curves, style, ends,
-        )?)
-    }
+    viboceros_smlib::loft_surface_with_end_points(curves, style, ends)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn surface(
@@ -142,17 +124,8 @@ pub(super) fn surface(
     style: LoftStyle,
     closed: bool,
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::loft_surface(curves, style, closed)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_loft_nurbs_curves(
-            curves, style, closed,
-        )?)
-    }
+    viboceros_smlib::loft_surface(curves, style, closed)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 #[cfg(test)]

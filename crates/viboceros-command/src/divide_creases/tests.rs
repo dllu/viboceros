@@ -77,24 +77,6 @@ fn division_options_are_strict_typed_remembered_and_independent_between_registri
             .all(|o| o.value)
     );
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn division_requires_native_kernel_without_changing_sources_or_history() {
-    let r = CommandRegistry::with_builtins();
-    let mut d = Document::default();
-    let id = d.add_geometry(Geometry::NurbsSurface(surface())).unwrap();
-    d.select_objects_direct([id], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{d:?}");
-    assert!(
-        r.execute(&mut d, "DivideAlongCreases")
-            .unwrap_err()
-            .to_string()
-            .contains("native-smlib")
-    );
-    assert_eq!(format!("{d:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn division_retains_identity_groups_and_attributes_in_one_reversible_edit() {
     let r = CommandRegistry::with_builtins();
@@ -150,7 +132,6 @@ fn division_retains_identity_groups_and_attributes_in_one_reversible_edit() {
     assert!(snapshot.commit(&mut d).is_err());
     assert_eq!(format!("{d:?}"), before);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn division_staging_failure_and_noop_preserve_redo_and_all_sources() {
     let r = CommandRegistry::with_builtins();

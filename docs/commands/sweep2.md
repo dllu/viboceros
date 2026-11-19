@@ -25,7 +25,7 @@ case-insensitive and currently cannot contain whitespace in this command.
 Sections may be selected in either order and either direction. The second rail
 is reversed automatically when necessary to align the section contacts.
 
-This first implementation requires `native-smlib`, open polynomial curves and
+This implementation requires open polynomial curves and
 sections whose endpoints contact both rails. The first and last sections must
 contact the ends of the complete rails; interior sections must meet both rails
 at matching normalized rail parameters. Provide at least the maximum rail

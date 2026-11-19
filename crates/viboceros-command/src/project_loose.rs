@@ -69,14 +69,11 @@ pub(super) fn geometry(
         if points.iter().all(|p| *p == points[0]) {
             continue;
         }
-        #[cfg(feature = "native-smlib")]
         let result = curve.try_with_edit_points_with_solver(
             &points,
             tolerance,
             &mut viboceros_smlib::curve_edit_point_interpolation,
         )?;
-        #[cfg(not(feature = "native-smlib"))]
-        let result = curve.try_with_edit_points(&points, tolerance)?;
         output.push(Geometry::NurbsCurve(result));
     }
     Ok(output)

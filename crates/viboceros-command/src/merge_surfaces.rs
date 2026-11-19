@@ -2,8 +2,6 @@
 use super::*;
 mod geometry;
 mod options;
-#[cfg(not(feature = "native-smlib"))]
-mod portable;
 mod prepare;
 pub use geometry::merge;
 pub use options::{Options, parse};

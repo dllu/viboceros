@@ -3435,7 +3435,6 @@ pub struct OperationResult {
 
 #[derive(Debug, Error)]
 pub enum ProbeError {
-    #[cfg(feature = "native-smlib")]
     #[error(transparent)]
     Native(#[from] viboceros_smlib::Error),
     #[error("face UV oracle probe requires 2..8 surfaces, 1..32 queries, and valid face indices")]
@@ -4303,7 +4302,6 @@ fn execute(
                 _ => return Err(ProbeError::InvalidMatchOption("preserve_other_end")),
             };
             let (matched, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = if *average {
                     viboceros_smlib::average_match_curve_ends(
                         (&first, *reverse_first),
@@ -4324,30 +4322,6 @@ fn execute(
                     .map(|a| vec![a])
                 }
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = if *average {
-                    viboceros_geometry::try_average_match_curve_ends(
-                        &first,
-                        *reverse_first,
-                        &second,
-                        *reverse_second,
-                        continuity,
-                        preserve,
-                        tolerance,
-                    )
-                    .map(|(a, b)| vec![a, b])
-                } else {
-                    viboceros_geometry::try_match_curve_end(
-                        &first,
-                        *reverse_first,
-                        &second,
-                        *reverse_second,
-                        continuity,
-                        preserve,
-                        tolerance,
-                    )
-                    .map(|a| vec![a])
-                };
                 result.map_err(ProbeError::from)
             })?;
             let outputs = matched.iter().map(|curve| {
@@ -6062,11 +6036,8 @@ fn execute(
                 options = options.with_end_tangent(Vector3::try_from(*t)?);
             }
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::interpolate_curve(&points, options, tolerance)
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = NurbsCurve::try_interpolate(&points, options, tolerance);
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6166,19 +6137,12 @@ fn execute(
         } => {
             let surface = nurbs_surface_from_definition(surface)?;
             let (rebuilt, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::rebuild_surface(
                     &surface,
                     black_box(*point_count),
                     black_box(*degree),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = viboceros_geometry::try_rebuild_nurbs_surface(
-                    &surface,
-                    black_box(*point_count),
-                    black_box(*degree),
-                );
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6196,7 +6160,6 @@ fn execute(
             let start = nurbs_surface_from_definition(start_surface)?;
             let end = nurbs_surface_from_definition(end_surface)?;
             let (surfaces, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::surface_tweens_sampled(
                     &start,
                     &end,
@@ -6204,13 +6167,6 @@ fn execute(
                     black_box(*sample_number),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = viboceros_geometry::try_tween_nurbs_surfaces_sampled(
-                    &start,
-                    &end,
-                    black_box(*number),
-                    black_box(*sample_number),
-                );
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6228,23 +6184,12 @@ fn execute(
             let start = nurbs_surface_from_definition(start_surface)?;
             let end = nurbs_surface_from_definition(end_surface)?;
             let (surfaces, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = if *refit {
                     viboceros_smlib::surface_tweens_refitted(&start, &end, black_box(*number))
                 } else {
                     viboceros_smlib::surface_tweens(&start, &end, black_box(*number))
                 }
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = if *refit {
-                    viboceros_geometry::try_tween_nurbs_surfaces_refitted(
-                        &start,
-                        &end,
-                        black_box(*number),
-                    )
-                } else {
-                    viboceros_geometry::try_tween_nurbs_surfaces(&start, &end, black_box(*number))
-                };
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6270,7 +6215,6 @@ fn execute(
                 },
             };
             let (curves, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::curve_tweens(
                     &start,
                     &end,
@@ -6279,14 +6223,6 @@ fn execute(
                     tolerance,
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = viboceros_geometry::try_tween_nurbs_curves(
-                    &start,
-                    &end,
-                    black_box(*number),
-                    black_box(method),
-                    tolerance,
-                );
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6306,7 +6242,6 @@ fn execute(
             let source = nurbs_curve_from_definition(curve)?;
             let angle_tolerance = angle_tolerance_radians.unwrap_or(tolerance.angular());
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::fit_curve(
                     CurveRef::NurbsCurve(&source),
                     black_box(*degree),
@@ -6315,14 +6250,6 @@ fn execute(
                     tolerance,
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = viboceros_geometry::try_fit_curve(
-                    CurveRef::NurbsCurve(&source),
-                    black_box(*degree),
-                    black_box(*fit_tolerance),
-                    black_box(angle_tolerance),
-                    tolerance,
-                );
                 result.map_err(ProbeError::from)
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
@@ -6336,7 +6263,6 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::rebuild_curve(
                     CurveRef::NurbsCurve(&source),
                     black_box(*point_count),
@@ -6345,14 +6271,6 @@ fn execute(
                     tolerance,
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = viboceros_geometry::try_rebuild_curve(
-                    CurveRef::NurbsCurve(&source),
-                    black_box(*point_count),
-                    black_box(*degree),
-                    black_box(*preserve_tangents),
-                    tolerance,
-                );
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6370,15 +6288,12 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::change_curve_degree(
                     &source,
                     black_box(*degree),
                     black_box(*deformable),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_change_degree(black_box(*degree), black_box(*deformable));
                 result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6386,11 +6301,8 @@ fn execute(
         Operation::CurveMakePeriodicGeometry { curve, smooth, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::make_curve_periodic(&source, black_box(*smooth))
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_make_periodic(black_box(*smooth));
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6400,11 +6312,8 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::change_curve_seam(&source, black_box(*parameter))
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_change_closed_seam(black_box(*parameter));
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6497,12 +6406,9 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (result, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result =
                     viboceros_smlib::trim_curve(&source, black_box(*start)..=black_box(*end))
                         .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_trimmed(black_box(*start)..=black_box(*end));
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&result)?, elapsed)
@@ -6512,11 +6418,8 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::subcurve(&source, black_box(*start), black_box(*end))
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_subcurve(black_box(*start), black_box(*end));
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6532,11 +6435,8 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let ((left, right), elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::split_curve(&source, black_box(*parameter))
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_split(black_box(*parameter));
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6552,12 +6452,9 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (pieces, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result =
                     viboceros_smlib::split_curve_at_parameters(&source, black_box(parameters))
                         .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_split_at_parameters(black_box(parameters));
                 result.map_err(ProbeError::from)
             })?;
             (
@@ -6584,23 +6481,12 @@ fn execute(
         } => {
             let source = nurbs_surface_from_definition(surface)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::surface_isocurve(
                     &source,
                     direction.geometry(),
                     black_box(*parameter),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.isocurve_with_extractor(
-                    direction.geometry(),
-                    black_box(*parameter),
-                    &mut |s, d, p| match d {
-                        SurfaceKnotDirection::U => s.isocurve_u(p),
-                        SurfaceKnotDirection::V => s.isocurve_v(p),
-                        SurfaceKnotDirection::Both => unreachable!(),
-                    },
-                );
                 result.map_err(ProbeError::from)
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -6608,18 +6494,12 @@ fn execute(
         Operation::SurfaceTrimGeometry { surface, u, v, .. } => {
             let source = nurbs_surface_from_definition(surface)?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::trim_surface(
                     &source,
                     black_box(u[0])..=black_box(u[1]),
                     black_box(v[0])..=black_box(v[1]),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_trimmed(
-                    black_box(u[0])..=black_box(u[1]),
-                    black_box(v[0])..=black_box(v[1]),
-                );
                 result.map_err(ProbeError::from)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7166,16 +7046,12 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::insert_curve_knot(
                     &source,
                     black_box(*parameter),
                     black_box(*multiplicity),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result =
-                    source.try_insert_knot(black_box(*parameter), black_box(*multiplicity));
                 result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -7185,11 +7061,8 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::remove_curve_knot(&source, black_box(*parameter))
                     .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_remove_knot_near(black_box(*parameter));
                 result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -7213,18 +7086,12 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let ((curve, _), elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::remove_curve_multiple_knots(
                     &source,
                     black_box(*remove_fully_multiple_knots),
                     black_box(maximum_kink_angle_degrees.to_radians()),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_remove_multiple_knots(
-                    black_box(*remove_fully_multiple_knots),
-                    black_box(maximum_kink_angle_degrees.to_radians()),
-                );
                 result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -7232,11 +7099,8 @@ fn execute(
         Operation::CurveMakeNonPeriodicGeometry { curve, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result =
                     viboceros_smlib::make_curve_non_periodic(&source).map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_make_non_periodic();
                 result
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
@@ -7289,7 +7153,6 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::change_surface_degree(
                     &source,
                     black_box(*desired_degree_u),
@@ -7297,12 +7160,6 @@ fn execute(
                     black_box(*deformable),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_change_degree(
-                    black_box(*desired_degree_u),
-                    black_box(*desired_degree_v),
-                    black_box(*deformable),
-                );
                 result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7329,16 +7186,12 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::make_surface_periodic(
                     &source,
                     black_box(direction.geometry()),
                     black_box(*smooth),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result =
-                    source.try_make_periodic(black_box(direction.geometry()), black_box(*smooth));
                 result.map_err(ProbeError::from)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7435,7 +7288,6 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::change_surface_seam(
                     &source,
                     direction.geometry(),
@@ -7443,12 +7295,6 @@ fn execute(
                     black_box(parameter[1]),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_change_closed_seam(
-                    direction.geometry(),
-                    black_box(parameter[0]),
-                    black_box(parameter[1]),
-                );
                 result.map_err(ProbeError::from)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7585,7 +7431,6 @@ fn execute(
             )?;
             let (surface, elapsed) = measure_probe(iterations, || match direction {
                 SurfaceKnotAxis::U => {
-                    #[cfg(feature = "native-smlib")]
                     let result = viboceros_smlib::insert_surface_knot(
                         &source,
                         viboceros_geometry::SurfaceKnotDirection::U,
@@ -7593,13 +7438,9 @@ fn execute(
                         black_box(*multiplicity),
                     )
                     .map_err(CommandError::from);
-                    #[cfg(not(feature = "native-smlib"))]
-                    let result =
-                        source.try_insert_knot_u(black_box(*parameter), black_box(*multiplicity));
                     result
                 }
                 SurfaceKnotAxis::V => {
-                    #[cfg(feature = "native-smlib")]
                     let result = viboceros_smlib::insert_surface_knot(
                         &source,
                         viboceros_geometry::SurfaceKnotDirection::V,
@@ -7607,9 +7448,6 @@ fn execute(
                         black_box(*multiplicity),
                     )
                     .map_err(CommandError::from);
-                    #[cfg(not(feature = "native-smlib"))]
-                    let result =
-                        source.try_insert_knot_v(black_box(*parameter), black_box(*multiplicity));
                     result
                 }
             })?;
@@ -7637,7 +7475,6 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::remove_surface_knot(
                     &source,
                     match direction {
@@ -7647,11 +7484,6 @@ fn execute(
                     black_box(*parameter),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = match direction {
-                    SurfaceKnotAxis::U => source.try_remove_knot_u_near(black_box(*parameter)),
-                    SurfaceKnotAxis::V => source.try_remove_knot_v_near(black_box(*parameter)),
-                };
                 result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7707,7 +7539,6 @@ fn execute(
                 knots_v.clone(),
             )?;
             let ((surface, _), elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result = viboceros_smlib::remove_surface_multiple_knots(
                     &source,
                     SurfaceKnotDirection::Both,
@@ -7715,12 +7546,6 @@ fn execute(
                     black_box(maximum_kink_angle_degrees.to_radians()),
                 )
                 .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_remove_multiple_knots(
-                    SurfaceKnotDirection::Both,
-                    black_box(*remove_fully_multiple_knots),
-                    black_box(maximum_kink_angle_degrees.to_radians()),
-                );
                 result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -7745,12 +7570,9 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure_probe(iterations, || {
-                #[cfg(feature = "native-smlib")]
                 let result =
                     viboceros_smlib::make_surface_non_periodic(&source, SurfaceKnotDirection::Both)
                         .map_err(CommandError::from);
-                #[cfg(not(feature = "native-smlib"))]
-                let result = source.try_make_non_periodic(SurfaceKnotDirection::Both);
                 result
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -12321,29 +12143,17 @@ fn curve_through_backend(
     construction: CurveThroughConstruction,
     closed: bool,
 ) -> Result<NurbsCurve, ProbeError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_geometry::try_curve_through_points_with_interpolation(
-            points,
-            degree,
-            construction,
-            closed,
-            &mut |points, options| {
-                viboceros_smlib::interpolate_curve_for_command(points, options)
-                    .map_err(CommandError::from)
-            },
-        )
-        .map_err(ProbeError::from)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_curve_through_points(
-            points,
-            degree,
-            construction,
-            closed,
-        )?)
-    }
+    viboceros_geometry::try_curve_through_points_with_interpolation(
+        points,
+        degree,
+        construction,
+        closed,
+        &mut |points, options| {
+            viboceros_smlib::interpolate_curve_for_command(points, options)
+                .map_err(CommandError::from)
+        },
+    )
+    .map_err(ProbeError::from)
 }
 
 fn curve_through_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {

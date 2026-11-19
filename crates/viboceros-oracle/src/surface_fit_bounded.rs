@@ -44,7 +44,6 @@ fn run_with_metric(
     };
     let limit = fixture.absolute_tolerance.unwrap_or(tolerance.absolute());
     let build = || -> Result<Option<(NurbsSurface, f64, Option<Value>)>, ProbeError> {
-        #[cfg(feature = "native-smlib")]
         {
             if image {
                 viboceros_smlib::fit_surface_image_with_bound(&source, options, limit).map(|r| {
@@ -59,23 +58,6 @@ fn run_with_metric(
             }
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            if image {
-                Ok(
-                    viboceros_geometry::try_fit_surface_image_with_bound(&source, options, limit)?
-                        .map(|r| {
-                            let certificate = surface_fit_certificate::value(&r.certificate);
-                            (r.surface, r.maximum_deviation_bound, Some(certificate))
-                        }),
-                )
-            } else {
-                Ok(
-                    viboceros_geometry::try_fit_surface_with_bound(&source, options, limit)?
-                        .map(|r| (r.surface, r.maximum_deviation_bound, None)),
-                )
-            }
         }
     };
     let mut result = build()?;

@@ -1,6 +1,5 @@
 //! Surface-normal pull geometry compared through the public Rhino face API.
 use super::*;
-#[cfg(feature = "native-smlib")]
 pub(super) fn run(
     iterations: u32,
     curve: &NurbsCurveDefinition,
@@ -32,17 +31,6 @@ pub(super) fn run(
         Ok::<_, ProbeError>(json!({"curves":curves}))
     })
 }
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn run(
-    _: u32,
-    _: &NurbsCurveDefinition,
-    _: &NurbsSurfaceDefinition,
-    _: Tolerance,
-) -> Result<(Value, u64), ProbeError> {
-    Err(ProbeError::FixtureInvariant(
-        "pull_curve_surface requires native-smlib",
-    ))
-}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -52,7 +40,6 @@ mod tests {
             "../../../tools/rhino_oracle/fixtures/pull_curve_surface.json"
         ))
         .unwrap();
-        #[cfg(feature = "native-smlib")]
         {
             let result = run_request(&request).unwrap();
             assert_eq!(result.results.len(), 6);
@@ -82,13 +69,6 @@ mod tests {
                 );
             }
         }
-        #[cfg(not(feature = "native-smlib"))]
-        assert!(
-            run_request(&request)
-                .unwrap_err()
-                .to_string()
-                .contains("requires native-smlib")
-        );
     }
 }
 
@@ -153,15 +133,6 @@ mod command_tests {
             "../../../tools/rhino_oracle/fixtures/pull_curve_surface_command.json"
         ))
         .unwrap();
-        #[cfg(not(feature = "native-smlib"))]
-        let request = ProbeRequest {
-            operations: request
-                .operations
-                .into_iter()
-                .filter(|op| op.id().starts_with("plane-"))
-                .collect(),
-            ..request
-        };
         let result = run_request(&request).unwrap();
         assert!(!result.results.is_empty());
         for row in result.results {

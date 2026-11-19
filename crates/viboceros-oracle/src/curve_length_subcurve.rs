@@ -18,12 +18,9 @@ pub(super) fn run(
         let result = if length == 0. && source.as_ref().domain().contains(&start) {
             None
         } else {
-            #[cfg(feature = "native-smlib")]
             let result = viboceros_smlib::subcurve_at_arc_length(&source, start, length, tolerance)
                 .map_err(CommandError::from)?
                 .map(|(curve, _)| curve);
-            #[cfg(not(feature = "native-smlib"))]
-            let result = source.try_subcurve_at_arc_length(start, length, tolerance)?;
             result
         };
         let curve = if let Some(result) = result {

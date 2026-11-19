@@ -69,10 +69,7 @@ fn compare_case(id: &str, value: &serde_json::Value, prefix: &str) {
         matching: matching::options(recipe),
         reverse_target: recipe["reverse_target"].as_bool().unwrap(),
     };
-    #[cfg(feature = "native-smlib")]
     let operation = viboceros_smlib::average_match_surface_supports;
-    #[cfg(not(feature = "native-smlib"))]
-    let operation = try_average_match_nurbs_surfaces;
     let result = operation(
         &first,
         matching::side(recipe["side"].as_str().unwrap()),

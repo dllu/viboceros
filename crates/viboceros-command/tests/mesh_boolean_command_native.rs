@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 #[allow(dead_code)]
 #[path = "support/frozen_scene.rs"]
 mod frozen_scene;

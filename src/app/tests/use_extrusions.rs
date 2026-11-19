@@ -83,16 +83,6 @@ fn replay_creators(family: &str) {
         // every creator receives the same shared policy as interactive getters.
         enter(&mut app, "UseExtrusions");
         enter(&mut app, label.split_once('_').unwrap().0);
-        if !cfg!(feature = "native-smlib") && v["input"]["command"] == "ExtrudeSrf" {
-            let before = app.document.objects().cloned().collect::<Vec<_>>();
-            assert!(!app.try_execute_command_with_plane(
-                v["input"]["application"].as_str().unwrap(),
-                Some(context.construction_plane)
-            ));
-            assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
-            assert_eq!(app.document.undo_label(), None);
-            continue;
-        }
         assert!(
             app.try_execute_command_with_plane(
                 v["input"]["application"].as_str().unwrap(),

@@ -6,7 +6,7 @@ Preselected cutters skip the first selection. Enter or Escape finishes; accepted
 picks remain. `Undo` inside the command reverses the last pick. One Undo after
 finishing restores the entire command, including original geometry storage.
 
-Build with `native-smlib`. MeshTrim shares the
+MeshTrim shares the
 [usd-brep/SMLib partition kernel](../mesh-split-kernel.md), cutter conversion and
 [vertex-channel transfer](../mesh-split-channels.md) with [MeshSplit](mesh-split.md).
 Curves extrude along the active CPlane Z axis. `IP` opens the shared temporary

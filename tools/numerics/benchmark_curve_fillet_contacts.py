@@ -17,6 +17,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output",type=Path)
     parser.add_argument("--iterations",type=int,default=100)
+    parser.add_argument("--portable-baseline", type=Path, required=True,
+                        help="saved response from an older portable build on the same host")
     args=parser.parse_args()
     if not 1<=args.iterations<=1000:raise ValueError("iterations must be 1..1000")
     operations=[]
@@ -25,8 +27,10 @@ def main():
         for op in r["operations"]:
             op=copy.deepcopy(op);op["id"]=fixture+"/"+op["id"];operations.append(op)
     request=dict(protocol_version=1,iterations=args.iterations,operations=operations)
-    portable=OracleClient(native_smlib=False).run_viboceros(request,timeout=1800)
-    native=OracleClient(native_smlib=True).run_viboceros(request,timeout=1800)
+    portable=load_request(args.portable_baseline)
+    if portable.get("engine") != "viboceros" or portable.get("iterations") != args.iterations:
+        parser.error("portable baseline must be a Viboceros response with matching iterations")
+    native=OracleClient().run_viboceros(request,timeout=1800)
     if [r["id"] for r in native["results"]]!=[r["id"] for r in portable["results"]]:
         raise ValueError("result identifiers differ")
     checks=[]

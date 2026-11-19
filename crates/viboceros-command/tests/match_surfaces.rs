@@ -27,10 +27,7 @@ fn surface_matching_from_authored_jets_matches_public_sdk() {
             let a = captured::surface(&recipe["sources"][0]);
             let b = captured::surface(&recipe["sources"][1]);
             let original = (a.clone(), b.clone());
-            #[cfg(feature = "native-smlib")]
             let operation = viboceros_smlib::match_surface_supports;
-            #[cfg(not(feature = "native-smlib"))]
-            let operation = try_match_nurbs_surfaces;
             let tolerance = Tolerance::try_new(
                 1e-6,
                 1e-9,
@@ -133,10 +130,7 @@ fn failed_preparation_and_work_limits_leave_native_operands_reusable() {
     let source = captured::surface(&recipe["sources"][0]);
     let target = captured::surface(&recipe["sources"][1]);
     let snapshot = (source.clone(), target.clone());
-    #[cfg(feature = "native-smlib")]
     let operation = viboceros_smlib::match_surface_supports;
-    #[cfg(not(feature = "native-smlib"))]
-    let operation = try_match_nurbs_surfaces;
     let singular = NurbsSurface::try_new_rational(
         3,
         3,

@@ -1,7 +1,7 @@
 # ExtrudeSrf
 
 `ExtrudeSrf` sweeps surfaces and B-rep faces along a straight displacement using
-usd-brep's native topology sweep. Build with `--features native-smlib`.
+usd-brep's native topology sweep.
 Trim holes and nonplanar source surfaces remain in the solid's caps.
 
 Start the command, select surface objects and press Enter, then pick a distance
@@ -111,6 +111,6 @@ cutters, negative and oblique sweeps, and enclosed cutter apertures.
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_extrusion
-cargo test -p viboceros-command -p viboceros --features native-smlib extrude_surface
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_extrusion.json --native-smlib
+cargo test -p viboceros-command -p viboceros extrude_surface
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_extrusion.json
 ```

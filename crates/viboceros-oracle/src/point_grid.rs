@@ -62,7 +62,6 @@ fn build(fixture: &PointGridFixture, points: &[Point3]) -> Result<NurbsSurface, 
             fixture.degree,
         )?)
     } else {
-        #[cfg(feature = "native-smlib")]
         {
             viboceros_smlib::interpolate_point_grid(
                 points,
@@ -72,15 +71,6 @@ fn build(fixture: &PointGridFixture, points: &[Point3]) -> Result<NurbsSurface, 
             )
             .map_err(CommandError::from)
             .map_err(ProbeError::from)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(NurbsSurface::try_through_point_grid(
-                points,
-                fixture.count,
-                fixture.degree,
-                fixture.closed,
-            )?)
         }
     }
 }
@@ -93,7 +83,6 @@ pub(super) fn build_brep(
     Ok(if fixture.control {
         Brep::try_control_point_grid(&points, fixture.count, fixture.degree, tolerance)?
     } else {
-        #[cfg(feature = "native-smlib")]
         let result = viboceros_smlib::point_grid_brep(
             &points,
             fixture.count,
@@ -102,14 +91,6 @@ pub(super) fn build_brep(
             tolerance,
         )
         .map_err(CommandError::from)?;
-        #[cfg(not(feature = "native-smlib"))]
-        let result = Brep::try_through_point_grid(
-            &points,
-            fixture.count,
-            fixture.degree,
-            fixture.closed,
-            tolerance,
-        )?;
         result
     })
 }

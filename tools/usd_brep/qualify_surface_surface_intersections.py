@@ -52,7 +52,7 @@ def main():
     request = load_request(ROOT/fixture)
     expected = json.loads((ROOT/observation).read_text())
     assert len(request['operations']) == 121
-    native = OracleClient(native_smlib=True).run_viboceros_audit(request, timeout=1800)
+    native = OracleClient().run_viboceros_audit(request, timeout=1800)
     portable = OracleClient().run_viboceros_audit(request, timeout=1800)
     rhino = compare_audit_response(native, expected, 1e-8, 1e-12).as_dict()
     def rows(response):

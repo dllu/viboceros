@@ -103,13 +103,10 @@ pub fn run(fixture: &BlendCurveFixture, tolerance: Tolerance) -> Result<(Value, 
     };
     let first_pick = first_reference.evaluate(first_parameter)?;
     let second_pick = second_reference.evaluate(second_parameter)?;
-    #[cfg(feature = "native-smlib")]
     let construct = |a, p, b, q, options, tolerance| {
         viboceros_smlib::blend_curve(a, p, b, q, options, tolerance)
             .map_err(viboceros_command::CommandError::from)
     };
-    #[cfg(not(feature = "native-smlib"))]
-    let construct = viboceros_geometry::try_blend_curve;
     let blend = construct(
         &first,
         first_pick,

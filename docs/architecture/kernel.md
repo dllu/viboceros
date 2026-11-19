@@ -6,21 +6,19 @@ The geometry crate owns validated primitives, curve and surface representations,
 B-rep topology, and geometric queries. Document policy, command input and UI state
 remain outside the kernel.
 
-## Native backends
+## Modeling and interchange
 
 `viboceros-opennurbs` owns the shared OpenNURBS build and C ABI. Geometry uses
 its public curve, mesh and SubD operations; file interchange links the same
 native archive. Geometry does not depend on the I/O crate.
 
-`viboceros-smlib` adapts usd-brep's SMLib kernel for native B-rep and NURBS
-modeling. Supported native command paths delegate construction, refinement,
-intersections and solid operations to this adapter. Rust retains operand
-selection, tolerance policy, document metadata and atomic admission. Native
-calls are serialized and operate on copied operands with owned output geometry.
-
-Portable and native capabilities differ. Their supported operations and remaining
-limits belong in the [native modeling guide](../native-modeling.md) and command
-pages, rather than a second feature list in this architecture overview.
+`viboceros-smlib` adapts usd-brep's SMLib kernel for B-rep and NURBS modeling
+and is required by the command, I/O and oracle crates. Construction, refinement,
+intersection and solid commands use this adapter wherever it can represent the
+operation and its inputs. Native calls are serialized and return owned geometry.
+Rust handles operand selection, tolerances, document metadata and validation
+before admission. See the [modeling guide](../native-modeling.md) for coverage
+and known limitations.
 
 ## Geometry modules
 
@@ -29,12 +27,13 @@ modules under `nurbs/`. Conic constructors share the existing validated curve
 representation; legacy regressions are grouped by operation under `nurbs/tests/`.
 Prepared samplers and derived caches retain immutable geometry snapshots.
 
-Shared algorithms supply curve fitting, surface pullback/pushup, trimming and
-Boolean classification. Exact constructions and certified portable paths remain
-available where the selected native backend does not supply the operation.
-Commands adapt these results without duplicating geometry algorithms.
+Shared Rust algorithms supply curve and surface evaluation, analytic
+constructions, trim checks, and Boolean classification. Some commands use
+specialized Rust producers where SMLib cannot provide the required geometry or
+topology, including certain concave planar faces and compound polyhedral
+Booleans.
 
-The portable B-rep is the validated representation shared by the document,
+The Rust B-rep is the validated representation shared by the document,
 file adapters, and native modeling bridge. Its mesh conversion owns the
 construction of polygon and planar n-gon faces. Face copies and trim removal
 share topology compaction, which keeps retained vertices and edges in source

@@ -1,6 +1,6 @@
 # BlendEdge
 
-Build with `--features native-smlib`. `BlendEdge` uses usd-brep's native selected-edge executive with a quintic curvature (G2) cross-section and unit blend scale. It retains editable B-rep surfaces, trims and topology.
+`BlendEdge` uses usd-brep's native selected-edge executive with a quintic curvature (G2) cross-section and unit blend scale. It retains editable B-rep surfaces, trims and topology.
 
 Start `BlendEdge`, select edges and press Enter. Edge-component preselection, click/window selection and ambiguity choices use the same picker as FilletEdge and ChamferEdge. Enter `Radius` followed by a value, or `Radius=0.5`; interactive values accept units such as `2mm`. Change `RailType=RollingBall|DistBetweenRails` while picking. Errors retain the getter and picks for retry; Esc/Cancel releases them.
 

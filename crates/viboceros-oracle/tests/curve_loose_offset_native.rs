@@ -63,11 +63,8 @@ fn polynomial_loose_offsets_reproduce_complete_native_curves() {
             assert_eq!(targets.len(), if op["both_sides"] == true { 2 } else { 1 });
             let mut used = vec![false; targets.len()];
             for &distance in &distances[..targets.len()] {
-                #[cfg(feature = "native-smlib")]
                 let solver =
                     Some(viboceros_smlib::curve_edit_point_interpolation as CurveEditPointSolver);
-                #[cfg(not(feature = "native-smlib"))]
-                let solver = None;
                 let actual = source
                     .try_loose_polynomial_offset(distance, normal, tolerance, solver)
                     .unwrap();
@@ -125,10 +122,7 @@ fn polynomial_offset_matches_the_complete_outer_isocurve_of_a_native_loose_ribbo
         .unwrap();
     let s = surfaces::surface(&output["surfaces"][0]);
     let boundary = s.isocurve_v(*s.domain_u().end()).unwrap();
-    #[cfg(feature = "native-smlib")]
     let solver = Some(viboceros_smlib::curve_edit_point_interpolation as CurveEditPointSolver);
-    #[cfg(not(feature = "native-smlib"))]
-    let solver = None;
     let normal = Vector3::try_new(0., 0., 1.)
         .unwrap()
         .normalized_nonzero()

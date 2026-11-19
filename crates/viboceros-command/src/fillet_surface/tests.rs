@@ -50,25 +50,6 @@ fn parsing_rejects_ambiguous_or_invalid_inputs() {
     assert!(!options.extend);
     assert_eq!(options.radius, 0.25);
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn missing_native_kernel_is_explicit_and_does_not_change_document() {
-    let (registry, mut doc, ids) = sources();
-    let before = doc.objects().cloned().collect::<Vec<_>>();
-    let error = registry
-        .execute(
-            &mut doc,
-            &format!(
-                "FilletSrf Sources={},{} Pick1=0.2,0.5 Pick2=0.2,0.5",
-                ids[0], ids[1]
-            ),
-        )
-        .unwrap_err();
-    assert!(error.to_string().contains("native-smlib"));
-    assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
-    assert!(!doc.can_undo());
-}
-#[cfg(feature = "native-smlib")]
 mod native {
     use super::*;
     fn command(ids: [ObjectId; 2], opts: &str) -> String {
@@ -205,6 +186,5 @@ mod native {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[path = "recorded.rs"]
 mod recorded;

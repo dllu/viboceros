@@ -14,15 +14,10 @@ JoinCopy JoinDisjointMeshes=No
 Each invocation uses one family; natural NURBS surfaces and B-reps can mix.
 The command-first workflow filters eligible objects and exposes the remembered
 mesh option and [SubD smooth/crease choices](join-subd.md). Mixed-family joining
-remains unimplemented. Surface joining
-uses [certified boundary assembly](../brep-edge-joining.md) with the coverage and
-Rhino differences described below.
-
-With `--features native-smlib`, surface joining instead uses
+remains unimplemented. Surface joining uses
 [usd-brep stitching](../smlib-joining.md), including partial circular overlaps.
-It retains the command's selection, metadata and history policy. Kernel gap
-admission, vertex placement and face parameterization can differ; the historical
-Rhino comparison scores below apply to builds without this feature.
+See the [older certified-assembly results](../brep-edge-joining.md) for
+measurements taken before the SMLib migration.
 
 `JoinCopy` retains all original objects, including their exact geometry, IDs,
 attributes, and groups. Outputs inherit their seed's attributes and memberships.
@@ -36,22 +31,10 @@ produce fresh copies. Both commands use the same staged geometry/document path.
 
 ## Surfaces and polysurfaces
 
-In builds without `native-smlib`, open inputs use a certified distance strictly below 1.8 times the document
-tolerance for preselection, or 2.1 times for command-first selection. These
-[measured command policies](../join-selection-distance.md) do not change the
-explicit kernel assembly API's distance argument; exact-cutoff endpoint behavior
-still has recorded differences.
-Complete boundaries must pass the kernel's whole-curve certificate. Different
-curved degrees, knot refinements and positive rational weights now have an
-[exact span/product certificate](../join-curved-certificates.md) through degree 16;
-[projective parameter alignment](../join-projective-correspondence.md) also
-certifies changed rational speeds. Continuous, exactly straight boundaries
-support independent degrees/parameter speeds
-and automatic partial-overlap splitting. Surfaces are never refitted. Newly
-closed outputs use exact spatial orientation, with a numerical volume fallback
-for unsupported single-shell representations. [Scale-independent normalization](../join-orientation.md)
-does not require a representable volume. This is not a Boolean union or a
-non-self-intersection certificate.
+The command submits a join distance just below 1.8 times the document
+tolerance for preselection and 2.1 times for command-first selection.
+SMLib then checks the eligible boundaries. For retained coverage and tolerance
+behavior, see the [stitching guide](../smlib-joining.md).
 
 Preselection processes document order and emits every connected output, including
 fresh copies of unjoined open inputs. A disconnected source can contribute to

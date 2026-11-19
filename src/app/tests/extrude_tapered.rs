@@ -46,7 +46,6 @@ fn tapered_source_getter_preserves_inline_options_and_accepts_option_edits() {
     enter(&mut app, "Cancel");
     assert!(app.active_command.is_none());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_distance_getter_commits_and_replays_geometry() {
     let mut app = test_app();
@@ -81,7 +80,6 @@ fn tapered_failed_distance_keeps_the_getter_and_sources() {
     assert_eq!(format!("{:?}", app.document), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_direction_points_use_displacement_and_keep_the_base_after_failed_target() {
     let mut app = test_app();

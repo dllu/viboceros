@@ -82,7 +82,6 @@ mod curve_completion;
 mod curve_deviation;
 mod curve_input;
 mod curve_offset;
-#[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/curve_path.rs"]
 mod curve_path_support;
 mod curve_rebuild_preview;
@@ -123,12 +122,10 @@ mod extract_curvature_graph;
 mod extract_points;
 mod extract_surface;
 mod extrude_apex_subd;
-#[cfg(feature = "native-smlib")]
 mod extrude_curve_path_native;
 mod extrude_curve_subd;
 mod extrude_surface;
 mod extrude_surface_apex;
-#[cfg(feature = "native-smlib")]
 mod extrude_surface_apex_native;
 mod extrude_surface_path;
 mod extrude_surface_tapered;
@@ -170,9 +167,7 @@ mod lines;
 mod loft_input;
 mod loft_options;
 mod loft_rebuild;
-#[cfg(feature = "native-smlib")]
 mod loft_splitting_native;
-#[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/loft_splitting.rs"]
 mod loft_splitting_support;
 mod maelstrom;
@@ -250,7 +245,6 @@ mod subd_direction_support;
 mod subd_edge_analysis;
 mod subd_join;
 mod subd_volume;
-#[cfg(feature = "native-smlib")]
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;
 mod torus;

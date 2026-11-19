@@ -16,28 +16,12 @@ fn data() -> (Value, Value) {
 fn interpolate(a: &NurbsSurface, b: &NurbsSurface) -> NurbsSurface {
     let degree = [b.degree_u(), b.degree_v()];
     let knots = [b.knots_u(), b.knots_v()];
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::interpolate_surface_in_basis(a, degree, knots).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_interpolate_surface_in_basis(a, degree, knots).unwrap()
-    }
+    viboceros_smlib::interpolate_surface_in_basis(a, degree, knots).unwrap()
 }
 fn fit(a: &NurbsSurface, options: SurfaceFitOptions, limit: f64) -> BoundedSurfaceImageFit {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::fit_surface_image_with_bound(a, options, limit)
-            .unwrap()
-            .unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_fit_surface_image_with_bound(a, options, limit)
-            .unwrap()
-            .unwrap()
-    }
+    viboceros_smlib::fit_surface_image_with_bound(a, options, limit)
+        .unwrap()
+        .unwrap()
 }
 fn bound(a: &NurbsSurface, b: &NurbsSurface) -> f64 {
     a.parameter_surface_deviation_bound(b, 1e-9)

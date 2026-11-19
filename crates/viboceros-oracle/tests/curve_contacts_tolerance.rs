@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 use serde_json::Value;
 use viboceros_oracle::{ProbeRequest, run_request};
 

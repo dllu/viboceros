@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 #[path = "../../viboceros-geometry/tests/support/loft_points.rs"]
 mod comparison;
 

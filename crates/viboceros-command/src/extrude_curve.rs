@@ -14,7 +14,7 @@ pub(super) type SplitPreference = std::sync::Arc<remembered::Remembered<SplitSet
 mod surface;
 use options::{Direction, parse_curve_extrusion};
 
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod native;
 #[cfg(test)]
 mod tests;
@@ -64,7 +64,6 @@ impl Command for ExtrudeCurveCommand {
         if curves.is_empty() {
             return Err(CommandError::NoExtrudableCurves);
         }
-        #[cfg(feature = "native-smlib")]
         let profiles = if matches!(&input_direction, Direction::Numeric(_)) {
             curves
                 .iter()
@@ -76,13 +75,10 @@ impl Command for ExtrudeCurveCommand {
         let direction = match input_direction {
             Direction::Explicit(direction) => direction,
             Direction::Numeric(distance) => {
-                #[cfg(feature = "native-smlib")]
                 let normal = viboceros_smlib::KernelCurve::parallel_plane_normal(
                     &profiles.iter().collect::<Vec<_>>(),
                     document.tolerance(),
                 )?;
-                #[cfg(not(feature = "native-smlib"))]
-                let normal = portable_parallel_normal(&curves, document.tolerance())?;
                 let normal = if let Some(normal) = normal {
                     positive_normal(normal)?
                 } else {
@@ -209,35 +205,4 @@ fn positive_normal(normal: Vector3) -> Result<Vector3, CommandError> {
     } else {
         normal
     })
-}
-
-#[cfg(not(feature = "native-smlib"))]
-fn portable_parallel_normal(
-    curves: &[(ObjectId, NurbsCurve)],
-    tolerance: Tolerance,
-) -> Result<Option<Vector3>, CommandError> {
-    let zero = Point3::try_new(0., 0., 0.)?;
-    let mut points = Vec::new();
-    for (_, curve) in curves {
-        let origin = curve.control_points()[0].point();
-        for p in curve.control_points() {
-            points.push(zero.translated(origin.vector_to(p.point())?)?);
-        }
-    }
-    if let Some(plane) = viboceros_geometry::try_control_polygon_plane(&points, tolerance)? {
-        return Ok(Some(plane.normal().as_vector()));
-    }
-    for (_, curve) in curves {
-        if !curve.is_linear(tolerance)? {
-            return Ok(None);
-        }
-    }
-    let positions = curves
-        .iter()
-        .flat_map(|(_, c)| c.control_points().iter().map(|p| p.point()))
-        .collect::<Vec<_>>();
-    Ok(
-        viboceros_geometry::try_control_polygon_plane(&positions, tolerance)?
-            .map(|p| p.normal().as_vector()),
-    )
 }

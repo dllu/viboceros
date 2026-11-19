@@ -43,9 +43,6 @@ fn shell_matches_native_geometry_metadata_identity_history_and_archives() {
         }
         println!("SHELL_COMMAND_CASE {id}");
         let mut doc = inputs::setup(&value);
-        if !inputs::supported(&doc, &value) {
-            continue;
-        }
         let state = inputs::State::capture(&doc);
         inputs::check(&doc, &value["before"], false);
         if inputs::success(&value) {
@@ -62,7 +59,6 @@ fn shell_matches_native_geometry_metadata_identity_history_and_archives() {
     println!("SHELL_COMMAND_COUNT {count}");
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn shell_sdk_box_and_circular_openings_match_native_geometry_and_mass() {
     use viboceros_document::{Document, Geometry};

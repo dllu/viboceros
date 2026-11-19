@@ -56,8 +56,7 @@ Headless calls without a view use model-space distances. Supply
 `picking::Projection` to `Draft::point_in_view` or
 `CommandRegistry::execute_with_pick_projection` to reproduce a viewport getter.
 Opening a 3dm retains its viewport pixel context until the first layout. The
-interactive path uses the selected backend's homogeneous fitting operations;
-`native-smlib` uses usd-brep for open fits and cyclic collocation. Cyclic removal
+interactive path uses usd-brep for open fits and cyclic collocation. Cyclic removal
 reuses the geometry module's periodic basis and Greville interpolation machinery.
 
 The [validation receipt](../remove-knot-validation.json) records the native
@@ -83,7 +82,7 @@ high-DPI pixel parity and general performance remain unqualified.
 
 ```sh
 cargo test -p viboceros-command --test remove_knot_command
-cargo test -p viboceros-command --features native-smlib --test remove_knot_command
+cargo test -p viboceros-command --test remove_knot_command
 cargo test -p viboceros app::tests::remove_knot
 python3 -m unittest tools.rhino_oracle.test_remove_knot_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_remove_knot_command

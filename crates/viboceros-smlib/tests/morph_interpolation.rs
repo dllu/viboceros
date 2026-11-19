@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     CurvePreviewCage, GeometryError, MorphInterpolationSolver, NurbsCurve, NurbsSurface,
     ParameterSide, Point3, PointMorph, SurfacePreviewCage, Tolerance, WeightedPoint3,

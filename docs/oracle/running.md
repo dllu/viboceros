@@ -233,13 +233,11 @@ report = OracleClient().compare(load_request("tools/rhino_oracle/fixtures/core.j
 assert report.passed
 ```
 
-Set `OracleClient(native_smlib=True)` or pass `--native-smlib` to the Python CLI
-to enable the optional usd-brep backend for Viboceros probes. The selection
-applies to ordinary runs, audit, saved replay and live comparison. It requires
-the [native kernel setup](../../README.md); the default uses the portable build.
+Viboceros probes use the standard usd-brep build for ordinary runs, audit,
+saved replay and live comparison. Follow the [build setup](../../README.md).
 
 ```python
-client = OracleClient(native_smlib=True)
+client = OracleClient()
 report = client.replay(
     load_request("tools/rhino_oracle/fixtures/blend_lines.json"),
     load_request("tools/rhino_oracle/observations/blend_lines.json"),

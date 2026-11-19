@@ -90,7 +90,7 @@ def main():
             op = copy.deepcopy(op)
             op['include_api'] = False
             portable_request['operations'].append(op)
-    native = OracleClient(native_smlib=True).run_viboceros_audit(native_request, timeout=1800)
+    native = OracleClient().run_viboceros_audit(native_request, timeout=1800)
     portable = OracleClient().run_viboceros_audit(portable_request, timeout=1800)
     def outcomes(response):
         return {r['result']['id'] if r['status'] == 'success' else r['id']: r for r in response['outcomes']}

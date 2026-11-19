@@ -32,7 +32,6 @@ selected on completion and are released when Undo or Redo replays them.
 
 Circular NURBS recognition uses the shared public OpenNURBS predicate at Rhino's
 geometric zero tolerance, independently of the document's fitting tolerance.
-The portable and `native-smlib` builds share the same command and geometry policy.
 
 See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/modifyradius.htm).
 
@@ -46,7 +45,7 @@ separate continuous-error certificate or a kernel performance benchmark.
 
 ```sh
 cargo test -p viboceros-command --test modify_radius
-cargo test -p viboceros-command --features native-smlib --test modify_radius
+cargo test -p viboceros-command --test modify_radius
 cargo test -p viboceros app::tests::modify_radius
 ```
 

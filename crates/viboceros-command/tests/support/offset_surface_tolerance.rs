@@ -83,16 +83,6 @@ pub fn setup(v: &Value) -> Document {
         inputs::setup(v)
     }
 }
-pub fn supported(_id: &str, v: &Value) -> bool {
-    if !inputs::success(v) {
-        return true;
-    }
-    if cfg!(feature = "native-smlib") {
-        true
-    } else {
-        !curved(v)
-    }
-}
 pub fn options(v: &Value) -> viboceros_command::offset_surface::Options {
     let text = inputs::command(v);
     viboceros_command::offset_surface::parse(

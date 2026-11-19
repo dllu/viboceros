@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsCurve, Point3, Tolerance, UnitVector3, WeightedPoint3};
 use viboceros_smlib::rail_revolved_surface;
 fn p(x: f64, y: f64, z: f64) -> Point3 {

@@ -26,7 +26,6 @@ impl Output {
             return Ok(arc.to_nurbs()?);
         }
         let d = self.deformation;
-        #[cfg(feature = "native-smlib")]
         {
             arc.try_deformable_with_rebuild::<CommandError>(
                 d.degree,
@@ -41,10 +40,6 @@ impl Output {
                     )?)
                 },
             )
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(arc.try_deformable(d.degree, d.point_count)?)
         }
     }
     pub fn geometry(self, arc: CircularArc3) -> Result<Geometry, CommandError> {

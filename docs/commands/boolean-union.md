@@ -1,6 +1,6 @@
 # BooleanUnion
 
-Linux builds with `--features native-smlib` use
+Viboceros uses
 [usd-brep directly](../smlib-set-booleans.md) for closed planar and curved solids.
 Native errors propagate before model edits; the Rust Union adapters are compiled
 only without that feature. Broader arbitrary-input qualification remains open.
@@ -58,10 +58,8 @@ bodies successfully union. Cancellation changes no geometry or model history.
 ## Current scope and native evidence
 
 Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
-cavities, and straight edges from earlier Boolean results. The convex certificate
-selects the faster construction when available; otherwise the general exact
-polyhedral certificate applies in builds without `native-smlib`. Native builds
-delegate these closed inputs and qualified curved solids to SMLib. Open inputs, intersecting input
+cavities, and straight edges from earlier Boolean results. SMLib handles closed solids and
+qualified curved inputs. Open inputs, intersecting input
 shells, unsupported plane roundoff, resource exhaustion, and singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence

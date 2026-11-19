@@ -1,6 +1,6 @@
 # Native surface joining
 
-Linux builds with `--features native-smlib` route the B-rep geometry stage of
+Viboceros routes the B-rep geometry stage of
 Join and JoinCopy through usd-brep's existing `SmStitch` executive. Rust retains
 command selection policy, source ownership, metadata, groups and Undo/Redo.
 The default Rust boundary matcher is compiled into the command adapter only
@@ -98,5 +98,5 @@ and workspace formatting checks passed.
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-smlib \
   --features native --test stitching
 CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test --release -p viboceros-command \
-  --features native-smlib join::
+  join::
 ```

@@ -83,7 +83,6 @@ pub(super) fn geometry(
                 true,
             )?);
         } else {
-            #[cfg(feature = "native-smlib")]
             for piece in viboceros_smlib::pull_curve_to_surface(&curve, surface, tolerance)? {
                 for event in viboceros_geometry::clip_surface_curve_to_face_with_operation(
                     &piece.spatial,
@@ -102,10 +101,6 @@ pub(super) fn geometry(
                     });
                 }
             }
-            #[cfg(not(feature = "native-smlib"))]
-            return Err(CommandError::Usage(
-                "Pull to curved surfaces requires native-smlib",
-            ));
         }
         if output.len() > MAX_INTERSECT_OUTPUTS {
             return Err(CommandError::TooManyIntersectOutputs {

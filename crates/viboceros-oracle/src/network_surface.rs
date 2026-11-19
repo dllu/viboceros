@@ -76,26 +76,16 @@ fn construct(
     f: &Fixture,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, ProbeError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Ok(viboceros_smlib::gordon_network_surface(
-            curves,
-            Tolerance::try_new(f.edge_tolerance, tolerance.relative(), tolerance.angular())?,
-            Tolerance::try_new(
-                f.interior_tolerance,
-                tolerance.relative(),
-                tolerance.angular(),
-            )?,
-        )
-        .map_err(CommandError::from)?)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (curves, f, tolerance);
-        Err(ProbeError::FixtureInvariant(
-            "Gordon networks require native-smlib",
-        ))
-    }
+    Ok(viboceros_smlib::gordon_network_surface(
+        curves,
+        Tolerance::try_new(f.edge_tolerance, tolerance.relative(), tolerance.angular())?,
+        Tolerance::try_new(
+            f.interior_tolerance,
+            tolerance.relative(),
+            tolerance.angular(),
+        )?,
+    )
+    .map_err(CommandError::from)?)
 }
 
 #[cfg(test)]
@@ -130,26 +120,7 @@ mod validation_tests {
     }
 }
 
-#[cfg(all(test, not(feature = "native-smlib")))]
-mod portable_tests {
-    use super::*;
-    #[test]
-    fn network_surface_without_native_declines_the_probe() {
-        let mut request: ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/network_surface.json"
-        ))
-        .unwrap();
-        request.operations.truncate(1);
-        assert!(
-            run_request(&request)
-                .unwrap_err()
-                .to_string()
-                .contains("native-smlib")
-        );
-    }
-}
-
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

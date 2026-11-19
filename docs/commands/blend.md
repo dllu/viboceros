@@ -36,6 +36,6 @@ For `Blend`, G3 and higher continuity, interactive curve-handle adjustment,
 curve trimming and joining are pending. [BlendSrf](blend-srf.md) provides
 surface-edge selection, preview, rectangular trimming and joining.
 
-With `native-smlib`, exact endpoint interpolation uses usd-brep's derivative
+exact endpoint interpolation uses usd-brep's derivative
 basis and homogeneous solver. Handle defaults and domain policy stay shared;
 see [native construction and replay](../smlib-curve-blend.md).

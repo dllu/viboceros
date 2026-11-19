@@ -3,7 +3,6 @@ use super::*;
 mod options;
 mod topology;
 
-#[cfg(feature = "native-smlib")]
 mod native;
 
 const EXTRUDE_CURVE_ALONG_CURVE_USAGE: &str = "ExtrudeCrvAlongCrv [PathName=name] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No] [SplitAtTangents=Yes|No]";
@@ -36,7 +35,6 @@ impl Command for ExtrudeCurveAlongCurveCommand {
 
         let crease = self.0.get().0;
         let path_cuts = topology::cuts(&path, crease, split)?;
-        #[cfg(feature = "native-smlib")]
         let native_path = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&path)?;
         let mut extrusions = Vec::new();
         for id in &profile_ids {
@@ -48,9 +46,6 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             else {
                 continue;
             };
-            #[cfg(not(feature = "native-smlib"))]
-            let wall = NurbsSurface::try_extruded_curve_along_curve(&profile, &path)?;
-            #[cfg(feature = "native-smlib")]
             let wall = native::surface(&profile, &native_path)?;
             let profile_cuts = topology::cuts(&profile, crease, split)?;
             let geometry = topology::finish(

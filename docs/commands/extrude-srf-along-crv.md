@@ -1,6 +1,6 @@
 # ExtrudeSrfAlongCrv
 
-Build with `--features native-smlib`. `ExtrudeSrfAlongCrv` translates surface
+`ExtrudeSrfAlongCrv` translates surface
 boundaries along an open NURBS path with fixed profile orientation. The source
 stays at its original position, independently of the path's location. Curved
 source faces and trim holes remain in the caps when `Solid=Yes`.
@@ -88,6 +88,6 @@ See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/comma
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_path_extrusion
-cargo test -p viboceros-command -p viboceros --features native-smlib extrude_surface_path
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_path_extrusion.json --native-smlib
+cargo test -p viboceros-command -p viboceros extrude_surface_path
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/surface_path_extrusion.json
 ```

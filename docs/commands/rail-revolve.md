@@ -34,7 +34,7 @@ back to translation, matching the observed inclusive Rhino threshold.
 kinks and tangent joins into connected B-rep faces. `No` retains a single NURBS
 surface with its internal joins. Options are remembered for subsequent calls.
 
-This implementation requires `native-smlib`. It reuses usd-brep's rational
+RailRevolve uses usd-brep's rational
 `SmBSplineSurface::CreateSwungSurface` tensor, with an axis-local coordinate map
 for spatial profile rotation and axial following. Kernel inputs are private
 copies; no Rhino proprietary code is used. Common-sign rational weights are

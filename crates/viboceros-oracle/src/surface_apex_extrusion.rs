@@ -100,12 +100,9 @@ fn brep_value(b: &Brep, tolerance: Tolerance) -> Result<Value, ProbeError> {
         .is_solid()
         .then(|| b.signed_volume(tolerance).map(f64::abs))
         .transpose()?;
-    #[cfg(feature = "native-smlib")]
     let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
         .and_then(|s| s.tight_bounds())
         .map_err(CommandError::from)?;
-    #[cfg(not(feature = "native-smlib"))]
-    let bounds = b.bounds();
     Ok(
         json!({"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":volume,
         "bounds":[bounds.min().to_array(),bounds.max().to_array()]}),
@@ -148,7 +145,7 @@ pub(super) fn run(
         Ok(json!({"breps":[brep_value(&combined, tolerance)?]}))
     })
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

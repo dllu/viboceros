@@ -26,8 +26,7 @@ the original face table. The getter also accepts `Object=id Face=index` for
 the first pick and a single integer for the second pick. Indices apply to the
 current source before this merge; obtain them again after changing topology.
 
-Meshes use OpenNURBS in all builds. B-reps require `--features native-smlib`
-and use usd-brep's protected topology remover. Both paths share the existing
+Meshes use OpenNURBS. B-reps use usd-brep's protected topology remover. Both paths share the existing
 [whole-object merge](merge-all-coplanar-faces.md) admission, resource limits and
 tolerance policy. Holes and surviving boundary vertices are retained. Copies
 are staged before replacement; object identity, attributes, groups and selection

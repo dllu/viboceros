@@ -3,7 +3,6 @@ use crate::*;
 use std::sync::Arc;
 mod arguments;
 mod execute;
-#[cfg(feature = "native-smlib")]
 mod geometry;
 use arguments::{Arguments, Settings};
 pub(super) const USAGE: &str = "MeshSplit [Tolerance=Auto|Document|Zero] [CoplanarFaces=Keep|Drop] [CreateNgons=Yes|No] [DiscardUnsplitMeshes=Yes|No] FirstSet=ids [SecondSet=ids] [InfinitePlane=definition]";

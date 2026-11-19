@@ -61,7 +61,7 @@ the native matching tolerances or acceptance rules.
 ```sh
 cargo test -p viboceros-smlib --features native --test stitch_uv
 cargo test -p viboceros-command --features native-smlib --test native_unclamped_join
-python3 -m tools.rhino_oracle audit tools/rhino_oracle/fixtures/join_isocurve_certificates.json --native-smlib
+python3 -m tools.rhino_oracle audit tools/rhino_oracle/fixtures/join_isocurve_certificates.json
 ```
 
 The [validation record](native-uv-transpose-validation.json) retains source and

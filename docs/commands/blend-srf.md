@@ -64,7 +64,7 @@ unequal rational spline bases/domains, trimming, joining, cancellation, stale
 previews, undo/redo and OpenNURBS 3DM readback. The supplied ASTRA V3 collar
 fixture also checks the independent minimum-jerk transition across a 41×41 grid.
 
-With `native-smlib`, parent trimming, clamping, degree matching and knot matching
+parent trimming, clamping, degree matching and knot matching
 use usd-brep's existing checked editors. Its derivative basis and homogeneous
 solver also construct the exact boundary interpolation, with independent
 continuity and bulges. See [native construction](../smlib-surface-blend.md).

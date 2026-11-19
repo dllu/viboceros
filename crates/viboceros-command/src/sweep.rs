@@ -8,15 +8,8 @@ pub(super) fn rebuild_sections(
     count: usize,
     tolerance: Tolerance,
 ) -> Result<Vec<SweepSection>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::rebuild_sweep_sections(sections, count, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(Sweep1::rebuild_sections(sections, count, tolerance)?)
-    }
+    viboceros_smlib::rebuild_sweep_sections(sections, count, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn model(
@@ -26,15 +19,8 @@ pub(super) fn model(
     blend: SweepBlend,
     tolerance: Tolerance,
 ) -> Result<Sweep1, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::sweep_model(rail, sections, style, blend, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(Sweep1::try_new(rail, sections, style, blend, tolerance)?)
-    }
+    viboceros_smlib::sweep_model(rail, sections, style, blend, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn model_with_point_ends(
@@ -48,44 +34,18 @@ pub(super) fn model_with_point_ends(
     if ends.is_empty() {
         return model(rail, sections, style, blend, tolerance);
     }
-    #[cfg(feature = "native-smlib")]
     {
         viboceros_smlib::sweep_model_with_point_ends(rail, sections, ends, style, blend, tolerance)
             .map_err(knot_refinement::native_geometry_error)
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(Sweep1::try_new_with_point_ends(
-            rail, sections, ends, style, blend, tolerance,
-        )?)
-    }
 }
 
 pub(super) fn surface(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::sweep_surface(sweep, refit).map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(if refit {
-            sweep.to_surface()?
-        } else {
-            sweep.to_rail_basis_surface()?
-        })
-    }
+    viboceros_smlib::sweep_surface(sweep, refit).map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn fitted_model_surface(sweep: &Sweep1) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::fit_sweep_model_surface(sweep)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(sweep.fit_model_surface()?)
-    }
+    viboceros_smlib::fit_sweep_model_surface(sweep).map_err(knot_refinement::native_geometry_error)
 }
 
 mod options;

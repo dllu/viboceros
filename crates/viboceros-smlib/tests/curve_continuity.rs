@@ -1,5 +1,3 @@
-#![cfg(feature = "native")]
-
 #[test]
 fn native_curve_continuity_uses_curvature_vectors_independent_of_parameterization() {
     let output = std::process::Command::new(env!("VIBOCEROS_NATIVE_CURVE_CONTINUITY_PROBE"))

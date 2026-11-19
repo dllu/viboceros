@@ -4,7 +4,6 @@ use crate::viewport::surface_extrusion::{SurfaceExtrusionDraft, SurfacePathPrevi
 use viboceros_drafting::PointInput;
 use viboceros_geometry::NurbsCurve;
 
-#[cfg(feature = "native-smlib")]
 mod boundary_preview;
 
 pub(super) struct PathPoints {
@@ -14,7 +13,6 @@ pub(super) struct PathPoints {
     reverse: bool,
     start: Option<f64>,
     draft: Option<SurfaceExtrusionDraft>,
-    #[cfg(feature = "native-smlib")]
     boundary_preview: Option<boundary_preview::Preview>,
 }
 
@@ -92,7 +90,6 @@ impl VibocerosApp {
         let draft = matches!(session.boundary, Boundary::None)
             .then(|| SurfaceExtrusionDraft::capture(&self.document, &session.sources.targets))
             .flatten();
-        #[cfg(feature = "native-smlib")]
         let boundary_preview = session.boundary.face().and_then(|boundary| {
             boundary_preview::Preview::capture(&self.document, &session.sources.targets, boundary)
         });
@@ -108,7 +105,6 @@ impl VibocerosApp {
             reverse,
             start: None,
             draft,
-            #[cfg(feature = "native-smlib")]
             boundary_preview,
         });
         self.log_surface_path_prompt();

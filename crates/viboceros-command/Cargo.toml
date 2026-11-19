@@ -6,7 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-viboceros-smlib = { path = "../viboceros-smlib", optional = true, features = ["native"] }
+viboceros-smlib.workspace = true
 num-bigint.workspace = true
 num-rational.workspace = true
 num-traits.workspace = true
@@ -19,23 +19,11 @@ viboceros-geometry.workspace = true
 viboceros-io.workspace = true
 
 [features]
-default = []
-native-smlib = ["dep:viboceros-smlib", "viboceros-io/native-smlib"]
+# Compatibility for existing build commands. USD BRep is always linked.
+native-smlib = []
 
 [dev-dependencies]
 flate2.workspace = true
 serde_json.workspace = true
 tempfile = "3.27.0"
 monstertruck.workspace = true
-
-[[example]]
-name = "curved_difference"
-required-features = ["native-smlib"]
-
-[[example]]
-name = "curved_sets"
-required-features = ["native-smlib"]
-
-[[example]]
-name = "curved_split"
-required-features = ["native-smlib"]

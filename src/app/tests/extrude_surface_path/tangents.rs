@@ -74,7 +74,7 @@ fn surface_path_tangent_option_changes_the_subcurve_preview_and_survives_complet
         assert_eq!(format!("{:?}", app.document), before);
 
         enter(&mut app, "w10,20.5,3");
-        if cfg!(feature = "native-smlib") {
+        {
             assert!(app.surface_path_prompt.is_none(), "{:?}", app.command_log);
             let Geometry::Brep(result) = app.document.selected_objects().next().unwrap().geometry()
             else {
@@ -87,9 +87,6 @@ fn surface_path_tangent_option_changes_the_subcurve_preview_and_survives_complet
             );
             enter(&mut app, "Undo");
             assert_eq!(app.document.objects().count(), 2);
-        } else {
-            assert!(app.surface_path_prompt.is_some());
-            assert_eq!(format!("{:?}", app.document), before);
         }
     }
 }

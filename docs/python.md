@@ -5,8 +5,7 @@ and submodule setup in the [README](../README.md#build-and-run).
 Run your script from the checkout with Python 3.10 or newer. To import it
 from elsewhere, install the Python package with `python -m pip install -e .`
 and put the built `viboceros` executable on `PATH` or set `VIBOCEROS_BIN` to its
-path. `Session(executable=...)` can select a specific build, including one built
-with `--features native-smlib`.
+path. Use `Session(executable=...)` to select a specific executable.
 
 ```python
 from viboceros import ENTER, Pick, Session

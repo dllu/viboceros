@@ -70,16 +70,6 @@ impl MeshSplitCommand {
         Ok(format!("MeshSplit produced {count} mesh(es)"))
     }
 }
-#[cfg(not(feature = "native-smlib"))]
-fn compute(
-    _: &Document,
-    _: &[ObjectId],
-    _: &Arguments,
-    _: CommandContext,
-) -> Result<Vec<(ObjectId, TriangleMesh)>, CommandError> {
-    Err(CommandError::MeshSplitRequiresNativeKernel)
-}
-#[cfg(feature = "native-smlib")]
 fn compute(
     doc: &Document,
     first: &[ObjectId],

@@ -1,15 +1,10 @@
-//! Optional native USD BRep/SMLib adapter. Enable `native` on Linux.
+//! USD BRep/SMLib modeling adapter for Viboceros.
 //!
-//! Kernel handles are thread-local; native calls are serialized process-wide.
-//! Boolean operations copy their operands before mutation. Native solids can
-//! import and export owned NURBS topology with validated Rust B-reps. The optional
-//! application feature uses this adapter for closed curved BooleanDifference,
-//! BooleanUnion, BooleanIntersection and BooleanSplit, surface joining/offsets,
-//! and native curve extrusion.
-#[cfg(feature = "native")]
+//! Kernel handles stay on their creating thread, and calls are serialized
+//! process-wide. Boolean operations copy their operands before mutation.
+//! Validated Rust B-reps carry owned topology across the native boundary.
 mod native;
 // The native wall classifier calls the shared OpenNURBS C ABI directly.
-#[cfg(feature = "native")]
 pub use native::{
     BooleanOperation, ChamferRailType, CurveDistanceExtrema, CurveDistanceWitness,
     EdgeBlendRailType, Error, FittedGordonNetwork, GordonCurveFamilyFit, GordonCurveFitClock,
@@ -55,5 +50,4 @@ pub use native::{
     sweep_surface, trim_blend_parent, trim_curve, trim_surface, trim_surface_direction,
     two_rail_sweep_surface,
 };
-#[cfg(feature = "native")]
 use viboceros_opennurbs as _;

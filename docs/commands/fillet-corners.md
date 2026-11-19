@@ -40,7 +40,7 @@ arc, with both source leaves trimmed at their tangent points.
 Sharp internal knots of a curved NURBS leaf are split into exact NURBS pieces
 and rounded in the same way, including when the selected object is a standalone
 NURBS curve.
-Linux `native-smlib` builds use [native interval extraction](../smlib-fillet-contacts.md)
+Viboceros uses [native interval extraction](../smlib-fillet-contacts.md)
 for the retained NURBS contacts and sharp internal knot pieces. Smooth
 unselected straight leaves retain their original classes and parameter domains.
 Curved NURBS-to-line/arc/NURBS contacts use the

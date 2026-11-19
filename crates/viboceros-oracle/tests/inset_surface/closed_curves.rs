@@ -171,7 +171,6 @@ fn stored_seams_distinguish_straight_curved_and_g2_stations() {
     cusps::replay_family("inset_closed_seams", (6, 0), None);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn expanding_holes_with_usd_brep_match_native_source_crossings() {
     cusps::replay_family(
@@ -181,7 +180,6 @@ fn expanding_holes_with_usd_brep_match_native_source_crossings() {
     );
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn adjacent_faces_and_seams_with_usd_brep_match_native() {
     let operations = Some(viboceros_smlib::curve_offset_operations());

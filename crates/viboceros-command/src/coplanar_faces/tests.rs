@@ -37,21 +37,6 @@ fn coplanar_merge_options_and_source_filter_are_strict() {
     assert!(r.execute(&mut d, "MergeAllCoplanarFaces").is_err());
     assert_eq!(format!("{d:?}"), before);
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn coplanar_merge_portable_decline_preserves_document() {
-    let mut d = Document::default();
-    let id = d.add_geometry(Geometry::Brep(split_rectangle())).unwrap();
-    d.select_objects_direct([id], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{d:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins().execute(&mut d, "MergeAllCoplanarFaces"),
-        Err(CommandError::CoplanarMergeRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{d:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_merge_preserves_attributes_groups_selection_and_one_history_step() {
     let mut d = Document::default();
@@ -98,7 +83,6 @@ fn coplanar_merge_preserves_attributes_groups_selection_and_one_history_step() {
     assert_eq!(d.object(id), Some(&after));
     assert_eq!(d.object(second), Some(&second_after));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_merge_later_failure_and_stale_sources_preserve_history() {
     let mut d = Document::default();
@@ -127,7 +111,6 @@ fn coplanar_merge_later_failure_and_stale_sources_preserve_history() {
     assert_eq!(format!("{d:?}"), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_merge_native_failure_does_not_commit_earlier_sources() {
     let mut d = Document::default();
@@ -160,7 +143,6 @@ fn coplanar_merge_native_failure_does_not_commit_earlier_sources() {
     assert_eq!(format!("{d:?}"), before);
     assert!(d.can_redo());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_merge_noop_and_stale_tolerance_preserve_history() {
     let mut d = Document::default();
@@ -184,7 +166,6 @@ fn coplanar_merge_noop_and_stale_tolerance_preserve_history() {
     assert!(d.can_redo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_merge_bounds_work_before_native_import() {
     let mut d = Document::default();

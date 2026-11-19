@@ -36,7 +36,7 @@ fn rational_final_getters_previews_and_cancellation_match_native() {
 
 fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
     let mut count = 0;
-    let mut declined = 0;
+    let declined = 0;
     for (id, v) in rows {
         println!("{prefix}_UI_CASE {id}");
         let mut app = test_app();
@@ -105,24 +105,6 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
             app.commands.offset_surface_options().tolerance,
             tolerance::options(&v).tolerance
         );
-        if !tolerance::supported(&id, &v) {
-            assert_eq!(
-                app.document.objects().cloned().collect::<Vec<_>>(),
-                original
-            );
-            assert!(app.document.can_redo());
-            if cfg!(feature = "native-smlib") {
-                assert!(
-                    app.command_log.iter().any(|s| s.contains("outside")),
-                    "{:?}",
-                    app.command_log
-                );
-            }
-            println!("{prefix}_UI_DECLINED {id}");
-            app.cancel_current_prompt_or_selection();
-            declined += 1;
-            continue;
-        }
         assert!(app.command_line_idle(), "{id}: {:?}", app.command_log);
         assert_eq!(
             app.commands.offset_surface_options().tolerance,

@@ -85,7 +85,6 @@ fn curved_surface_offset_getters_extend_generators_and_rings_with_cached_confirm
 }
 
 #[test]
-#[cfg(feature = "native-smlib")]
 fn rational_surface_offset_preview_uses_general_sections_and_cached_confirmation() {
     let request: serde_json::Value = serde_json::from_str(include_str!(
         "../../../tools/rhino_oracle/fixtures/surface_offset_general_ends.json"

@@ -18,7 +18,7 @@ terminal spans to their nearest forward intersection. `Join=Yes` joins the two
 results. Curved terminal segments are also supported when their selected
 endpoints already meet.
 
-Linux `native-smlib` builds use
+Viboceros uses
 [usd-brep producers](../smlib-curve-connections.md) for smooth NURBS
 continuation and retained intervals.
 

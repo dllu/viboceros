@@ -3,18 +3,14 @@ use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 use crate::surface_reference::{BoundaryInput, BoundaryRef};
 
-#[cfg(feature = "native-smlib")]
 mod boundary;
-#[cfg(feature = "native-smlib")]
 pub use boundary::preview_boundary_edges;
 
-#[cfg(feature = "native-smlib")]
 struct SweepProduct {
     brep: Brep,
     finished: bool,
 }
 
-#[cfg(feature = "native-smlib")]
 fn sweep_face(
     brep: &Brep,
     path: &NurbsCurve,
@@ -363,9 +359,7 @@ impl Command for ExtrudeSurfacePathCommand {
             .nurbs_curve_representation()?
             .ok_or(CommandError::Usage(USAGE))?;
         let path = prepare_surface_path(&path, input.options, doc.tolerance())?;
-        #[cfg(feature = "native-smlib")]
         let native = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&path)?;
-        #[cfg(feature = "native-smlib")]
         if let Some((reference, cutter)) = boundary {
             let count = boundary::apply(doc, &input, id, &path, &native, reference, &cutter)?;
             self.settings.set(input.options.remembered());
@@ -376,30 +370,22 @@ impl Command for ExtrudeSurfacePathCommand {
             &input.faces,
             input.options.delete_input,
             |brep, tolerance| {
-                #[cfg(feature = "native-smlib")]
-                {
-                    let result = sweep_face(
-                        brep,
-                        &path,
-                        &native,
-                        None,
-                        input.options.solid,
-                        input.options.split_at_tangents,
-                        tolerance,
-                    )?
-                    .brep;
-                    let components = if input.options.solid {
-                        vec![result]
-                    } else {
-                        result.into_edge_connected_components(tolerance)?
-                    };
-                    Ok(components.into_iter().map(Geometry::Brep).collect())
-                }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    let _ = (brep, tolerance, &path, &boundary);
-                    Err(CommandError::SurfacePathExtrusionRequiresNativeKernel)
-                }
+                let result = sweep_face(
+                    brep,
+                    &path,
+                    &native,
+                    None,
+                    input.options.solid,
+                    input.options.split_at_tangents,
+                    tolerance,
+                )?
+                .brep;
+                let components = if input.options.solid {
+                    vec![result]
+                } else {
+                    result.into_edge_connected_components(tolerance)?
+                };
+                Ok(components.into_iter().map(Geometry::Brep).collect())
             },
         )?;
         self.settings.set(input.options.remembered());

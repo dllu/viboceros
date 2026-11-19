@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 //! Compare public native extrema for endpoint-frame candidates and hidden bumps.
 use serde_json::Value;
 use std::path::Path;

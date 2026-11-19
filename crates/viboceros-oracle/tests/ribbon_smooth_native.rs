@@ -66,7 +66,6 @@ fn family(family: &str) -> usize {
         let d = sign * op["distance"].as_f64().unwrap();
         let mut parents = Vec::new();
         let started = std::time::Instant::now();
-        #[cfg(feature = "native-smlib")]
         let result = try_smooth_ribbon_with_ruled(
             &source,
             d,
@@ -77,20 +76,6 @@ fn family(family: &str) -> usize {
                 let surface = viboceros_smlib::ruled_surface(a, b)?;
                 parents.push(surface.try_reparameterized(0. ..=d.abs(), source.domain())?);
                 Ok::<_, viboceros_smlib::Error>(surface)
-            },
-        )
-        .map_err(|e| e.to_string());
-        #[cfg(not(feature = "native-smlib"))]
-        let result = try_smooth_ribbon_with_ruled(
-            &source,
-            d,
-            op["both_sides"] == true,
-            normal,
-            t,
-            &mut |a, b| {
-                let surface = NurbsSurface::try_ruled_from_curves(a, b)?;
-                parents.push(surface.try_reparameterized(0. ..=d.abs(), source.domain())?);
-                Ok::<_, GeometryError>(surface)
             },
         )
         .map_err(|e| e.to_string());

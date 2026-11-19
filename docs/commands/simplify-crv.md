@@ -20,10 +20,9 @@ Preselected objects stay selected. Changed command-first inputs finish unselecte
 including after Undo/Redo; command-first no-ops retain their picks. Changes make
 one undo step. No-ops preserve the redo branch.
 
-Both builds use the public OpenNURBS `ON_Curve::IsLinear` and `IsArc` predicates
-with the document's absolute tolerance. `native-smlib` uses usd-brep's existing
-exact splitter at fully multiple knots. The portable build uses the existing
-Rust splitter. Neither path fits a replacement spline. Simplification is bounded
+SimplifyCrv uses OpenNURBS `ON_Curve::IsLinear` and `IsArc` predicates with the
+document's absolute tolerance. USD BRep splits the existing spline at fully
+multiple knots. Simplification is bounded
 at 65,536 leaf pieces and one million controls of preparation work.
 
 The current workflow accepts whole curves. Temporary `SubCrv` inputs and general
@@ -42,7 +41,7 @@ Undo/Redo. Shared native 3dm sources preserve the actual inputs.
 
 ```sh
 cargo test -p viboceros-command --test simplify_curves
-cargo test -p viboceros-command --features native-smlib --test simplify_curves
+cargo test -p viboceros-command --test simplify_curves
 cargo test -p viboceros app::tests::simplify_curve
 cargo test -p viboceros-geometry --lib curve_simplify
 ```

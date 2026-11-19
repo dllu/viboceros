@@ -90,7 +90,7 @@ cargo test --release -p viboceros-smlib --features native --test boundary_extens
 cargo test --release -p viboceros-command -p viboceros-oracle -p viboceros-geometry \
   --features viboceros-command/native-smlib,viboceros-oracle/native-smlib boundary
 python3 -m tools.numerics.compare_native_extensions /tmp/boundary-extensions.json \
-  --portable-baseline --include-boundaries
+  --portable-baseline /path/to/portable-response.json --include-boundaries
 ```
 
 Build standalone probes in separate directories with

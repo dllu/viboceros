@@ -124,7 +124,7 @@ fn has_inner_overlap(
     curve: &NurbsCurve,
     brep: &Brep,
     tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
+) -> Result<bool, CommandError> {
     for face in brep.faces() {
         for boundary in face
             .loops()
@@ -133,9 +133,11 @@ fn has_inner_overlap(
         {
             for trim in boundary.trims() {
                 if let Some(edge) = trim.edge() {
-                    for event in curve
-                        .intersection_events_with_curve(brep.edges()[edge].curve(), tolerance)?
-                    {
+                    for event in crate::curve_intersections::events(
+                        curve,
+                        brep.edges()[edge].curve(),
+                        tolerance,
+                    )? {
                         if let CurveCurveIntersectionEvent::Overlap(span) = event {
                             let domain = span.first_interval();
                             if curve

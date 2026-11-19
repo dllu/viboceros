@@ -48,22 +48,6 @@ fn surface_apex_options_parse_strictly_and_update_atomically() {
     );
     assert!(SurfaceApexInput::parse(&["1,2,3", "4,5,6"]).is_err());
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_apex_portable_decline_preserves_the_document() {
-    let mut doc = Document::default();
-    let s = doc.add_geometry(patch()).unwrap();
-    doc.select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins()
-            .execute(&mut doc, "ExtrudeSrfToPoint 1,1.5,6 DeleteInput=Yes"),
-        Err(CommandError::SurfaceApexExtrusionRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_curved_cap_delete_history_and_uncapped_output() {
     let mut doc = Document::default();
@@ -100,7 +84,6 @@ fn surface_apex_curved_cap_delete_history_and_uncapped_output() {
             .all(|o| matches!(o.geometry(),Geometry::Brep(b)if !b.is_solid()))
     );
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_face_delete_preserves_remainder_identity_attributes_and_groups() {
     let mut doc = Document::default();
@@ -137,7 +120,6 @@ fn surface_apex_face_delete_preserves_remainder_identity_attributes_and_groups()
     registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(doc.object(s), Some(&source));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_coplanar_rectangles_match_rhino_topology() {
     for (apex, open, capped) in [
@@ -206,7 +188,6 @@ fn surface_apex_coplanar_rectangles_match_rhino_topology() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_coplanar_annulus_keeps_closed_rational_profiles_and_trim_holes() {
     let mut doc = Document::default();
@@ -263,7 +244,6 @@ fn surface_apex_coplanar_annulus_keeps_closed_rational_profiles_and_trim_holes()
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_at_a_single_closed_seam_keeps_only_the_cap_or_apex() {
     let mut doc = Document::default();
@@ -312,7 +292,6 @@ fn surface_apex_at_a_single_closed_seam_keeps_only_the_cap_or_apex() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 fn planar_rectangle(x: f64, z: f64) -> Geometry {
     Geometry::NurbsSurface(
         NurbsSurface::try_bilinear([p(x, 0., z), p(x + 2., 0., z), p(x + 2., 3., z), p(x, 3., z)])
@@ -320,5 +299,4 @@ fn planar_rectangle(x: f64, z: f64) -> Geometry {
     )
 }
 
-#[cfg(feature = "native-smlib")]
 mod boundary;

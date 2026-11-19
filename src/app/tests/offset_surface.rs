@@ -9,7 +9,6 @@ pub(super) mod inputs;
 #[path = "offset_surface/mouse.rs"]
 mod mouse;
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn offset_srf_picks_polysurfaces_and_replays_native_result_history() {
     let mut app = test_app();

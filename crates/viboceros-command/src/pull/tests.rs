@@ -307,7 +307,6 @@ fn mesh_curve_collapsed_image_preserves_whole_input_and_temporary_range() {
     assert!(doc.object(a).is_some());
     assert_eq!(doc.objects().len(), 2);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn native_cylinder_seam_witnesses_admit_one_axial_curve() {
     let surface =
@@ -330,7 +329,6 @@ fn native_cylinder_seam_witnesses_admit_one_axial_curve() {
         assert!((q.x() - 2.).abs() + q.y().abs() < 1e-8);
     }
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn native_curve_pull_is_clipped_by_the_original_curved_face() {
     let surface =

@@ -52,22 +52,6 @@ fn coplanar_getter_filters_picks_rejects_options_and_cancels() {
     assert!(app.object_prompt.is_none());
     assert_eq!(app.document.object(id), Some(&before));
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn coplanar_getter_retains_picks_when_native_kernel_is_unavailable() {
-    let mut app = test_app();
-    let id = source(&mut app);
-    enter(&mut app, "MergeAllCoplanarFaces");
-    app.apply_selection_click(SelectionClick {
-        object_id: Some(id),
-        mode: SelectionMode::Replace,
-    });
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "");
-    assert!(app.object_prompt.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn coplanar_getter_commits_once_for_postselection_and_preselection() {
     for pre in [false, true] {

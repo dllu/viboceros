@@ -44,7 +44,7 @@ def main():
     fixture_path = "tools/rhino_oracle/fixtures/curve_offset_corners.json"
     observation_path = "tools/rhino_oracle/observations/curve_offset_corners.json"
     request = load_request(ROOT / fixture_path)
-    native = OracleClient(native_smlib=True).run_viboceros(request, timeout=1800)
+    native = OracleClient().run_viboceros(request, timeout=1800)
     rhino = json.loads((ROOT / observation_path).read_text())
     checks = []
     if [r["id"] for r in native["results"]] != [r["id"] for r in rhino["results"]]:

@@ -27,7 +27,7 @@ def main():
     parser.add_argument("--timeout", type=float, default=1800.)
     parser.add_argument("--include-corners", action="store_true")
     args = parser.parse_args()
-    client = OracleClient(native_smlib=True)
+    client = OracleClient()
     sources = ["crates/viboceros-geometry/src/curve_connect_pair.rs",
                "crates/viboceros-geometry/src/curve_fillet_pair.rs",
                "crates/viboceros-geometry/src/curve_chamfer_pair.rs",

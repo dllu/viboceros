@@ -1,5 +1,4 @@
 use super::super::circle_preview::viewport_frame;
-#[cfg(feature = "native-smlib")]
 use super::super::circle_preview::{screen_point, viewport_click};
 use super::*;
 use viboceros_geometry::NurbsCurve;
@@ -55,7 +54,6 @@ pub(super) fn quadratic() -> NurbsCurve {
     .unwrap()
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn frame_rails(app: &mut VibocerosApp, ctx: &egui::Context) {
     viewport_frame(app, ctx, vec![]);
     viewport_frame(app, ctx, vec![]);
@@ -65,7 +63,6 @@ pub(super) fn frame_rails(app: &mut VibocerosApp, ctx: &egui::Context) {
     app.viewports[0].zoom_bounding_box(bounds).unwrap();
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn hover(
     app: &mut VibocerosApp,
     ctx: &egui::Context,
@@ -83,7 +80,6 @@ pub(super) fn hover(
     panic!("viewport layout did not settle");
 }
 
-#[cfg(feature = "native-smlib")]
 fn assert_result(app: &VibocerosApp, min: Point3, max: Point3, solid: bool, epsilon: f64) {
     assert!(app.surface_path_prompt.is_none(), "{:?}", app.command_log);
     let Geometry::Brep(result) = app.document.selected_objects().next().unwrap().geometry() else {
@@ -103,7 +99,6 @@ fn assert_result(app: &VibocerosApp, min: Point3, max: Point3, solid: bool, epsi
     assert_eq!(app.document.undo_label(), Some("ExtrudeSrfAlongCrv"));
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_viewport_pick_uses_the_curve_parameter_and_explicit_reverse_overrides_it() {
     let curve = NurbsCurve::try_new(
@@ -139,7 +134,6 @@ fn surface_path_viewport_pick_uses_the_curve_parameter_and_explicit_reverse_over
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_subcurve_mouse_preview_and_click_use_the_same_translated_rail() {
     for reverse in [false, true] {
@@ -239,7 +233,6 @@ fn surface_path_stale_rail_and_second_point_enter_leave_document_history_intact(
     assert_eq!(format!("{:?}", app.document), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_first_point_enter_uses_the_whole_rail_in_its_picked_direction() {
     let (mut app, _, path) = scene(quadratic());

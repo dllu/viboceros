@@ -324,12 +324,9 @@ fn loose_part(
             .try_offset(distance, normal, tolerance)
             .map_err(map_offset_error);
     }
-    #[cfg(feature = "native-smlib")]
     let solver = Some(
         viboceros_smlib::curve_edit_point_interpolation as viboceros_geometry::CurveEditPointSolver,
     );
-    #[cfg(not(feature = "native-smlib"))]
-    let solver = None;
     let curve = source.to_nurbs()?;
     let result = if fixed {
         curve.try_loose_polynomial_offset_in_plane(distance, normal, tolerance, solver)?

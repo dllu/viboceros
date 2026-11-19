@@ -16,9 +16,8 @@ face picker, preview, cancellation, attributes and history rules apply to all in
 Previews sample every nonempty curve span and share the existing segment limit.
 
 Certified circular/linear recognition retains analytic offsets and source clocks
-where possible. Other smooth curves share the planar NURBS offset fitter. Builds
-with `native-smlib` supply usd-brep's existing offset, intersection and curve-edit
-operations; admission and topology policy remain shared. Endpoint correspondence,
+where possible. Other smooth curves share the planar NURBS offset fitter, which uses usd-brep
+for offset, intersection and curve editing. Endpoint correspondence,
 closed-loop simplicity, winding, pair contacts and nesting are checked before
 staging the complete result. Narrow holes use trim-region queries rather than
 requiring their control hulls to fit inside an inscribed polygon.
@@ -75,6 +74,6 @@ output are described in [output modes](inset-outputs.md).
 
 ```sh
 cargo test -p viboceros-oracle --test inset_surface --test inset_loose
-cargo test -p viboceros-oracle --features native-smlib --test inset_surface --test inset_loose
+cargo test -p viboceros-oracle --test inset_surface --test inset_loose
 python3 -m unittest tools.rhino_oracle.test_inset_planar_curves tools.rhino_oracle.test_inset_loose
 ```

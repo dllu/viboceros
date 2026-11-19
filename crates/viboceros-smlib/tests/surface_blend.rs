@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     GeometryError, NurbsSurface, Point3, SurfaceBlendContinuity as G, SurfaceBlendOptions,
     SurfaceBlendResult, SurfaceExtensionEdge as Edge, Tolerance, WeightedPoint3,
