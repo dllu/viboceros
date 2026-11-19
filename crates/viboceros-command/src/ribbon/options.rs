@@ -1,13 +1,14 @@
 use super::*;
 use viboceros_geometry::{LengthUnitSystem, RibbonCornerStyle};
 
-pub const USAGE: &str = "Ribbon [distance|Distance=value] side-point | Ribbon ThroughPoint=point [BothSides=Yes|No] [Corner=Sharp|Round|Smooth|Chamfer|None] [Loose=Yes|No] [InCPlane=Yes|No] [OutputLayer=Current|Input] [Tolerance=value|Default]";
+pub const USAGE: &str = "Ribbon [distance|Distance=value] side-point | Ribbon ThroughPoint=point [BothSides=Yes|No] [Corner=Sharp|Round|Smooth|Chamfer|None] [Trim=Yes|No] [Loose=Yes|No] [InCPlane=Yes|No] [OutputLayer=Current|Input] [Tolerance=value|Default]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
     pub distance: Real,
     pub both_sides: bool,
     pub corner: RibbonCornerStyle,
+    pub trim: bool,
     pub loose: bool,
     pub in_cplane: bool,
     pub input_layer: bool,
@@ -19,6 +20,7 @@ impl Default for Options {
             distance: 1.,
             both_sides: false,
             corner: RibbonCornerStyle::Sharp,
+            trim: true,
             loose: false,
             in_cplane: false,
             input_layer: false,
@@ -40,10 +42,11 @@ impl Options {
     pub fn arguments(self) -> String {
         let yes = |b| if b { "Yes" } else { "No" };
         format!(
-            "Distance={} BothSides={} Corner={} Loose={} InCPlane={} OutputLayer={} Tolerance={}",
+            "Distance={} BothSides={} Corner={} Trim={} Loose={} InCPlane={} OutputLayer={} Tolerance={}",
             self.distance,
             yes(self.both_sides),
             self.corner_name(),
+            yes(self.trim),
             yes(self.loose),
             yes(self.in_cplane),
             if self.input_layer { "Input" } else { "Current" },
@@ -86,7 +89,7 @@ pub fn parse(
     units: &LengthUnitSystem,
     context: CommandContext,
 ) -> Result<Input, CommandError> {
-    let mut seen = [false; 7];
+    let mut seen = [false; 8];
     let mut side = None;
     let mut through_point = false;
     let parse_point = |text| {
@@ -176,6 +179,9 @@ pub fn parse(
                 length(value, units)?
             };
             6
+        } else if option_name_eq(name, "Trim") {
+            options.trim = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+            7
         } else {
             return Err(CommandError::Usage(USAGE));
         };

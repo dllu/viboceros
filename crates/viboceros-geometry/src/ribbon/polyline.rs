@@ -2,7 +2,7 @@
 use super::corner::{RibbonCornerStyle, smooth_corner};
 mod assembly;
 mod correspondence;
-use crate::curve_offset::{polyline_offset_corner_arc, polyline_offset_layout};
+use crate::curve_offset::{polyline_offset_corner_arc, polyline_offset_layout_with_trim};
 use crate::{
     Brep, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
     UnitVector3, WeightedPoint3, join_breps,
@@ -53,6 +53,23 @@ pub fn try_polyline_ribbon_with_ruled<E: From<GeometryError>>(
     corner: impl Into<RibbonCornerStyle>,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
 ) -> Result<Vec<Brep>, E> {
+    try_polyline_ribbon_with_trim(
+        source, distance, both_sides, normal, tolerance, corner, true, ruled,
+    )
+}
+
+/// Preserve each untrimmed strip at crossing inside corners when Trim is off.
+#[allow(clippy::too_many_arguments)]
+pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
+    source: &Polyline3,
+    distance: Real,
+    both_sides: bool,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+    corner: impl Into<RibbonCornerStyle>,
+    trim: bool,
+    ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
+) -> Result<Vec<Brep>, E> {
     let corner = corner.into();
     if !distance.is_finite() || distance == 0. {
         return Err(GeometryError::InvalidCurveOffsetDistance.into());
@@ -67,8 +84,16 @@ pub fn try_polyline_ribbon_with_ruled<E: From<GeometryError>>(
     }
     let mut patches = Vec::new();
     for (side, d) in [distance, -distance].into_iter().take(sides).enumerate() {
-        let layout = polyline_offset_layout(source, d, normal, tolerance, corner.layout_style())?;
-        let omit_seam_fans = corner == RibbonCornerStyle::Sharp
+        let layout = polyline_offset_layout_with_trim(
+            source,
+            d,
+            normal,
+            tolerance,
+            corner.layout_style(),
+            trim,
+        )?;
+        let omit_seam_fans = trim
+            && corner == RibbonCornerStyle::Sharp
             && source.is_closed()
             && layout.outside_corners[1]
             && layout.outside_corners[layout.corners.len() - 1];
@@ -111,14 +136,11 @@ pub fn try_polyline_ribbon_with_ruled<E: From<GeometryError>>(
             } else {
                 SegmentClock::Original
             };
-            let fractions = correspondence::fractions(
-                segment,
-                [start, end],
-                inside,
-                clipped,
-                clock,
-                tolerance,
-            )?;
+            let fractions = if trim {
+                correspondence::fractions(segment, [start, end], inside, clipped, clock, tolerance)?
+            } else {
+                [0.0, 1.0]
+            };
             if fractions[0] >= fractions[1] {
                 return Err(GeometryError::Degenerate {
                     context: "overlapping inner ribbon corners",
@@ -197,7 +219,10 @@ pub fn try_polyline_ribbon_with_ruled<E: From<GeometryError>>(
                 )?);
             }
             let (start, end) = layout.corners[next];
-            if start == end || corner == RibbonCornerStyle::None {
+            if start == end
+                || corner == RibbonCornerStyle::None
+                || (!trim && layout.inside_corners[next])
+            {
                 continue;
             }
             let center = source.vertices()[next];
@@ -235,7 +260,11 @@ pub fn try_polyline_ribbon_with_ruled<E: From<GeometryError>>(
             )?);
         }
     }
-    Ok(assembly::sew(patches, tolerance)?)
+    if trim {
+        Ok(assembly::sew(patches, tolerance)?)
+    } else {
+        Ok(vec![assembly::sew_untrimmed(patches, tolerance)?])
+    }
 }
 
 fn constant_with_basis(point: Point3, basis: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {

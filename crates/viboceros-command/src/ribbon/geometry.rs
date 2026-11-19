@@ -171,13 +171,14 @@ impl Source {
             ]);
         }
         if let Some(polyline) = polyline {
-            return viboceros_geometry::try_polyline_ribbon_with_ruled(
+            return viboceros_geometry::try_polyline_ribbon_with_trim(
                 &polyline,
                 d,
                 options.both_sides,
                 normal,
                 tolerance,
                 options.corner,
+                options.trim,
                 &mut ruled,
             )
             .map_err(CommandError::from);

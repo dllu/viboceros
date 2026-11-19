@@ -1235,7 +1235,7 @@ pub(crate) fn polyline_offset_layout(
     polyline_offset_layout_with_trim(polyline, distance, fallback, tolerance, corner_style, true)
 }
 
-fn polyline_offset_layout_with_trim(
+pub(crate) fn polyline_offset_layout_with_trim(
     polyline: &Polyline3,
     distance: Real,
     fallback: UnitVector3,

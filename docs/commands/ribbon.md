@@ -22,6 +22,7 @@ Ribbon .5 0,5,0
 Ribbon Distance=2cm 0,5,0 BothSides=Yes Corner=Round
 Ribbon .5 0,5,0 Loose=Yes InCPlane=Yes OutputLayer=Input
 Ribbon ThroughPoint=w2,3,0
+Ribbon 1 3,2,0 Trim=No
 ```
 
 Ordinary ribbons support lines, planar smooth NURBS and planar polylines, including
@@ -50,9 +51,14 @@ inferred width. The [Rhino capture](../ribbon-through-point-reference.json)
 includes line extensions, off-plane picks, and rounded polyline corners.
 Drafts invalidate when source state changes.
 
+`Trim=Yes` clips adjacent inside corners of ordinary polyline ribbons.
+`Trim=No` preserves the full ruled strips where they overlap. Edit `Trim` while
+selecting a source or picking the offset side. The live preview follows the
+setting, and changes carry over after Escape. [Rhino 8 trim capture](../ribbon-trim-reference.json)
+
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
-tolerance and Corner. Trim and self-intersection policies and history-based
+tolerance, Corner, and Trim. Global self-intersection trimming and history-based
 regeneration remain unfinished. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain

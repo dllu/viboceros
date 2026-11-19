@@ -1,0 +1,83 @@
+{
+  "rhino_version": "8.32.26160.13001",
+  "trim_change_persisted_after_cancel": true,
+  "cases": [
+    {
+      "name": "line",
+      "source": "Line 0,0,0 6,0,0",
+      "ribbon": "Ribbon 1 w3,3,0",
+      "untrimmed": {"faces": 1, "edges": 4, "vertices": 4, "area": 6.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 1.0, 0.0]},
+      "trimmed": {"faces": 1, "edges": 4, "vertices": 4, "area": 6.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 1.0, 0.0]}
+    },
+    {
+      "name": "inside_l",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,2,0",
+      "untrimmed": {"faces": 2, "edges": 8, "vertices": 7, "area": 10.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]},
+      "trimmed": {"faces": 2, "edges": 7, "vertices": 6, "area": 9.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]}
+    },
+    {
+      "name": "outside_l",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,-2,0",
+      "untrimmed": {"faces": 2, "edges": 7, "vertices": 6, "area": 11.0, "min": [0.0, -1.0, 0.0], "max": [7.0, 4.0, 0.0]},
+      "trimmed": {"faces": 2, "edges": 7, "vertices": 6, "area": 11.0, "min": [0.0, -1.0, 0.0], "max": [7.0, 4.0, 0.0]}
+    },
+    {
+      "name": "bow",
+      "source": "Polyline 0,0,0 5,5,0 0,5,0 5,0,0 0,0,0",
+      "ribbon": "Ribbon 0.5 w5,6,0",
+      "untrimmed": {"faces": 4, "edges": 14, "vertices": 10, "area": 13.278174593052, "min": [-1.2071067811865483, -0.35355339059327373, 0.0], "max": [6.207106781186548, 5.5, 0.0]},
+      "trimmed": {"faces": 8, "edges": 20, "vertices": 12, "area": 12.071067811865, "min": [-1.2071067811865483, 0.0, 0.0], "max": [6.207106781186548, 5.5, 0.0]}
+    },
+    {
+      "name": "dumbbell",
+      "source": "Polyline 0,0,0 4,0,0 4,1.5,0 8,1.5,0 8,0,0 12,0,0 12,4,0 8,4,0 8,2.5,0 4,2.5,0 4,4,0 0,4,0 0,0,0",
+      "ribbon": "Ribbon 0.75 w2,2,0",
+      "untrimmed": {"faces": 12, "edges": 44, "vertices": 32, "area": 30.75, "min": [0.0, 0.0, 0.0], "max": [12.0, 4.0, 0.0]},
+      "trimmed": {"faces": 10, "edges": 32, "vertices": 24, "area": 18.5, "min": [0.0, 0.0, 0.0], "max": [12.0, 4.0, 0.0]}
+    },
+    {
+      "name": "u",
+      "source": "Polyline 0,0,0 6,0,0 6,2,0 0,2,0",
+      "ribbon": "Ribbon 1.25 w3,1,0",
+      "untrimmed": {"faces": 3, "edges": 12, "vertices": 10, "area": 17.5, "min": [0.0, 0.0, 0.0], "max": [6.0, 2.0, 0.0]},
+      "trimmed": {"faces": 7, "edges": 26, "vertices": 20, "area": 20.625, "min": [0.0, 0.0, 0.0], "max": [6.0, 2.0, 0.0]}
+    },
+    {
+      "name": "lobed",
+      "source": "Polyline 0,0,0 5,0,0 5,3,0 3,3,0 3,1,0 0,1,0",
+      "ribbon": "Ribbon 1.25 w3,0.5,0",
+      "untrimmed": {"faces": 5, "edges": 19, "vertices": 15, "area": 20.3125, "min": [0.0, -0.25, 0.0], "max": [5.0, 3.0, 0.0]},
+      "trimmed": {"faces": 10, "edges": 37, "vertices": 28, "area": 18.028846153846, "min": [0.0, 0.0, 0.0], "max": [5.0, 3.0, 0.0]}
+    },
+    {
+      "name": "inside_Round",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,2,0 _Corner=_Round",
+      "untrimmed": {"faces": 2, "edges": 8, "vertices": 7, "area": 10.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]},
+      "trimmed": {"faces": 4, "edges": 11, "vertices": 8, "area": 9.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]}
+    },
+    {
+      "name": "inside_Smooth",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,2,0 _Corner=_Smooth",
+      "untrimmed": {"faces": 2, "edges": 8, "vertices": 7, "area": 10.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]},
+      "trimmed": {"faces": 4, "edges": 11, "vertices": 8, "area": 9.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]}
+    },
+    {
+      "name": "inside_Chamfer",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,2,0 _Corner=_Chamfer",
+      "untrimmed": {"faces": 2, "edges": 8, "vertices": 7, "area": 10.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]},
+      "trimmed": {"faces": 4, "edges": 11, "vertices": 8, "area": 9.0, "min": [0.0, 0.0, 0.0], "max": [6.0, 4.0, 0.0]}
+    },
+    {
+      "name": "both_sides",
+      "source": "Polyline 0,0,0 6,0,0 6,4,0",
+      "ribbon": "Ribbon 1 w3,2,0 _Corner=_Sharp _BothSides",
+      "untrimmed": {"faces": 4, "edges": 15, "vertices": 10, "area": 21.0, "min": [0.0, -1.0, 0.0], "max": [7.0, 4.0, 0.0]},
+      "trimmed": {"faces": 4, "edges": 12, "vertices": 9, "area": 20.0, "min": [0.0, -1.0, 0.0], "max": [7.0, 4.0, 0.0]}
+    }
+  ]
+}

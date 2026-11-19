@@ -40,8 +40,11 @@ impl Session {
             Some("Corner") => "Sharp, Round, Smooth, Chamfer or None",
             Some("OutputLayer") => "Current or Input",
             _ if self.through_point => "Through point; pick or type the offset location",
+            _ if self.options.loose => {
+                "Side to ribbon; Distance, ThroughPoint, Loose, BothSides, InCPlane, OutputLayer"
+            }
             _ => {
-                "Side to ribbon; Distance, ThroughPoint, Loose, Corner, BothSides, InCPlane, OutputLayer"
+                "Side to ribbon; Distance, ThroughPoint, Loose, Corner, Trim, BothSides, InCPlane, OutputLayer"
             }
         }
     }
@@ -104,7 +107,13 @@ impl VibocerosApp {
                 return true;
             }
         };
-        if parsed.side.is_some() || self.document.selected_object_count() == 0 {
+        if parsed.side.is_some() {
+            return false;
+        }
+        if !parsed.options.loose {
+            self.commands.remember_ribbon_trim(parsed.options.trim);
+        }
+        if self.document.selected_object_count() == 0 {
             return false;
         }
         let sources = self
@@ -218,12 +227,11 @@ impl VibocerosApp {
                 context,
             )
         } else {
-            let input = format!(
-                "Ribbon {} {}{}",
-                s.options.arguments(),
-                if s.through_point { "ThroughPoint " } else { "" },
-                format_model_point(point)
-            );
+            let input = ribbon_command_line(solver::Input {
+                options: s.options,
+                side: Some(point),
+                through_point: s.through_point,
+            });
             if s.postselected {
                 self.commands
                     .execute_postselected(&mut self.document, &input, context)
@@ -246,6 +254,18 @@ impl VibocerosApp {
             }
         }
     }
+}
+
+fn ribbon_command_line(input: solver::Input) -> String {
+    let mut command = format!("Ribbon {}", input.options.arguments());
+    if input.through_point {
+        command.push_str(" ThroughPoint");
+    }
+    if let Some(point) = input.side {
+        command.push(' ');
+        command.push_str(&format_model_point(point));
+    }
+    command
 }
 
 fn is_subcurve_option(word: &str) -> bool {

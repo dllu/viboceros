@@ -20,6 +20,7 @@ fn options_reject_duplicate_values_and_resolve_model_units() {
         vec!["nan"],
         vec!["Distance=1", "2"],
         vec!["Loose=Yes", "Loose=No"],
+        vec!["Trim=Yes", "Trim=No"],
         vec!["OutputLayer=Target"],
         vec!["w0,0,0", "w1,2,3"],
         vec!["ThroughPoint=w0,2,0", "ThroughPoint"],
@@ -35,6 +36,67 @@ fn options_reject_duplicate_values_and_resolve_model_units() {
             .is_err(),
             "{args:?}"
         );
+    }
+}
+
+#[test]
+fn ribbon_trim_preserves_native_strip_geometry_and_incidence() {
+    let document: serde_json::Value =
+        serde_json::from_str(include_str!("../../../../docs/ribbon-trim-reference.json")).unwrap();
+    for case in document["cases"].as_array().unwrap() {
+        let name = case["name"].as_str().unwrap();
+        let closure = case["source"].as_str().unwrap();
+        for (trim, field) in [(false, "untrimmed"), (true, "trimmed")] {
+            // Global self-intersection trimming is separate from the inside
+            // corner policy used in these regular Trim=Yes cases.
+            if name == "bow" || (trim && matches!(name, "dumbbell" | "u" | "lobed")) {
+                continue;
+            }
+            let mut doc = Document::default();
+            let registry = CommandRegistry::with_builtins();
+            registry.execute(&mut doc, closure).unwrap();
+            registry.execute(&mut doc, "SelAll").unwrap();
+            let prefix = case["ribbon"].as_str().unwrap();
+            let setting = if trim { "Yes" } else { "No" };
+            let args = format!("{prefix} Trim={setting}");
+            registry
+                .execute(&mut doc, &args)
+                .unwrap_or_else(|err| panic!("{name} {args}: {err}"));
+            let b = doc
+                .objects()
+                .find_map(|object| match object.geometry() {
+                    Geometry::Brep(brep) => Some(brep),
+                    _ => None,
+                })
+                .unwrap();
+            let expected = &case[field];
+            for (actual, dimension) in [
+                (b.faces().len(), "faces"),
+                (b.edges().len(), "edges"),
+                (b.vertices().len(), "vertices"),
+            ] {
+                assert_eq!(
+                    actual,
+                    expected[dimension].as_u64().unwrap() as usize,
+                    "{name} {args} {dimension}"
+                );
+            }
+            let area = b.area(doc.tolerance()).unwrap();
+            assert!(
+                (area - expected["area"].as_f64().unwrap()).abs() < 1e-9,
+                "{name} {args} area={area}"
+            );
+            for (point, key) in [(b.bounds().min(), "min"), (b.bounds().max(), "max")] {
+                let values = expected[key].as_array().unwrap();
+                let expected =
+                    Point3::try_from(std::array::from_fn(|i| values[i].as_f64().unwrap())).unwrap();
+                assert!(
+                    point.distance_to(expected).unwrap() < 1e-9,
+                    "{name} {args} {key}={point:?}"
+                );
+            }
+            assert_eq!(registry.ribbon_options().trim, trim);
+        }
     }
 }
 

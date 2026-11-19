@@ -112,6 +112,10 @@ impl RibbonCommand {
 }
 
 impl CommandRegistry {
+    pub fn remember_ribbon_trim(&self, trim: bool) {
+        self.ribbon_options.update(|options| options.trim = trim);
+    }
+
     /// Accept a temporary Ribbon source from the shared SubCrv picker.
     pub fn commit_ribbon_portion(
         &self,

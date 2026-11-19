@@ -206,6 +206,68 @@ fn ribbon_subcurve_can_retry_after_a_canceled_portion_and_measure_length() {
 }
 
 #[test]
+fn ribbon_trim_edits_before_and_after_source_pick_update_the_preview() {
+    let mut app = test_app();
+    enter(&mut app, "Polyline 0,0,0 6,0,0 6,4,0");
+    let source = app.document.objects().next().unwrap().id();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Ribbon");
+    enter(&mut app, "_Trim=_No");
+    pick(&mut app, source);
+    assert!(app.ribbon_session.is_some(), "{:?}", app.command_log);
+    let context = egui::Context::default();
+    let has_full_inner_strip = |app: &mut VibocerosApp| {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            app.update_ribbon_preview(Some(point(3., 2., 0.)), &context);
+            if let Some(preview) = app
+                .ribbon_session
+                .as_ref()
+                .unwrap()
+                .preview_curves(&app.document)
+            {
+                return preview.iter().any(|edge| {
+                    let bounds = edge.control_point_bounds();
+                    bounds.min().distance_to(point(0., 1., 0.)).unwrap() < 1e-9
+                        && bounds.max().distance_to(point(6., 1., 0.)).unwrap() < 1e-9
+                });
+            }
+            assert!(Instant::now() < deadline, "Ribbon preview did not arrive");
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    };
+    assert!(has_full_inner_strip(&mut app));
+    enter(&mut app, "_Trim");
+    assert!(!has_full_inner_strip(&mut app));
+    enter(&mut app, "Trim No");
+    assert!(has_full_inner_strip(&mut app));
+    assert!(!app.document.can_undo());
+    enter(&mut app, "w3,2,0");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(ribbon) = app
+        .document
+        .objects()
+        .find(|o| o.id() != source)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a ribbon");
+    };
+    assert_eq!((ribbon.faces().len(), ribbon.edges().len()), (2, 8));
+    assert!(!app.commands.ribbon_options().trim);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.commands.ribbon_options().trim);
+    enter(&mut app, "Ribbon");
+    enter(&mut app, "Trim=Yes");
+    app.cancel_current_prompt_or_selection();
+    assert!(app.command_line_idle());
+    assert!(app.commands.ribbon_options().trim);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
 fn ribbon_side_and_through_point_preview_follow_the_mouse_and_click_commit() {
     let (mut app, id) = fixture();
     app.document
