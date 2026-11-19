@@ -365,7 +365,13 @@ impl Brep {
         let mut vertex_parameters = Vec::new();
         let vertex_limit = sampling.vertex_limit().min(u32::MAX as usize);
         let mut remaining = vertex_limit - coarse_vertices;
-        let face_allowance = vertex_limit / frames.len();
+        let minimum_weight = (coarse_vertices / frames.len() / 2).max(1);
+        let refinement_weight = |points: usize| points.max(minimum_weight) as u64;
+        let mut pending_weight = face_meshes
+            .iter()
+            .filter(|mesh| mesh.chord_height.is_some())
+            .map(|mesh| refinement_weight(mesh.points.len()))
+            .sum::<u64>();
         let mut locations = sampling.chord_density.map(|_| {
             let mut occupied = HashSet::with_capacity(coarse_vertices);
             occupied.extend(
@@ -385,9 +391,13 @@ impl Brep {
             } = face_mesh;
             if let (Some(chord_height), Some(locations)) = (chord_height, &mut locations) {
                 // Reserve every coarse face before sharing the remaining
-                // budget among interior chords.
+                // budget among interior chords. Dense charts receive more
+                // stations because their coarse triangulations contain more
+                // chords that may need subdivision.
                 let coarse = points.len();
-                let allowance = remaining.div_ceil(frames.len() - index).min(face_allowance);
+                let weight = refinement_weight(coarse);
+                let allowance = ((remaining as u64 * weight).div_ceil(pending_weight)) as usize;
+                pending_weight -= weight;
                 let limit = points
                     .len()
                     .saturating_add(allowance)
