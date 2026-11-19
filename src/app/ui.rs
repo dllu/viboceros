@@ -1031,7 +1031,7 @@ impl VibocerosApp {
                     extent: sources.extent,
                     result: self
                         .cutting_preview
-                        .result(sources, self.document.tolerance()),
+                        .result(draft, sources, self.document.tolerance()),
                 });
         let polygon_input = self
             .polygon_session
@@ -1976,7 +1976,9 @@ impl VibocerosApp {
             }
         }
         self.cutting_preview.update(
-            cutting_plan.filter(|_| cutting_draft == self.cutting_draft()),
+            cutting_draft
+                .filter(|_| cutting_draft == self.cutting_draft())
+                .zip(cutting_plan),
             cutting_sources,
             self.document.tolerance(),
             ui.ctx(),

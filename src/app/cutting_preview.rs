@@ -27,34 +27,41 @@ impl Sources {
 }
 
 struct Request {
+    draft: CutDraft,
     plan: CutPlan,
     sources: Sources,
     tolerance: Tolerance,
 }
 
+impl Request {
+    fn matches_input(&self, draft: CutDraft, sources: &Sources, tolerance: Tolerance) -> bool {
+        self.draft == draft && self.tolerance == tolerance && self.sources.matches(sources)
+    }
+}
+
 struct Job {
+    request: Request,
     receiver: mpsc::Receiver<CutResult>,
     cancel: Arc<AtomicBool>,
 }
 
 #[derive(Default)]
 pub(super) struct Preview {
-    request: Option<Request>,
     job: Option<Job>,
-    result: Option<CutResult>,
+    result: Option<(Request, CutResult)>,
 }
 
 impl Preview {
     pub(super) fn result(
         &self,
+        draft: CutDraft,
         sources: &Sources,
         tolerance: Tolerance,
     ) -> Option<(&CutPlan, &CutResult)> {
-        let request = self.request.as_ref()?;
-        if request.tolerance != tolerance || !request.sources.matches(sources) {
-            return None;
-        }
-        Some((&request.plan, self.result.as_ref()?))
+        let (request, result) = self.result.as_ref()?;
+        request
+            .matches_input(draft, sources, tolerance)
+            .then_some((&request.plan, result))
     }
 
     pub(super) fn poll(&mut self) {
@@ -64,44 +71,55 @@ impl Preview {
             Err(mpsc::TryRecvError::Empty) => return,
             Err(mpsc::TryRecvError::Disconnected) => CutResult::default(),
         };
+        let job = self.job.take().unwrap();
         if !job.cancel.load(Ordering::Relaxed) {
-            self.result = Some(result);
+            self.result = Some((job.request, result));
         }
-        self.job = None;
     }
 
     pub(super) fn update(
         &mut self,
-        plan: Option<CutPlan>,
+        input: Option<(CutDraft, CutPlan)>,
         sources: Option<Sources>,
         tolerance: Tolerance,
         context: &egui::Context,
     ) {
-        let request = plan.zip(sources).map(|(plan, sources)| Request {
-            plan,
-            sources,
-            tolerance,
-        });
-        let changed = match (&self.request, &request) {
-            (Some(before), Some(after)) => {
-                before.plan != after.plan
-                    || before.tolerance != after.tolerance
-                    || !before.sources.matches(&after.sources)
-            }
-            (None, None) => false,
-            _ => true,
+        let request = input.filter(|(_, plan)| !plan.is_empty()).zip(sources).map(
+            |((draft, plan), sources)| Request {
+                draft,
+                plan,
+                sources,
+                tolerance,
+            },
+        );
+        let incompatible = |previous: &Request| {
+            request.as_ref().is_none_or(|current| {
+                !previous.matches_input(current.draft, &current.sources, tolerance)
+                    || !previous.plan.shares_reference(&current.plan)
+            })
         };
-        if changed {
-            self.request = request;
+        if self
+            .result
+            .as_ref()
+            .is_some_and(|(previous, _)| incompatible(previous))
+        {
             self.result = None;
-            if let Some(job) = &self.job {
+        }
+        if let Some(job) = &self.job {
+            // Cursor movement alone leaves the current intersection solve intact.
+            if incompatible(&job.request) {
                 job.cancel.store(true, Ordering::Relaxed);
             }
-        }
-        if self.job.is_some() || self.result.is_some() {
             return;
         }
-        let Some(request) = &self.request else { return };
+        let Some(request) = request else { return };
+        if self
+            .result
+            .as_ref()
+            .is_some_and(|(previous, _)| previous.plan == request.plan)
+        {
+            return;
+        }
         let plan = request.plan.clone();
         let sources = request.sources.geometry.clone();
         let tolerance = request.tolerance;
@@ -118,9 +136,13 @@ impl Preview {
             })
             .is_ok()
         {
-            self.job = Some(Job { receiver, cancel });
+            self.job = Some(Job {
+                request,
+                receiver,
+                cancel,
+            });
         } else {
-            self.result = Some(CutResult::default());
+            self.result = Some((request, CutResult::default()));
         }
     }
 }
@@ -158,6 +180,7 @@ fn intersections(
             frame,
             length,
             extend,
+            ..
         } => {
             for source in sources {
                 if cancel.load(Ordering::Relaxed) {

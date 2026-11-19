@@ -14,8 +14,8 @@ world/relative syntax, filters and constraints. Esc cancels pending input withou
 geometry changes. Outputs and their groups form one Undo step.
 
 The viewport previews up to 12 planes while you choose a direction or spacing.
-Intersection curves and points appear as they finish computing for the current
-guide. The completed command uses the full grid.
+The preview updates the planes and their intersections together as each solve
+finishes. The pick line follows the cursor. The completed command uses the full grid.
 
 Options
 

@@ -1,6 +1,6 @@
-//! Live cutting guides and the most recent matching intersection result.
+//! Live cutting input and plane guides paired with solved intersections.
 use super::*;
-use viboceros_geometry::BoundingBox3;
+use viboceros_geometry::{BoundingBox3, UnitVector3};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum CutDraft {
@@ -21,10 +21,25 @@ pub(crate) enum CutDraft {
 pub(crate) enum CutPlan {
     Section {
         frame: Frame3,
+        vertical: UnitVector3,
         length: Real,
         extend: bool,
     },
     Contour(Vec<Frame3>),
+}
+
+impl CutPlan {
+    pub(crate) fn is_empty(&self) -> bool {
+        matches!(self, Self::Contour(frames) if frames.is_empty())
+    }
+
+    pub(crate) fn shares_reference(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Section { vertical: a, .. }, Self::Section { vertical: b, .. }) => a == b,
+            (Self::Contour(_), Self::Contour(_)) => true,
+            _ => false,
+        }
+    }
 }
 
 #[derive(Default, Debug)]
@@ -57,6 +72,7 @@ impl CutDraft {
                         .ok()?;
                 CutPlan::Section {
                     frame,
+                    vertical: cplane.z_axis(),
                     length,
                     extend,
                 }
@@ -108,11 +124,16 @@ impl Viewport {
                 painter.line_segment(projected, stroke);
             }
         };
-        match &plan {
+        let solved = preview
+            .result
+            .filter(|(solved, _)| !plan.is_empty() && solved.shares_reference(&plan));
+        let guide_plan = solved.map_or(&plan, |(solved, _)| solved);
+        match guide_plan {
             CutPlan::Section {
                 frame,
                 length,
                 extend,
+                ..
             } => {
                 if let Some(corners) =
                     plane_outline(*frame, preview.extent, (!extend).then_some(*length))
@@ -120,9 +141,6 @@ impl Viewport {
                     for i in 0..4 {
                         draw([corners[i], corners[(i + 1) % 4]], guides);
                     }
-                }
-                if let Ok(end) = frame.point_at([*length, 0., 0.]) {
-                    draw([frame.origin(), end], guides);
                 }
             }
             CutPlan::Contour(frames) => {
@@ -135,7 +153,21 @@ impl Viewport {
                 }
             }
         }
-        if let Some((_, result)) = preview.result.filter(|(key, _)| **key == plan) {
+        if let CutPlan::Section { frame, length, .. } = &plan {
+            if let Ok(end) = frame.point_at([*length, 0., 0.]) {
+                draw([frame.origin(), end], guides);
+            }
+        } else if let CutDraft::Contour {
+            base,
+            direction,
+            spacing_start,
+            ..
+        } = preview.draft
+            && let Some(start) = spacing_start.or(direction.is_none().then_some(base))
+        {
+            draw([start, cursor], guides);
+        }
+        if let Some((_, result)) = solved {
             let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
             for &line in &result.lines {
                 draw(line, stroke);

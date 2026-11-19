@@ -13,6 +13,8 @@ Inputs stay in the model and the accepted outputs are selected on exit.
 
 The viewport shows the cutting plane while you pick its end. It computes the
 intersection preview using the same geometry routine as the finished cut.
+While the cursor moves, completed intersections stay with their plane guides
+and the pick line follows the current cursor.
 
 Options are `ExtendSection=Yes|No`,
 `AssignProperties=ByCurrentLayer|ByInputObject`, `Output=All|CurvesOnly`, and

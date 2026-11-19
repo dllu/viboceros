@@ -3,6 +3,7 @@ use super::{
     curve_fillet::enter,
     *,
 };
+use crate::viewport::CutPlan;
 use serde::Deserialize;
 use viboceros_command::cutting_options::Output;
 
@@ -202,11 +203,23 @@ fn preview_app() -> VibocerosApp {
     app
 }
 
-fn wait_for_preview(app: &mut VibocerosApp, context: &egui::Context, count: usize) {
+fn wait_for_preview(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    count: usize,
+    accepts: impl Fn(&CutPlan) -> bool,
+) {
+    let draft = app.cutting_draft().unwrap();
+    let sources = app.cutting_sources(draft).unwrap();
     let until = std::time::Instant::now() + std::time::Duration::from_secs(3);
     loop {
         let strokes = viewport_frame(app, context, Vec::new());
-        if strokes.len() >= count {
+        if strokes.len() >= count
+            && app
+                .cutting_preview
+                .result(draft, &sources, app.document.tolerance())
+                .is_some_and(|(plan, _)| accepts(plan))
+        {
             return;
         }
         assert!(
@@ -227,19 +240,21 @@ fn section_viewport_refreshes_the_exact_cut_when_extend_changes() {
     viewport_frame(&mut app, &ctx, Vec::new());
     let cursor = screen_point(&app, point(2., 4., 0.));
     viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(cursor)]);
-    wait_for_preview(&mut app, &ctx, 1);
-    let sources = app.cutting_sources(app.cutting_draft().unwrap()).unwrap();
+    wait_for_preview(&mut app, &ctx, 1, |_| true);
+    let draft = app.cutting_draft().unwrap();
+    let sources = app.cutting_sources(draft).unwrap();
     let (_, finite) = app
         .cutting_preview
-        .result(&sources, app.document.tolerance())
+        .result(draft, &sources, app.document.tolerance())
         .unwrap();
     let finite_length = cut_length(&finite.lines);
     assert!((finite_length - 3.).abs() < 1e-8, "{finite_length}");
     enter(&mut app, "ExtendSection");
-    wait_for_preview(&mut app, &ctx, 1);
+    wait_for_preview(&mut app, &ctx, 1, |_| true);
+    let draft = app.cutting_draft().unwrap();
     let (_, extended) = app
         .cutting_preview
-        .result(&sources, app.document.tolerance())
+        .result(draft, &sources, app.document.tolerance())
         .unwrap();
     let extended_length = cut_length(&extended.lines);
     assert!((extended_length - 5.).abs() < 1e-8, "{extended_length}");
@@ -263,13 +278,19 @@ fn contour_viewport_tracks_spacing_with_live_grid_and_no_model_edits() {
     for (distance, count) in [(1., 6), (2., 3)] {
         let cursor = screen_point(&app, point(distance, 1., 0.));
         viewport_frame(&mut app, &ctx, vec![egui::Event::PointerMoved(cursor)]);
-        wait_for_preview(&mut app, &ctx, count);
-        let sources = app.cutting_sources(app.cutting_draft().unwrap()).unwrap();
+        wait_for_preview(
+            &mut app,
+            &ctx,
+            count,
+            |plan| matches!(plan, CutPlan::Contour(frames) if frames[1].origin().x() == distance),
+        );
+        let draft = app.cutting_draft().unwrap();
+        let sources = app.cutting_sources(draft).unwrap();
         let (plan, cut) = app
             .cutting_preview
-            .result(&sources, app.document.tolerance())
+            .result(draft, &sources, app.document.tolerance())
             .unwrap();
-        let crate::viewport::CutPlan::Contour(frames) = plan else {
+        let CutPlan::Contour(frames) = plan else {
             panic!("expected contour planes")
         };
         assert_eq!(frames.len(), count);
@@ -284,6 +305,64 @@ fn contour_viewport_tracks_spacing_with_live_grid_and_no_model_edits() {
     assert_eq!(app.document.objects().len(), 4);
     assert_mesh_cut_lengths(&app, length);
     assert_eq!(app.document.undo().unwrap().as_deref(), Some("Contour"));
+}
+
+#[test]
+fn section_and_contour_show_solved_intersections_during_cursor_motion() {
+    use std::time::{Duration, Instant};
+
+    for contour in [false, true] {
+        let mut app = preview_app();
+        app.grid_snap = false;
+        let context = egui::Context::default();
+        let commands: &[&str] = if contour {
+            &["Contour", "w0,0,0", "w5,0,0", "w0,1,0"]
+        } else {
+            &["Section", "w2,1,0"]
+        };
+        for input in commands {
+            enter(&mut app, input);
+        }
+        viewport_frame(&mut app, &context, Vec::new());
+        let draft = app.cutting_draft().unwrap();
+        let sources = app.cutting_sources(draft).unwrap();
+        let tolerance = app.document.tolerance();
+        let deadline = Instant::now() + Duration::from_secs(3);
+        for step in 0.. {
+            let sweep = 0.002 * f64::from(step);
+            let target = if contour {
+                point(1. + sweep, 1., 0.)
+            } else {
+                point(2. + sweep, 4., 0.)
+            };
+            let cursor = screen_point(&app, target);
+            let lines = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(cursor)]);
+            if !lines.is_empty() {
+                let (plan, result) = app
+                    .cutting_preview
+                    .result(draft, &sources, tolerance)
+                    .unwrap();
+                let solved_x = match plan {
+                    CutPlan::Section { frame, length, .. } => {
+                        frame.point_at([*length, 0., 0.]).unwrap().x()
+                    }
+                    CutPlan::Contour(frames) => frames[1].origin().x(),
+                };
+                assert!(solved_x < target.x() - 0.0002, "{solved_x} vs {target:?}");
+                assert_eq!(lines.len(), result.lines.len());
+                break;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "no intersections during {commands:?}"
+            );
+            std::thread::sleep(Duration::from_millis(2));
+        }
+        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(app.document.undo_label(), Some("MeshPlane"));
+        enter(&mut app, "Cancel");
+        assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
+    }
 }
 
 fn assert_mesh_cut_lengths(app: &VibocerosApp, expected: f64) {
