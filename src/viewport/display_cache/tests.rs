@@ -178,8 +178,12 @@ fn four_views_share_geometry_and_reuse_unchanged_scenes() {
     assert_eq!(entries.len(), document.objects().len());
     for entry in &entries {
         assert!(entry.wires.get().is_some());
-        if entry.mesh().is_some() {
-            assert!(entry.normals.get().is_some());
+        if let Some(mesh) = entry.mesh() {
+            let normals = entry
+                .normals
+                .get()
+                .or_else(|| entry.mesh.get()?.as_ref()?.normals.as_ref());
+            assert_eq!(normals.map(Vec::len), Some(mesh.faces().len()));
         }
     }
     for (i, view) in views.iter().enumerate() {
