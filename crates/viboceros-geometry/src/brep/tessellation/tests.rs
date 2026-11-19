@@ -43,6 +43,25 @@ fn display_mesh_retains_source_face_indices() {
     );
 }
 
+#[test]
+fn conforming_mesh_keeps_distinct_vertices_on_subtolerance_edges() {
+    let width = 0.0005;
+    let frame = Frame3::try_from_directions(
+        Point3::try_new(0., 0., 0.).unwrap(),
+        Vector3::try_new(1., 0., 0.).unwrap(),
+        Vector3::try_new(0., 1., 0.).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let source =
+        Brep::try_box(frame, [[0., width], [0., 1.], [0., 1.]], Tolerance::DEFAULT).unwrap();
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let mesh = source.tessellate_conforming(1, tolerance).unwrap();
+    assert!(mesh.topology().is_closed());
+    assert!(mesh.topology().is_oriented());
+    assert!((mesh.area().unwrap() - (2. + 4. * width)).abs() < 1e-12);
+}
+
 fn check_open_corner(mesh: &TriangleMesh) {
     let lines = mesh
         .filtered_edge_lines(crate::MeshEdgeFilter::Naked, Tolerance::DEFAULT)

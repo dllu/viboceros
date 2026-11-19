@@ -226,8 +226,9 @@ impl Brep {
                 .map(|(mesh, _, _)| mesh);
         }
         let samples_per_span = grids
-            .into_iter()
+            .iter()
             .flatten()
+            .copied()
             .max()
             .expect("a validated B-rep has at least one face");
         // A B-rep currently needs one common resolution for seam stitching.
@@ -246,6 +247,13 @@ impl Brep {
             .and_then(|side| side.checked_mul(side))
             .and_then(|n| n.checked_mul(spans?));
         if vertices.is_none_or(|n| n > 1_048_576) {
+            if density == 0. && !self.has_positional_break() {
+                let sampling = Sampling::per_face(&grids)
+                    .with_axis_limit(dense_grid_axis_limit(self.faces.len()));
+                return self
+                    .tessellate_conforming_sampling(sampling, tolerance, false)
+                    .map(|(mesh, _, _)| mesh);
+            }
             return Err(GeometryError::MeshSubdivisionLimit);
         }
         self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance, false)

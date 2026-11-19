@@ -116,8 +116,7 @@ pub(super) fn trim_chart_samples(
         return sample_trim_loop(boundary, resolution);
     }
     let surface = &face.surface;
-    let widths = [surface.domain_u(), surface.domain_v()].map(|d| d.end() - d.start());
-    let extra = cusp::stations(boundary, resolution, widths)?;
+    let extra = trim_cusp_stations(face, boundary, resolution)?;
     let mut samples = sample_trim_loop_with_stations(boundary, resolution, &extra)?;
     // UV endpoint roundoff can leave two nearly identical polygon vertices.
     // Keep conforming seam samples intact. On independent faces, eliminate
@@ -144,6 +143,16 @@ pub(super) fn trim_chart_samples(
     }
     samples.truncate(retained);
     Ok(samples)
+}
+
+pub(super) fn trim_cusp_stations(
+    face: &BrepFace,
+    boundary: &BrepLoop,
+    resolution: usize,
+) -> Result<Vec<Vec<Real>>, GeometryError> {
+    let surface = &face.surface;
+    let widths = [surface.domain_u(), surface.domain_v()].map(|d| d.end() - d.start());
+    cusp::stations(boundary, resolution, widths)
 }
 
 pub(super) fn append_trimmed_surface_grid_parameters(
