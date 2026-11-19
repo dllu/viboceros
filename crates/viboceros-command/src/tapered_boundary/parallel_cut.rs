@@ -1,6 +1,7 @@
 //! Direct sections of expanding, convex line-and-arc profiles.
 use super::*;
-use viboceros_geometry::{BrepFace, BrepLoop, BrepTrim, ParameterSide, SurfaceIso};
+use crate::surface_boundary_cut::mount_planar_cap;
+use viboceros_geometry::{BrepFace, ParameterSide};
 use viboceros_smlib::KernelCurve;
 
 #[cfg(test)]
@@ -187,50 +188,5 @@ fn on_cutter(
         .iter()
         .position(|face| std::ptr::eq(face.surface(), end))
         .ok_or(REJECTED)?;
-    let old = &result.faces()[cap];
-    let [boundary] = old.loops() else {
-        return Err(REJECTED);
-    };
-    let normal = |surface: &NurbsSurface| {
-        surface.normal_at(surface.parameter_at_u(0.5)?, surface.parameter_at_v(0.5)?)
-    };
-    let flip = normal(cutter)?.as_vector().dot(normal(end)?.as_vector())? < 0.;
-    let mut trims = Vec::with_capacity(boundary.trims().len());
-    for trim in boundary.trims() {
-        let edge = trim.edge().ok_or(REJECTED)?;
-        let mut uv =
-            cutter.try_pullback_projective_curve(result.edges()[edge].curve(), tolerance)?;
-        if trim.is_reversed_3d() ^ flip {
-            uv = uv.reversed()?;
-        }
-        let [a, b] = trim.vertices();
-        trims.push(BrepTrim::try_new(
-            if flip { [b, a] } else { [a, b] },
-            Some(edge),
-            trim.is_reversed_3d() ^ flip,
-            uv,
-            trim.trim_type(),
-            SurfaceIso::NotIso,
-            [0.; 2],
-        )?);
-    }
-    if flip {
-        trims.reverse();
-    }
-    let mut faces = result.faces().to_vec();
-    faces[cap] = BrepFace::try_new(
-        cutter.clone(),
-        old.is_reversed() ^ flip,
-        vec![BrepLoop::try_new(boundary.loop_type(), trims)?],
-    )?;
-    let remapped = Brep::try_new(
-        result.vertices().to_vec(),
-        result.edges().to_vec(),
-        faces,
-        tolerance,
-    )?;
-    if !remapped.is_solid() {
-        return Err(REJECTED);
-    }
-    Ok(remapped)
+    mount_planar_cap(result, cap, cutter, tolerance)
 }

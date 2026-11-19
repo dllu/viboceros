@@ -11,6 +11,7 @@ use crate::surface_boundary_cut::{
 use crate::surface_reference::BoundaryRef;
 use viboceros_smlib::Shape;
 
+mod oblique;
 mod open_profile;
 mod parallel_cut;
 mod source_holes;
@@ -227,11 +228,22 @@ fn extrude(
             reached_boundary: true,
         });
     }
-    let oblique_surface = curve.is_none()
-        && draft != 0.
+    let oblique = draft != 0.
         && direction.cross(reference)?.length()? > tolerance.angular()
         && stock.single_face_plane_normal(tolerance)?.is_some();
-    let filled = if draft < 0. && !oblique_surface {
+    if oblique
+        && draft > 0.
+        && oblique::crosses_circular_focal_radius(
+            &original,
+            direction,
+            reference,
+            length * draft.to_radians().tan(),
+            tolerance,
+        )?
+    {
+        return Err(REJECTED);
+    }
+    let filled = if draft < 0. && !oblique {
         source_holes::fill_collapsed(&original, length * (-draft).to_radians().tan(), tolerance)?
     } else {
         None
@@ -260,33 +272,39 @@ fn extrude(
             tolerance,
         )
     };
-    let stock = match swept {
-        Ok(stock) => stock.to_brep(tolerance)?,
+    let swept = match swept {
+        Ok(stock) => stock,
         // A contracting stock can collapse before reaching its temporary end.
         Err(viboceros_smlib::Error::Kernel(_)) => return Err(REJECTED),
         Err(error) => return Err(error.into()),
     };
-    if oblique_surface && !stock.is_solid() {
-        // A naked edge reaching the base is a gap between adjacent walls.
-        // A closed lateral shell can instead be trimmed and capped by a cutter.
+    let stock = swept.to_brep(tolerance)?;
+    if oblique && !stock.is_solid() {
         let plane = original.faces()[0]
             .surface()
             .plane(tolerance)?
             .ok_or(REJECTED)?;
-        let mut wall_gap = false;
-        for curve in stock.naked_boundary_curve_components()?.iter().flatten() {
-            let domain = curve.domain();
-            for t in [*domain.start(), *domain.end()] {
-                wall_gap |=
-                    plane.signed_distance_to(curve.evaluate(t)?)?.abs() <= tolerance.absolute();
+        if oblique::has_wall_gap(&stock, plane, tolerance)? {
+            if curve.is_none() {
+                return Ok(Product {
+                    brep: stock.transformed(to_world, tolerance)?,
+                    reached_boundary: false,
+                });
             }
-        }
-        if !wall_gap {
             return Err(REJECTED);
         }
+        let result = oblique::trim(
+            &swept,
+            &stock,
+            &original,
+            &cutter,
+            displacement,
+            curve.is_none() || options.solid,
+            tolerance,
+        )?;
         return Ok(Product {
-            brep: stock.transformed(to_world, tolerance)?,
-            reached_boundary: false,
+            brep: result.transformed(to_world, tolerance)?,
+            reached_boundary: true,
         });
     }
     let base_face = source.faces()[0].surface();

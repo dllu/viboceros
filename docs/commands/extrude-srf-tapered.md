@@ -27,8 +27,10 @@ A cutter hole inside the section leaves an opening. One that crosses the
 rim can leave the full temporary sweep and report a failed cut. A contracting
 source opening certified to collapse during the temporary sweep is filled by
 a separate face at the base. An oblique sweep with gaps between adjacent walls
-retains its base-capped temporary sweep and reports a failed cut. Cutting and
-capping an oblique sweep with a continuous rim still needs qualification.
+retains its base-capped temporary sweep and reports a failed cut. A continuous
+oblique sweep can be cut and capped by a planar face that covers the section.
+Warped cutters, cutter holes and partial results from collapse still need
+qualification for slanted sweeps.
 
 With source objects selected:
 

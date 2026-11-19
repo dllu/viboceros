@@ -144,30 +144,80 @@ fn curve_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion()
     check_viewport_cut(&mut app, source, cutter, "ExtrudeCrvTapered");
 }
 
-fn check_viewport_cut(app: &mut VibocerosApp, source: ObjectId, cutter: ObjectId, command: &str) {
-    use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
+#[test]
+fn surface_taper_oblique_boundary_direction_and_viewport_click_close_the_disk() {
+    use viboceros_geometry::{Brep, Circle3, UnitVector3};
 
-    let original = app.document.object(source).unwrap().clone();
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let circle = Circle3::try_new(
+        point(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+        tolerance,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Brep(
+            Brep::try_planar_face(&circle, tolerance).unwrap(),
+        ))
+        .unwrap();
+    let cutter = rectangle(&mut app, [-4., -5., 6., 5.], 5.);
     app.document
         .select_objects_direct([source], SelectionMode::Replace)
         .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeSrfTapered ToBoundary DraftAngle=-10 Solid=No DeleteInput=Yes",
+    );
+    enter(&mut app, "Direction");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,6");
+    assert!(app.picking_tapered_boundary());
+    pick_boundary_in_top_view(
+        &mut app,
+        [point(-4., -5., 0.), point(6., 5., 5.)],
+        point(-3.5, -4., 5.),
+    );
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(app.document.object(source).is_none());
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|o| o.id() != cutter)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a capped oblique extrusion");
+    };
+    assert!(result.is_solid());
+    assert_eq!((result.faces().len(), result.edges().len()), (6, 12));
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [cutter]
+    );
+    enter(&mut app, "Undo");
+    assert!(app.document.object(source).is_some());
+    enter(&mut app, "Redo");
+    assert!(app.document.object(source).is_none());
+}
+
+fn pick_boundary_in_top_view(app: &mut VibocerosApp, bounds: [Point3; 2], aim: Point3) {
+    use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
+
     app.viewports[0] = Viewport::new(ViewKind::Top);
     app.active_viewport = 0;
     app.maximized_viewport = Some(0);
     app.osnap = false;
     let ctx = egui::Context::default();
-    enter(
-        app,
-        &format!("{command} DraftAngle=-10 DeleteInput=Yes Solid=Yes"),
-    );
-    enter(app, "ToBoundary");
     viewport_frame(app, &ctx, vec![]);
     viewport_frame(app, &ctx, vec![]);
-    let bounds =
-        viboceros_geometry::BoundingBox3::from_points([point(-8., -8., 0.), point(13., 11., 8.)])
-            .unwrap();
+    let bounds = viboceros_geometry::BoundingBox3::from_points(bounds).unwrap();
     app.viewports[0].zoom_bounding_box(bounds).unwrap();
-    let aim = point(-3., -2., 5.);
     let pointer = (0..8)
         .find_map(|_| {
             let pointer = screen_point(app, aim);
@@ -176,6 +226,23 @@ fn check_viewport_cut(app: &mut VibocerosApp, source: ObjectId, cutter: ObjectId
         })
         .expect("boundary viewport layout");
     viewport_click(app, &ctx, pointer);
+}
+
+fn check_viewport_cut(app: &mut VibocerosApp, source: ObjectId, cutter: ObjectId, command: &str) {
+    let original = app.document.object(source).unwrap().clone();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    enter(
+        app,
+        &format!("{command} DraftAngle=-10 DeleteInput=Yes Solid=Yes"),
+    );
+    enter(app, "ToBoundary");
+    pick_boundary_in_top_view(
+        app,
+        [point(-8., -8., 0.), point(13., 11., 8.)],
+        point(-3., -2., 5.),
+    );
     assert!(app.active_command.is_none(), "{:?}", app.command_log);
     assert!(app.document.object(source).is_none());
     assert_eq!(

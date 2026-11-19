@@ -242,6 +242,65 @@ pub(super) fn copied_carrier(
     same_spline_carrier(copy, original, tolerance)
 }
 
+/// Transfer a planar cap and its existing topology to the selected cutter's
+/// chart. The cutter supplies exact p-curves for the cap's shared 3D edges.
+pub(super) fn mount_planar_cap(
+    result: Brep,
+    cap: usize,
+    cutter: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    use viboceros_geometry::{BrepFace, BrepLoop, BrepTrim, SurfaceIso};
+
+    let old = &result.faces()[cap];
+    let normal = |surface: &NurbsSurface| {
+        surface.normal_at(surface.parameter_at_u(0.5)?, surface.parameter_at_v(0.5)?)
+    };
+    let flip = normal(cutter)?
+        .as_vector()
+        .dot(normal(old.surface())?.as_vector())?
+        < 0.;
+    let mut loops = Vec::with_capacity(old.loops().len());
+    for boundary in old.loops() {
+        let mut trims = Vec::with_capacity(boundary.trims().len());
+        for trim in boundary.trims() {
+            let edge = trim.edge().ok_or(REJECTED)?;
+            let mut uv =
+                cutter.try_pullback_exact_curve(result.edges()[edge].curve(), tolerance)?;
+            let reversed = trim.is_reversed_3d() ^ flip;
+            if reversed {
+                uv = uv.reversed()?;
+            }
+            let [a, b] = trim.vertices();
+            trims.push(BrepTrim::try_new(
+                if flip { [b, a] } else { [a, b] },
+                Some(edge),
+                reversed,
+                uv,
+                trim.trim_type(),
+                SurfaceIso::NotIso,
+                [0.; 2],
+            )?);
+        }
+        if flip {
+            trims.reverse();
+        }
+        loops.push(BrepLoop::try_new(boundary.loop_type(), trims)?);
+    }
+    let mut faces = result.faces().to_vec();
+    faces[cap] = BrepFace::try_new(cutter.clone(), old.is_reversed() ^ flip, loops)?;
+    let remapped = Brep::try_new(
+        result.vertices().to_vec(),
+        result.edges().to_vec(),
+        faces,
+        tolerance,
+    )?;
+    if !remapped.is_solid() {
+        return Err(REJECTED);
+    }
+    Ok(remapped)
+}
+
 fn matches_reparameterized_wall(
     surface: &NurbsSurface,
     originals: &[&NurbsSurface],
