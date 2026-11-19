@@ -207,6 +207,14 @@ fn certified_ellipse_pushup_trimmed_solid_exports_without_refitting() {
     assert!(source.is_solid());
     let original = model(ThreeDmGeometry::Brep(source.clone()));
     let preserved = original.clone();
+    let checked =
+        crate::check_3dm_geometry_with_tolerance(&original.objects[0].geometry, original.tolerance);
+    assert_eq!(
+        checked.status,
+        crate::GeometryCheckStatus::Valid,
+        "{checked:?}"
+    );
+    assert_eq!(original, preserved);
     let temporary = tempfile::tempdir().unwrap();
     let path = temporary.path().join("certified-pushup-panel.3dm");
     let adapted = prepare(&original.objects[0].geometry, original.tolerance).unwrap();

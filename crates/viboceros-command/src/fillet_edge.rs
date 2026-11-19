@@ -281,7 +281,7 @@ fn checked_local_fillet(
         viboceros_smlib::Solid::fillet_brep_edges_with_local_merge(brep, edges, radius, tolerance)
             .ok()?;
     let geometry = Geometry::Brep(candidate);
-    let check = crate::geometry_check::check_geometry(&geometry);
+    let check = crate::geometry_check::check_geometry_with_tolerance(&geometry, tolerance);
     if let Geometry::Brep(candidate) = geometry
         && candidate.is_solid()
         && check.status == crate::geometry_check::GeometryCheckStatus::Valid
