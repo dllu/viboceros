@@ -6972,7 +6972,7 @@ fn triangulate_trim_region_with_constraints(
     };
     let normalized = parameters
         .iter()
-        .map(|&p| normalization.normalize(p))
+        .map(|&p| normalization.normalize_for_triangulation(p))
         .collect::<Result<Vec<_>, _>>()?;
     let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
     let mut start = 0_usize;

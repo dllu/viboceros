@@ -10,7 +10,9 @@ mod curvature;
 mod independent;
 mod normals;
 mod sampling;
-use sampling::{Sampling, append_trimmed_surface_grid_parameters, trim_chart_samples};
+use sampling::{
+    SPARSE_MESH_VERTEX_LIMIT, Sampling, append_trimmed_surface_grid_parameters, trim_chart_samples,
+};
 
 #[cfg(test)]
 mod tests;
