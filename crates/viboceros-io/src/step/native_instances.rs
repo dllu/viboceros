@@ -72,6 +72,7 @@ pub fn read_step_native_instances<R: Read>(
     tolerance: Tolerance,
 ) -> Result<StepNativeImport, StepError> {
     let data = read_data_section(reader)?;
+    let tolerance = super::units::native_validation_tolerance(&data, tolerance);
     let table = Table::from_data_section(&data);
     drop(data);
     convert_table(&table, tolerance, true)
@@ -86,6 +87,7 @@ pub fn read_step_native_instances_in_units<R: Read>(
     let mut data = read_data_section(reader)?;
     let (scale, source_tolerance) =
         super::units::conversion_to_target(&mut data, target, tolerance)?;
+    let source_tolerance = super::units::native_validation_tolerance(&data, source_tolerance);
     let table = Table::from_data_section(&data);
     drop(data);
     let mut imported = convert_table(&table, source_tolerance, true)?;

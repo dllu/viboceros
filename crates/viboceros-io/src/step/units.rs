@@ -1,4 +1,5 @@
 //! Resolve physical length units from Part 21 records before table conversion.
+mod accuracy;
 mod angle;
 use super::StepError;
 use monstertruck::step::load::step_p21::ast::{
@@ -6,6 +7,8 @@ use monstertruck::step::load::step_p21::ast::{
 };
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use viboceros_geometry::{LengthUnitSystem, Tolerance};
+
+pub(super) use accuracy::native_validation_tolerance;
 
 pub(super) fn conversion_to_target(
     data: &mut DataSection,
