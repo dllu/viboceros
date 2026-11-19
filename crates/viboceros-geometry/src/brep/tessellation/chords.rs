@@ -1,5 +1,5 @@
 //! Refine long chords on shared edges and within trimmed faces.
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 use super::audit::key as vertex_location;
 use super::*;
@@ -97,6 +97,32 @@ pub(super) fn refinement_weight(
     Ok((work * stride as Real * 0.5).ceil() as u64)
 }
 
+#[derive(Clone, Copy)]
+struct InteriorProbe {
+    error: Real,
+    uv: Point2,
+    point: Point3,
+}
+
+fn probe_interior_edge(
+    surface: &NurbsSurface,
+    [ua, ub]: [Point2; 2],
+    [a, b]: [Point3; 2],
+    height: Real,
+    locations: &HashSet<[u64; 3]>,
+) -> Result<Option<InteriorProbe>, GeometryError> {
+    let uv = Point2::try_new(ua.x().midpoint(ub.x()), ua.y().midpoint(ub.y()))?;
+    if uv == ua || uv == ub {
+        return Ok(None);
+    }
+    let point = surface.evaluate(uv.x(), uv.y())?;
+    if locations.contains(&vertex_location(point)) {
+        return Ok(None);
+    }
+    let error = distance_to_chord(point, a, b)?;
+    Ok((error > height).then_some(InteriorProbe { error, uv, point }))
+}
+
 pub(super) fn refine_interior(
     surface: &NurbsSurface,
     parameters: &mut Vec<Point2>,
@@ -106,6 +132,15 @@ pub(super) fn refine_interior(
     limit: usize,
     locations: &mut HashSet<[u64; 3]>,
 ) -> Result<Option<Real>, GeometryError> {
+    const CACHED_EDGE_LIMIT: usize = 65_536;
+    // Vertex indices and UV values are stable during refinement. Reuse probes
+    // for edges that survive several rounds, especially on large supports.
+    let cache_limit = if triangles.len() >= 512 {
+        CACHED_EDGE_LIMIT
+    } else {
+        0
+    };
+    let mut probes = HashMap::new();
     loop {
         let mut edges = triangles
             .iter()
@@ -121,18 +156,25 @@ pub(super) fn refine_interior(
             }
             let key = incidence[0];
             let [a, b] = key.map(|i| i as usize);
-            let [ua, ub] = [parameters[a], parameters[b]];
-            let uv = Point2::try_new(ua.x().midpoint(ub.x()), ua.y().midpoint(ub.y()))?;
-            if uv == ua || uv == ub {
-                continue;
-            }
-            let point = surface.evaluate(uv.x(), uv.y())?;
-            if locations.contains(&vertex_location(point)) {
-                continue;
-            }
-            let error = distance_to_chord(point, points[a], points[b])?;
-            if error > chord_height {
-                proposals.push((error, key, uv, point));
+            let probe = if let Some(&saved) = probes.get(&key) {
+                saved
+            } else {
+                let probe = probe_interior_edge(
+                    surface,
+                    [parameters[a], parameters[b]],
+                    [points[a], points[b]],
+                    chord_height,
+                    locations,
+                )?;
+                if probes.len() < cache_limit {
+                    probes.insert(key, probe);
+                }
+                probe
+            };
+            if let Some(probe) = probe
+                && !locations.contains(&vertex_location(probe.point))
+            {
+                proposals.push((probe.error, key, probe.uv, probe.point));
             }
         }
         if proposals.is_empty() {

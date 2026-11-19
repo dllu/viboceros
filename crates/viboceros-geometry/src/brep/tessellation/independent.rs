@@ -4,7 +4,7 @@ use super::*;
 
 const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
 const DENSE_GRID_AXIS_LIMIT: usize = 32;
-const DENSE_DISPLAY_CHORD_DENSITY: Real = 0.25;
+const DENSE_DISPLAY_CHORD_DENSITY: Real = 0.35;
 
 fn dense_grid_axis_limit(face_count: usize) -> usize {
     // Reserve part of the mesh budget for the actual trim curves. Allow more
