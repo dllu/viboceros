@@ -1238,6 +1238,7 @@ impl VibocerosApp {
             || self.start_solid_axial(&input)
             || self.start_subd_axial(&input)
             || self.start_curve_offset(&input)
+            || self.start_ribbon(&input, false)
             || self.try_start_object_prompt(&input)
             || self.try_start_interactive_command(&input)
         {

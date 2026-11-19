@@ -6,6 +6,7 @@ use viboceros_document::ObjectId;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) enum Temporary {
     Offset,
+    Ribbon,
     Radius,
     NestedLength,
 }
@@ -236,7 +237,7 @@ impl VibocerosApp {
         self.begin_temporary_subcurve_prompt(reference, Temporary::Radius);
     }
 
-    fn begin_temporary_subcurve_prompt(
+    pub(in crate::app) fn begin_temporary_subcurve_prompt(
         &mut self,
         reference: Option<(ObjectId, Option<usize>)>,
         parent: Temporary,
@@ -595,6 +596,7 @@ impl VibocerosApp {
         match parent {
             Temporary::Radius => self.return_to_radius(portion)?,
             Temporary::NestedLength => self.continue_after_nested_length_portion(portion)?,
+            Temporary::Ribbon => self.finish_ribbon_portion(portion)?,
             Temporary::Offset => {
                 if let Some((reference, curve)) = portion {
                     self.add_curve_offset_portion(&reference, curve);
@@ -604,6 +606,13 @@ impl VibocerosApp {
             }
         }
         Ok(())
+    }
+
+    pub(in crate::app) fn clear_temporary_subcurve_input(&mut self) {
+        self.subcurve_prompt = None;
+        self.active_command = None;
+        self.point_filter = None;
+        self.point_constraint = None;
     }
 
     pub(super) fn accept_temporary_subcurve_parameter(&mut self, parameter: f64) -> bool {

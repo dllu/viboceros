@@ -1609,6 +1609,12 @@ impl VibocerosApp {
                                         .as_ref()
                                         .filter(|p| p.show_curve)
                                         .map(|p| &p.geometry.curve)
+                                })
+                                .or_else(|| {
+                                    self.ribbon_session
+                                        .as_ref()
+                                        .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                        .and_then(|s| s.portion_preview(&self.document))
                                 }),
                             preview_polycurves: self
                                 .fillet_corners_session

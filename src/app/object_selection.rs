@@ -189,6 +189,9 @@ impl PendingObjectCommand {
         if self.description.command == "FilletCorners" {
             return "Select curves to fillet; Enter sets the radius, Esc cancels";
         }
+        if self.description.command == "Ribbon" && self.phase == ObjectPromptPhase::Selecting {
+            return "Select a curve to ribbon or choose SubCrv to use a portion";
+        }
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
         }
@@ -1256,6 +1259,11 @@ impl VibocerosApp {
             return false;
         }
         if self.continue_merge_surface_options(input) {
+            return true;
+        }
+        if input.trim_start_matches(['_', '-']).eq_ignore_ascii_case("SubCrv")
+            && self.start_ribbon_portion()
+        {
             return true;
         }
         if self.continue_length_choices(input)

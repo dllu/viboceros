@@ -10,6 +10,13 @@ points. Choose `ThroughPoint` to vary the width with the cursor and pick or
 type the target location. Both modes use the shared coordinate and snapping
 controls. Escape cancels the draft without a model edit.
 
+Before selecting the source, enter `SubCrv` to use a temporary portion.
+Select the curve and pick or type its start and end. You can also enter a
+length and confirm its direction. The Ribbon side prompt then previews the
+portion. A temporary source uses the current layer even with
+`OutputLayer=Input`. [SubCrv controls](subcurve.md)
+[Rhino 8 temporary-source capture](../ribbon-subcurve-reference.json)
+
 ```text
 Ribbon .5 0,5,0
 Ribbon Distance=2cm 0,5,0 BothSides=Yes Corner=Round
@@ -45,8 +52,8 @@ Drafts invalidate when source state changes.
 
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
-tolerance and Corner. Trim and self-intersection policies, source subcurves,
-and history-based regeneration remain unfinished. Both-sided Loose polycurves
+tolerance and Corner. Trim and self-intersection policies and history-based
+regeneration remain unfinished. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

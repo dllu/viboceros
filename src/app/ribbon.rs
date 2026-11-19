@@ -1,12 +1,22 @@
 //! A curve pick, option editing and one final side point; drafts stay off-model.
 use super::*;
+use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_command::ribbon::{self as solver, Options};
 use viboceros_document::Object;
+use viboceros_geometry::{Curve3, NurbsCurve};
 mod input;
+mod portion;
 mod preview;
+
+struct Portion {
+    reference: CapturedCurve,
+    curve: Curve3,
+    guide: NurbsCurve,
+}
 
 pub(super) struct Session {
     source: Object,
+    portion: Option<Portion>,
     selection: Vec<ObjectId>,
     pub(super) postselected: bool,
     plane: Frame3,
@@ -40,6 +50,10 @@ impl Session {
             && doc.current_layer_id() == self.layer
             && doc.units() == &self.units
             && doc.selected_object_ids().eq(self.selection.iter().copied())
+            && self
+                .portion
+                .as_ref()
+                .is_none_or(|p| p.reference.current(doc))
             && doc.object(self.source.id()).is_some_and(|o| {
                 o.geometry_snapshot()
                     .shares_storage_with(self.source.geometry_snapshot())
@@ -57,6 +71,22 @@ impl VibocerosApp {
                 .eq_ignore_ascii_case("Ribbon")
         }) {
             return false;
+        }
+        if words[1..].iter().any(|word| is_subcurve_option(word)) {
+            let input = words
+                .iter()
+                .copied()
+                .filter(|word| !is_subcurve_option(word))
+                .collect::<Vec<_>>()
+                .join(" ");
+            if self.document.selected_object_count() == 0 {
+                if self.try_start_object_prompt(&input) {
+                    self.start_ribbon_portion();
+                }
+                return true;
+            }
+            self.push_log("SubCrv is available while selecting the Ribbon source".into());
+            return self.start_ribbon(&input, postselected);
         }
         let plane = self.viewports[self.active_viewport].construction_plane();
         let context = viboceros_command::CommandContext {
@@ -87,9 +117,22 @@ impl VibocerosApp {
             self.push_log("Select one curve for Ribbon".into());
             return true;
         }
+        self.begin_ribbon_side(sources[0].clone(), None, parsed, plane, postselected);
+        true
+    }
+
+    fn begin_ribbon_side(
+        &mut self,
+        source: Object,
+        portion: Option<Portion>,
+        parsed: solver::Input,
+        plane: Frame3,
+        postselected: bool,
+    ) {
         self.cancel_interactive_command(false);
         self.ribbon_session = Some(Session {
-            source: sources[0].clone(),
+            source,
+            portion,
             selection: self.document.selected_object_ids().collect(),
             postselected,
             plane,
@@ -106,7 +149,6 @@ impl VibocerosApp {
         self.drafting_plane = Some(plane);
         self.command_input.clear();
         self.ribbon_prompt();
-        true
     }
     fn ribbon_prompt(&mut self) {
         if let Some(s) = &self.ribbon_session {
@@ -160,21 +202,35 @@ impl VibocerosApp {
             return Some(false);
         }
         let s = self.ribbon_session.take().unwrap();
-        let input = format!(
-            "Ribbon {} {}{}",
-            s.options.arguments(),
-            if s.through_point { "ThroughPoint " } else { "" },
-            format_model_point(point)
-        );
         let context = viboceros_command::CommandContext {
             construction_plane: s.plane,
         };
-        let result = if s.postselected {
-            self.commands
-                .execute_postselected(&mut self.document, &input, context)
+        let result = if let Some(portion) = &s.portion {
+            self.commands.commit_ribbon_portion(
+                &mut self.document,
+                &portion.reference,
+                portion.curve.as_ref(),
+                solver::Input {
+                    options: s.options,
+                    side: Some(point),
+                    through_point: s.through_point,
+                },
+                context,
+            )
         } else {
-            self.commands
-                .execute_in_context(&mut self.document, &input, context)
+            let input = format!(
+                "Ribbon {} {}{}",
+                s.options.arguments(),
+                if s.through_point { "ThroughPoint " } else { "" },
+                format_model_point(point)
+            );
+            if s.postselected {
+                self.commands
+                    .execute_postselected(&mut self.document, &input, context)
+            } else {
+                self.commands
+                    .execute_in_context(&mut self.document, &input, context)
+            }
         };
         match result {
             Ok(message) => {
@@ -190,4 +246,9 @@ impl VibocerosApp {
             }
         }
     }
+}
+
+fn is_subcurve_option(word: &str) -> bool {
+    word.trim_start_matches(['_', '-'])
+        .eq_ignore_ascii_case("SubCrv")
 }

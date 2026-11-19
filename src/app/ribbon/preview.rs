@@ -1,7 +1,7 @@
 //! Solve the ribbon at the current side without putting draft geometry into the model.
 use super::*;
 use std::sync::{Arc, mpsc};
-use viboceros_geometry::NurbsCurve;
+use viboceros_geometry::CurveRef;
 
 #[derive(Clone, Copy, PartialEq)]
 struct Request {
@@ -31,7 +31,7 @@ pub(super) struct Preview {
 impl Preview {
     fn source(
         &mut self,
-        object: &Object,
+        curve: CurveRef<'_>,
         in_cplane: bool,
         plane: Frame3,
         tolerance: Tolerance,
@@ -41,7 +41,6 @@ impl Preview {
             .as_ref()
             .is_none_or(|(fixed, _)| *fixed != in_cplane)
         {
-            let curve = object.geometry().curve_ref()?;
             let context = viboceros_command::CommandContext {
                 construction_plane: plane,
             };
@@ -136,8 +135,13 @@ impl VibocerosApp {
                 return None;
             }
             let options = session.options;
+            let curve = session
+                .portion
+                .as_ref()
+                .map(|portion| portion.curve.as_ref())
+                .or_else(|| session.source.geometry().curve_ref())?;
             let source = session.preview.source(
-                &session.source,
+                curve,
                 options.in_cplane,
                 session.plane,
                 session.tolerance,

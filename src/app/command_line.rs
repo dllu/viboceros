@@ -287,13 +287,13 @@ impl VibocerosApp {
             edge_pattern_selection::HINT
         } else if self.length_units_pending {
             "Enter a unit name or Model_Units; Esc cancels Length"
+        } else if let Some(prompt) = &self.subcurve_prompt {
+            prompt.hint()
         } else if let Some(prompt) = &self.object_prompt {
             prompt.hint()
         } else if let Some(prompt) = &self.group_prompt {
             prompt.hint()
         } else if let Some(prompt) = &self.intersection_prompt {
-            prompt.hint()
-        } else if let Some(prompt) = &self.subcurve_prompt {
             prompt.hint()
         } else if let Some(prompt) = &self.edge_prompt {
             prompt.hint()

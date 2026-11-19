@@ -356,7 +356,7 @@ impl VibocerosApp {
             inputs.push(Input { source, curve });
         }
         self.sync_offset_portion_guides();
-        self.finish_offset_subcurve_input();
+        self.clear_temporary_subcurve_input();
         if self.curve_offset_session.as_ref().unwrap().kind == Kind::Offset {
             self.finish_curve_offset_sources();
         } else {
@@ -364,15 +364,8 @@ impl VibocerosApp {
         }
     }
 
-    pub(in crate::app) fn finish_offset_subcurve_input(&mut self) {
-        self.subcurve_prompt = None;
-        self.active_command = None;
-        self.point_filter = None;
-        self.point_constraint = None;
-    }
-
     pub(in crate::app) fn return_to_curve_offset_sources(&mut self) {
-        self.finish_offset_subcurve_input();
+        self.clear_temporary_subcurve_input();
         self.curve_offset_prompt();
     }
 

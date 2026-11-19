@@ -9,6 +9,11 @@ impl VibocerosApp {
             return false;
         }
         let option = input.trim().trim_start_matches(['_', '-']);
+        if is_subcurve_option(option) {
+            self.push_log("SubCrv is available while selecting the Ribbon source".into());
+            self.command_input.clear();
+            return true;
+        }
         let local = [
             "Distance",
             "Corner",
