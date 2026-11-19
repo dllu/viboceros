@@ -92,6 +92,9 @@ displacement of previously shared vertices independently from the curve match.
 To split several edges of one B-rep in a single operation, use
 `model.run(f"SplitEdge {object_id} Batch 0:2,6 1:3")` with each edge's
 original index and its curve parameters.
+Use `ShrinkTrimmedSrfToEdge object-id PoleEdges=0,1` to represent named
+roundoff-sized naked edges as singular trims. This requires the corresponding
+surface sides to collapse to the same points.
 
 ## Files and images
 

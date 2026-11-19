@@ -18,6 +18,7 @@ mod extrusion;
 pub use extrusion::{ExtrusionNurbsForm, ExtrusionRepresentation};
 mod boolean;
 mod borders;
+mod collapsed_poles;
 mod command_box;
 pub use boolean::{
     BrepBooleanOperation, BrepConvexBooleanPlan, BrepConvexIntersection, BrepConvexRegion,

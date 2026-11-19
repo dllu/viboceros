@@ -14,6 +14,14 @@ fn command_name(mode: BrepSurfaceShrinkMode) -> &'static str {
     }
 }
 
+fn pole_edge_indices<'a>(arguments: &'a [&str]) -> Option<&'a str> {
+    let [_, edge_list] = arguments else {
+        return None;
+    };
+    let (option, value) = edge_list.split_once('=')?;
+    option_name_eq(option, "PoleEdges").then_some(value)
+}
+
 #[cfg(test)]
 mod tests;
 
@@ -28,6 +36,9 @@ impl Command for ShrinkTrimmedCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        if self.0 == BrepSurfaceShrinkMode::ToEdge && pole_edge_indices(arguments).is_some() {
+            return Ok(None);
+        }
         if !arguments.is_empty() && self.0 == BrepSurfaceShrinkMode::Standard {
             parse_faces(arguments)?;
             return Ok(None);
@@ -65,6 +76,28 @@ impl ShrinkTrimmedCommand {
         postselected: bool,
     ) -> Result<String, CommandError> {
         if self.0 == BrepSurfaceShrinkMode::ToEdge {
+            if let Some(edges) = pole_edge_indices(arguments) {
+                let usage = "ShrinkTrimmedSrfToEdge object-id PoleEdges=edge-index[,edge-index...]";
+                let id = arguments[0]
+                    .parse()
+                    .map_err(|_| CommandError::Usage(usage))?;
+                let indices = edges
+                    .split(',')
+                    .map(|v| v.parse().map_err(|_| CommandError::Usage(usage)))
+                    .collect::<Result<Vec<usize>, _>>()?;
+                if !document.is_object_selectable(id) {
+                    return Err(CommandError::ShrinkTrimmedUnavailable);
+                }
+                let Some(Geometry::Brep(brep)) = document.object(id).map(|o| o.geometry()) else {
+                    return Err(CommandError::ShrinkTrimmedUnavailable);
+                };
+                let result = brep.try_normalize_pole_edges(&indices, document.tolerance())?;
+                document.replace_object_geometries([(id, Geometry::Brep(result))])?;
+                return Ok(format!(
+                    "Represented {} collapsed edge(s) as singular trims",
+                    indices.len()
+                ));
+            }
             require_consumed(arguments, 0, self.name())?;
         }
         let faces = parse_faces(arguments)?;
