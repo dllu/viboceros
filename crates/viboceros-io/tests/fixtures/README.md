@@ -14,6 +14,13 @@ To regenerate, run a copy of the generator in an empty temporary directory
 inside an isolated Rhino 8 instance. It writes the reference and a version/result
 JSON beside itself and exits Rhino. Inspect that JSON before replacing this fixture.
 
+## Text arrowhead block
+
+`text-leader-arrow.3dm` was generated with OpenNURBS using the block-local text
+plane, rotation, and leader path from the Rhino 8
+[EvaluatePt capture](../../../../docs/evaluate-point-labels-rhino-reference.json).
+It contains one leader referencing a block with a native `ON_Text` member.
+
 ## Subnormal-weight import regression
 
 `pre_scale_subnormal_weights.3dm` was written by Viboceros commit `0b08c71`

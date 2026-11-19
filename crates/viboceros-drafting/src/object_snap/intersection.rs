@@ -270,6 +270,7 @@ pub(super) fn visit(
             Geometry::Mesh(_)
             | Geometry::Point(_)
             | Geometry::TextDot(_)
+            | Geometry::Text(_)
             | Geometry::Leader(_)
             | Geometry::PointCloud(_)
             | Geometry::SubD(_)

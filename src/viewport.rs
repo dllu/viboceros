@@ -31,6 +31,7 @@ mod camera;
 mod text_dot;
 mod leader;
 mod leader_arrow;
+mod model_text;
 mod clipping;
 mod curve_line;
 mod curve_offset;
@@ -2537,6 +2538,7 @@ impl Viewport {
         );
         self.paint_scene_text_dots(&painter, rect);
         self.paint_scene_leaders(&painter, rect, document);
+        self.paint_scene_model_text(&painter, rect);
         if let Some(rectangle) = input.alignment_plane_preview {
             let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
             for (a, b) in rectangle

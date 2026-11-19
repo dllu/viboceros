@@ -137,6 +137,11 @@ impl ProjectedPrimitives {
         self.triangles.push([first, second, third]);
     }
 
+    fn add_text_quad(&mut self, [a, b, c, d]: [Pos2; 4]) {
+        self.add_triangle([Some(a), Some(b), Some(c)]);
+        self.add_triangle([Some(a), Some(c), Some(d)]);
+    }
+
     pub(super) fn is_windowed_by(&self, selection: Rect) -> bool {
         !self.depth_clipped
             && !self.points.is_empty()
@@ -219,6 +224,43 @@ impl Viewport {
         PickHit::screen(0, distance)
     }
 
+    fn model_text_distance(
+        &self,
+        text: &viboceros_geometry::TextAnnotation,
+        pointer: Pos2,
+        rect: Rect,
+    ) -> f32 {
+        let Some([a, b, c, d]) = self
+            .project_model_text(text, rect)
+            .filter(|quad| Rect::from_points(quad).intersects(rect))
+        else {
+            return f32::INFINITY;
+        };
+        if point_in_triangle(pointer, a, b, c) || point_in_triangle(pointer, a, c, d) {
+            return 0.0;
+        }
+        [[a, b], [b, c], [c, d], [d, a]]
+            .into_iter()
+            .map(|[a, b]| point_segment_distance(pointer, a, b))
+            .fold(f32::INFINITY, f32::min)
+    }
+
+    fn add_projected_model_text(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        text: &viboceros_geometry::TextAnnotation,
+        rect: Rect,
+    ) {
+        if let Some(quad) = self.project_model_text(text, rect) {
+            projected.add_text_quad(quad);
+        } else {
+            projected.depth_clipped |= text
+                .quad()
+                .iter()
+                .any(|&p| !self.point_within_display_depth(p));
+        }
+    }
+
     fn pick_leader(
         &self,
         leader: &viboceros_geometry::Leader,
@@ -261,6 +303,11 @@ impl Viewport {
                             f32::INFINITY
                         }
                     }
+                    ArrowPiece::Text(text) => self.model_text_distance(&text, pointer, rect),
+                    ArrowPiece::TextDot(dot) => self
+                        .text_dot_bounds(&dot, rect)
+                        .filter(|bounds| bounds.intersects(rect))
+                        .map_or(f32::INFINITY, |bounds| bounds.distance_to_pos(pointer)),
                 };
                 distance = distance.min(hit);
             });
@@ -288,6 +335,8 @@ impl Viewport {
                     projected.add_triangle(triangle.map(Some));
                 }
             }
+            ArrowPiece::Text(text) => self.add_projected_model_text(projected, &text, rect),
+            ArrowPiece::TextDot(dot) => self.add_projected_text_dot(projected, &dot, rect),
         });
     }
 
@@ -301,9 +350,7 @@ impl Viewport {
             projected.add_triangle(triangle.map(Some));
         }
         if let Some(bounds) = self.leader_text_bounds(leader, rect) {
-            let [a, b, c, d] = rect_corners(bounds);
-            projected.add_triangle([Some(a), Some(b), Some(c)]);
-            projected.add_triangle([Some(a), Some(c), Some(d)]);
+            projected.add_text_quad(rect_corners(bounds));
         }
     }
 
@@ -317,9 +364,7 @@ impl Viewport {
             projected.depth_clipped = true;
             return;
         };
-        let [a, b, c, d] = rect_corners(bounds);
-        projected.add_triangle([Some(a), Some(b), Some(c)]);
-        projected.add_triangle([Some(a), Some(c), Some(d)]);
+        projected.add_text_quad(rect_corners(bounds));
     }
 
     fn draws_object_faces(&self, id: ObjectId) -> bool {
@@ -584,6 +629,9 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
+                Geometry::Text(text) => {
+                    PickHit::screen(1, self.model_text_distance(text, pointer, rect))
+                }
                 Geometry::PointCloud(cloud) => {
                     let distance = self
                         .pick_point_cloud_member(pointer, rect, cloud)
@@ -919,6 +967,9 @@ impl Viewport {
                     }),
             ),
             Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
+            Geometry::Text(text) => {
+                PickHit::screen(1, self.model_text_distance(text, pointer, rect))
+            }
             Geometry::Leader(leader) => {
                 self.pick_leader(leader, display.wires(), pointer, rect, None)
             }
@@ -1027,6 +1078,7 @@ impl Viewport {
         match &*display.geometry {
             Geometry::Point(point) => self.add_selection_point(&mut projected, *point, rect),
             Geometry::TextDot(dot) => self.add_projected_text_dot(&mut projected, dot, rect),
+            Geometry::Text(text) => self.add_projected_model_text(&mut projected, text, rect),
             Geometry::Leader(leader) => {
                 for &[a, b] in display.wires() {
                     self.add_selection_segment(&mut projected, a, b, rect);
@@ -1088,6 +1140,9 @@ impl Viewport {
             }
             Geometry::TextDot(dot) => {
                 self.add_projected_text_dot(&mut projected, dot, viewport_rect);
+            }
+            Geometry::Text(text) => {
+                self.add_projected_model_text(&mut projected, text, viewport_rect)
             }
             Geometry::Leader(leader) => {
                 leader.visit_segments(|a, b| {
@@ -1346,6 +1401,46 @@ mod tests {
         let arrow = view.project(expected, rect).unwrap();
         assert_eq!(view.pick_object(arrow, rect, &document), Some(object.id()));
         let region = Rect::from_center_size(arrow, Vec2::splat(4.));
+        assert_eq!(
+            view.objects_in_selection(rect, region, true, &document),
+            vec![object.id()]
+        );
+    }
+
+    #[test]
+    fn model_text_in_an_arrowhead_can_pick_the_leader() {
+        use viboceros_document::BlockContent;
+
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("crates/viboceros-io/tests/fixtures/text-leader-arrow.3dm");
+        let (document, _, _) =
+            viboceros_command::open_3dm_with_named_views(fixture.to_str().unwrap()).unwrap();
+        let object = document.objects().next().unwrap();
+        let Geometry::Leader(leader) = object.geometry() else {
+            panic!("expected a leader");
+        };
+        let definition = document.block_definitions().next().unwrap();
+        let BlockContent::Geometry(geometry) = definition.members()[0].content() else {
+            panic!("expected an annotation member");
+        };
+        let Geometry::Text(text) = &**geometry else {
+            panic!("expected native model text");
+        };
+        let posed = text.transformed(leader.arrow_transform().unwrap()).unwrap();
+        // Rhino 8.32 retains the text rotation and transforms the block-local origin.
+        let expected = Point3::try_new(4. * std::f64::consts::SQRT_2, 0., 0.).unwrap();
+        assert!(posed.plane().origin().distance_to(expected).unwrap() < 1e-12);
+        assert_eq!(posed.layout().rotation, 0.25);
+        assert!((posed.layout().height_factor - 2.).abs() < 1e-12);
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let [a, _, c, _] = view.project_model_text(&posed, rect).unwrap();
+        let pointer = a.lerp(c, 0.5);
+        assert_eq!(
+            view.pick_object(pointer, rect, &document),
+            Some(object.id())
+        );
+        let region = Rect::from_center_size(pointer, Vec2::splat(2.));
         assert_eq!(
             view.objects_in_selection(rect, region, true, &document),
             vec![object.id()]

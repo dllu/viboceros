@@ -70,6 +70,7 @@ impl Geometry {
         match self {
             Self::Point(_) => DuplicateGeometryFamily::Point,
             Self::TextDot(_) => DuplicateGeometryFamily::TextDot,
+            Self::Text(_) => DuplicateGeometryFamily::Text,
             Self::Leader(_) => DuplicateGeometryFamily::Leader,
             Self::PointCloud(_) => DuplicateGeometryFamily::PointCloud,
             Self::Line(_) | Self::Polyline(_) => DuplicateGeometryFamily::PiecewiseLinear,
@@ -115,6 +116,19 @@ impl Geometry {
                 text: dot.text().into(),
                 secondary: dot.secondary_text().into(),
                 style: dot.style().clone(),
+            },
+            Self::Text(text) => DuplicateGeometryKey::Text {
+                plane: [
+                    point_key(text.plane().origin()),
+                    vector_key(text.plane().x_axis()),
+                    vector_key(text.plane().y_axis()),
+                ],
+                rotation: real_key(text.layout().rotation),
+                width: text.layout().wrapping_width.map(real_key),
+                scale: real_key(text.layout().height_factor),
+                plain_text: text.text().into(),
+                rich_text: text.rich_text().into(),
+                style: text.style().archive().into(),
             },
             Self::Leader(leader) => DuplicateGeometryKey::Leader {
                 path: leader.path().vertices().iter().copied().map(point_key).collect(),
@@ -232,6 +246,7 @@ pub(super) enum DuplicateGeometryFamily {
     BlockInstance,
     Point,
     TextDot,
+    Text,
     Leader,
     PointCloud,
     PiecewiseLinear,
@@ -255,6 +270,15 @@ enum DuplicateGeometryKey {
         text: String,
         secondary: String,
         style: viboceros_geometry::TextDotStyle,
+    },
+    Text {
+        plane: [[u64; 3]; 3],
+        rotation: u64,
+        width: Option<u64>,
+        scale: u64,
+        plain_text: String,
+        rich_text: String,
+        style: Vec<u8>,
     },
     Leader {
         path: Vec<[u64; 3]>,

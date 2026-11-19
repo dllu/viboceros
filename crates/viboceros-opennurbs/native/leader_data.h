@@ -36,20 +36,27 @@ bool append_leader(const ONX_Model& model, const ON_Leader& leader, BridgeObject
   return true;
 }
 
-const ON_DimStyle* install_leader_style(ONX_Model& model, ON_DimStyle& style) {
+const ON_DimStyle* install_object_annotation_style(ONX_Model& model, ON_DimStyle& style) {
   const auto id = style.Id();
   if (id != ON_nil_uuid) {
     const auto& system_style = ON_DimStyle::SystemDimstyleFromId(id);
-    if (system_style.Id() == id && style.CompareFields(system_style)) return &system_style;
-    const auto existing = model.ComponentFromId(ON_ModelComponent::Type::DimStyle, id);
-    const auto* component = ON_DimStyle::Cast(existing.ModelComponent());
-    if (component != nullptr && style.CompareFields(*component)) return component;
+    if (system_style.Id() == id) {
+      if (style.CompareFields(system_style)) return &system_style;
+      // Installing a modified style with a system ID changes every annotation
+      // that uses the corresponding built-in style.
+      style.ClearId();
+      style.ClearIndex();
+    } else {
+      const auto existing = model.ComponentFromId(ON_ModelComponent::Type::DimStyle, id);
+      const auto* component = ON_DimStyle::Cast(existing.ModelComponent());
+      if (component != nullptr && style.CompareFields(*component)) return component;
+    }
   }
-  // Effective overrides are stored as standalone styles so detached leaders do
+  // Effective overrides are stored as standalone styles so detached annotations do
   // not reference a dimension style absent from the destination model.
   style.SetParentId(ON_nil_uuid);
   style.ClearAllFieldOverrides();
-  if (style.Name().IsEmpty()) style.SetName(L"Leader style");
+  if (style.Name().IsEmpty()) style.SetName(L"Annotation style");
   const auto added = model.AddModelComponent(style, true);
   return ON_DimStyle::Cast(added.ModelComponent());
 }
@@ -91,7 +98,7 @@ ON_Geometry* decode_leader(const ViboWriteObject& input, ONX_Model* model, std::
       error = "invalid leader annotation style";
       return nullptr;
     }
-    style = model ? install_leader_style(*model, archived_style) : &archived_style;
+    style = model ? install_object_annotation_style(*model, archived_style) : &archived_style;
   }
   const ON_wString contents((rich_text.empty() ? text : rich_text).c_str());
   auto leader = std::make_unique<ON_Leader>();

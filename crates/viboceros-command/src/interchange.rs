@@ -868,6 +868,7 @@ pub(super) fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, Co
         }
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
         Geometry::TextDot(dot) => ThreeDmGeometry::TextDot(dot.clone()),
+        Geometry::Text(text) => ThreeDmGeometry::Text(text.clone()),
         Geometry::Leader(leader) => ThreeDmGeometry::Leader(leader.clone()),
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
@@ -892,6 +893,7 @@ pub(super) fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry 
         }
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::TextDot(dot) => Geometry::TextDot(dot),
+        ThreeDmGeometry::Text(text) => Geometry::Text(text),
         ThreeDmGeometry::Leader(leader) => Geometry::Leader(leader),
         ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),

@@ -62,7 +62,10 @@ ViboAnnotationLengthFormat length_format(const ON_DimStyle& style) {
     static_cast<uint32_t>(style.LeaderArrowType()),
     static_cast<uint32_t>(style.LeaderContentAngleStyle()),
     style.DrawForward() ? 1u : 0u,
-    {}
+    {},
+    style.TextHeight(),
+    static_cast<uint32_t>(style.TextHorizontalAlignment()),
+    style.TextOrientation() == ON::TextOrientation::InView ? 1u : 0u
   };
   if (style.LeaderArrowType() == ON_Arrowhead::arrow_type::UserBlock) {
     uuid_to_bytes(style.LeaderArrowBlockId(), format.leader_arrow_block);

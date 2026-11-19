@@ -74,6 +74,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/text_dot_data.h");
     println!("cargo:rerun-if-changed=native/annotation_style.h");
     println!("cargo:rerun-if-changed=native/leader_data.h");
+    println!("cargo:rerun-if-changed=native/annotation_text.h");
     println!("cargo:rerun-if-changed={}", open_nurbs.display());
 
     println!("cargo:rerun-if-env-changed=VIBOCEROS_OPENNURBS_ASAN");

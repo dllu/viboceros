@@ -32,11 +32,13 @@ pub use check::{
     GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_geometry_with_tolerance,
     check_3dm_instance_reference,
 };
+mod annotation_data;
+mod leader_data;
 #[cfg(test)]
 mod nested_codec_tests;
 mod point_cloud_data;
+mod text_annotation_data;
 mod text_dot_data;
-mod leader_data;
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -54,6 +56,7 @@ const OBJECT_SUBD: c_int = 12;
 const OBJECT_EXTRUSION: c_int = 13;
 const OBJECT_TEXT_DOT: c_int = 14;
 const OBJECT_LEADER: c_int = 15;
+const OBJECT_TEXT: c_int = 16;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -172,6 +175,7 @@ pub enum ThreeDmGeometry {
     },
     Point(Point3),
     TextDot(viboceros_geometry::TextDot),
+    Text(viboceros_geometry::TextAnnotation),
     Leader(viboceros_geometry::Leader),
     PointCloud(PointCloud3),
     Line(LineSegment),
@@ -1348,6 +1352,9 @@ fn decode_object(
         OBJECT_LEADER if knots_u.is_empty() && knots_v.is_empty() && indices.is_empty() => {
             ThreeDmGeometry::Leader(leader_data::decode(coordinates, geometry_data)?)
         }
+        OBJECT_TEXT if knots_u.is_empty() && knots_v.is_empty() && indices.is_empty() => {
+            ThreeDmGeometry::Text(text_annotation_data::decode(coordinates, geometry_data)?)
+        }
         OBJECT_TEXT_DOT
             if coordinates.len() == 3
                 && knots_u.is_empty()
@@ -1829,6 +1836,18 @@ impl ObjectPayload {
                 knots_v: Vec::new(),
                 indices: Vec::new(),
                 geometry_data: leader_data::encode(leader),
+            },
+            ThreeDmGeometry::Text(text) => Self {
+                object_type: OBJECT_TEXT,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: text_annotation_data::coordinates(text),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: text_annotation_data::encode(text),
             },
             ThreeDmGeometry::TextDot(dot) => Self {
                 object_type: OBJECT_TEXT_DOT,

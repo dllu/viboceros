@@ -13,6 +13,16 @@ struct LengthFormat {
     zero_suppress: u32,
     decimal_separator: u32,
     leader: LeaderAppearance,
+    style_height: f64,
+    text_alignment: u32,
+    text_in_view: u32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TextAlignment {
+    Left,
+    Center,
+    Right,
 }
 
 #[repr(C)]
@@ -150,6 +160,22 @@ impl AnnotationStyle {
     pub fn leader_appearance(&self) -> LeaderAppearance {
         self.format()
             .map_or_else(LeaderAppearance::default, |format| format.leader)
+    }
+
+    pub fn text_alignment(&self) -> TextAlignment {
+        match self.format().map(|format| format.text_alignment) {
+            Some(1) => TextAlignment::Center,
+            Some(2) => TextAlignment::Right,
+            _ => TextAlignment::Left,
+        }
+    }
+
+    pub fn text_in_view(&self) -> bool {
+        self.format().is_some_and(|format| format.text_in_view != 0)
+    }
+
+    pub fn text_style_height(&self) -> f64 {
+        self.format().map_or(1.0, |format| format.style_height)
     }
 
     /// Change the referenced definition while retaining the other style settings.

@@ -440,12 +440,14 @@ pub use sweep::{
 };
 mod text_dot;
 pub use text_dot::{TextDot, TextDotStyle};
+mod text_annotation;
+pub use text_annotation::{TextAnnotation, TextAnnotationLayout};
 mod leader;
 pub use leader::Leader;
-pub use viboceros_opennurbs::AnnotationStyle;
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};
+pub use viboceros_opennurbs::{AnnotationStyle, TextAlignment};
 pub use viboceros_opennurbs::{CurveContinuity, CurveParametricContinuity};
 
 /// Scalar type used throughout the geometry kernel.

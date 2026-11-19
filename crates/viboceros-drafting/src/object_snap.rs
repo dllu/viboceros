@@ -532,6 +532,7 @@ fn nearest_object_snap_with_metric(
             // Mesh queries use the independently cached wire index above.
             Geometry::Mesh(_)
             | Geometry::TextDot(_)
+            | Geometry::Text(_)
             | Geometry::Leader(_)
             | Geometry::NurbsSurface(_)
             | Geometry::Brep(_)

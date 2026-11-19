@@ -302,5 +302,24 @@
       [0.0, 0.0, 2.0, 0.0],
       [0.0, 0.0, 0.0, 1.0]
     ]
+  },
+  "text_arrow": {
+    "input": "_EvaluatePt _Label=On _Style=Leader _CoordinateSystem=World w0,0,0",
+    "block_definition": "81b711a8-f1df-4a81-8398-11564c790251",
+    "block_base_point": [1, 2, 0],
+    "arrow_size": 2,
+    "leader_path": [[0.0, 0.0, 0.0], [2.0, 2.0, 0.0], [3.0, 2.0, 0.0]],
+    "block_member": {
+      "kind": "TextEntity",
+      "text": "MARK",
+      "local_origin": [-2.0, 2.0, 0.0],
+      "rotation_radians": 0.25
+    },
+    "exploded_arrow_transform": [
+      [-1.414213562373095, 1.414213562373095, 0.0, 0.0],
+      [-1.414213562373095, -1.414213562373095, 0.0, 0.0],
+      [0.0, 0.0, 2.0, 0.0],
+      [0.0, 0.0, 0.0, 1.0]
+    ]
   }
 }

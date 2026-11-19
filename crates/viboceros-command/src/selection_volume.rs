@@ -208,6 +208,7 @@ impl SelectionSphere {
                 VolumeRelation::OUTSIDE
             }),
             Geometry::TextDot(dot) => self.classify_points([dot.point()]),
+            Geometry::Text(text) => self.classify_polyline(&text.outline()),
             Geometry::Leader(leader) => self.classify_polyline(leader.path().vertices()),
             Geometry::PointCloud(cloud) => self.classify_points(
                 cloud
@@ -524,6 +525,7 @@ impl SelectionBox {
                 VolumeRelation::OUTSIDE
             }),
             Geometry::TextDot(dot) => self.classify_points([dot.point()]),
+            Geometry::Text(text) => self.classify_polyline(&text.outline()),
             Geometry::Leader(leader) => self.classify_polyline(leader.path().vertices()),
             Geometry::PointCloud(cloud) => self.classify_points(
                 cloud

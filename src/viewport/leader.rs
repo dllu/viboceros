@@ -62,6 +62,7 @@ impl Viewport {
             append_triangle(triangle, color);
         }
         let mut shapes = Vec::new();
+        let mut annotations = Vec::new();
         self.visit_custom_leader_arrow(document, leader, color, |piece, color| match piece {
             ArrowPiece::Point(point) => {
                 if let Some(point) = self.project_selection_point(point, rect) {
@@ -78,11 +79,21 @@ impl Viewport {
                     append_triangle(triangle, color);
                 }
             }
+            ArrowPiece::Text(_) | ArrowPiece::TextDot(_) => annotations.push((piece, color)),
         });
         if !arrow.indices.is_empty() {
             painter.add(egui::Shape::mesh(arrow));
         }
         painter.extend(shapes);
+        for (piece, color) in annotations {
+            match piece {
+                ArrowPiece::Text(text) => self.paint_model_text(painter, rect, &text, color),
+                ArrowPiece::TextDot(dot) if self.point_within_display_depth(dot.point()) => {
+                    self.paint_text_dot(painter, rect, &dot, color);
+                }
+                _ => {}
+            }
+        }
         if let Some(text) = self.leader_text_layout(painter.ctx(), leader, rect)
             && rect.intersects(text.bounds)
         {

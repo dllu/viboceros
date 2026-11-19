@@ -7,6 +7,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 pub enum GeometryError {
     #[error("text dot must have a height of at least 3 points and contain no NUL characters")]
     InvalidTextDot,
+    #[error("invalid model text annotation")]
+    InvalidTextAnnotation,
     #[error("invalid text leader")]
     InvalidLeader,
     #[error("the annotation style cannot format these coordinates")]

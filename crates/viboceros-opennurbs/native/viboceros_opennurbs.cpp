@@ -333,6 +333,7 @@ class ByteReader {
 #include "text_dot_data.h"
 #include "annotation_style.h"
 #include "leader_data.h"
+#include "annotation_text.h"
 
 bool append_point(const ON_Point& point, BridgeObject& output) {
   const ON_3dPoint value = point.point;
@@ -1503,6 +1504,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
       return decode_text_dot(source, error);
     case VIBO_OBJECT_LEADER:
       return decode_leader(source, model, error);
+    case VIBO_OBJECT_TEXT:
+      return decode_model_text(source, model, error);
     case VIBO_OBJECT_POINT: {
       if (source.coordinate_count != 3) {
         error = "a point must contain three coordinates";
@@ -2035,6 +2038,8 @@ bool read_geometry_object(const ONX_Model& model, const ON_Geometry* geometry,co
         supported = append_text_dot(*dot, object);
       } else if (const ON_Leader* leader = ON_Leader::Cast(geometry)) {
         supported = append_leader(model, *leader, object);
+      } else if (const ON_Text* text = ON_Text::Cast(geometry)) {
+        supported = append_model_text(model, *text, object);
       } else if (const ON_Point* point = ON_Point::Cast(geometry)) {
         supported = append_point(*point, object);
       } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {

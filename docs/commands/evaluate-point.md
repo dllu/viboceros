@@ -36,10 +36,10 @@ over to subsequent calls in the same session.
 With `Style=Leader`, a single pick or typed point places the previewed annotation.
 The leader lies on the construction plane through the measured point. Its path
 is sized from the annotation style's scaled text height, and the style controls
-any additional landing. The preview and placed leader draw points, curves, and
-faces from a block arrowhead referenced by the active style. Inline commands
-can also specify an explicit path by supplying additional vertices. Saving to
-3DM preserves the leader and its arrowhead reference.
+any additional landing. The preview and placed leader draw points, curves,
+faces, model text, and text dots from the active style's block arrowhead.
+Inline commands can also specify an explicit path by supplying additional
+vertices. Saving to 3DM preserves the leader and its arrowhead reference.
 [Rhino label and leader captures](../evaluate-point-labels-rhino-reference.json)
 [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/evaluatept.htm)
 

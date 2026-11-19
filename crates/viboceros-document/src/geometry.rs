@@ -3,7 +3,7 @@
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, Curve3, CurveRef, Ellipse3,
     GeometryError, Leader, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph,
-    PolyCurve3, Polyline3, TextDot, Tolerance, TriangleMesh,
+    PolyCurve3, Polyline3, TextAnnotation, TextDot, Tolerance, TriangleMesh,
 };
 
 #[cfg(test)]
@@ -13,6 +13,7 @@ mod tests;
 pub enum Geometry {
     Point(Point3),
     TextDot(TextDot),
+    Text(TextAnnotation),
     Leader(Leader),
     PointCloud(PointCloud3),
     Line(LineSegment),
@@ -72,6 +73,7 @@ impl Geometry {
             Self::EmptyMesh => return None,
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::TextDot(dot) => BoundingBox3::from_points([dot.point()]).unwrap(),
+            Self::Text(text) => text.bounds(),
             Self::Leader(leader) => leader.bounds(),
             Self::PointCloud(cloud) => cloud.bounds(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
@@ -155,6 +157,7 @@ impl Geometry {
                 Self::TextDot(dot.with_point(transform.transform_point(dot.point())?))
             }
             Self::Leader(leader) => Self::Leader(leader.transformed(transform)?),
+            Self::Text(text) => Self::Text(text.transformed(transform)?),
             Self::PointCloud(cloud) => Self::PointCloud(cloud.transformed(transform)?),
             Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
             Self::Circle(circle) => match circle.transformed_similarity(transform, tolerance)? {
@@ -216,6 +219,7 @@ impl Geometry {
             Self::Point(point) => Self::Point(morph.morph_point(*point)?),
             Self::TextDot(dot) => Self::TextDot(dot.with_point(morph.morph_point(dot.point())?)),
             Self::Leader(_) => return Err(GeometryError::InvalidLeader),
+            Self::Text(_) => return Err(GeometryError::InvalidTextAnnotation),
             Self::BlockInstance(_) => {
                 return Err(GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "morph",
@@ -275,7 +279,11 @@ impl Geometry {
     /// periodic NURBS controls follow Rhino's unique-grip ordering.
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
         Ok(match self {
-            Self::Point(_) | Self::TextDot(_) | Self::Leader(_) | Self::EmptyMesh => Vec::new(),
+            Self::Point(_)
+            | Self::TextDot(_)
+            | Self::Text(_)
+            | Self::Leader(_)
+            | Self::EmptyMesh => Vec::new(),
             Self::BlockInstance(_) => {
                 return Err(GeometryError::UnsupportedBlockInstanceOperation {
                     operation: "extract defining points",

@@ -5,7 +5,7 @@ use std::{collections::HashMap, rc::Rc};
 use viboceros_document::{
     BlockDefinitionId, BlockEditTreeRevision, BlockMemberDisplay, BlockReference, ColorRgb,
 };
-use viboceros_geometry::{AffineTransform3, BoundingBox3, Leader};
+use viboceros_geometry::{AffineTransform3, BoundingBox3, Leader, TextAnnotation, TextDot};
 
 #[derive(Default)]
 pub(super) struct ArrowBlocks {
@@ -24,11 +24,12 @@ struct ArrowPlacement {
     states: Rc<[BlockMemberDisplay]>,
 }
 
-#[derive(Clone, Copy)]
 pub(super) enum ArrowPiece {
     Point(Point3),
     Segment([Point3; 2]),
     Triangle([Point3; 3]),
+    Text(TextAnnotation),
+    TextDot(TextDot),
 }
 
 impl ArrowBlocks {
@@ -224,6 +225,16 @@ impl Viewport {
             };
             match &*member.geometry {
                 Geometry::Point(p) => point(*p),
+                Geometry::Text(text) => {
+                    if let Ok(text) = text.transformed(map) {
+                        visit(ArrowPiece::Text(text), color);
+                    }
+                }
+                Geometry::TextDot(dot) => {
+                    if let Some(at) = transform(dot.point()) {
+                        visit(ArrowPiece::TextDot(dot.with_point(at)), color);
+                    }
+                }
                 Geometry::PointCloud(cloud) => {
                     for (index, &p) in cloud.points().iter().enumerate() {
                         if !cloud.is_hidden(index) {

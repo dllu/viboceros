@@ -317,3 +317,37 @@ fn evaluate_point_previews_an_arrow_from_the_active_styles_block() {
     assert_eq!(app.document.objects().count(), 2);
     assert!(app.active_command.is_none());
 }
+
+#[test]
+fn evaluate_point_previews_model_text_from_the_active_styles_arrow_block() {
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("crates/viboceros-io/tests/fixtures/text-leader-arrow.3dm");
+    let mut app = test_app();
+    (app.document, _, _) =
+        viboceros_command::open_3dm_with_named_views(fixture.to_str().unwrap()).unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "EvaluatePt Label=On Style=Leader");
+    render_annotations(&mut app, &context, vec![]);
+    render_annotations(&mut app, &context, vec![]);
+    let start = screen_point(&app, point(-3., -1., 0.));
+    let preview = render_annotations(&mut app, &context, vec![egui::Event::PointerMoved(start)]);
+    let marker = preview
+        .iter()
+        .find_map(|shape| match &shape.shape {
+            egui::Shape::Text(text)
+                if text.galley.job.text == "MARK"
+                    && text.fallback_color == egui::Color32::from_rgb(20, 115, 190) =>
+            {
+                Some(text)
+            }
+            _ => None,
+        })
+        .expect("text painted by the live arrowhead preview");
+    assert!(marker.galley.mesh_bounds.is_positive());
+    assert_eq!(app.document.objects().count(), 1);
+    viewport_click(&mut app, &context, start);
+    assert_eq!(app.document.objects().count(), 2);
+    assert!(app.active_command.is_none());
+}
