@@ -434,13 +434,26 @@ impl Brep {
         let mut vertex_parameters = Vec::new();
         let vertex_limit = sampling.vertex_limit().min(u32::MAX as usize);
         let mut remaining = vertex_limit - coarse_vertices;
-        let minimum_weight = (coarse_vertices / frames.len() / 2).max(1);
-        let refinement_weight = |points: usize| points.max(minimum_weight) as u64;
-        let mut pending_weight = face_meshes
+        let minimum_weight = (coarse_vertices / frames.len() / 16).max(1);
+        let weights = face_meshes
             .iter()
-            .filter(|mesh| mesh.chord_height.is_some())
-            .map(|mesh| refinement_weight(mesh.points.len()))
-            .sum::<u64>();
+            .zip(&frames)
+            .map(|(mesh, frame)| {
+                let Some(height) = mesh.chord_height else {
+                    return Ok(0);
+                };
+                let baseline = (mesh.points.len() / 16).max(minimum_weight) as u64;
+                chords::refinement_weight(
+                    &frame.face.surface,
+                    &mesh.parameters,
+                    &mesh.points,
+                    &mesh.triangles,
+                    height,
+                )
+                .map(|estimated| baseline + estimated)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let mut pending_weight = weights.iter().sum::<u64>();
         let mut locations = sampling.chord_density.map(|_| {
             let mut occupied = HashSet::with_capacity(coarse_vertices);
             occupied.extend(
@@ -460,11 +473,9 @@ impl Brep {
             } = face_mesh;
             if let (Some(chord_height), Some(locations)) = (chord_height, &mut locations) {
                 // Reserve every coarse face before sharing the remaining
-                // budget among interior chords. Dense charts receive more
-                // stations because their coarse triangulations contain more
-                // chords that may need subdivision.
+                // budget using the estimated work required by each face.
                 let coarse = points.len();
-                let weight = refinement_weight(coarse);
+                let weight = weights[index];
                 let allowance = ((remaining as u64 * weight).div_ceil(pending_weight)) as usize;
                 pending_weight -= weight;
                 let limit = points

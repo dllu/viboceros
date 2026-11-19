@@ -18,6 +18,32 @@ fn distance_to_chord(point: Point3, a: Point3, b: Point3) -> Result<Real, Geomet
     point.distance_to(a.translated(axis.scaled(position)?)?)
 }
 
+pub(super) fn refinement_weight(
+    surface: &NurbsSurface,
+    parameters: &[Point2],
+    points: &[Point3],
+    triangles: &[[u32; 3]],
+    chord_height: Real,
+) -> Result<u64, GeometryError> {
+    const PROBE_TRIANGLES: usize = 96;
+    let stride = triangles.len().div_ceil(PROBE_TRIANGLES).max(1);
+    let mut work = 0.;
+    for &[a, b, c] in triangles.iter().step_by(stride) {
+        for [i, j] in [[a, b], [b, c], [c, a]] {
+            let [i, j] = [i, j].map(|index| index as usize);
+            let [u, v] = [parameters[i], parameters[j]];
+            let point = surface.evaluate(u.x().midpoint(v.x()), u.y().midpoint(v.y()))?;
+            let ratio = distance_to_chord(point, points[i], points[j])? / chord_height;
+            if ratio > 1. {
+                // A smooth arc's deviation decreases quadratically as
+                // its station spacing decreases.
+                work += ratio.sqrt().min(16.);
+            }
+        }
+    }
+    Ok((work * stride as Real * 0.5).ceil() as u64)
+}
+
 pub(super) fn refine_interior(
     surface: &NurbsSurface,
     parameters: &mut Vec<Point2>,
