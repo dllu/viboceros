@@ -42,6 +42,7 @@ A successful extrusion remembers `Solid`, `DeleteInput` and `SubCurve`.
 Typed paths and Enter use the original start in automatic mode. `PathLength`
 takes an arc length from the chosen start. It accepts units in the path
 picker and uses document model units in direct commands.
+Open results produce a separate object for each set of walls joined by edges.
 The path object is always retained. DeleteInput removes extruded source faces,
 retaining any remainder's identity, attributes and groups. All products stage
 before document edits and form one Undo/Redo entry. Frozen source snapshots
@@ -66,9 +67,8 @@ quadratic, rational and multispan rails. Seven independent Python
 `surface_path_extrusion` fixtures also exercise the kernel with planar and
 warped caps, rational holes, partial paths and translated sources. The SDK
 probe calls [BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brepface/createextrusion).
-For the open ring, the Rhino command returns two one-face objects and Viboceros
-groups the two walls in one B-rep. The SDK returns a single B-rep with three
-faces. All three results have the same overall bounds.
+For the open ring, both commands return two one-face objects. The Rhino SDK
+returns a single B-rep with three faces and the same overall bounds.
 [Rhino SDK capture](../../tools/rhino_oracle/observations/surface_path_extrusion_rhino.json)
 See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrfalongcrv.htm).
 

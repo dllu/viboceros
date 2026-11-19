@@ -1,6 +1,6 @@
 //! Fixed-orientation surface extrusion along a chosen curve.
 use super::*;
-use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusions};
+use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 
 pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [SubCurve=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfacePathCommand {
@@ -286,7 +286,7 @@ impl Command for ExtrudeSurfacePathCommand {
         let path = prepare_surface_path(&path, input.options, doc.tolerance())?;
         #[cfg(feature = "native-smlib")]
         let native = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&path)?;
-        let count = apply_face_extrusions(
+        let count = apply_face_extrusion_products(
             doc,
             &input.faces,
             input.options.delete_input,
@@ -310,7 +310,12 @@ impl Command for ExtrudeSurfacePathCommand {
                             AffineTransform3::from_translation(zero.vector_to(origin)?),
                             tolerance,
                         )?;
-                    Ok(Geometry::Brep(result))
+                    let components = if input.options.solid {
+                        vec![result]
+                    } else {
+                        result.into_edge_connected_components(tolerance)?
+                    };
+                    Ok(components.into_iter().map(Geometry::Brep).collect())
                 }
                 #[cfg(not(feature = "native-smlib"))]
                 {
