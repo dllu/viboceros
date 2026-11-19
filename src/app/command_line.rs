@@ -366,6 +366,8 @@ impl VibocerosApp {
                         "SetView"
                     } else if self.length_units_pending {
                         "Length units"
+                    } else if self.picking_edge_blend_chain() {
+                        "ChainEdges"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"
                     } else if let Some(kind) = self.nested_measurement_kind() {

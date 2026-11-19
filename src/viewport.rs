@@ -5,9 +5,12 @@ use eframe::egui::{
 };
 use nalgebra::Vector3 as NaVector3;
 use viboceros_command::ObjectSelectionFilter;
+use viboceros_command::component_selection::current;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_command::interface::RectSelectionMode;
-use viboceros_document::{Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
+use viboceros_document::{
+    Document, Geometry, GeometrySnapshot, ObjectAttributes, ObjectId, SelectionMode,
+};
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveSegment3, Ellipse3, Frame3, GeometryError, NurbsCurve, Point3,
     PointCloud3, PolyCurve3, Real, Tolerance, TriangleMesh, Vector3,
@@ -515,6 +518,7 @@ pub struct ViewportInput<'a> {
     pub component_preselection: bool,
     pub control_point_pick: bool,
     pub component_pick: Option<ComponentPickFilter>,
+    pub edge_blend_double_click: bool,
     pub component_highlights: &'a [ComponentPick],
     pub component_previews: &'a [ComponentPick],
     pub raw_mesh_face_highlights: Option<&'a std::collections::BTreeSet<ComponentPick>>,
@@ -685,6 +689,7 @@ impl Default for ViewportInput<'_> {
             component_preselection: false,
             control_point_pick: false,
             component_pick: None,
+            edge_blend_double_click: false,
             component_highlights: &[],
             component_previews: &[],
             raw_mesh_face_highlights: None,
@@ -871,6 +876,7 @@ pub struct Viewport {
     last_pointer: Option<Pos2>,
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
+    edge_blend_first_click: Vec<(ComponentPick, GeometrySnapshot)>,
     blend_curve_press: Option<(viboceros_command::blend_curve::Handle, bool, bool)>,
     lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
@@ -988,6 +994,7 @@ impl Viewport {
             last_pointer: None,
             selection_drag_start: None,
             component_drag: None,
+            edge_blend_first_click: Vec::new(),
             blend_curve_press: None,
             lasso_drag_path: Vec::new(),
             zoom_window_start: None,
@@ -1771,7 +1778,7 @@ impl Viewport {
         } else {
             None
         };
-        let component_click = if response.clicked_by(PointerButton::Primary) {
+        let mut component_click = if response.clicked_by(PointerButton::Primary) {
             component_mode.and_then(|(filter, preselection, modifiers)| {
                 selection_pointer.map(|pointer| ComponentClick {
                     picks: self.pick_components(pointer, rect, document, filter),
@@ -1782,20 +1789,44 @@ impl Viewport {
         } else {
             None
         };
-        let loop_double = response.double_clicked_by(PointerButton::Primary)
+        let double_clicked = response.double_clicked_by(PointerButton::Primary);
+        if !input.edge_blend_double_click {
+            self.edge_blend_first_click.clear();
+        } else if let Some(click) = &mut component_click {
+            let first = std::mem::take(&mut self.edge_blend_first_click);
+            if !click.modifiers.ctrl && !click.modifiers.command {
+                if double_clicked && click.picks.is_empty() {
+                    // Keep the first hit if the projection moves between
+                    // the two releases of one gesture.
+                    click
+                        .picks
+                        .extend(first.into_iter().filter_map(|(pick, source)| {
+                            current(document, pick, &source).then_some(pick)
+                        }));
+                } else if !double_clicked {
+                    self.edge_blend_first_click
+                        .extend(click.picks.iter().filter_map(|&pick| {
+                            let object = document.object(pick.object)?;
+                            Some((pick, object.geometry_snapshot().clone()))
+                        }));
+                }
+            }
+        }
+        let component_double = double_clicked
             && component_click.as_ref().is_some_and(|c| {
-                c.preselection
-                    && !c.modifiers.alt
-                    && !c.picks.is_empty()
-                    && c.picks.iter().all(|p| {
-                        matches!(
-                            p.kind,
-                            viboceros_command::ComponentSelectionKind::MeshEdge
-                                | viboceros_command::ComponentSelectionKind::SubDEdge
-                        )
-                    })
+                !c.picks.is_empty()
+                    && (input.edge_blend_double_click && !c.modifiers.ctrl && !c.modifiers.command
+                        || c.preselection
+                            && !c.modifiers.alt
+                            && c.picks.iter().all(|p| {
+                                matches!(
+                                    p.kind,
+                                    viboceros_command::ComponentSelectionKind::MeshEdge
+                                        | viboceros_command::ComponentSelectionKind::SubDEdge
+                                )
+                            }))
             });
-        let (component_click, component_double_click) = if loop_double {
+        let (component_click, component_double_click) = if component_double {
             (None, component_click)
         } else {
             (component_click, None)

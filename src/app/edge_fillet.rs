@@ -42,13 +42,13 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges, or use FaceEdges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
+                    "Select edges, or use ChainEdges or FaceEdges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges, or use FaceEdges. Set Distance=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges or FaceEdges. Set Distance=value, FromTwoPoints, RailType or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges, or use FaceEdges. Set Radius=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges or FaceEdges. Set Radius=value, FromTwoPoints, RailType or Preview."
                 }
             }
         }
@@ -113,6 +113,13 @@ impl VibocerosApp {
                 return true;
             }
         };
+        let chain_options = words
+            .iter()
+            .position(|word| {
+                word.trim_start_matches('_')
+                    .eq_ignore_ascii_case("ChainEdges")
+            })
+            .map(|index| words.split_off(index)[1..].join(" "));
         let face_edges = words.iter().position(|word| {
             word.trim_start_matches('_')
                 .eq_ignore_ascii_case("FaceEdges")
@@ -185,7 +192,9 @@ impl VibocerosApp {
             prompt.name(),
             prompt.options()
         ));
-        if face_edges.is_some() {
+        if let Some(chain_options) = chain_options {
+            self.begin_edge_blend_chain(&chain_options);
+        } else if face_edges.is_some() {
             self.begin_edge_blend_faces();
         }
         true
@@ -196,6 +205,13 @@ impl VibocerosApp {
         };
         let input = input.trim();
         let keyword = input.trim_start_matches('_');
+        let (name, options) = keyword
+            .split_once(char::is_whitespace)
+            .unwrap_or((keyword, ""));
+        if name.eq_ignore_ascii_case("ChainEdges") {
+            self.begin_edge_blend_chain(options);
+            return true;
+        }
         if keyword.eq_ignore_ascii_case("FaceEdges") {
             self.begin_edge_blend_faces();
             return true;

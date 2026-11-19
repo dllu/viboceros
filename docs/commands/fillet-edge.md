@@ -25,6 +25,12 @@ coordinates. With preview enabled, the second point updates the wireframe.
 Use `FaceEdges` to add the sharp boundary edges of one or more faces. Enter
 keeps those picks and returns to edge selection. Esc restores the prior edge
 set. Tangent edges and same-face seams are excluded.
+Use `ChainEdges` to select connected edges on closed polysurfaces. Set
+`ChainContinuity`, `Direction`, `GapTolerance` or `AngleTolerance` as in
+[connected-edge selection](curve-chains.md). `Next`, `All` and `Undo` edit the
+chain. At a fork, pick a branch or press Enter to confirm the highlighted path.
+Enter at the chain prompt adds the chain to the fillet selection. Esc cancels
+the fillet. Double-click an edge at the main prompt to select its tangent chain.
 
 The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage
@@ -36,7 +42,7 @@ Pole connectors require a continuous surface-image certificate at their vertex.
 
 This checkpoint supports one constant radius, closed B-reps and Linux native
 builds. Variable-radius handles, open polysurfaces, alternative
-rail types, chained selection, editing old fillets and broader failure cases
+rail types, editing old fillets and broader failure cases
 remain work. The intersection guard bounds input and output to 362 faces. Kernel
 intersection curves must lie entirely on shared trimmed topological edges, and
 isolated contacts must lie on shared edges or vertices. Adjacent faces are

@@ -28,15 +28,19 @@ impl Session {
         side: usize,
         candidates: Vec<ChainContinuation>,
         choice: usize,
+        one: bool,
     ) -> Result<Pending, CommandError> {
         let mut state = base.clone();
         let mut journal = Vec::new();
         self.append(&mut state, side, candidates[choice], &mut journal)?;
-        self.grow(&mut state, false, &mut journal, false)?;
+        if !one {
+            self.grow(&mut state, false, &mut journal, false)?;
+        }
         Ok(Pending {
             state,
             journal,
             candidates,
+            one,
         })
     }
     pub(super) fn grow(
@@ -63,7 +67,7 @@ impl Session {
                     break;
                 }
                 if next.len() > 1 && allow_proposal {
-                    return Ok(Some(self.propose(state, side, next, 0)?));
+                    return Ok(Some(self.propose(state, side, next, 0, one)?));
                 }
                 self.append(state, side, next[0], journal)?;
                 if one {

@@ -1,6 +1,7 @@
 use super::*;
 use crate::viewport::{ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
+mod chain_edges;
 mod face_edges;
 fn submit(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();

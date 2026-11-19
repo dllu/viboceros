@@ -245,6 +245,10 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
+        if self.picking_edge_blend_chain() {
+            self.pick_edge_blend_chain(click.picks);
+            return;
+        }
         if self
             .blend_curve_session
             .as_ref()
@@ -698,6 +702,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn accept_component_window(&mut self, mut window: ComponentWindow) {
+        if self.picking_edge_blend_chain() {
+            return;
+        }
         if (self.arc_blend_session.is_some() || self.blend_curve_session.is_some())
             && self.plane_prompt.is_none()
         {

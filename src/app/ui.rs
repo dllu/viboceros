@@ -1350,6 +1350,11 @@ impl VibocerosApp {
         } else {
             None
         };
+        let edge_blend_double_click = self.edge_fillet_prompt.is_some()
+            && !self.picking_edge_blend_chain()
+            && component_pick == Some(crate::viewport::ComponentPickFilter::Edges);
+        let chain_pick =
+            self.chain_prompt.is_some() && !self.picking_edge_blend_chain() && model_input_active;
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1731,6 +1736,7 @@ impl VibocerosApp {
                             component_preselection,
                             control_point_pick,
                             component_pick,
+                            edge_blend_double_click,
                             component_previews: self
                                 .edge_pattern_prompt
                                 .as_ref()
@@ -1745,7 +1751,7 @@ impl VibocerosApp {
                             ),
                             mesh_boundary_edges,
                             curve_or_edge_pick,
-                            chain_pick: self.chain_prompt.is_some() && model_input_active,
+                            chain_pick,
                             length_pick,
                             nested_length_guides: &nested_length_guides,
                             chain_highlights: self

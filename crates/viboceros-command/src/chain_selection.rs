@@ -47,9 +47,23 @@ struct Pending {
     state: State,
     journal: Vec<UndoFrame>,
     candidates: Vec<ChainContinuation>,
+    one: bool,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum Scope {
+    Mixed,
+    EdgeBlend,
+}
+impl Scope {
+    fn includes(self, geometry: &Geometry) -> bool {
+        matches!(geometry, Geometry::Brep(_))
+            || self == Self::Mixed
+                && (geometry.curve_ref().is_some() || matches!(geometry, Geometry::NurbsSurface(_)))
+    }
 }
 #[derive(Clone, Debug)]
 pub struct Session {
+    scope: Scope,
     options: CurveChainOptions,
     index: CurveChainIndex,
     targets: Vec<Target>,
@@ -70,18 +84,26 @@ impl Session {
         selection: &component_selection::ComponentSelection,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, Some(selection), options)
+        Self::with_selection(doc, Some(selection), options, Scope::Mixed)
     }
     pub fn new_for_measurement(
         doc: &Document,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, None, options)
+        Self::with_selection(doc, None, options, Scope::Mixed)
+    }
+    pub fn new_for_edge_blend(
+        doc: &Document,
+        selection: &component_selection::ComponentSelection,
+        options: CurveChainOptions,
+    ) -> Result<Self, CommandError> {
+        Self::with_selection(doc, Some(selection), options, Scope::EdgeBlend)
     }
     fn with_selection(
         doc: &Document,
         selection: Option<&component_selection::ComponentSelection>,
         options: CurveChainOptions,
+        scope: Scope,
     ) -> Result<Self, CommandError> {
         options.validate()?;
         let mut sources = BTreeMap::new();
@@ -91,6 +113,10 @@ impl Session {
         for object in doc.selectable_objects() {
             let geo = object.geometry();
             let id = object.id();
+            if !scope.includes(geo) {
+                continue;
+            }
+            sources.insert(id, object.geometry_snapshot().clone());
             if let Some(curve) = geo.curve_ref() {
                 curves.push(curve.to_owned());
                 targets.push(Target::Curve(id));
@@ -103,13 +129,23 @@ impl Session {
                     ),
                     _ => continue,
                 };
+                let joined = if scope == Scope::EdgeBlend {
+                    if !brep.is_solid() {
+                        continue;
+                    }
+                    Some(brep.edges_shared_by_distinct_faces())
+                } else {
+                    None
+                };
                 for (i, edge) in brep.edges().iter().enumerate() {
+                    if joined.as_ref().is_some_and(|shared| !shared[i]) {
+                        continue;
+                    }
                     curves.push(viboceros_geometry::Curve3::NurbsCurve(edge.curve().clone()));
                     targets.push(Target::Edge(id, i));
                     classes.push(1);
                 }
             }
-            sources.insert(id, object.geometry_snapshot().clone());
         }
         let (baseline_whole, baseline_components) = if let Some(selection) = selection {
             (
@@ -133,6 +169,7 @@ impl Session {
         let index = CurveChainIndex::new(&curves)?;
         let lookup = targets.iter().enumerate().map(|(i, &t)| (t, i)).collect();
         Ok(Self {
+            scope,
             options,
             index,
             targets,
@@ -163,10 +200,7 @@ impl Session {
         }
         let now = doc
             .selectable_objects()
-            .filter(|o| {
-                o.geometry().curve_ref().is_some()
-                    || matches!(o.geometry(), Geometry::Brep(_) | Geometry::NurbsSurface(_))
-            })
+            .filter(|o| self.scope.includes(o.geometry()))
             .map(|o| (o.id(), o.geometry_snapshot()))
             .collect::<BTreeMap<_, _>>();
         self.baseline_sources.iter().all(|(&id, w)| {
@@ -191,6 +225,9 @@ impl Session {
     }
     pub fn has_seed(&self) -> bool {
         !self.state.selected.is_empty()
+    }
+    pub fn contains(&self, target: Target) -> bool {
+        self.lookup.contains_key(&target)
     }
     /// Native object getters ignore whole curves already selected at startup.
     pub fn pick_input(&mut self, doc: &Document, target: Target) -> Result<(), CommandError> {
@@ -244,7 +281,11 @@ impl Session {
                 ));
             }
         }
-        let pending = self.grow(&mut state, false, &mut journal, true)?;
+        let pending = if self.pending.as_ref().is_some_and(|pending| pending.one) {
+            None
+        } else {
+            self.grow(&mut state, false, &mut journal, true)?
+        };
         self.undo.extend(journal);
         self.state = state;
         self.pending = pending;
@@ -259,6 +300,9 @@ impl Session {
     }
     pub fn choosing_branch(&self) -> bool {
         self.pending.is_some()
+    }
+    pub fn discard_proposal(&mut self) {
+        self.pending = None;
     }
     pub fn branch_choices(&self) -> Vec<Target> {
         self.pending
