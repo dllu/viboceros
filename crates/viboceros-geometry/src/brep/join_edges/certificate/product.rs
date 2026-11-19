@@ -108,8 +108,24 @@ fn mapped_bound(
         let mut bc = b.extract(bi, &b_left, &map.apply(&right), charge)?;
         charge(4 * bc.len())?;
         map.compose_span(&mut bc, &left, &right);
-        charge(4 * ac.len() * bc.len())?;
-        let net = multiply(&ac, &bc);
+        let net = if ac.len() == bc.len() && ac.iter().zip(&bc).all(|(a, b)| a[3] == b[3]) {
+            // Identical denominators stay identical on the entire span. Direct
+            // subtraction avoids a higher-degree product for knot-refined
+            // polynomial edges and rational edges with the same weights.
+            charge(4 * ac.len())?;
+            ac.into_iter()
+                .zip(bc)
+                .map(|(mut a, b)| {
+                    for (coordinate, other) in a[..3].iter_mut().zip(b) {
+                        *coordinate -= other;
+                    }
+                    a
+                })
+                .collect()
+        } else {
+            charge(4 * ac.len() * bc.len())?;
+            multiply(&ac, &bc)
+        };
         let Some(upper) = hull_bound(net, limit, tighten, charge)? else {
             return Ok(None);
         };
