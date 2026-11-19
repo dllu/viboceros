@@ -2,6 +2,7 @@
 use super::*;
 use crate::surface_boundary_cut::{boundary_tool, mount_planar_cap};
 
+mod exterior;
 mod holes;
 mod walls;
 
@@ -101,47 +102,32 @@ pub(super) fn trim(
             Output::SolidCurve { .. } => Err(REJECTED),
         };
     }
-    let cap = !matches!(output, Output::CurveWalls { .. });
-    let brep = if cutter.faces()[0].loops().len() > 1 {
-        // Intersect the filled outline first so the actual section rim is
-        // available on the cutter's chart, even for a wall-only result.
-        let outline = cutter.try_remove_all_holes(tolerance)?.ok_or(REJECTED)?;
-        let closed = clip(
-            sweep,
-            &stock,
-            source,
-            &outline,
-            displacement,
-            true,
-            tolerance,
-        )?;
+    let has_holes = cutter.faces()[0].loops().len() > 1;
+    let outline = if has_holes {
+        Some(cutter.try_remove_all_holes(tolerance)?.ok_or(REJECTED)?)
+    } else {
+        None
+    };
+    let outline = outline.as_ref().unwrap_or(cutter);
+    // Keep the section on the cutter's chart for checking holes even when
+    // the requested output will contain only walls.
+    let cap = has_holes || !matches!(output, Output::CurveWalls { .. });
+    let closed = match clip(sweep, &stock, source, outline, displacement, cap, tolerance) {
+        Err(CommandError::SurfaceExtrusionBoundaryRejected)
+            if exterior::crosses_rim(&stock, source_plane, outline, displacement, tolerance)? =>
+        {
+            return rim_contact(stock, output, picked);
+        }
+        result => result?,
+    };
+    let brep = if has_holes {
         let section = closed.faces().last().ok_or(REJECTED)?;
         let planar = section.surface().plane(tolerance)?.is_some();
         let enclosed = match holes::section_holes(cutter, &closed, section, tolerance)? {
             holes::SectionHoles::Enclosed(enclosed) => enclosed,
-            holes::SectionHoles::RimContact
-                if matches!(
-                    output,
-                    Output::Surface
-                        | Output::SolidCurve {
-                            preview_stock: true,
-                            ..
-                        }
-                ) =>
-            {
-                return Ok(Some(Product {
-                    brep: stock,
-                    status: if matches!(output, Output::Surface) {
-                        ProductStatus::Fallback
-                    } else {
-                        ProductStatus::CurvePreviewFallback
-                    },
-                }));
-            }
-            holes::SectionHoles::RimContact | holes::SectionHoles::CoversSection if picked => {
-                return Ok(None);
-            }
-            _ => return Err(REJECTED),
+            holes::SectionHoles::RimContact => return rim_contact(stock, output, picked),
+            holes::SectionHoles::CoversSection if picked => return Ok(None),
+            holes::SectionHoles::CoversSection => return Err(REJECTED),
         };
         match output {
             Output::CurveWalls { .. } => {
@@ -157,11 +143,31 @@ pub(super) fn trim(
             _ => return Err(REJECTED),
         }
     } else {
-        clip(sweep, &stock, source, cutter, displacement, cap, tolerance)?
+        closed
     };
     Ok(Some(Product {
         brep,
         status: ProductStatus::Cut,
+    }))
+}
+
+fn rim_contact(
+    stock: Brep,
+    output: Output<'_>,
+    picked: bool,
+) -> Result<Option<Product>, CommandError> {
+    let status = match output {
+        Output::Surface => ProductStatus::Fallback,
+        Output::SolidCurve {
+            preview_stock: true,
+            ..
+        } => ProductStatus::CurvePreviewFallback,
+        _ if picked => return Ok(None),
+        _ => return Err(REJECTED),
+    };
+    Ok(Some(Product {
+        brep: stock,
+        status,
     }))
 }
 
