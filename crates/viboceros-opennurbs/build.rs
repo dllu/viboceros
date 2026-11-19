@@ -71,6 +71,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/rational_coordinates.h");
     println!("cargo:rerun-if-changed=native/instance_read.h");
     println!("cargo:rerun-if-changed=native/structural_blocks.h");
+    println!("cargo:rerun-if-changed=native/text_dot_data.h");
     println!("cargo:rerun-if-changed={}", open_nurbs.display());
 
     println!("cargo:rerun-if-env-changed=VIBOCEROS_OPENNURBS_ASAN");

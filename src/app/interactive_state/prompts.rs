@@ -143,9 +143,13 @@ impl InteractiveCommand {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"
             }
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
-            Self::EvaluatePoint => {
-                "EvaluatePt: pick a location to report world/CPlane coordinates (Esc cancels)"
-            }
+            Self::EvaluatePoint { pending, .. } => match pending {
+                Some(super::super::evaluate_point::OptionName::CoordinateSystem) => {
+                    "Coordinate system (World / CPlane)"
+                }
+                Some(super::super::evaluate_point::OptionName::Style) => "Label style (Dot)",
+                None => "EvaluatePt: pick a point (Label / Style / CoordinateSystem)",
+            },
             Self::EvaluateUv { .. } => {
                 "EvaluateUVPt: pick surface locations (Normalized=Yes|No; CreatePoint=Yes|No; Enter or Esc finishes)"
             }

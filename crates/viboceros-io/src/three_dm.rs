@@ -35,6 +35,7 @@ pub use check::{
 #[cfg(test)]
 mod nested_codec_tests;
 mod point_cloud_data;
+mod text_dot_data;
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -50,6 +51,7 @@ const OBJECT_ARC: c_int = 10;
 const OBJECT_INSTANCE: c_int = 11;
 const OBJECT_SUBD: c_int = 12;
 const OBJECT_EXTRUSION: c_int = 13;
+const OBJECT_TEXT_DOT: c_int = 14;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -167,6 +169,7 @@ pub enum ThreeDmGeometry {
         transform: viboceros_geometry::AffineTransform3,
     },
     Point(Point3),
+    TextDot(viboceros_geometry::TextDot),
     PointCloud(PointCloud3),
     Line(LineSegment),
     Arc(CircularArc3),
@@ -1321,6 +1324,14 @@ fn decode_object(
                 transform: blocks::affine(coordinates)?,
             }
         }
+        OBJECT_TEXT_DOT
+            if coordinates.len() == 3
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty() =>
+        {
+            ThreeDmGeometry::TextDot(text_dot_data::decode(point(coordinates)?, geometry_data)?)
+        }
         OBJECT_POINT
             if coordinates.len() == 3
                 && knots_u.is_empty()
@@ -1782,6 +1793,18 @@ impl ObjectPayload {
                     ThreeDmError::InvalidModel("block index exceeds native range".into())
                 })?],
                 geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::TextDot(dot) => Self {
+                object_type: OBJECT_TEXT_DOT,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: dot.point().to_array().to_vec(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: text_dot_data::encode(dot),
             },
             ThreeDmGeometry::Point(point) => Self {
                 object_type: OBJECT_POINT,

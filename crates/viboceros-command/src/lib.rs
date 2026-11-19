@@ -373,7 +373,8 @@ use measurements::{
     VolumeCommand,
 };
 pub use measurements::{
-    EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv, evaluate_surface_uv_on_face,
+    EvaluatePointOptions, EvaluateUvOptions, EvaluateUvResult, evaluate_surface_uv,
+    evaluate_surface_uv_on_face,
 };
 pub use measurements::{distance_display_units, length_edge_kind, measure_length_targets};
 mod grouping;
@@ -911,6 +912,10 @@ pub trait Command: Send + Sync {
     /// Whether successful mutations should be grouped into one undo step.
     fn records_history(&self) -> bool {
         true
+    }
+
+    fn records_history_for(&self, _arguments: &[&str]) -> bool {
+        self.records_history()
     }
 
     /// Replay behavior for both full invocations and incremental prompt steps.
@@ -2735,12 +2740,13 @@ impl CommandRegistry {
                 "finish BlockEdit before opening or saving a file",
             ));
         }
-        if group.is_some() && !command.records_history() {
+        let arguments = command.parse_arguments(tokens.next().unwrap_or(""))?;
+        let records_history = command.records_history_for(&arguments);
+        if group.is_some() && !records_history {
             return Err(CommandError::Usage(
                 "history groups require an editing command",
             ));
         }
-        let arguments = command.parse_arguments(tokens.next().unwrap_or(""))?;
         let (arguments, copy) = if let Some(default) = command.copy_option_default() {
             copy_options::arguments(
                 &arguments,
@@ -2769,7 +2775,7 @@ impl CommandRegistry {
             }
         };
         let mut single_group = if group.is_none()
-            && command.records_history()
+            && records_history
             && command.history_policy() != CommandHistoryPolicy::Ordinary
         {
             Some(document.begin_history_group(command.name())?)
@@ -2793,7 +2799,7 @@ impl CommandRegistry {
                     Err(error)
                 }
             }
-        } else if command.records_history() {
+        } else if records_history {
             run_command_transaction_with_policy(document, command.name(), run, |error| {
                 command.commits_on_error(error)
             })
@@ -7854,6 +7860,7 @@ impl Command for DuplicateEdgeCommand {
                         .map(Geometry::Line)
                         .collect(),
                     Geometry::Point(_)
+                    | Geometry::TextDot(_)
                     | Geometry::PointCloud(_)
                     | Geometry::Line(_)
                     | Geometry::Circle(_)
@@ -8088,7 +8095,8 @@ impl Command for DuplicateMeshEdgeCommand {
                 | Geometry::NurbsSurface(_)
                 | Geometry::BlockInstance(_)
                 | Geometry::Brep(_)
-                | Geometry::SubD(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
+                | Geometry::SubD(_)
+                | Geometry::TextDot(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
             })
             .collect::<Result<Vec<_>, _>>()?;
         if meshes.is_empty() {
@@ -8506,7 +8514,8 @@ impl Command for ExtractWireframeCommand {
                 | Geometry::Ellipse(_)
                 | Geometry::Polyline(_)
                 | Geometry::NurbsCurve(_)
-                | Geometry::PolyCurve(_) => {
+                | Geometry::PolyCurve(_)
+                | Geometry::TextDot(_) => {
                     return Err(CommandError::UnsupportedExtractWireframeGeometry);
                 }
             };

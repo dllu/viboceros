@@ -196,6 +196,7 @@ pub(super) struct CachedScene {
     key: SceneKey,
     scene: Arc<GpuViewportScene>,
     reprojection: Option<Reprojection>,
+    pub(super) text_dots: Vec<(viboceros_geometry::TextDot, Color32)>,
 }
 
 #[derive(Clone, Copy)]
@@ -693,6 +694,7 @@ impl Viewport {
             }
         }
         let mut scene = GpuSceneBuilder::new();
+        let mut text_dots = Vec::new();
         for object in &key.objects {
             let normal_transform = object.transform.map(AffineNormalTransform3::new);
             let display = &object.geometry;
@@ -705,6 +707,11 @@ impl Viewport {
                             let point = scene.points.pop().unwrap();
                             scene.overlay_points.push(point);
                         }
+                    }
+                }
+                Geometry::TextDot(dot) => {
+                    if let Some(point) = object.display_point(dot.point()) {
+                        text_dots.push((dot.with_point(point), object.color));
                     }
                 }
                 Geometry::PointCloud(cloud) => {
@@ -836,6 +843,7 @@ impl Viewport {
             key,
             scene: Arc::clone(&scene),
             reprojection,
+            text_dots,
         });
         scene
     }

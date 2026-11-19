@@ -865,6 +865,7 @@ pub(super) fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, Co
             );
         }
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
+        Geometry::TextDot(dot) => ThreeDmGeometry::TextDot(dot.clone()),
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
@@ -887,6 +888,7 @@ pub(super) fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry 
             unreachable!("reference conversion requires a document catalog")
         }
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
+        ThreeDmGeometry::TextDot(dot) => Geometry::TextDot(dot),
         ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
         ThreeDmGeometry::Arc(arc) => Geometry::Arc(arc),

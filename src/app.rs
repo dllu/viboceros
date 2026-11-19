@@ -1001,6 +1001,9 @@ impl VibocerosApp {
         if self.continue_project_plane_name_input(&input) {
             return;
         }
+        if self.plane_prompt.is_none() && self.try_continue_evaluate_point(&input) {
+            return;
+        }
         if self.plane_prompt.is_none() && self.try_continue_remap_cplane(&input) {
             return;
         }
@@ -1305,6 +1308,7 @@ impl VibocerosApp {
             || self.try_continue_angle(input)
             || self.try_continue_circle(input)
             || self.try_continue_arc(input)
+            || self.try_continue_evaluate_point(input)
             || self.try_continue_evaluate_uv(input)
             || self.try_continue_align(input)
         {

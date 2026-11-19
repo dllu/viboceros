@@ -24,6 +24,7 @@ enum ViboObjectType {
   VIBO_OBJECT_INSTANCE = 11,
   VIBO_OBJECT_SUBD = 12,
   VIBO_OBJECT_EXTRUSION = 13,
+  VIBO_OBJECT_TEXT_DOT = 14,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;

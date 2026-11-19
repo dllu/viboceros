@@ -28,6 +28,7 @@ use viboceros_geometry::{Brep, NurbsSurface, Polyline3};
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
+mod text_dot;
 mod clipping;
 mod curve_line;
 mod curve_offset;
@@ -405,6 +406,7 @@ pub struct ViewportInput<'a> {
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
+    pub(crate) evaluate_point: Option<viboceros_command::EvaluatePointOptions>,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
@@ -596,6 +598,7 @@ impl Default for ViewportInput<'_> {
             extrude_subd_edges: None,
             soft_crease: None,
             drafting: DraftingInput::default(),
+            evaluate_point: None,
             point_filter: None,
             point_constraint: None,
             translation_constraint: None,
@@ -838,6 +841,7 @@ pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
     grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
+    text_dot_fonts: Option<egui::Context>,
     analysis_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
     curvature_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
     curvature_meshes: Option<viboceros_command::curvature_analysis::Meshes>,
@@ -957,6 +961,7 @@ impl Viewport {
             display_cache: Default::default(),
             grip_preview_cache: Default::default(),
             cached_scene: Default::default(),
+            text_dot_fonts: None,
             analysis_objects: None,
             curvature_objects: None,
             curvature_meshes: None,
@@ -1527,6 +1532,7 @@ impl Viewport {
         let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
+        self.text_dot_fonts = Some(ui.ctx().clone());
         use egui::emath::GuiRounding as _;
         let pixels_per_point = ui.ctx().pixels_per_point();
         let rect = response.rect.round_to_pixels(pixels_per_point);
@@ -2525,6 +2531,7 @@ impl Viewport {
                 },
             ),
         );
+        self.paint_scene_text_dots(&painter, rect);
         if let Some(rectangle) = input.alignment_plane_preview {
             let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
             for (a, b) in rectangle
@@ -2570,6 +2577,15 @@ impl Viewport {
                 )
             });
         self.paint_component_previews(&painter, rect, document, input.component_previews);
+        if let Some(options) = input.evaluate_point
+            && let Some(cursor) = drafting_cursor
+            && !input
+                .point_filter
+                .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
+            && let Some(dot) = options.preview_label(cursor.point, self.construction_plane())
+        {
+            self.paint_text_dot(&painter, rect, &dot, Color32::from_rgb(20, 115, 190));
+        }
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         for &curve in input.nested_length_guides {
             self.paint_curve_draft(&painter, rect, curve);

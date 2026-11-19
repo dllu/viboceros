@@ -69,6 +69,7 @@ impl Geometry {
     pub(super) fn duplicate_family(&self) -> DuplicateGeometryFamily {
         match self {
             Self::Point(_) => DuplicateGeometryFamily::Point,
+            Self::TextDot(_) => DuplicateGeometryFamily::TextDot,
             Self::PointCloud(_) => DuplicateGeometryFamily::PointCloud,
             Self::Line(_) | Self::Polyline(_) => DuplicateGeometryFamily::PiecewiseLinear,
             Self::Circle(_) => DuplicateGeometryFamily::Circle,
@@ -108,6 +109,12 @@ impl Geometry {
                 });
             }
             Self::Point(point) => DuplicateGeometryKey::Point(point_key(*point)),
+            Self::TextDot(dot) => DuplicateGeometryKey::TextDot {
+                point: point_key(dot.point()),
+                text: dot.text().into(),
+                secondary: dot.secondary_text().into(),
+                style: dot.style().clone(),
+            },
             Self::PointCloud(cloud) => DuplicateGeometryKey::PointCloud(
                 cloud.points().iter().copied().map(point_key).collect(),
             ),
@@ -216,6 +223,7 @@ fn points_equal_with_fixed_zero_policy(left: Point3, right: Point3) -> bool {
 pub(super) enum DuplicateGeometryFamily {
     BlockInstance,
     Point,
+    TextDot,
     PointCloud,
     PiecewiseLinear,
     Circle,
@@ -233,6 +241,12 @@ pub(super) enum DuplicateGeometryFamily {
 enum DuplicateGeometryKey {
     SubD(Vec<u8>),
     Point([u64; 3]),
+    TextDot {
+        point: [u64; 3],
+        text: String,
+        secondary: String,
+        style: viboceros_geometry::TextDotStyle,
+    },
     PointCloud(Vec<[u64; 3]>),
     PiecewiseLinear(Vec<[u64; 3]>),
     Circle {

@@ -273,6 +273,21 @@ class ByteReader {
     return true;
   }
 
+  bool CString(std::string& value) {
+    if (Remaining() == 0) {
+      return false;
+    }
+    const auto* start = bytes_ + position_;
+    const auto* end = static_cast<const uint8_t*>(std::memchr(start, 0, Remaining()));
+    if (end == nullptr) {
+      return false;
+    }
+    const size_t size = static_cast<size_t>(end - start);
+    value.assign(reinterpret_cast<const char*>(start), size);
+    position_ += size + 1;
+    return true;
+  }
+
   size_t Remaining() const { return count_ - position_; }
   bool Finished() const { return position_ == count_; }
 
@@ -281,6 +296,8 @@ class ByteReader {
   size_t count_;
   size_t position_ = 0;
 };
+
+#include "text_dot_data.h"
 
 bool append_point(const ON_Point& point, BridgeObject& output) {
   const ON_3dPoint value = point.point;
@@ -1447,6 +1464,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
       }
       return vibo_subd::decode(source.geometry_data, source.geometry_data_count).release();
     }
+    case VIBO_OBJECT_TEXT_DOT:
+      return decode_text_dot(source, error);
     case VIBO_OBJECT_POINT: {
       if (source.coordinate_count != 3) {
         error = "a point must contain three coordinates";
@@ -1975,7 +1994,9 @@ bool read_geometry_metadata(const ONX_Model& model, const ON_Geometry* geometry,
 bool read_geometry_object(const ONX_Model& model, const ON_Geometry* geometry,const ON_3dmObjectAttributes* attributes,BridgeObject& object, double model_tolerance) {
       if(!read_geometry_metadata(model,geometry,attributes,object)) return false;
       bool supported = false;
-      if (const ON_Point* point = ON_Point::Cast(geometry)) {
+      if (const ON_TextDot* dot = ON_TextDot::Cast(geometry)) {
+        supported = append_text_dot(*dot, object);
+      } else if (const ON_Point* point = ON_Point::Cast(geometry)) {
         supported = append_point(*point, object);
       } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
         supported = append_point_cloud(*cloud, object);

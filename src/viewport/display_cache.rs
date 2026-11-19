@@ -297,7 +297,7 @@ impl DisplayGeometry {
                         lines.extend_from_slice(display.wires());
                     }
                 }
-                Geometry::Point(_) | Geometry::PointCloud(_) => {}
+                Geometry::Point(_) | Geometry::TextDot(_) | Geometry::PointCloud(_) => {}
                 Geometry::Line(line) => visit(line.start(), line.end()),
                 Geometry::Circle(circle) => circle.visit_segments(&mut visit),
                 Geometry::Arc(arc) => curve_sampling::visit_parametric_segments(

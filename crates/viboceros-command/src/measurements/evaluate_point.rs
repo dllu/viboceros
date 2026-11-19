@@ -1,6 +1,83 @@
-//! Read-only world/CPlane coordinate reporting.
+//! World and construction-plane coordinate reporting and annotation.
 use super::*;
 use crate::{CommandContext, parse_point};
+use viboceros_geometry::{Frame3, GeometryError, Point3, TextDot};
+
+const USAGE: &str = "EvaluatePt point [Label=On|Off] [Style=Dot] [CoordinateSystem=World|CPlane]";
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct EvaluatePointOptions {
+    pub label: bool,
+    cplane: bool,
+}
+
+impl EvaluatePointOptions {
+    pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
+        let mut options = Self::default();
+        let mut seen = [false; 3];
+        for argument in arguments {
+            let key = options.set(argument)?;
+            if std::mem::replace(&mut seen[key], true) {
+                return Err(CommandError::Usage(USAGE));
+            }
+        }
+        Ok(options)
+    }
+
+    pub fn with_option(mut self, argument: &str) -> Result<Self, CommandError> {
+        self.set(argument)?;
+        Ok(self)
+    }
+
+    fn set(&mut self, argument: &str) -> Result<usize, CommandError> {
+        let (key, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        let value = value.trim_start_matches('_');
+        if crate::option_name_eq(key, "Label") {
+            if value.eq_ignore_ascii_case("On") {
+                self.label = true;
+            } else if value.eq_ignore_ascii_case("Off") {
+                self.label = false;
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            }
+            Ok(0)
+        } else if crate::option_name_eq(key, "Style") && value.eq_ignore_ascii_case("Dot") {
+            Ok(1)
+        } else if crate::option_name_eq(key, "CoordinateSystem") {
+            if value.eq_ignore_ascii_case("CPlane") {
+                self.cplane = true;
+            } else if value.eq_ignore_ascii_case("World") {
+                self.cplane = false;
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            }
+            Ok(2)
+        } else {
+            Err(CommandError::Usage(USAGE))
+        }
+    }
+
+    pub fn coordinate_system(self) -> &'static str {
+        if self.cplane { "CPlane" } else { "World" }
+    }
+
+    pub fn preview_label(self, point: Point3, plane: Frame3) -> Option<TextDot> {
+        if !self.label {
+            return None;
+        }
+        let local = plane.coordinates_of(point).ok()?;
+        self.create_label(point, local).ok()
+    }
+
+    fn create_label(self, point: Point3, local: [f64; 3]) -> Result<TextDot, GeometryError> {
+        let values = if self.cplane { local } else { point.to_array() };
+        TextDot::try_new(point, format_coordinates(values))
+    }
+}
+
+fn format_coordinates(values: [f64; 3]) -> String {
+    values.map(format_measurement).join(",")
+}
 
 pub(crate) struct EvaluatePointCommand;
 
@@ -8,8 +85,13 @@ impl Command for EvaluatePointCommand {
     fn name(&self) -> &'static str {
         "EvaluatePt"
     }
-    fn records_history(&self) -> bool {
-        false
+
+    fn records_history_for(&self, arguments: &[&str]) -> bool {
+        arguments.iter().any(|argument| {
+            EvaluatePointOptions::default()
+                .with_option(argument)
+                .is_ok_and(|options| options.label)
+        })
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -18,40 +100,35 @@ impl Command for EvaluatePointCommand {
 
     fn run_in_context(
         &self,
-        _document: &mut Document,
+        document: &mut Document,
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
         let mut point = None;
         let mut index = 0;
-        let mut label_seen = false;
+        let mut options = Vec::new();
         while index < arguments.len() {
-            if let Some((key, value)) = arguments[index].split_once('=') {
-                if label_seen
-                    || !crate::option_name_eq(key, "Label")
-                    || !value.trim_start_matches('_').eq_ignore_ascii_case("Off")
-                {
-                    return Err(CommandError::Usage(
-                        "EvaluatePt point [Label=Off]; labels are not implemented",
-                    ));
-                }
-                label_seen = true;
+            if arguments[index].contains('=') {
+                options.push(arguments[index]);
                 index += 1;
             } else if point.is_none() {
                 let (value, consumed) = parse_point(&arguments[index..])?;
                 point = Some(value);
                 index += consumed;
             } else {
-                return Err(CommandError::Usage("EvaluatePt point [Label=Off]"));
+                return Err(CommandError::Usage(USAGE));
             }
         }
-        let point = point.ok_or(CommandError::Usage("EvaluatePt point [Label=Off]"))?;
+        let point = point.ok_or(CommandError::Usage(USAGE))?;
+        let options = EvaluatePointOptions::parse(&options)?;
         let local = context.construction_plane.coordinates_of(point)?;
-        let coordinates = |p: [f64; 3]| p.map(format_measurement).join(",");
+        if options.label {
+            document.add_geometry(Geometry::TextDot(options.create_label(point, local)?))?;
+        }
         Ok(format!(
             "World coordinates = {}\nCPlane coordinates = {}",
-            coordinates(point.to_array()),
-            coordinates(local)
+            format_coordinates(point.to_array()),
+            format_coordinates(local)
         ))
     }
 }
@@ -97,11 +174,15 @@ mod tests {
             );
             assert_eq!(format!("{doc:?}"), before);
         }
+
+        doc.begin_transaction("Caller edit").unwrap();
+        assert!(registry.execute(&mut doc, "EvaluatePt 1,2,3").is_ok());
+        assert!(!doc.commit_transaction().unwrap());
         for input in [
             "EvaluatePt",
             "EvaluatePt NaN,0,0",
             "EvaluatePt 0,0,0 extra",
-            "EvaluatePt 0,0,0 Label=On",
+            "EvaluatePt 0,0,0 Style=Leader",
             "EvaluatePt 0,0,0 Label=No",
             "EvaluatePt 0,0,0 Label=Off Label=Off",
         ] {
@@ -131,6 +212,39 @@ mod tests {
             "World coordinates = -5,0,2\nCPlane coordinates = 2,-6,-1"
         );
         assert_eq!(format!("{document:?}"), before);
+    }
+
+    #[test]
+    fn evaluate_point_inline_label_defaults_to_world_and_undoes_as_one_edit() {
+        let registry = CommandRegistry::with_builtins();
+        let point = Point3::try_new(1., 2., 3.).unwrap();
+        let context = CommandContext {
+            construction_plane: CommandContext::default()
+                .construction_plane
+                .with_origin(point),
+        };
+        let mut document = Document::default();
+        let report = registry
+            .execute_in_context(
+                &mut document,
+                "EvaluatePt Label=On 1,2,3 Style=Dot",
+                context,
+            )
+            .unwrap();
+        assert_eq!(
+            report,
+            "World coordinates = 1,2,3\nCPlane coordinates = 0,0,0"
+        );
+        let Geometry::TextDot(dot) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a text dot");
+        };
+        assert_eq!(dot.point(), point);
+        assert_eq!(dot.text(), "1,2,3");
+        assert_eq!(document.undo_label(), Some("EvaluatePt"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 0);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().count(), 1);
     }
 
     #[test]

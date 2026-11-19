@@ -438,6 +438,8 @@ pub use surface_directional::SurfaceNormalJet3;
 pub use sweep::{
     Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection, SweepSurfaceOperations,
 };
+mod text_dot;
+pub use text_dot::{TextDot, TextDotStyle};
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};

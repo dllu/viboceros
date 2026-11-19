@@ -313,7 +313,9 @@ impl VibocerosApp {
                 }
             }
             InteractiveCommand::Points => return self.apply_points_point(point),
-            InteractiveCommand::EvaluatePoint => return self.finish_evaluate_point(point, plane),
+            InteractiveCommand::EvaluatePoint { options, pending } => {
+                return pending.is_none() && self.finish_evaluate_point(point, plane, options);
+            }
             InteractiveCommand::EvaluateUv { options } => {
                 return self.apply_evaluate_uv(point, options);
             }

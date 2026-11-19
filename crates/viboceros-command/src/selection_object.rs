@@ -146,6 +146,7 @@ impl SelectionObject<'_> {
             } else {
                 VolumeRelation::OUTSIDE
             }),
+            Geometry::TextDot(dot) => self.classify_points([dot.point()]),
             Geometry::PointCloud(cloud) => self.classify_points(
                 cloud
                     .points()

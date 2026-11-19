@@ -1453,6 +1453,15 @@ impl VibocerosApp {
                                 .map(|s| s.edges()),
                             soft_crease: self.soft_crease_prompt.as_ref().and_then(|p| p.overlay()),
                             drafting,
+                            evaluate_point: match self.active_command {
+                                Some(InteractiveCommand::EvaluatePoint {
+                                    options,
+                                    pending: None,
+                                }) if model_input_active && self.plane_prompt.is_none() => {
+                                    Some(options)
+                                }
+                                _ => None,
+                            },
                             angle_plane,
                             point_filter,
                             point_constraint,

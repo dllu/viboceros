@@ -77,7 +77,9 @@ pub(super) fn rescale_geometry(
     } else {
         let tolerance = if matches!(geometry, ThreeDmGeometry::Brep(_)) {
             Tolerance::try_new(
-                tolerance.absolute().max(stored_tolerance.absolute() * scale),
+                tolerance
+                    .absolute()
+                    .max(stored_tolerance.absolute() * scale),
                 tolerance.relative(),
                 tolerance.angular(),
             )?
@@ -260,6 +262,7 @@ fn bounds(
                 BoundingBox3::from_points(corners)?
             }
             ThreeDmGeometry::Point(p) => BoundingBox3::from_points([*p])?,
+            ThreeDmGeometry::TextDot(dot) => BoundingBox3::from_points([dot.point()])?,
             ThreeDmGeometry::PointCloud(g) => g.bounds(),
             ThreeDmGeometry::Line(g) => BoundingBox3::from_points([g.start(), g.end()])?,
             ThreeDmGeometry::Arc(g) => g.bounds(),

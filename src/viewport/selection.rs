@@ -6,6 +6,7 @@ use super::screen::{
     segments_intersect,
 };
 use super::*;
+use viboceros_geometry::TextDot;
 
 const FENCE_POINT_CAPTURE_PIXELS: f32 = 2.0;
 const BOUNDARY_JOIN_PIXELS: f32 = 0.5;
@@ -209,6 +210,29 @@ impl ProjectedPrimitives {
 }
 
 impl Viewport {
+    fn pick_text_dot(&self, dot: &TextDot, pointer: Pos2, rect: Rect) -> PickHit {
+        let distance = self
+            .text_dot_bounds(dot, rect)
+            .filter(|bounds| bounds.intersects(rect))
+            .map_or(f32::INFINITY, |bounds| bounds.distance_to_pos(pointer));
+        PickHit::screen(0, distance)
+    }
+
+    fn add_projected_text_dot(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        dot: &TextDot,
+        rect: Rect,
+    ) {
+        let Some(bounds) = self.text_dot_bounds(dot, rect) else {
+            projected.depth_clipped = true;
+            return;
+        };
+        let [a, b, c, d] = rect_corners(bounds);
+        projected.add_triangle([Some(a), Some(b), Some(c)]);
+        projected.add_triangle([Some(a), Some(c), Some(d)]);
+    }
+
     fn draws_object_faces(&self, id: ObjectId) -> bool {
         self.display_mode != DisplayMode::Wireframe
             || self
@@ -455,6 +479,7 @@ impl Viewport {
                         });
                     PickHit::screen(0, distance)
                 }
+                Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
                 Geometry::PointCloud(cloud) => {
                     let distance = self
                         .pick_point_cloud_member(pointer, rect, cloud)
@@ -787,6 +812,7 @@ impl Viewport {
                         point_segment_distance(pointer, projected, projected)
                     }),
             ),
+            Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
             Geometry::PointCloud(cloud) => PickHit::screen(
                 0,
                 self.pick_point_cloud_member(pointer, rect, cloud)
@@ -888,6 +914,7 @@ impl Viewport {
         let mut projected = ProjectedPrimitives::default();
         match &*display.geometry {
             Geometry::Point(point) => self.add_selection_point(&mut projected, *point, rect),
+            Geometry::TextDot(dot) => self.add_projected_text_dot(&mut projected, dot, rect),
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
                     if cloud.is_hidden(index) {
@@ -940,6 +967,9 @@ impl Viewport {
             }
             Geometry::Point(point) => {
                 self.add_selection_point(&mut projected, *point, viewport_rect)
+            }
+            Geometry::TextDot(dot) => {
+                self.add_projected_text_dot(&mut projected, dot, viewport_rect);
             }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {

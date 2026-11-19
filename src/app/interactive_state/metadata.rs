@@ -47,7 +47,7 @@ impl InteractiveCommand {
             Self::FilletCorners { .. } => "FilletCorners",
             Self::ArcBlend => "ArcBlend",
             Self::BlendCurve => "BlendCrv",
-            Self::EvaluatePoint => "EvaluatePt",
+            Self::EvaluatePoint { .. } => "EvaluatePt",
             Self::EvaluateUv { .. } => "EvaluateUVPt",
             Self::DomainFace => "Domain",
             Self::DomainSubCrv { .. } => "Domain",
@@ -256,7 +256,7 @@ impl InteractiveCommand {
             | Self::ReplaceBlock
             | Self::Block { .. }
             | Self::Insert { .. }
-            | Self::EvaluatePoint
+            | Self::EvaluatePoint { .. }
             | Self::EvaluateUv { .. }
             | Self::DomainFace
             | Self::DomainSubCrv { start: None }

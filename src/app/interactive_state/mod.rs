@@ -180,7 +180,10 @@ pub(super) enum InteractiveCommand {
         points: [Option<Point3>; 3],
     },
     Point,
-    EvaluatePoint,
+    EvaluatePoint {
+        options: viboceros_command::EvaluatePointOptions,
+        pending: Option<super::evaluate_point::OptionName>,
+    },
     EvaluateUv {
         options: viboceros_command::EvaluateUvOptions,
     },

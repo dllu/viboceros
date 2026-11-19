@@ -387,6 +387,7 @@ impl VibocerosApp {
                             };
                             let kind = match object.geometry() {
                                 viboceros_document::Geometry::Point(_) => "point",
+                                viboceros_document::Geometry::TextDot(_) => "annotation dot",
                                 viboceros_document::Geometry::PointCloud(_) => "point cloud",
                                 viboceros_document::Geometry::Line(_) => "line",
                                 viboceros_document::Geometry::Circle(_) => "circle",

@@ -74,6 +74,7 @@ impl Command for DuplicateBorderCommand {
                 .collect::<Result<_, _>>()?,
                 Geometry::Mesh(mesh) => assemble::mesh_boundaries(mesh, document.tolerance())?,
                 Geometry::Point(_)
+                | Geometry::TextDot(_)
                 | Geometry::PointCloud(_)
                 | Geometry::Line(_)
                 | Geometry::Circle(_)

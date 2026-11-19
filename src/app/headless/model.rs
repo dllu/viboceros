@@ -116,6 +116,7 @@ pub(super) fn objects(document: &Document, ids: Option<Vec<String>>) -> Result<V
         let geometry = object.geometry();
         let kind = match geometry {
             Geometry::Point(_) => "point",
+            Geometry::TextDot(_) => "text_dot",
             Geometry::PointCloud(_) => "point_cloud",
             Geometry::Line(_) => "line",
             Geometry::Circle(_) => "circle",
