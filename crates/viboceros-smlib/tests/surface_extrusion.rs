@@ -1,6 +1,6 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{
-    Brep, Circle3, Frame3, NurbsSurface, Point3, Tolerance, UnitVector3, Vector3,
+    Brep, Circle3, Frame3, NurbsCurve, NurbsSurface, Point3, Tolerance, UnitVector3, Vector3,
 };
 use viboceros_smlib::Shape;
 fn p(x: f64, y: f64, z: f64) -> Point3 {
@@ -32,6 +32,39 @@ fn patch(warped: bool) -> Brep {
         tol(),
     )
     .unwrap()
+}
+
+#[test]
+fn native_surface_sweep_preserves_an_unevenly_parameterized_closed_wall() {
+    let normal = UnitVector3::try_new(0., 0., 1., tol()).unwrap();
+    let circle = Circle3::try_new(p(0., 0., 0.), 1., normal, tol())
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+    let profile = NurbsCurve::try_new_rational(
+        circle.degree(),
+        circle.control_points().to_vec(),
+        vec![0., 0., 0., 1., 1., 3., 3., 6., 6., 10., 10., 10.],
+    )
+    .unwrap();
+    let face = Brep::try_planar_face(&profile, tol()).unwrap();
+    let source = Shape::from_brep(&face, tol()).unwrap();
+    for solid in [false, true] {
+        let result = source
+            .extruded_faces(v(0., 0., 4.), solid, tol())
+            .unwrap()
+            .to_brep(tol())
+            .unwrap();
+        assert_eq!(result.is_solid(), solid);
+        assert_eq!(
+            (
+                result.faces().len(),
+                result.edges().len(),
+                result.vertices().len()
+            ),
+            (if solid { 3 } else { 1 }, 3, 2)
+        );
+    }
 }
 #[test]
 fn native_surface_sweep_retains_curved_caps_and_has_analytic_volume() {

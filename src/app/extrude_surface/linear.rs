@@ -10,7 +10,10 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let Ok(parsed) = SurfaceExtrusionInput::parse(&words.collect::<Vec<_>>()) else {
+        let Ok(parsed) = SurfaceExtrusionInput::parse_with_options(
+            &words.collect::<Vec<_>>(),
+            self.commands.surface_extrusion_settings().options,
+        ) else {
             return false;
         };
         let mut sources = match self.prepare_surface_extrusion_sources(parsed.faces) {
@@ -34,7 +37,7 @@ impl VibocerosApp {
             options: parsed.options,
         });
         self.command_input.clear();
-        self.push_log(self.active_command.unwrap().prompt().into());
+        self.log_surface_extrusion_prompt(Stage::Distance, parsed.options);
         true
     }
     pub(in crate::app) fn try_continue_surface_extrusion(&mut self, input: &str) -> bool {
@@ -58,11 +61,23 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if stage == Stage::Distance && (input.is_empty() || keyword.eq_ignore_ascii_case("Enter")) {
+            if let Some(distance) = self.commands.surface_extrusion_settings().distance {
+                self.accept_surface_extrusion_length(distance, options);
+            } else {
+                self.log_surface_extrusion_prompt(stage, options);
+            }
+            self.command_input.clear();
+            return true;
+        }
         let words = input.split_whitespace().collect::<Vec<_>>();
         if words.is_empty() {
             return false;
         }
-        if words.iter().all(|s| s.contains('=')) {
+        if words
+            .iter()
+            .all(|s| s.contains('=') || SurfaceExtrusionOptions::recognizes(s))
+        {
             let old_direction = options.direction;
             match options.update(&words) {
                 Ok(()) => {
@@ -71,26 +86,10 @@ impl VibocerosApp {
                     }
                     self.active_command =
                         Some(InteractiveCommand::ExtrudeSurface { stage, options });
-                    self.push_log(options.command_options());
+                    self.log_surface_extrusion_prompt(stage, options);
                 }
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
-            self.command_input.clear();
-            return true;
-        }
-        let toggle = if keyword.eq_ignore_ascii_case("BothSides") {
-            Some(&mut options.both_sides)
-        } else if keyword.eq_ignore_ascii_case("Solid") {
-            Some(&mut options.solid)
-        } else if keyword.eq_ignore_ascii_case("DeleteInput") {
-            Some(&mut options.delete_input)
-        } else {
-            None
-        };
-        if let Some(toggle) = toggle {
-            *toggle = !*toggle;
-            self.active_command = Some(InteractiveCommand::ExtrudeSurface { stage, options });
-            self.push_log(options.command_options());
             self.command_input.clear();
             return true;
         }
@@ -114,13 +113,7 @@ impl VibocerosApp {
         {
             match length {
                 Ok(h) => {
-                    let direction = self
-                        .surface_extrusion_sources
-                        .as_ref()
-                        .and_then(|sources| sources.linear.as_ref())
-                        .and_then(|session| session.hover)
-                        .map_or(1., f64::signum);
-                    self.finish_surface_extrusion(h * direction, options);
+                    self.accept_surface_extrusion_length(h, options);
                 }
                 Err(e) => self.push_log(format!("Error: {e}")),
             }
@@ -128,6 +121,14 @@ impl VibocerosApp {
             return true;
         }
         false
+    }
+
+    fn accept_surface_extrusion_length(&mut self, distance: f64, options: SurfaceExtrusionOptions) {
+        let direction = self
+            .surface_extrusion_preview()
+            .and_then(|preview| preview.hover)
+            .map_or(1., f64::signum);
+        self.finish_surface_extrusion(distance * direction, distance, options);
     }
 
     fn reset_surface_extrusion_hover(&mut self) {
@@ -144,7 +145,27 @@ impl VibocerosApp {
         self.reset_surface_extrusion_hover();
         let command = InteractiveCommand::ExtrudeSurface { stage, options };
         self.active_command = Some(command);
-        self.push_log(command.prompt().into());
+        self.log_surface_extrusion_prompt(stage, options);
+    }
+
+    fn log_surface_extrusion_prompt(&mut self, stage: Stage, options: SurfaceExtrusionOptions) {
+        if stage == Stage::Distance {
+            let distance = self
+                .commands
+                .surface_extrusion_settings()
+                .distance
+                .unwrap_or(0.);
+            self.push_log(format!(
+                "Extrusion distance <{distance}> (Direction SetBasePoint {})",
+                options.command_options(),
+            ));
+        } else {
+            self.push_log(
+                InteractiveCommand::ExtrudeSurface { stage, options }
+                    .prompt()
+                    .into(),
+            );
+        }
     }
 
     pub(in crate::app) fn accept_surface_extrusion_point(
@@ -164,7 +185,7 @@ impl VibocerosApp {
                     );
                     return false;
                 };
-                return self.finish_surface_extrusion(height, options);
+                return self.finish_surface_extrusion(height, height.abs(), options);
             }
             Stage::BasePoint => {
                 if let Some(session) = self

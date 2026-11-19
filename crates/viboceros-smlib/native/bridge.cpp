@@ -2091,6 +2091,9 @@ extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displac
         // keeps the actual source surfaces, including curved and trimmed caps.
         owner->value->m_bEditingEnabled=TRUE;
         SmTranslationalSweepGeometry geometry(distance*direction,tolerance);
+        // Analytic recognition can reparameterize a closed wall while the
+        // original rim still uses its nonuniform spline knots.
+        geometry.SetMakeAnalytics(FALSE);
         SmTopologySweep sweep(geometry);sweep.SetDoStitching(FALSE);
         SmTArray<SmEdge*> all_edges,edges;owner->value->GetEdges(all_edges);
         for(ULONG i=0;i<all_edges.GetSize();++i)

@@ -217,10 +217,74 @@ fn surface_extrusion_typed_distance_uses_the_live_side() {
         assert!(app.observe_surface_extrusion_hover(Some(point(1., 1.5, -1.))));
         enter(&mut app, distance);
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert_eq!(
+            app.commands.surface_extrusion_settings().distance,
+            Some(distance.parse().unwrap())
+        );
         let Geometry::Brep(cut) = app.document.selected_objects().next().unwrap().geometry() else {
             panic!("expected a surface extrusion");
         };
         assert!((cut.bounds().min().z() - expected[0]).abs() < 1e-9);
         assert!((cut.bounds().max().z() - expected[1]).abs() < 1e-9);
     }
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
+fn surface_extrusion_repeats_the_last_successful_distance_and_toggles() {
+    let mut app = test_app();
+    let id = surface_at(&mut app, 2., 0.);
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    enter(
+        &mut app,
+        "ExtrudeSrf BothSides=Yes Solid=No DeleteInput=Yes SplitAtTangents=Yes",
+    );
+    for input in ["SetBasePoint", "w1,1.5,3", "w1,1.5,7"] {
+        enter(&mut app, input);
+    }
+    let assert_result = |app: &VibocerosApp| {
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert!(app.document.object(id).is_none());
+        let Geometry::Brep(result) = app.document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("expected the extruded walls");
+        };
+        assert!(!result.is_solid());
+        assert_eq!(result.faces().len(), 4);
+        assert!((result.bounds().min().z() + 2.).abs() < 1e-9);
+        assert!((result.bounds().max().z() - 6.).abs() < 1e-9);
+    };
+    assert_result(&app);
+    let saved = app.commands.surface_extrusion_settings();
+    assert_eq!(saved.distance, Some(4.));
+    assert!(
+        saved.options.both_sides && saved.options.delete_input && saved.options.split_at_tangents
+    );
+    assert!(!saved.options.solid);
+
+    enter(&mut app, "Undo");
+    assert!(app.document.object(id).is_some());
+    app.document
+        .select_objects_direct([id], SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "ExtrudeSrf");
+    assert_eq!(
+        app.surface_extrusion_preview().unwrap().constraint.anchor,
+        point(1., 1.5, 2.)
+    );
+    enter(&mut app, "BothSides Solid DeleteInput SplitAtTangents");
+    let Some(InteractiveCommand::ExtrudeSurface { options, .. }) = app.active_command else {
+        panic!("expected the active distance getter");
+    };
+    assert!(options.solid);
+    assert!(!options.both_sides && !options.delete_input && !options.split_at_tangents);
+    enter(&mut app, "Cancel");
+    assert_eq!(app.commands.surface_extrusion_settings(), saved);
+    assert!(app.document.can_redo());
+    enter(&mut app, "ExtrudeSrf");
+    assert!(app.command_log.back().unwrap().contains("<4>"));
+    enter(&mut app, "");
+    assert_result(&app);
 }

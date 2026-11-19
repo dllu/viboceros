@@ -875,7 +875,7 @@ impl InteractiveCommand {
             }
             Self::ExtrudeSurface { stage, .. } => match stage {
                 extrude_surface::Stage::Distance => {
-                    "Extrusion distance (Direction, BothSides, Solid, DeleteInput, SetBasePoint)"
+                    "Extrusion distance (Direction, BothSides, Solid, DeleteInput, SplitAtTangents, SetBasePoint)"
                 }
                 extrude_surface::Stage::BasePoint => "Base point for extrusion distance",
                 extrude_surface::Stage::DirectionStart => "Base point for direction",

@@ -1052,6 +1052,8 @@ pub struct CommandRegistry {
     curve_extrusion_split: extrude_curve::SplitPreference,
     surface_apex_options:
         std::sync::Arc<remembered::Remembered<extrude_surface_apex::SurfaceApexOptions>>,
+    surface_extrusion_settings:
+        std::sync::Arc<remembered::Remembered<extrude_surface::SurfaceExtrusionSettings>>,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
@@ -1125,6 +1127,19 @@ impl CommandRegistry {
 
     pub fn surface_apex_options(&self) -> extrude_surface_apex::SurfaceApexOptions {
         self.surface_apex_options.get()
+    }
+
+    pub fn surface_extrusion_settings(&self) -> extrude_surface::SurfaceExtrusionSettings {
+        self.surface_extrusion_settings.get()
+    }
+
+    /// Interactive placement can use a signed model displacement while
+    /// retaining the distance as it was entered in the getter.
+    pub fn remember_surface_extrusion_distance(&self, distance: f64) {
+        if distance.is_finite() && distance != 0. {
+            self.surface_extrusion_settings
+                .update(|settings| settings.distance = Some(distance));
+        }
     }
 
     pub fn curve_extrusion_split_at_tangents(&self) -> bool {
@@ -1624,7 +1639,9 @@ impl CommandRegistry {
             .register(extrude_tapered::ExtrudeTaperedCommand)
             .expect("unique built-in command");
         registry
-            .register(extrude_surface::ExtrudeSurfaceCommand)
+            .register(extrude_surface::ExtrudeSurfaceCommand {
+                settings: registry.surface_extrusion_settings.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(shell::ShellCommand(registry.shell_options.clone()))

@@ -1,6 +1,7 @@
 use super::*;
 
 mod distance_preview;
+mod tangents;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
@@ -101,6 +102,13 @@ fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
             enter(&mut app, "2");
         }
         assert!(app.active_command.is_none());
+        assert!(
+            app.commands
+                .surface_extrusion_settings()
+                .options
+                .direction
+                .is_none()
+        );
         assert!(app.document.object(id).is_none());
         assert_eq!(app.document.objects().count(), 1);
         let Geometry::Brep(b) = app.document.selected_objects().next().unwrap().geometry() else {

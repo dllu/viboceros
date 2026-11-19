@@ -26,4 +26,13 @@ impl<T: Copy> Remembered<T> {
             .lock()
             .expect("preference locks never invoke user code") = value;
     }
+
+    pub(super) fn update(&self, update: impl FnOnce(&mut T)) {
+        update(
+            &mut self
+                .0
+                .lock()
+                .expect("preference locks never invoke user code"),
+        );
+    }
 }

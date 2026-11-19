@@ -8,16 +8,19 @@ Start the command, select surface objects and press Enter, then pick a distance
 point or enter a length in document units. Preselected surfaces and B-rep face
 components also work. The live preview shows the translated rims and walls,
 including cap wires when `Solid=Yes`. The hovered side sets the sign for a
-positive typed length. Type `0` or `w0` to use the active CPlane or world origin.
+typed length. Press Enter to reuse the last successful length. A typed length
+keeps its sign and a picked distance is stored as a magnitude. Type `0` or `w0`
+to use the active CPlane or world origin.
 In views looking down the extrusion axis, the mouse measures radial distance
 from the guide's screen location. Picks below the guide use the negative side.
 
 Enter `Direction` and pick two points to set the axis, then specify the distance.
 `Direction=x,y,z` sets the axis directly. `SetBasePoint` changes where the
-distance is measured from. Toggle `BothSides`, `Solid` and `DeleteInput` by name
-or set them to `Yes` or `No`. A failed placement keeps the getter and source picks
-available for retry. Esc cancels, and frozen snapshots keep picks tied to the
-original faces.
+distance is measured from. Toggle `BothSides`, `Solid`, `DeleteInput` and
+`SplitAtTangents` by name or set them to `Yes` or `No`. A successful extrusion
+saves these four options for the next invocation, which starts with a fresh
+direction and base point. A failed placement keeps the getter and source picks
+available for retry. Esc cancels and discards pending option edits.
 
 With selected objects:
 
@@ -36,18 +39,23 @@ original B-rep. Specify faces for a whole polysurface; a single-face object need
 no selector. Source selection preserves inline face selectors and options.
 Choose typed face selectors when starting the command, before its distance getter.
 
-Initial options are `BothSides=No Solid=Yes DeleteInput=No`. Each selected face
-produces an independent result. Numeric distance uses the native plane normal
-for a planar face, oriented toward its largest positive world component. Curved
-faces use the CPlane normal captured when the interactive command starts. An
-explicit direction overrides that policy. A point gives the signed distance
-along the guide axis through the center of the source bounds or the custom
-base point. The two-point script form supplies the full displacement.
+Initial options are `BothSides=No Solid=Yes DeleteInput=No SplitAtTangents=No`.
+Each selected face is swept independently. Numeric distance uses the native
+plane normal for a planar face, oriented toward its largest positive world
+component. Curved faces use the CPlane normal captured when the interactive
+command starts. An explicit direction overrides that policy. A point gives the
+signed distance along the guide axis through the center of the source bounds or
+the custom base point. The two-point script form supplies the full displacement.
 `BothSides=Yes` extends from minus the displacement to plus the displacement,
 doubling the indicated distance.
 
 `Solid=Yes` keeps the original surface and its translated copy as caps and
 requires a closed manifold result. `Solid=No` creates boundary walls only.
+Disconnected boundary loops, including hole walls, produce separate objects
+with `Solid=No`. Sharp corners always split the walls. `SplitAtTangents=Yes`
+also splits at tangent joins with a curvature break, such as line-to-arc joins,
+and adds the seams to the live preview. Original seams are retained and
+changes in parameter speed alone leave the walls continuous.
 Sources remain unchanged unless `DeleteInput=Yes`: whole selected surface
 objects are deleted, while selected faces are removed from a polysurface and
 its remaining faces retain the original object identity, attributes and groups.
@@ -64,20 +72,22 @@ decline exact planes. Source geometry is copied before sweep, stitching and
 orientation. Native construction and Rust B-rep transfer both validate results.
 
 Tangential planar extrusion, zero displacement, closed sources without a
-boundary and unsupported native imports decline. `ToBoundary`,
-`SplitAtTangents`, remembered distances and saved option defaults remain
-future work. General self-intersection and degenerate surfaces need broader
+boundary and unsupported native imports decline. `ToBoundary` remains future
+work. General self-intersection and degenerate surfaces need broader
 qualification.
 
 The Python `surface_extrusion` operation takes an owned `source`, original `face`
 index, `displacement`, `solid` and `both_sides`. Eight independent fixtures cover
 planar, curved, oblique, two-sided, holed, uncapped and box-face inputs.
-The Rhino SDK run measures bounds, volumes, solid flags and face counts.
+The Rhino SDK run measures bounds, volumes, solid flags and face counts. The
+SDK groups uncapped hole walls into one object. The command returns the outer
+wall and hole walls as individual objects.
 [BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_BrepFace_CreateExtrusion.htm)
 
 Separate private headless command captures cover world and CPlane origins,
-custom base points, direction picks and mouse distance in Front, Top and
-Bottom views. The initial kernel qualification predates these captures.
+custom base points, direction picks, mouse distance in Front, Top and Bottom
+views, tangent wall topology and option and distance reuse. The initial kernel
+qualification predates these captures.
 [Initial kernel qualification](../surface-extrusion-qualification.json)
 · [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrf.htm)
 

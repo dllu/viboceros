@@ -188,9 +188,22 @@ impl Brep {
         split_at_tangents: bool,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_split_edges_at_parameters(
+            &self.sweep_boundary_splits(split_at_tangents)?,
+            tolerance,
+        )
+    }
+
+    /// Find wall splits on naked edges while retaining every original seam.
+    /// Sharp breaks always split. The tangent option also splits geometric
+    /// curvature breaks. Existing face interiors and their edges stay intact.
+    pub fn sweep_boundary_splits(
+        &self,
+        split_at_tangents: bool,
+    ) -> Result<Vec<(usize, Vec<Real>)>, GeometryError> {
         let uses = self.edge_use_counts();
         if !uses.contains(&1) {
-            return invalid("surface apex extrusion requires a boundary");
+            return invalid("surface extrusion requires a boundary");
         }
         let mut splits = Vec::new();
         for (index, &count) in uses.iter().enumerate() {
@@ -203,6 +216,6 @@ impl Brep {
                 }
             }
         }
-        self.try_split_edges_at_parameters(&splits, tolerance)
+        Ok(splits)
     }
 }

@@ -124,12 +124,18 @@ impl VibocerosApp {
     pub(super) fn finish_surface_extrusion(
         &mut self,
         distance: f64,
+        remembered: f64,
         options: SurfaceExtrusionOptions,
     ) -> bool {
-        self.finish_surface_face_command(&format!(
+        let success = self.finish_surface_face_command(&format!(
             "ExtrudeSrf {distance} {}",
             options.command_options()
-        ))
+        ));
+        if success {
+            self.commands
+                .remember_surface_extrusion_distance(remembered);
+        }
+        success
     }
     pub(super) fn finish_surface_face_command(&mut self, command: &str) -> bool {
         let Some(sources) = self.surface_extrusion_sources.take() else {

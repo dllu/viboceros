@@ -29,6 +29,7 @@ fn surface_extrusion_options_validate_atomically_and_face_targets_are_checked() 
             "BothSides=Yes",
             "DeleteInput=Yes",
             "Solid=No",
+            "_SplitAtTangents",
             "Direction=0,0,2",
         ])
         .unwrap();
@@ -43,8 +44,14 @@ fn surface_extrusion_options_validate_atomically_and_face_targets_are_checked() 
         .options,
         options
     );
+    assert!(options.split_at_tangents);
     let before = options;
     assert!(options.update(&["Solid=Yes", "Direction=0,0,0"]).is_err());
+    assert!(
+        options
+            .update(&["SplitAtTangents", "SplitAtTangents=Yes"])
+            .is_err()
+    );
     assert_eq!(options, before);
     assert!(SurfaceExtrusionInput::parse(&["Face=0", "Faces=1"]).is_err());
     let mut doc = Document::default();

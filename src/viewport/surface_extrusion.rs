@@ -17,6 +17,7 @@ struct SweepFace {
     outline: FaceDraft,
     normal: Option<Vector3>,
     cap: Vec<[Point3; 2]>,
+    tangent_seams: Vec<Point3>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -51,6 +52,17 @@ impl SurfaceExtrusionDraft {
                 face_bounds
             });
             let outline = FaceDraft::capture(&brep, face, false, tolerance)?;
+            let tangent_seams = brep
+                .sweep_boundary_splits(true)
+                .unwrap_or_default()
+                .into_iter()
+                .flat_map(|(edge, parameters)| {
+                    let curve = brep.edges()[edge].curve();
+                    parameters
+                        .into_iter()
+                        .filter_map(move |parameter| curve.evaluate(parameter).ok())
+                })
+                .collect();
             let normal = surface_extrusion_reference_normal(&brep, tolerance)
                 .ok()
                 .flatten();
@@ -71,6 +83,7 @@ impl SurfaceExtrusionDraft {
                 outline,
                 normal,
                 cap,
+                tangent_seams,
             });
         }
         Some(Self {
@@ -191,7 +204,14 @@ impl Viewport {
                     paint(a, b);
                 }
             }
-            for p in face.outline.boundary_rulings() {
+            let seams = preview
+                .options
+                .split_at_tangents
+                .then_some(face.tangent_seams.as_slice())
+                .into_iter()
+                .flatten()
+                .copied();
+            for p in face.outline.boundary_rulings().chain(seams) {
                 if let (Some(a), Some(b)) = (start(p), end(p)) {
                     paint(a, b);
                 }
