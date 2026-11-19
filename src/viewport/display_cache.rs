@@ -33,6 +33,7 @@ fn isocurve_span_count(surface: &viboceros_geometry::NurbsSurface, density: i32)
 
 #[derive(Default)]
 pub(super) struct DisplayCache {
+    pub(super) arrow_blocks: super::leader_arrow::ArrowBlocks,
     analyses: Vec<AnalysisDrawing>,
     entries: HashMap<ObjectId, Rc<DisplayGeometry>>,
     temporary_sources: HashMap<ObjectId, Rc<DisplayGeometry>>,

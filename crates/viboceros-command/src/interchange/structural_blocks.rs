@@ -1,16 +1,43 @@
-//! Map file-local block indices onto independent document catalog IDs.
+//! Retain archive definition IDs and remap references when importing another copy.
 use super::*;
 use viboceros_document::{
     BlockContent, BlockDefinition, BlockDefinitionId, BlockMember, BlockReference, GroupId, LayerId,
 };
 use viboceros_io::ThreeDmDefinition;
 
+pub(super) struct ImportedDefinitions {
+    ids: Vec<BlockDefinitionId>,
+    remapped: BTreeMap<BlockDefinitionId, BlockDefinitionId>,
+}
+
+impl ImportedDefinitions {
+    fn remap_geometry(&self, geometry: ThreeDmGeometry) -> Result<Geometry, CommandError> {
+        if let ThreeDmGeometry::Leader(leader) = &geometry
+            && let Some(id) = leader.style().leader_appearance().arrow_block_id()
+            && let Some(mapped) = self.remapped.get(&BlockDefinitionId::from_bytes(id))
+        {
+            let style = leader
+                .style()
+                .with_leader_arrow_block(*mapped.uuid().as_bytes())
+                .ok_or(viboceros_geometry::GeometryError::InvalidLeader)?;
+            return Ok(Geometry::Leader(viboceros_geometry::Leader::try_styled(
+                leader.plane(),
+                leader.path().vertices().to_vec(),
+                leader.text(),
+                leader.rich_text(),
+                style,
+            )?));
+        }
+        Ok(document_geometry_from_3dm(geometry))
+    }
+}
+
 pub(super) fn import_definitions(
     document: &mut Document,
     definitions: Vec<ThreeDmDefinition>,
     layers: &[LayerId],
     groups: &[GroupId],
-) -> Result<Vec<BlockDefinitionId>, CommandError> {
+) -> Result<ImportedDefinitions, CommandError> {
     let mut names = ImportNames::new(
         document
             .block_definitions()
@@ -18,14 +45,32 @@ pub(super) fn import_definitions(
         true,
         "Imported Block",
     );
+    let mut used = document
+        .block_definitions()
+        .map(BlockDefinition::id)
+        .collect::<BTreeSet<_>>();
+    let mut remapped = BTreeMap::new();
     let mut imported = definitions
         .iter()
-        .map(|definition| BlockDefinition::new(names.allocate(&definition.name), Vec::new()))
+        .map(|definition| {
+            let original = BlockDefinitionId::from_uuid(definition.id);
+            let name = names.allocate(&definition.name);
+            let mut block = BlockDefinition::new(name, Vec::new());
+            if used.insert(original) {
+                return block.with_id(original);
+            }
+            while !used.insert(block.id()) {
+                block = BlockDefinition::new(block.name(), Vec::new());
+            }
+            remapped.insert(original, block.id());
+            block
+        })
         .collect::<Vec<_>>();
     let ids = imported
         .iter()
         .map(|definition| definition.id())
         .collect::<Vec<_>>();
+    let imports = ImportedDefinitions { ids, remapped };
     for (index, definition) in definitions.into_iter().enumerate() {
         let members = definition
             .members
@@ -37,10 +82,10 @@ pub(super) fn import_definitions(
                         definition_index,
                         transform,
                     } => BlockContent::Reference(BlockReference::try_new(
-                        ids[definition_index],
+                        imports.ids[definition_index],
                         transform,
                     )?),
-                    geometry => BlockContent::Geometry(document_geometry_from_3dm(geometry).into()),
+                    geometry => BlockContent::Geometry(imports.remap_geometry(geometry)?.into()),
                 };
                 let mut member = BlockMember::new(content, attributes)
                     .with_id(viboceros_document::ObjectId::from_uuid(object.id))
@@ -65,7 +110,7 @@ pub(super) fn import_definitions(
         .chain(imported)
         .collect();
     document.set_block_definitions(catalog)?;
-    Ok(ids)
+    Ok(imports)
 }
 fn attributes(object: &ThreeDmObject, layer: LayerId) -> Result<ObjectAttributes, CommandError> {
     let mut attributes = ObjectAttributes::on_layer(layer)
@@ -89,15 +134,17 @@ fn attributes(object: &ThreeDmObject, layer: LayerId) -> Result<ObjectAttributes
 pub(super) fn import_geometry(
     document: &Document,
     geometry: ThreeDmGeometry,
-    ids: &[BlockDefinitionId],
+    imports: &ImportedDefinitions,
 ) -> Result<Geometry, CommandError> {
     match geometry {
         ThreeDmGeometry::InstanceReference {
             definition_index,
             transform,
-        } => Ok(document
-            .block_instance_geometry(BlockReference::try_new(ids[definition_index], transform)?)?),
-        geometry => Ok(document_geometry_from_3dm(geometry)),
+        } => Ok(document.block_instance_geometry(BlockReference::try_new(
+            imports.ids[definition_index],
+            transform,
+        )?)?),
+        geometry => imports.remap_geometry(geometry),
     }
 }
 pub(super) fn export_geometry(
@@ -157,6 +204,7 @@ pub(super) fn export_definitions(
                 })
                 .collect::<Result<Vec<_>, CommandError>>()?;
             Ok(ThreeDmDefinition {
+                id: definition.id().uuid(),
                 name: definition.name().into(),
                 members,
             })

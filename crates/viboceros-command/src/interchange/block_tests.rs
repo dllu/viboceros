@@ -7,6 +7,56 @@ fn fixture(name: &str) -> std::path::PathBuf {
 }
 
 #[test]
+fn custom_leader_arrow_ids_round_trip_and_remap_on_repeated_import() {
+    let source = fixture("../custom-leader-arrow.3dm");
+    let (mut doc, _, _) = open_3dm_with_named_views(source.to_str().unwrap()).unwrap();
+    let ids = |doc: &Document| {
+        doc.objects()
+            .map(|object| match object.geometry() {
+                Geometry::Leader(leader) => {
+                    leader.style().leader_appearance().arrow_block_id().unwrap()
+                }
+                _ => panic!("expected a leader"),
+            })
+            .collect::<BTreeSet<_>>()
+    };
+    let original = doc.block_definitions().next().unwrap().id();
+    assert_eq!(
+        original.uuid().to_string(),
+        "367991c9-378c-44e1-9b65-616b0c8e331b"
+    );
+    assert_eq!(ids(&doc), BTreeSet::from([*original.uuid().as_bytes()]));
+    assert_eq!(
+        doc.annotation_style().leader_appearance().arrow_block_id(),
+        Some(*original.uuid().as_bytes())
+    );
+    let registry = CommandRegistry::with_builtins();
+    registry
+        .execute(&mut doc, &format!("Import3dm \"{}\"", source.display()))
+        .unwrap();
+    let imported = doc.block_definitions().last().unwrap().id();
+    assert_ne!(imported, original);
+    let expected = BTreeSet::from([*original.uuid().as_bytes(), *imported.uuid().as_bytes()]);
+    assert_eq!(ids(&doc), expected);
+    let directory = tempfile::tempdir().unwrap();
+    let target = directory.path().join("arrow-copy.3dm");
+    registry
+        .execute(&mut doc, &format!("SaveAs \"{}\"", target.display()))
+        .unwrap();
+    let (reopened, _, _) = open_3dm_with_named_views(target.to_str().unwrap()).unwrap();
+    assert_eq!(ids(&reopened), expected);
+    assert!(reopened.block_definition(original).is_some());
+    assert!(reopened.block_definition(imported).is_some());
+    assert_eq!(
+        reopened
+            .annotation_style()
+            .leader_appearance()
+            .arrow_block_id(),
+        Some(*original.uuid().as_bytes())
+    );
+}
+
+#[test]
 fn reopened_definitions_remain_shared_editable_and_import_name_conflicts_are_isolated() {
     let registry = CommandRegistry::with_builtins();
     let mut doc = Document::default();

@@ -291,3 +291,29 @@ fn evaluate_point_leader_previews_the_annotation_and_commits_on_the_first_click(
     viewport_click(&mut app, &context, visible.center());
     assert!(app.document.is_selected(id));
 }
+
+#[test]
+fn evaluate_point_previews_an_arrow_from_the_active_styles_block() {
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("crates/viboceros-io/tests/fixtures/custom-leader-arrow.3dm");
+    let mut app = test_app();
+    (app.document, _, _) =
+        viboceros_command::open_3dm_with_named_views(fixture.to_str().unwrap()).unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "EvaluatePt Label=On Style=Leader");
+    render_annotations(&mut app, &context, vec![]);
+    render_annotations(&mut app, &context, vec![]);
+    let start = screen_point(&app, point(-3., -1., 0.));
+    let end = screen_point(&app, point(-3. + 2. * std::f64::consts::SQRT_2, -1., 0.));
+    let preview = render_annotations(&mut app, &context, vec![egui::Event::PointerMoved(start)]);
+    assert!(preview.iter().any(|shape| matches!(&shape.shape,
+        egui::Shape::LineSegment { points: [a,b], stroke }
+        if a.distance(start) < 0.5 && b.distance(end) < 0.5 && stroke.color == egui::Color32::from_rgb(20, 115, 190)
+    )));
+    assert_eq!(app.document.objects().count(), 1);
+    viewport_click(&mut app, &context, start);
+    assert_eq!(app.document.objects().count(), 2);
+    assert!(app.active_command.is_none());
+}

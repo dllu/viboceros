@@ -80,6 +80,7 @@ typedef struct ViboWriteGroup {
 
 typedef struct ViboWriteDefinition {
   const char* name;
+  uint8_t id[16];
   size_t first_object;
   size_t object_count;
   double bounds[6];
@@ -223,7 +224,8 @@ int32_t vibo_3dm_read_mode(const char* path, uint8_t structural, uint8_t retain_
 uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model);
 size_t vibo_3dm_definition_count(const ViboThreeDmModel* model);
 size_t vibo_3dm_top_level_start(const ViboThreeDmModel* model);
-int32_t vibo_3dm_definition(const ViboThreeDmModel* model, size_t index, const char** name, size_t* first, size_t* count);
+int32_t vibo_3dm_definition(const ViboThreeDmModel* model, size_t index, const char** name,
+                           uint8_t id[16], size_t* first, size_t* count);
 int32_t vibo_3dm_units(const ViboThreeDmModel* model, uint32_t* unit_system,
                       double* meters_per_unit, const char** name);
 
@@ -310,6 +312,7 @@ typedef struct ViboAnnotationLengthFormat {
   uint32_t leader_arrow_type;
   uint32_t leader_angle_style;
   uint32_t draw_forward;
+  uint8_t leader_arrow_block[16];
 } ViboAnnotationLengthFormat;
 
 int32_t vibo_annotation_length_format(const uint8_t* style, size_t count,
@@ -317,6 +320,8 @@ int32_t vibo_annotation_length_format(const uint8_t* style, size_t count,
 int32_t vibo_annotation_format_coordinates(const ViboAnnotationLengthFormat* format,
     double model_meters_per_unit, const double coordinates[3], char* text, size_t capacity);
 uint32_t vibo_annotation_arrowhead(uint32_t type, const double** points);
+size_t vibo_annotation_set_arrow_block(const uint8_t* style, size_t count,
+    const uint8_t id[16], uint8_t* output, size_t capacity);
 
 #ifdef __cplusplus
 }

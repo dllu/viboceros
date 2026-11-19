@@ -188,6 +188,7 @@ pub enum ThreeDmGeometry {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmDefinition {
+    pub id: uuid::Uuid,
     pub name: String,
     pub members: Vec<ThreeDmObject>,
 }
@@ -605,6 +606,7 @@ pub fn write_3dm_file(
         }
         definitions.push(ffi::ViboWriteDefinition {
             name: definition_names[index].as_ptr(),
+            id: *definition.id.as_bytes(),
             first_object,
             object_count: prepared.len() - first_object,
             bounds: definition_bounds[index],
@@ -2166,6 +2168,7 @@ mod ffi {
     #[repr(C)]
     pub struct ViboWriteDefinition {
         pub name: *const c_char,
+        pub id: [u8; 16],
         pub first_object: usize,
         pub object_count: usize,
         pub bounds: [f64; 6],
@@ -2379,6 +2382,7 @@ mod ffi {
             model: *const ViboThreeDmModel,
             index: usize,
             name: *mut *const c_char,
+            id: *mut u8,
             first: *mut usize,
             count: *mut usize,
         ) -> c_int;

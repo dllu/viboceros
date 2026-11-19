@@ -30,6 +30,7 @@ const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod text_dot;
 mod leader;
+mod leader_arrow;
 mod clipping;
 mod curve_line;
 mod curve_offset;
@@ -2535,7 +2536,7 @@ impl Viewport {
             ),
         );
         self.paint_scene_text_dots(&painter, rect);
-        self.paint_scene_leaders(&painter, rect);
+        self.paint_scene_leaders(&painter, rect, document);
         if let Some(rectangle) = input.alignment_plane_preview {
             let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
             for (a, b) in rectangle
@@ -2591,7 +2592,7 @@ impl Viewport {
             let plane = self.construction_plane();
             if preview.wants_leader() {
                 if let Ok(leader) = preview.leader_label(cursor.point, plane, document) {
-                    self.paint_leader_preview(&painter, rect, &leader, color);
+                    self.paint_leader_preview(&painter, rect, document, &leader, color);
                 }
             } else if let Some(dot) = preview.preview_label(cursor.point, plane, document) {
                 self.paint_text_dot(&painter, rect, &dot, color);

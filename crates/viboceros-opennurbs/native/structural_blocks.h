@@ -41,7 +41,7 @@ bool read_structural_blocks(const ONX_Model& source,std::vector<BridgeDefinition
     native.push_back(definition);
   }
   for(const auto* definition:native){
-    BridgeDefinition record;record.name=utf8(definition->Name());record.first_object=objects.size();
+    BridgeDefinition record;record.name=utf8(definition->Name());record.id=definition->Id();record.first_object=objects.size();
     const auto& ids=definition->InstanceGeometryIdList();
     if(ids.UnsignedCount()>100000-objects.size()){set_error(error,capacity,"3DM definition member limit exceeded");return false;}
     for(unsigned i=0;i<ids.UnsignedCount();++i){

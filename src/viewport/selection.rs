@@ -6,6 +6,7 @@ use super::screen::{
     segments_intersect,
 };
 use super::*;
+use leader_arrow::ArrowPiece;
 use viboceros_geometry::TextDot;
 
 const FENCE_POINT_CAPTURE_PIXELS: f32 = 2.0;
@@ -224,6 +225,7 @@ impl Viewport {
         wires: &[[Point3; 2]],
         pointer: Pos2,
         rect: Rect,
+        document: Option<&Document>,
     ) -> PickHit {
         let text = self
             .leader_text_bounds(leader, rect)
@@ -236,11 +238,57 @@ impl Viewport {
         {
             return PickHit::screen(1, 0.0);
         }
-        let distance = wires
+        let mut distance = wires
             .iter()
             .map(|&[a, b]| self.selection_line_distance(pointer, a, b, rect))
             .fold(text, f32::min);
+        if let Some(document) = document {
+            self.visit_custom_leader_arrow(document, leader, Color32::WHITE, |piece, _| {
+                let hit = match piece {
+                    ArrowPiece::Point(point) => self
+                        .project_selection_point(point, rect)
+                        .map_or(f32::INFINITY, |point| point.distance(pointer)),
+                    ArrowPiece::Segment([a, b]) => {
+                        self.selection_line_distance(pointer, a, b, rect)
+                    }
+                    ArrowPiece::Triangle(face) => {
+                        if self
+                            .project_custom_arrow_face(face, rect)
+                            .any(|[a, b, c]| point_in_triangle(pointer, a, b, c))
+                        {
+                            0.0
+                        } else {
+                            f32::INFINITY
+                        }
+                    }
+                };
+                distance = distance.min(hit);
+            });
+        }
         PickHit::screen(1, distance)
+    }
+
+    fn add_projected_custom_arrow(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        display: &display_cache::DisplayGeometry,
+        document: &Document,
+        rect: Rect,
+    ) {
+        let Geometry::Leader(leader) = &*display.geometry else {
+            return;
+        };
+        self.visit_custom_leader_arrow(document, leader, Color32::WHITE, |piece, _| match piece {
+            ArrowPiece::Point(point) => self.add_selection_point(projected, point, rect),
+            ArrowPiece::Segment([a, b]) => self.add_selection_segment(projected, a, b, rect),
+            ArrowPiece::Triangle(face) => {
+                projected.depth_clipped |=
+                    face.iter().any(|p| !self.point_within_display_depth(*p));
+                for triangle in self.project_custom_arrow_face(face, rect) {
+                    projected.add_triangle(triangle.map(Some));
+                }
+            }
+        });
     }
 
     fn add_projected_leader_annotation(
@@ -507,7 +555,22 @@ impl Viewport {
                         .zip(display.block_members())
                         .filter(|(state, _)| state.visible)
                         .map(|(_, member)| {
-                            self.pick_display_geometry(pointer, rect, member, document.tolerance())
+                            if let Geometry::Leader(leader) = &*member.geometry {
+                                self.pick_leader(
+                                    leader,
+                                    member.wires(),
+                                    pointer,
+                                    rect,
+                                    Some(document),
+                                )
+                            } else {
+                                self.pick_display_geometry(
+                                    pointer,
+                                    rect,
+                                    member,
+                                    document.tolerance(),
+                                )
+                            }
                         })
                         .min_by(|a, b| a.rank(*b))
                         .unwrap_or(PickHit::screen(2, f32::INFINITY))
@@ -541,7 +604,7 @@ impl Viewport {
                             | Geometry::SubD(_)
                     );
                     if let Geometry::Leader(leader) = object.geometry() {
-                        self.pick_leader(leader, display.wires(), pointer, rect)
+                        self.pick_leader(leader, display.wires(), pointer, rect, Some(document))
                     } else if surface
                         && self.draws_object_faces(object.id())
                         && let Some(mesh) = self
@@ -856,7 +919,9 @@ impl Viewport {
                     }),
             ),
             Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
-            Geometry::Leader(leader) => self.pick_leader(leader, display.wires(), pointer, rect),
+            Geometry::Leader(leader) => {
+                self.pick_leader(leader, display.wires(), pointer, rect, None)
+            }
             Geometry::PointCloud(cloud) => PickHit::screen(
                 0,
                 self.pick_point_cloud_member(pointer, rect, cloud)
@@ -910,12 +975,14 @@ impl Viewport {
                 );
                 return projected;
             }
-            return self.projected_display_with_faces(
+            let mut projected = self.projected_display_with_faces(
                 display,
                 rect,
                 document.tolerance(),
                 self.draws_object_faces(source.id()),
             );
+            self.add_projected_custom_arrow(&mut projected, display, document, rect);
+            return projected;
         };
         let mut projected = ProjectedPrimitives::default();
         let Ok(states) = document.block_instance_member_displays(source.attributes(), instance)
@@ -925,6 +992,7 @@ impl Viewport {
         for (state, geometry) in states.into_iter().zip(display.block_members()) {
             if state.visible {
                 let mut leaf = self.projected_display(geometry, rect, document.tolerance());
+                self.add_projected_custom_arrow(&mut leaf, geometry, document, rect);
                 projected.depth_clipped |= leaf.depth_clipped;
                 projected.points.append(&mut leaf.points);
                 projected.segments.append(&mut leaf.segments);
@@ -1249,6 +1317,40 @@ mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
     use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn custom_leader_arrow_can_be_picked_away_from_its_leader_path() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("crates/viboceros-io/tests/fixtures/custom-leader-arrow.3dm");
+        let (document, _, _) =
+            viboceros_command::open_3dm_with_named_views(fixture.to_str().unwrap()).unwrap();
+        let object = document.objects().next().unwrap();
+        let Geometry::Leader(leader) = object.geometry() else {
+            panic!("expected a leader");
+        };
+        // Rhino 8.32 Leader.Explode for the captured block with a non-origin base.
+        let middle = Point3::try_new(-1., 1., 0.).unwrap();
+        let actual = leader
+            .arrow_transform()
+            .unwrap()
+            .transform_point(middle)
+            .unwrap();
+        let expected = Point3::try_new(2.0 * std::f64::consts::SQRT_2, 0., 0.).unwrap();
+        assert!(actual.distance_to(expected).unwrap() < 1e-12);
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800., 600.));
+        let bounds = view
+            .bounds_with_leader_arrows(&document, object.geometry(), Some(leader.bounds()))
+            .unwrap();
+        assert!(bounds.max().y() > leader.bounds().max().y());
+        let arrow = view.project(expected, rect).unwrap();
+        assert_eq!(view.pick_object(arrow, rect, &document), Some(object.id()));
+        let region = Rect::from_center_size(arrow, Vec2::splat(4.));
+        assert_eq!(
+            view.objects_in_selection(rect, region, true, &document),
+            vec![object.id()]
+        );
+    }
 
     #[test]
     fn leader_picking_follows_the_visible_spline_and_arrow_outline() {

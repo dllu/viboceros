@@ -94,7 +94,30 @@ struct BridgeObject {
   std::vector<std::pair<std::string, std::string>> geometry_user_text;
 };
 
-struct BridgeDefinition { std::string name; size_t first_object=0; size_t object_count=0; };
+struct BridgeDefinition {
+  std::string name;
+  ON_UUID id = ON_nil_uuid;
+  size_t first_object = 0;
+  size_t object_count = 0;
+};
+
+void uuid_to_bytes(const ON_UUID& id, uint8_t* bytes) {
+  for (unsigned i = 0; i < 4; ++i) bytes[i] = static_cast<uint8_t>(id.Data1 >> (24 - 8*i));
+  bytes[4] = static_cast<uint8_t>(id.Data2 >> 8);
+  bytes[5] = static_cast<uint8_t>(id.Data2);
+  bytes[6] = static_cast<uint8_t>(id.Data3 >> 8);
+  bytes[7] = static_cast<uint8_t>(id.Data3);
+  std::copy_n(id.Data4, 8, bytes + 8);
+}
+
+ON_UUID uuid_from_bytes(const uint8_t* bytes) {
+  ON_UUID id{};
+  for (unsigned i = 0; i < 4; ++i) id.Data1 = (id.Data1 << 8) | bytes[i];
+  id.Data2 = static_cast<uint16_t>((bytes[4] << 8) | bytes[5]);
+  id.Data3 = static_cast<uint16_t>((bytes[6] << 8) | bytes[7]);
+  std::copy_n(bytes + 8, 8, id.Data4);
+  return id;
+}
 
 void begin_open_nurbs() { vibo_begin_open_nurbs(); }
 
@@ -2303,9 +2326,16 @@ extern "C" int32_t vibo_3dm_read(const char* path,ViboThreeDmModel** output,char
 extern "C" uint8_t vibo_3dm_is_structural(const ViboThreeDmModel* model){return model!=nullptr&&model->structural;}
 extern "C" size_t vibo_3dm_definition_count(const ViboThreeDmModel* model){return model==nullptr?0:model->definitions.size();}
 extern "C" size_t vibo_3dm_top_level_start(const ViboThreeDmModel* model){return model==nullptr?0:model->top_level_start;}
-extern "C" int32_t vibo_3dm_definition(const ViboThreeDmModel* model,size_t index,const char** name,size_t* first,size_t* count){
-  if(model==nullptr||index>=model->definitions.size()||name==nullptr||first==nullptr||count==nullptr)return 0;
-  const auto& definition=model->definitions[index];*name=definition.name.c_str();*first=definition.first_object;*count=definition.object_count;return 1;
+extern "C" int32_t vibo_3dm_definition(const ViboThreeDmModel* model, size_t index,
+    const char** name, uint8_t* id, size_t* first, size_t* count) {
+  if (model == nullptr || index >= model->definitions.size() || name == nullptr ||
+      id == nullptr || first == nullptr || count == nullptr) return 0;
+  const auto& definition = model->definitions[index];
+  *name = definition.name.c_str();
+  uuid_to_bytes(definition.id, id);
+  *first = definition.first_object;
+  *count = definition.object_count;
+  return 1;
 }
 
 extern "C" void vibo_3dm_free(ViboThreeDmModel* model) { delete model; }
@@ -2600,6 +2630,27 @@ extern "C" uint32_t vibo_annotation_arrowhead(uint32_t type, const double** poin
   return ON_Arrowhead::GetPoints(static_cast<ON_Arrowhead::arrow_type>(type), *points);
 }
 
+extern "C" size_t vibo_annotation_set_arrow_block(const uint8_t* data, size_t count,
+    const uint8_t* id, uint8_t* output, size_t capacity) {
+  if (id == nullptr) return 0;
+  try {
+    begin_open_nurbs();
+    const std::lock_guard lock(annotation_archive_mutex);
+    ON_DimStyle style;
+    if (!vibo_annotation::read(data, count, style) ||
+        style.LeaderArrowType() != ON_Arrowhead::arrow_type::UserBlock) return 0;
+    style.SetLeaderArrowBlockId(uuid_from_bytes(id));
+    std::vector<uint8_t> archive;
+    if (!vibo_annotation::archive_style(style, archive)) return 0;
+    if (output != nullptr && capacity >= archive.size()) {
+      std::copy(archive.begin(), archive.end(), output);
+    }
+    return archive.size();
+  } catch (...) {
+    return 0;
+  }
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
@@ -2839,7 +2890,9 @@ extern "C" int32_t vibo_3dm_write(
     }
 
     std::vector<ON_UUID> definition_ids(definition_count);
-    for(auto& id:definition_ids) ON_CreateUuid(id);
+    for (size_t index = 0; index < definition_count; ++index) {
+      definition_ids[index] = uuid_from_bytes(definitions[index].id);
+    }
     std::vector<ON_UUID> geometry_ids;
     geometry_ids.reserve(object_count);
     for (size_t index = 0; index < object_count; ++index) {

@@ -12,6 +12,20 @@ const MAX_MEMBERS: usize = 100_000;
 const MAX_DEPTH: usize = 64;
 const MAX_RESOLUTION_VISITS: usize = 1_000_000;
 
+impl BlockDefinitionId {
+    pub const fn from_uuid(id: uuid::Uuid) -> Self {
+        Self(id)
+    }
+
+    pub const fn from_bytes(id: [u8; 16]) -> Self {
+        Self(uuid::Uuid::from_bytes(id))
+    }
+
+    pub const fn uuid(self) -> uuid::Uuid {
+        self.0
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BlockReference {
     definition: BlockDefinitionId,
@@ -139,6 +153,10 @@ impl BlockDefinition {
     }
     pub const fn id(&self) -> BlockDefinitionId {
         self.id
+    }
+    pub fn with_id(mut self, id: BlockDefinitionId) -> Self {
+        self.id = id;
+        self
     }
     pub fn name(&self) -> &str {
         &self.name

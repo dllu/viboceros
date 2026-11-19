@@ -77,7 +77,10 @@ impl Viewport {
         if !borders.valid() {
             return Err("invalid zoom extents border scale");
         }
-        let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
+        let Some(bounds) = viewports
+            .first()
+            .and_then(|viewport| viewport.zoom_bounds(document, selected_only))
+        else {
             return Ok(false);
         };
         let fits = viewports
@@ -159,7 +162,7 @@ impl Viewport {
             return Err("invalid zoom extents border scale");
         }
         let rect = self.last_rect.ok_or("viewport has not been laid out")?;
-        let Some(bounds) = Self::zoom_bounds(document, selected_only) else {
+        let Some(bounds) = self.zoom_bounds(document, selected_only) else {
             return Ok(false);
         };
         self.fit_bounds(bounds, rect, borders.for_kind(self.kind))?
@@ -168,7 +171,7 @@ impl Viewport {
         Ok(true)
     }
 
-    fn zoom_bounds(document: &Document, selected_only: bool) -> Option<BoundingBox3> {
+    fn zoom_bounds(&self, document: &Document, selected_only: bool) -> Option<BoundingBox3> {
         document
             .objects()
             .filter(|object| {
@@ -178,7 +181,13 @@ impl Viewport {
                         .layer(object.attributes().layer_id())
                         .is_some_and(|layer| layer.is_visible())
             })
-            .filter_map(|object| object.geometry().bounds())
+            .filter_map(|object| {
+                self.bounds_with_leader_arrows(
+                    document,
+                    object.geometry(),
+                    object.geometry().bounds(),
+                )
+            })
             .reduce(|a, b| a.union(b).expect("finite bounds"))
     }
 

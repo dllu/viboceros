@@ -356,7 +356,6 @@ impl Viewport {
     }
 
     fn visible_document_bounds(&self, document: &Document) -> Option<BoundingBox3> {
-        let mut cache = self.display_cache.borrow_mut();
         document
             .objects()
             .filter(|object| {
@@ -368,9 +367,12 @@ impl Viewport {
             // Keep unsupported unselected geometry from invalidating a valid
             // fit. The renderer likewise omits unrepresentable local vertices.
             .filter_map(|object| {
-                cache
+                let bounds = self
+                    .display_cache
+                    .borrow_mut()
                     .get(object, document.tolerance(), document.subd_control_net())
-                    .bounds()
+                    .bounds();
+                self.bounds_with_leader_arrows(document, object.geometry(), bounds)
             })
             .filter(|bounds| {
                 self.gpu_position(bounds.min()).is_some()

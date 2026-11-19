@@ -108,10 +108,18 @@ pub(super) fn decode_definitions(
     let mut expected = 0;
     for index in 0..count {
         let mut name = std::ptr::null();
+        let mut id = [0; 16];
         let mut first = 0;
         let mut length = 0;
         let ok = unsafe {
-            ffi::vibo_3dm_definition(handle.0.as_ptr(), index, &mut name, &mut first, &mut length)
+            ffi::vibo_3dm_definition(
+                handle.0.as_ptr(),
+                index,
+                &mut name,
+                id.as_mut_ptr(),
+                &mut first,
+                &mut length,
+            )
         };
         if ok == 0 || name.is_null() || first != expected || length > top_start - expected {
             return Err(invalid("invalid definition member range"));
@@ -121,6 +129,7 @@ pub(super) fn decode_definitions(
             return Err(invalid("definition member range is truncated"));
         }
         model.definitions.push(ThreeDmDefinition {
+            id: uuid::Uuid::from_bytes(id),
             name: c_text(name)?,
             members,
         });
@@ -138,8 +147,12 @@ pub(super) fn validate(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
         return Err(invalid("definition limit exceeded"));
     }
     let mut names = BTreeSet::new();
+    let mut ids = BTreeSet::new();
     let mut total = 0;
     for definition in &model.definitions {
+        if definition.id.is_nil() || !ids.insert(definition.id) {
+            return Err(invalid("missing or duplicate block definition ID"));
+        }
         if definition.members.iter().any(|member| member.locked) {
             return Err(invalid(
                 "locked prototype object modes are unsupported by native instance-definition records",

@@ -285,5 +285,22 @@
       "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=Off ): w1.23456,2.34567,0\nPoint in world coordinates = 1.235,2.346,0.000    CPlane coordinates = 1.235,2.346,0.000",
       "created": []
     }
-  ]
+  ],
+  "custom_arrow": {
+    "input": "_EvaluatePt _Label=On _Style=Leader _CoordinateSystem=World w0,0,0",
+    "block_definition": "367991c9-378c-44e1-9b65-616b0c8e331b",
+    "block_base_point": [1, 2, 0],
+    "arrow_size": 2,
+    "leader_path": [
+      [0.0, 0.0, 0.0],
+      [2.0, 2.0, 0.0],
+      [3.0, 2.0, 0.0]
+    ],
+    "exploded_arrow_transform": [
+      [-1.414213562373095, 1.414213562373095, 0.0, 0.0],
+      [-1.414213562373095, -1.414213562373095, 0.0, 0.0],
+      [0.0, 0.0, 2.0, 0.0],
+      [0.0, 0.0, 0.0, 1.0]
+    ]
+  }
 }

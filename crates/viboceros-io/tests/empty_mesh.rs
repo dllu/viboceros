@@ -48,10 +48,12 @@ fn nested_empty_mesh_definitions_round_trip_without_inventing_bounded_geometry()
     let far = Point3::try_new(8000., 9000., 10000.).unwrap();
     model.definitions = vec![
         ThreeDmDefinition {
+            id: uuid::Uuid::new_v4(),
             name: "empty".into(),
             members: vec![ThreeDmObject::new(ThreeDmGeometry::EmptyMesh, 0)],
         },
         ThreeDmDefinition {
+            id: uuid::Uuid::new_v4(),
             name: "mixed".into(),
             members: vec![
                 ThreeDmObject::new(reference(), 0),

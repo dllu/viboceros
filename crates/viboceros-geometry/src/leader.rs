@@ -5,7 +5,7 @@ use viboceros_opennurbs::{LeaderAppearance, LeaderCurveType, LeaderTextAngle};
 
 use crate::{
     AffineTransform3, AnnotationStyle, BoundingBox3, CurveRef, Frame3, GeometryError, NurbsCurve,
-    Point3, Polyline3, Tolerance, UnitVector3,
+    Point3, Polyline3, Tolerance, UnitVector3, Vector3,
 };
 
 #[derive(Clone, Debug, PartialEq)]
@@ -119,6 +119,15 @@ impl Leader {
             .map(|edge| [self.arrow[0], edge[0], edge[1]])
     }
 
+    pub fn arrow_transform(&self) -> Option<AffineTransform3> {
+        arrow_transform(
+            self.plane,
+            &self.path,
+            self.style.leader_appearance().arrow_size,
+        )
+        .ok()
+    }
+
     pub fn text_attachment(&self) -> Option<(Point3, UnitVector3)> {
         let (tail, direction) = self.tail()?;
         let appearance = self.style.leader_appearance();
@@ -216,14 +225,31 @@ fn arrow_outline(
     if appearance.arrow_size <= 0.0 || outline.is_empty() {
         return Ok(Arc::from([]));
     }
+    let transform = arrow_transform(plane, path, appearance.arrow_size)?;
+    outline
+        .iter()
+        .map(|&[x, y]| transform.transform_point(Point3::try_new(x, y, 0.0)?))
+        .collect()
+}
+
+fn arrow_transform(
+    plane: Frame3,
+    path: &Polyline3,
+    size: f64,
+) -> Result<AffineTransform3, GeometryError> {
+    if size <= 0.0 {
+        return Err(GeometryError::InvalidLeader);
+    }
     let tip = path.vertices()[0];
     let outward = path.vertices()[1].direction_to(tip)?.as_vector();
     let across = plane.z_axis().as_vector().cross(outward)?;
-    outline
-        .iter()
-        .map(|&[x, y]| {
-            tip.translated(outward.scaled(x * appearance.arrow_size)?)?
-                .translated(across.scaled(y * appearance.arrow_size)?)
-        })
-        .collect()
+    let [x, y, z] = [
+        outward.to_array(),
+        across.to_array(),
+        plane.z_axis().as_vector().to_array(),
+    ];
+    AffineTransform3::try_new(
+        std::array::from_fn(|row| [x[row] * size, y[row] * size, z[row] * size]),
+        Vector3::try_new(tip.x(), tip.y(), tip.z())?,
+    )
 }

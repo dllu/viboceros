@@ -1,6 +1,7 @@
 //! Leader arrowheads, landings, and model-sized text for the viewport.
 use super::*;
 use egui::epaint::TextShape;
+use leader_arrow::ArrowPiece;
 use std::sync::Arc;
 use viboceros_geometry::Leader;
 
@@ -12,10 +13,15 @@ struct TextLayout {
 }
 
 impl Viewport {
-    pub(super) fn paint_scene_leaders(&self, painter: &egui::Painter, rect: Rect) {
+    pub(super) fn paint_scene_leaders(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        document: &Document,
+    ) {
         if let Some(scene) = self.cached_scene.borrow().as_ref() {
             for (leader, color) in &scene.leaders {
-                self.paint_leader_annotation(painter, rect, leader, *color);
+                self.paint_leader_annotation(painter, rect, document, leader, *color);
             }
         }
     }
@@ -24,6 +30,7 @@ impl Viewport {
         &self,
         painter: &egui::Painter,
         rect: Rect,
+        document: &Document,
         leader: &Leader,
         color: Color32,
     ) {
@@ -32,27 +39,50 @@ impl Viewport {
                 painter.line_segment([a, b], Stroke::new(1.5, color));
             }
         });
-        self.paint_leader_annotation(painter, rect, leader, color);
+        self.paint_leader_annotation(painter, rect, document, leader, color);
     }
 
     fn paint_leader_annotation(
         &self,
         painter: &egui::Painter,
         rect: Rect,
+        document: &Document,
         leader: &Leader,
         color: Color32,
     ) {
         let mut arrow = egui::Mesh::default();
-        for triangle in self.projected_leader_arrow(leader, rect) {
+        let mut append_triangle = |triangle: [Pos2; 3], color| {
             let first = arrow.vertices.len() as u32;
             for point in triangle {
                 arrow.colored_vertex(point, color);
             }
             arrow.add_triangle(first, first + 1, first + 2);
+        };
+        for triangle in self.projected_leader_arrow(leader, rect) {
+            append_triangle(triangle, color);
         }
+        let mut shapes = Vec::new();
+        self.visit_custom_leader_arrow(document, leader, color, |piece, color| match piece {
+            ArrowPiece::Point(point) => {
+                if let Some(point) = self.project_selection_point(point, rect) {
+                    shapes.push(egui::Shape::circle_filled(point, 3., color));
+                }
+            }
+            ArrowPiece::Segment([a, b]) => {
+                if let Some(segment) = self.project_selection_segment(a, b, rect) {
+                    shapes.push(egui::Shape::line_segment(segment, Stroke::new(1.5, color)));
+                }
+            }
+            ArrowPiece::Triangle(face) => {
+                for triangle in self.project_custom_arrow_face(face, rect) {
+                    append_triangle(triangle, color);
+                }
+            }
+        });
         if !arrow.indices.is_empty() {
             painter.add(egui::Shape::mesh(arrow));
         }
+        painter.extend(shapes);
         if let Some(text) = self.leader_text_layout(painter.ctx(), leader, rect)
             && rect.intersects(text.bounds)
         {

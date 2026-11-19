@@ -47,7 +47,7 @@ bool install(ONX_Model& model, const uint8_t* data, size_t count) {
 ViboAnnotationLengthFormat length_format(const ON_DimStyle& style) {
   const ON_UnitSystem display_units(style.DimensionLengthDisplayUnit(0));
   const double meters = display_units.MetersPerUnit(0.0);
-  return {
+  ViboAnnotationLengthFormat format = {
     display_units.UnitSystem() == ON::LengthUnitSystem::None ? 0.0 : meters,
     style.LengthFactor(), style.RoundOff(), style.LengthResolution(),
     static_cast<uint32_t>(style.DimensionLengthDisplay()),
@@ -61,8 +61,13 @@ ViboAnnotationLengthFormat length_format(const ON_DimStyle& style) {
     static_cast<uint32_t>(style.LeaderCurveType()),
     static_cast<uint32_t>(style.LeaderArrowType()),
     static_cast<uint32_t>(style.LeaderContentAngleStyle()),
-    style.DrawForward() ? 1u : 0u
+    style.DrawForward() ? 1u : 0u,
+    {}
   };
+  if (style.LeaderArrowType() == ON_Arrowhead::arrow_type::UserBlock) {
+    uuid_to_bytes(style.LeaderArrowBlockId(), format.leader_arrow_block);
+  }
+  return format;
 }
 
 bool format_coordinates(const ViboAnnotationLengthFormat& format, double model_meters,

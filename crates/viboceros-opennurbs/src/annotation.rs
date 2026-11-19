@@ -27,6 +27,7 @@ pub struct LeaderAppearance {
     arrow_type: u32,
     angle_style: u32,
     draw_forward: u32,
+    arrow_block: [u8; 16],
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -64,6 +65,10 @@ impl LeaderAppearance {
         self.draw_forward != 0
     }
 
+    pub fn arrow_block_id(self) -> Option<[u8; 16]> {
+        (self.arrow_block != [0; 16]).then_some(self.arrow_block)
+    }
+
     pub fn arrow_outline(self) -> &'static [[f64; 2]] {
         let mut points = std::ptr::null();
         // SAFETY: OpenNURBS returns immutable static pairs for its built-in arrows.
@@ -90,6 +95,13 @@ unsafe extern "C" {
         capacity: usize,
     ) -> i32;
     fn vibo_annotation_arrowhead(arrow_type: u32, points: *mut *const f64) -> u32;
+    fn vibo_annotation_set_arrow_block(
+        style: *const u8,
+        count: usize,
+        id: *const u8,
+        output: *mut u8,
+        capacity: usize,
+    ) -> usize;
 }
 
 impl LengthFormat {
@@ -138,6 +150,37 @@ impl AnnotationStyle {
     pub fn leader_appearance(&self) -> LeaderAppearance {
         self.format()
             .map_or_else(LeaderAppearance::default, |format| format.leader)
+    }
+
+    /// Change the referenced definition while retaining the other style settings.
+    pub fn with_leader_arrow_block(&self, id: [u8; 16]) -> Option<Self> {
+        let previous = self.leader_appearance().arrow_block_id()?;
+        if previous == id {
+            return Some(self.clone());
+        }
+        let write = |buffer: &mut [u8]| {
+            // SAFETY: the archive, 16 UUID bytes and output span live across the call.
+            unsafe {
+                vibo_annotation_set_arrow_block(
+                    self.archive.as_ptr(),
+                    self.archive.len(),
+                    id.as_ptr(),
+                    buffer.as_mut_ptr(),
+                    buffer.len(),
+                )
+            }
+        };
+        let mut buffer = vec![0; self.archive.len()];
+        let count = write(&mut buffer);
+        if count > buffer.len() {
+            buffer.resize(count, 0);
+            if write(&mut buffer) != count {
+                return None;
+            }
+        }
+        (count != 0)
+            .then(|| Self::from_archive(&buffer[..count]))
+            .flatten()
     }
 
     pub fn format_coordinates(
