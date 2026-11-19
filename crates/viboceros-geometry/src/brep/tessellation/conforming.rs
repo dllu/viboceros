@@ -15,6 +15,68 @@ struct FaceTriangulation {
     chord_height: Option<Real>,
 }
 
+impl FaceTriangulation {
+    fn compact(&mut self) -> Result<(), GeometryError> {
+        let mut mapping = vec![u32::MAX; self.points.len()];
+        let original = std::mem::take(&mut self.triangles);
+        self.triangles.reserve(original.len());
+        for triangle in original {
+            if crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+                &self.points,
+                triangle,
+                Tolerance::MESH_VALIDATION,
+            )? {
+                for index in triangle {
+                    mapping[index as usize] = 0;
+                }
+                self.triangles.push(triangle);
+            }
+        }
+        let mut next = 0;
+        for index in &mut mapping {
+            if *index != u32::MAX {
+                *index = next;
+                next += 1;
+            }
+        }
+        if next as usize != mapping.len() {
+            let mut keep = mapping.iter();
+            self.points.retain(|_| keep.next() != Some(&u32::MAX));
+            let mut keep = mapping.iter();
+            self.parameters.retain(|_| keep.next() != Some(&u32::MAX));
+            for triangle in &mut self.triangles {
+                *triangle = triangle.map(|i| mapping[i as usize]);
+            }
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn refinement_budget_counts_only_stations_used_by_valid_triangles() {
+        let mut mesh = FaceTriangulation {
+            points: [[0., 0.], [7., 7.], [1., 0.], [0., 1.], [0.5, 0.]]
+                .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap())
+                .to_vec(),
+            parameters: [[0., 0.], [0.9, 0.5], [1., 0.], [0., 1.], [0.5, 0.]]
+                .map(|[u, v]| Point2::try_new(u, v).unwrap())
+                .to_vec(),
+            triangles: vec![[0, 2, 3], [0, 4, 2]],
+            chord_height: Some(0.1),
+        };
+        mesh.compact().unwrap();
+        assert_eq!(mesh.triangles, [[0, 1, 2]]);
+        assert_eq!(mesh.points.len(), 3);
+        assert_eq!(mesh.parameters.len(), 3);
+        assert_eq!(mesh.points[1].to_array(), [1., 0., 0.]);
+        assert_eq!(mesh.parameters[2].to_array(), [0., 1.]);
+    }
+}
+
 impl Brep {
     /// Rebuild boundaries from one sample table per topological edge. Merely
     /// snapping independently sampled face grids cannot remove T-junctions.
@@ -233,6 +295,7 @@ impl Brep {
 
         let mut face_meshes = Vec::with_capacity(frames.len());
         let mut coarse_vertices = 0;
+        let refine_chords = sampling.chord_density.is_some();
         for (index, frame) in frames.iter().enumerate() {
             let face = frame.face.as_ref();
             let mut parameters = Vec::new();
@@ -347,16 +410,22 @@ impl Brep {
                 .map(|density| face.surface.polygon_chord_height(density))
                 .transpose()?
                 .map(|height| height.max(tolerance.absolute()));
-            coarse_vertices += points.len();
-            if coarse_vertices > sampling.vertex_limit() {
-                return Err(GeometryError::MeshSubdivisionLimit);
-            }
-            face_meshes.push(FaceTriangulation {
+            let mut mesh = FaceTriangulation {
                 parameters,
                 points,
                 triangles,
                 chord_height,
-            });
+            };
+            if refine_chords {
+                // Triangulation can leave a grid station outside the trims or
+                // on a collapsed face. It needs no space in the refined mesh.
+                mesh.compact()?;
+            }
+            coarse_vertices += mesh.points.len();
+            if coarse_vertices > sampling.vertex_limit() {
+                return Err(GeometryError::MeshSubdivisionLimit);
+            }
+            face_meshes.push(mesh);
         }
 
         let mut vertices = Vec::with_capacity(coarse_vertices);
@@ -424,11 +493,13 @@ impl Brep {
                 if face.reversed {
                     triangle.swap(1, 2);
                 }
-                if crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
-                    &vertices,
-                    triangle,
-                    Tolerance::MESH_VALIDATION,
-                )? {
+                if refine_chords
+                    || crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+                        &vertices,
+                        triangle,
+                        Tolerance::MESH_VALIDATION,
+                    )?
+                {
                     triangles.push(triangle);
                     face_sources.push(index);
                 }
