@@ -4,7 +4,7 @@ use viboceros_geometry::{CurveRef, NurbsCurve, UnitVector3};
 /// Source data shared by the side getter and the ribbon solve.
 pub struct Source {
     curve: NurbsCurve,
-    side_curve: Curve3,
+    side_curve: NurbsCurve,
     normal: UnitVector3,
     cplane_normal: UnitVector3,
     fixed: bool,
@@ -58,7 +58,7 @@ impl Source {
 
         Ok(Self {
             curve: source,
-            side_curve: Curve3::NurbsCurve(side_curve),
+            side_curve,
             normal,
             cplane_normal,
             fixed,
@@ -80,11 +80,12 @@ impl Source {
             self.normal
         };
         if through_point {
-            let Curve3::NurbsCurve(curve) = &self.side_curve else {
-                unreachable!("ribbon side curve is a NURBS curve")
-            };
-            let distance =
-                viboceros_geometry::ribbon_through_distance(curve, side, normal, self.tolerance)?;
+            let distance = viboceros_geometry::ribbon_through_distance(
+                &self.side_curve,
+                side,
+                normal,
+                self.tolerance,
+            )?;
             Ok(if options.both_sides {
                 distance.abs()
             } else {
@@ -93,7 +94,17 @@ impl Source {
         } else if options.both_sides {
             Ok(options.distance)
         } else {
-            Ok(options.distance * self.side_curve.offset_side(side, normal, self.tolerance)?)
+            let distance = viboceros_geometry::ribbon_side_distance(
+                &self.side_curve,
+                side,
+                normal,
+                self.tolerance,
+            )?;
+            Ok(if distance < 0. {
+                -options.distance
+            } else {
+                options.distance
+            })
         }
     }
 

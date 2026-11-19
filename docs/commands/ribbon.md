@@ -12,6 +12,12 @@ Choose `ThroughPoint` to vary the width with the cursor and pick or type the
 target location. Both modes use the shared coordinate and snapping controls.
 Escape cancels the draft without a model edit.
 
+At a corner, the larger perpendicular distance to either adjacent segment
+determines the side and the ThroughPoint width. The two segments at a closed
+curve's seam participate in the same rule. At zero perpendicular distance,
+a fixed-distance pick uses the curve's positive offset side. ThroughPoint
+requires a nonzero width. [Rhino 8 side picks](../ribbon-side-reference.json)
+
 Before selecting the source, enter `SubCrv` to use a temporary portion.
 Select the curve and pick or type its start and end. You can also enter a
 length and confirm its direction. The Ribbon side prompt then previews the

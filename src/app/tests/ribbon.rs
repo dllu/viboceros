@@ -379,6 +379,61 @@ fn ribbon_trim_edits_before_and_after_source_pick_update_the_preview() {
 }
 
 #[test]
+fn ribbon_corner_hover_and_click_use_the_same_side() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    enter(&mut app, "Polyline 0,0,0 6,0,0 2,4,0");
+    let source = app.document.objects().next().unwrap().id();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Ribbon .25 Trim=No");
+    pick(&mut app, source);
+    viewport_frame(&mut app, &context, vec![]);
+
+    let target = point(7., -2., 0.);
+    let deadline = Instant::now() + Duration::from_secs(5);
+    let cursor = loop {
+        let cursor = screen_point(&app, target);
+        viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(cursor)]);
+        let has_rail = app
+            .ribbon_session
+            .as_ref()
+            .unwrap()
+            .preview_curves(&app.document)
+            .is_some_and(|edges| {
+                edges.iter().any(|edge| {
+                    let bounds = edge.control_point_bounds();
+                    (bounds.min().y() + 0.25).abs() < 1e-9 && (bounds.max().y() + 0.25).abs() < 1e-9
+                })
+            });
+        if has_rail && cursor == screen_point(&app, target) {
+            break cursor;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "Ribbon preview did not show the outside rail"
+        );
+        std::thread::sleep(Duration::from_millis(5));
+    };
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    viewport_click(&mut app, &context, cursor);
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|obj| obj.id() != source)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a ruled ribbon");
+    };
+    assert!((result.bounds().min().y() + 0.25).abs() < 1e-9);
+}
+
+#[test]
 fn ribbon_side_and_through_point_preview_follow_the_mouse_and_click_commit() {
     let (mut app, id) = fixture();
     app.document

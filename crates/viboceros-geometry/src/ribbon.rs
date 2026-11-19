@@ -3,10 +3,11 @@ mod corner;
 pub(crate) use corner::smooth_corner;
 mod in_plane;
 mod polyline;
+mod side;
 mod smooth;
 use crate::{
-    Brep, CurveContinuity, CurveEditPointSolver, GeometryError, NurbsCurve, NurbsSurface,
-    ParameterSide, Point3, Real, Tolerance, UnitVector3,
+    Brep, CurveContinuity, CurveEditPointSolver, GeometryError, NurbsCurve, NurbsSurface, Real,
+    Tolerance, UnitVector3,
 };
 pub use corner::RibbonCornerStyle;
 pub use in_plane::{
@@ -14,38 +15,13 @@ pub use in_plane::{
     try_fixed_plane_ribbon_with_ruled, try_loose_ribbon_in_plane,
     try_loose_ribbon_in_plane_with_ruled,
 };
-pub use polyline::{try_polyline_ribbon, try_polyline_ribbon_with_ruled, try_polyline_ribbon_with_trim};
+pub use polyline::{
+    try_polyline_ribbon, try_polyline_ribbon_with_ruled, try_polyline_ribbon_with_trim,
+};
+pub use side::{ribbon_side_distance, ribbon_through_distance};
 pub use smooth::{
     try_smooth_ribbon, try_smooth_ribbon_with_fit_tolerance, try_smooth_ribbon_with_ruled,
 };
-
-/// Signed width inferred from the closest source location's normal section.
-/// At a corner, use the larger of the two adjacent normal distances.
-pub fn ribbon_through_distance(
-    curve: &NurbsCurve,
-    point: Point3,
-    normal: UnitVector3,
-    tolerance: Tolerance,
-) -> Result<Real, GeometryError> {
-    let normal = crate::curve_offset::nurbs_offset_plane(curve, normal, tolerance)?;
-    let parameter = curve.closest_parameter(point, tolerance)?;
-    let distance = |side| {
-        let (nearest, tangent) = curve.evaluate_with_derivative_on_side(parameter, side)?;
-        let left = normal.as_vector().cross(tangent)?.normalized_nonzero()?;
-        nearest.vector_to(point)?.dot(left.as_vector())
-    };
-    let left = distance(ParameterSide::Left)?;
-    let right = distance(ParameterSide::Right)?;
-    let distance = if left.abs() > right.abs() {
-        left
-    } else {
-        right
-    };
-    if distance.abs() <= tolerance.absolute() {
-        return Err(GeometryError::InvalidCurveOffsetDistance);
-    }
-    Ok(distance)
-}
 
 /// Build a loose polynomial offset ribbon. U follows source-to-offset rulings;
 /// V retains the source's chart. BothSides builds and sews two independent sides

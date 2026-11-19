@@ -49,7 +49,7 @@ fn ribbon_trim_preserves_native_strip_geometry_and_incidence() {
         for (trim, field) in [(false, "untrimmed"), (true, "trimmed")] {
             // Global self-intersection trimming is separate from the inside
             // corner policy used in these regular Trim=Yes cases.
-            if name == "bow" || (trim && matches!(name, "dumbbell" | "u" | "lobed")) {
+            if trim && matches!(name, "bow" | "dumbbell" | "u" | "lobed") {
                 continue;
             }
             let mut doc = Document::default();
@@ -98,6 +98,82 @@ fn ribbon_trim_preserves_native_strip_geometry_and_incidence() {
             assert_eq!(registry.ribbon_options().trim, trim);
         }
     }
+}
+
+#[test]
+fn ribbon_corner_side_and_width_match_native_picks() {
+    let reference: serde_json::Value =
+        serde_json::from_str(include_str!("../../../../docs/ribbon-side-reference.json")).unwrap();
+    let tolerance = Tolerance::try_new(
+        reference["model_absolute_tolerance"].as_f64().unwrap(),
+        Tolerance::DEFAULT.relative(),
+        Tolerance::DEFAULT.angular(),
+    )
+    .unwrap();
+    for case in reference["cases"].as_array().unwrap() {
+        let name = case["name"].as_str().unwrap();
+        let source = case["source"].as_str().unwrap();
+        let [x, y, z] = json_point(&case["point"]).to_array();
+        for (mode, args) in [
+            ("fixed", format!("Ribbon .25 Trim=No w{x},{y},{z}")),
+            (
+                "through",
+                format!("Ribbon Trim=No ThroughPoint=w{x},{y},{z}"),
+            ),
+        ] {
+            let mut doc = Document::new(tolerance);
+            let registry = CommandRegistry::with_builtins();
+            registry.execute(&mut doc, source).unwrap();
+            registry.execute(&mut doc, "SelAll").unwrap();
+            doc.clear_history().unwrap();
+            let output = registry.execute(&mut doc, &args);
+            let expected = &case[mode];
+            if expected.is_null() {
+                assert!(output.is_err(), "{name} {args}");
+                assert_eq!(doc.objects().len(), 1);
+                assert!(!doc.can_undo());
+                continue;
+            }
+            output.unwrap_or_else(|err| panic!("{name} {args}: {err}"));
+            assert_eq!(doc.objects().len(), 2, "{name} {args}");
+            let result = doc
+                .objects()
+                .find_map(|object| match object.geometry() {
+                    Geometry::Brep(brep) => Some(brep),
+                    _ => None,
+                })
+                .unwrap();
+            let bounds = result.bounds();
+            let width = expected["width"].as_f64().unwrap();
+            let coordinate_tolerance = 1e-9_f64.min(width * 1e-7);
+            assert_eq!(
+                result.faces().len(),
+                expected["faces"].as_u64().unwrap() as usize,
+                "{name} {args}"
+            );
+            for (actual, key) in [(bounds.min(), "min"), (bounds.max(), "max")] {
+                assert!(
+                    actual.distance_to(json_point(&expected[key])).unwrap() < coordinate_tolerance,
+                    "{name} {args} {key}={actual:?}"
+                );
+            }
+            let area = result.area(doc.tolerance()).unwrap();
+            let expected_area = expected["area"].as_f64().unwrap();
+            assert!(
+                (area - expected_area).abs() < 1e-9_f64.min(expected_area * 1e-7),
+                "{name} {args} area={area}"
+            );
+            let remembered = registry.ribbon_options().distance;
+            assert!(
+                (remembered - width).abs() < coordinate_tolerance,
+                "{name} {args} width={remembered}"
+            );
+        }
+    }
+}
+
+fn json_point(values: &serde_json::Value) -> Point3 {
+    Point3::try_from(std::array::from_fn(|i| values[i].as_f64().unwrap())).unwrap()
 }
 
 #[test]
