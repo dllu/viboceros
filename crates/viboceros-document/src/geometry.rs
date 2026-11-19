@@ -72,7 +72,7 @@ impl Geometry {
             Self::EmptyMesh => return None,
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::TextDot(dot) => BoundingBox3::from_points([dot.point()]).unwrap(),
-            Self::Leader(leader) => leader.path().bounds(),
+            Self::Leader(leader) => leader.bounds(),
             Self::PointCloud(cloud) => cloud.bounds(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
             Self::Circle(circle) => circle.bounds(),

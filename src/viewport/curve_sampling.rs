@@ -69,6 +69,25 @@ impl ViewportCurve for PolyCurve3 {
     }
 }
 
+impl ViewportCurve for viboceros_geometry::Leader {
+    fn visit_segments(&self, mut visit: impl FnMut(Point3, Point3)) {
+        match self.body() {
+            Some(viboceros_geometry::CurveRef::NurbsCurve(curve)) => {
+                curve.visit_segments(&mut visit);
+            }
+            Some(viboceros_geometry::CurveRef::Polyline(curve)) => {
+                for segment in curve.segments() {
+                    visit(segment.start(), segment.end());
+                }
+            }
+            _ => {}
+        }
+        if let Some([tail, end]) = self.landing() {
+            visit(tail, end);
+        }
+    }
+}
+
 pub(super) fn visit_parametric_segments(
     count: usize,
     evaluate: impl Fn(Real) -> Result<Point3, GeometryError>,

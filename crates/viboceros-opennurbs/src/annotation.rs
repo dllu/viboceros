@@ -22,6 +22,58 @@ pub struct LeaderAppearance {
     pub arrow_size: f64,
     pub landing_length: f64,
     pub text_gap: f64,
+    text_rotation: f64,
+    curve_type: u32,
+    arrow_type: u32,
+    angle_style: u32,
+    draw_forward: u32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum LeaderCurveType {
+    None,
+    Polyline,
+    Spline,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum LeaderTextAngle {
+    Horizontal,
+    Aligned,
+    Rotated(f64),
+}
+
+impl LeaderAppearance {
+    pub fn curve_type(self) -> LeaderCurveType {
+        match self.curve_type {
+            0 => LeaderCurveType::None,
+            2 => LeaderCurveType::Spline,
+            _ => LeaderCurveType::Polyline,
+        }
+    }
+
+    pub fn text_angle(self) -> LeaderTextAngle {
+        match self.angle_style {
+            1 => LeaderTextAngle::Aligned,
+            2 => LeaderTextAngle::Rotated(self.text_rotation),
+            _ => LeaderTextAngle::Horizontal,
+        }
+    }
+
+    pub fn draws_forward(self) -> bool {
+        self.draw_forward != 0
+    }
+
+    pub fn arrow_outline(self) -> &'static [[f64; 2]] {
+        let mut points = std::ptr::null();
+        // SAFETY: OpenNURBS returns immutable static pairs for its built-in arrows.
+        let count = unsafe { vibo_annotation_arrowhead(self.arrow_type, &mut points) };
+        if points.is_null() || !(3..=24).contains(&count) {
+            return &[];
+        }
+        // SAFETY: the returned static array contains exactly count pairs of doubles.
+        unsafe { std::slice::from_raw_parts(points.cast(), count as usize) }
+    }
 }
 
 unsafe extern "C" {
@@ -37,6 +89,7 @@ unsafe extern "C" {
         text: *mut c_char,
         capacity: usize,
     ) -> i32;
+    fn vibo_annotation_arrowhead(arrow_type: u32, points: *mut *const f64) -> u32;
 }
 
 impl LengthFormat {

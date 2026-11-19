@@ -206,6 +206,12 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
 #[test]
 fn evaluate_point_leader_previews_the_tail_and_commits_once() {
     let mut app = test_app();
+    let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("crates/viboceros-io/tests/fixtures/leader-appearance.3dm");
+    let style = viboceros_io::read_3dm_file(fixture, Tolerance::DEFAULT)
+        .unwrap()
+        .annotation_style;
+    app.document.set_annotation_style(style);
     app.viewports[0] = Viewport::new(ViewKind::Top);
     app.maximized_viewport = Some(0);
     let context = egui::Context::default();
@@ -228,13 +234,18 @@ fn evaluate_point_leader_previews_the_tail_and_commits_once() {
     let tail = point(2., 1., 2.);
     let pixel = screen_point(&app, tail);
     let preview = frame(&mut app, vec![egui::Event::PointerMoved(pixel)]);
-    assert!(
-        preview.iter().any(|shape| matches!(
-            &shape.shape,
-            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00"
-        )),
-        "expected the formatted leader text in the hover preview"
-    );
+    let preview_text = preview
+        .iter()
+        .find_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00" => Some(text),
+            _ => None,
+        })
+        .expect("formatted leader text in hover preview");
+    assert!((preview_text.angle + 0.5_f32.atan()).abs() < 1e-5);
+    assert!(preview.iter().any(|shape| matches!(
+        &shape.shape,
+        egui::Shape::Mesh(mesh) if mesh.indices.len() == 22 * 3
+    )));
     assert!(app.document.objects().next().is_none());
     viewport_click(&mut app, &context, pixel);
     assert!(app.active_command.is_none(), "{:?}", app.command_log);
@@ -255,7 +266,8 @@ fn evaluate_point_leader_previews_the_tail_and_commits_once() {
             _ => None,
         })
         .expect("drawn leader label");
-    let label_center = label.pos + label.galley.size() * 0.5;
+    let label_center =
+        label.pos + egui::emath::Rot2::from_angle(label.angle) * (label.galley.size() * 0.5);
     viewport_click(&mut app, &context, label_center);
     assert!(app.document.is_selected(id));
 }

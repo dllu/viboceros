@@ -56,7 +56,12 @@ ViboAnnotationLengthFormat length_format(const ON_DimStyle& style) {
     style.TextHeight() * style.DimScale(),
     style.LeaderArrowSize() * style.DimScale(),
     style.LeaderHasLanding() ? style.LeaderLandingLength() * style.DimScale() : 0.0,
-    style.TextGap() * style.DimScale()
+    style.TextGap() * style.DimScale(),
+    style.LeaderContentAngleRadians(),
+    static_cast<uint32_t>(style.LeaderCurveType()),
+    static_cast<uint32_t>(style.LeaderArrowType()),
+    static_cast<uint32_t>(style.LeaderContentAngleStyle()),
+    style.DrawForward() ? 1u : 0u
   };
 }
 

@@ -34,8 +34,10 @@ inline point, or be changed at the interactive prompt.
 
 With `Style=Leader`, pick or type the measured point, then place the tail.
 The preview shows the arrow and coordinate label on the construction plane
-through the measured point. Inline commands can include extra path vertices
-after the measured point. Saving to 3DM preserves the annotation and active style.
+through the measured point. The active annotation style controls the curve,
+built-in arrowhead, landing, and text angle. Inline commands can include extra
+path vertices after the measured point. Saving to 3DM preserves the annotation
+and active style.
 [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/evaluatept.htm)
 
 A [live Rhino 8.32.26160.13001 capture](../evaluate-point-rhino-reference.json)

@@ -2589,6 +2589,12 @@ extern "C" int32_t vibo_annotation_format_coordinates(const ViboAnnotationLength
   }
 }
 
+extern "C" uint32_t vibo_annotation_arrowhead(uint32_t type, const double** points) {
+  if (points == nullptr) return 0;
+  *points = nullptr;
+  return ON_Arrowhead::GetPoints(static_cast<ON_Arrowhead::arrow_type>(type), *points);
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,

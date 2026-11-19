@@ -305,12 +305,18 @@ typedef struct ViboAnnotationLengthFormat {
   double arrow_size;
   double landing_length;
   double text_gap;
+  double text_rotation;
+  uint32_t leader_curve_type;
+  uint32_t leader_arrow_type;
+  uint32_t leader_angle_style;
+  uint32_t draw_forward;
 } ViboAnnotationLengthFormat;
 
 int32_t vibo_annotation_length_format(const uint8_t* style, size_t count,
                                       ViboAnnotationLengthFormat* format);
 int32_t vibo_annotation_format_coordinates(const ViboAnnotationLengthFormat* format,
     double model_meters_per_unit, const double coordinates[3], char* text, size_t capacity);
+uint32_t vibo_annotation_arrowhead(uint32_t type, const double** points);
 
 #ifdef __cplusplus
 }

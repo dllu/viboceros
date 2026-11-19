@@ -218,17 +218,45 @@ impl Viewport {
         PickHit::screen(0, distance)
     }
 
-    fn pick_leader(&self, leader: &viboceros_geometry::Leader, pointer: Pos2, rect: Rect) -> PickHit {
+    fn pick_leader(
+        &self,
+        leader: &viboceros_geometry::Leader,
+        wires: &[[Point3; 2]],
+        pointer: Pos2,
+        rect: Rect,
+    ) -> PickHit {
         let text = self
             .leader_text_bounds(leader, rect)
             .filter(|bounds| bounds.intersects(rect))
             .map_or(f32::INFINITY, |bounds| bounds.distance_to_pos(pointer));
-        let distance = leader
-            .path()
-            .segments()
-            .map(|segment| self.selection_line_distance(pointer, segment.start(), segment.end(), rect))
+        if text == 0.0
+            || self
+                .projected_leader_arrow(leader, rect)
+                .any(|[a, b, c]| point_in_triangle(pointer, a, b, c))
+        {
+            return PickHit::screen(1, 0.0);
+        }
+        let distance = wires
+            .iter()
+            .map(|&[a, b]| self.selection_line_distance(pointer, a, b, rect))
             .fold(text, f32::min);
         PickHit::screen(1, distance)
+    }
+
+    fn add_projected_leader_annotation(
+        &self,
+        projected: &mut ProjectedPrimitives,
+        leader: &viboceros_geometry::Leader,
+        rect: Rect,
+    ) {
+        for triangle in self.projected_leader_arrow(leader, rect) {
+            projected.add_triangle(triangle.map(Some));
+        }
+        if let Some(bounds) = self.leader_text_bounds(leader, rect) {
+            let [a, b, c, d] = rect_corners(bounds);
+            projected.add_triangle([Some(a), Some(b), Some(c)]);
+            projected.add_triangle([Some(a), Some(c), Some(d)]);
+        }
     }
 
     fn add_projected_text_dot(
@@ -493,7 +521,6 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
-                Geometry::Leader(leader) => self.pick_leader(leader, pointer, rect),
                 Geometry::PointCloud(cloud) => {
                     let distance = self
                         .pick_point_cloud_member(pointer, rect, cloud)
@@ -513,7 +540,9 @@ impl Viewport {
                             | Geometry::Mesh(_)
                             | Geometry::SubD(_)
                     );
-                    if surface
+                    if let Geometry::Leader(leader) = object.geometry() {
+                        self.pick_leader(leader, display.wires(), pointer, rect)
+                    } else if surface
                         && self.draws_object_faces(object.id())
                         && let Some(mesh) = self
                             .curvature_meshes
@@ -827,7 +856,7 @@ impl Viewport {
                     }),
             ),
             Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
-            Geometry::Leader(leader) => self.pick_leader(leader, pointer, rect),
+            Geometry::Leader(leader) => self.pick_leader(leader, display.wires(), pointer, rect),
             Geometry::PointCloud(cloud) => PickHit::screen(
                 0,
                 self.pick_point_cloud_member(pointer, rect, cloud)
@@ -934,11 +963,7 @@ impl Viewport {
                 for &[a, b] in display.wires() {
                     self.add_selection_segment(&mut projected, a, b, rect);
                 }
-                if let Some(bounds) = self.leader_text_bounds(leader, rect) {
-                    let [a, b, c, d] = rect_corners(bounds);
-                    projected.add_triangle([Some(a), Some(b), Some(c)]);
-                    projected.add_triangle([Some(a), Some(c), Some(d)]);
-                }
+                self.add_projected_leader_annotation(&mut projected, leader, rect);
             }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
@@ -997,14 +1022,10 @@ impl Viewport {
                 self.add_projected_text_dot(&mut projected, dot, viewport_rect);
             }
             Geometry::Leader(leader) => {
-                for segment in leader.path().segments() {
-                    self.add_selection_segment(
-                        &mut projected,
-                        segment.start(),
-                        segment.end(),
-                        viewport_rect,
-                    );
-                }
+                leader.visit_segments(|a, b| {
+                    self.add_selection_segment(&mut projected, a, b, viewport_rect);
+                });
+                self.add_projected_leader_annotation(&mut projected, leader, viewport_rect);
             }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
@@ -1228,6 +1249,42 @@ mod tests {
     use super::*;
     use viboceros_document::ColorRgb;
     use viboceros_geometry::LineSegment;
+
+    #[test]
+    fn leader_picking_follows_the_visible_spline_and_arrow_outline() {
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("crates/viboceros-io/tests/fixtures/leader-appearance.3dm");
+        let (document, _, _) =
+            viboceros_command::open_3dm_with_named_views(fixture.to_str().unwrap()).unwrap();
+        let spline = document
+            .objects()
+            .find(|object| {
+                matches!(object.geometry(), Geometry::Leader(leader) if leader.text() == "Spline dot")
+            })
+            .unwrap()
+            .id();
+        let view = Viewport::new(ViewKind::Top);
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(2400., 1600.));
+        let project = |x, y| {
+            let pixel = view
+                .project(Point3::try_new(x, y, 0.).unwrap(), rect)
+                .unwrap();
+            assert!(rect.contains(pixel));
+            pixel
+        };
+        let pick = |x, y| view.pick_object(project(x, y), rect, &document);
+        let crossing = |x, y| {
+            let region = Rect::from_center_size(project(x, y), Vec2::splat(2.0));
+            view.objects_in_selection(rect, region, true, &document)
+        };
+
+        assert_eq!(pick(4., 3.), Some(spline));
+        assert_eq!(pick(0.8, 0.), Some(spline));
+        assert_eq!(pick(17., 6.), None);
+        assert_eq!(pick(-5.5, -4.), None);
+        assert_eq!(crossing(0.8, 0.), vec![spline]);
+        assert!(crossing(-5.5, -4.).is_empty());
+    }
 
     #[test]
     fn excluding_the_first_surface_makes_nested_cutters_pickable_in_filled_views() {
