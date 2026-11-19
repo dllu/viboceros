@@ -2,6 +2,7 @@
 use super::*;
 use std::borrow::Cow;
 
+mod fillet;
 mod joints;
 mod poles;
 use poles::close_pole_gaps;
@@ -345,6 +346,7 @@ unsafe extern "C" {
         radius: f64,
         accuracy: f64,
         require_ball: c_int,
+        local_merge: c_int,
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
@@ -818,49 +820,6 @@ impl Solid {
         call(|error, capacity| unsafe {
             vb_solid_validate_endpoints(self.handle.as_ptr(), tolerance.absolute(), error, capacity)
         })
-    }
-    /// Fillets original Rust edge indices on a freshly imported temporary solid.
-    /// The input B-rep is never mutated. Repeated indices select the edge once.
-    pub fn fillet_brep_edges(
-        brep: &Brep,
-        edges: &[usize],
-        radius: f64,
-        tolerance: Tolerance,
-    ) -> Result<Self, Error> {
-        Self::fillet_brep_edges_with_corner(brep, edges, radius, tolerance, false)
-    }
-
-    /// When requested, the fillet executive requires spherical corner patches.
-    pub fn fillet_brep_edges_with_corner(
-        brep: &Brep,
-        edges: &[usize],
-        radius: f64,
-        tolerance: Tolerance,
-        require_ball: bool,
-    ) -> Result<Self, Error> {
-        if edges.is_empty()
-            || edges.len() > 100000
-            || !radius.is_finite()
-            || radius <= 0.
-            || edges.iter().any(|&edge| edge >= brep.edges().len())
-        {
-            return Err(Error::Kernel("Invalid fillet parameters".into()));
-        }
-        let solid = Self::from_brep(brep, tolerance)?;
-        let accuracy = (radius * 1e-10).min(tolerance.absolute() * 0.1);
-        call(|error, capacity| unsafe {
-            vb_imported_solid_fillet_edges(
-                solid.handle.as_ptr(),
-                edges.as_ptr(),
-                edges.len(),
-                radius,
-                accuracy,
-                c_int::from(require_ball),
-                error,
-                capacity,
-            )
-        })?;
-        Ok(solid)
     }
     pub fn try_clone(&self) -> Result<Self, Error> {
         let mut pointer = std::ptr::null_mut();

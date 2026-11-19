@@ -230,14 +230,24 @@ fn blend(
         AffineTransform3::from_translation(origin.vector_to(zero)?),
         tolerance,
     )?;
-    let solid = match kind {
-        EdgeBlendKind::Fillet(corner) => viboceros_smlib::Solid::fillet_brep_edges_with_corner(
-            &local,
-            edges,
-            radius,
-            tolerance,
-            corner == FilletCorner::Ball,
-        )?,
+    let blended = match kind {
+        EdgeBlendKind::Fillet(corner) => {
+            let primary = viboceros_smlib::Solid::fillet_brep_edges_with_corner(
+                &local,
+                edges,
+                radius,
+                tolerance,
+                corner == FilletCorner::Ball,
+            )
+            .and_then(|solid| solid.to_brep(tolerance));
+            if corner == FilletCorner::Automatic {
+                primary.or_else(|error| {
+                    checked_local_fillet(&local, edges, radius, tolerance).ok_or(error)
+                })?
+            } else {
+                primary?
+            }
+        }
         EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
             let rail = match rail {
                 crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
@@ -247,17 +257,38 @@ fn blend(
                     viboceros_smlib::EdgeBlendRailType::RollingBall
                 }
             };
-            if matches!(kind, EdgeBlendKind::Curvature(_)) {
+            let solid = if matches!(kind, EdgeBlendKind::Curvature(_)) {
                 viboceros_smlib::Solid::blend_brep_edges(&local, edges, radius, rail, tolerance)?
             } else {
                 viboceros_smlib::Solid::chamfer_brep_edges(&local, edges, radius, rail, tolerance)?
-            }
+            };
+            solid.to_brep(tolerance)?
         }
     };
-    Ok(solid.to_brep(tolerance)?.transformed(
+    Ok(blended.transformed(
         AffineTransform3::from_translation(zero.vector_to(origin)?),
         tolerance,
     )?)
+}
+
+fn checked_local_fillet(
+    brep: &Brep,
+    edges: &[usize],
+    radius: Real,
+    tolerance: Tolerance,
+) -> Option<Brep> {
+    let candidate =
+        viboceros_smlib::Solid::fillet_brep_edges_with_local_merge(brep, edges, radius, tolerance)
+            .ok()?;
+    let geometry = Geometry::Brep(candidate);
+    let check = crate::geometry_check::check_geometry(&geometry);
+    if let Geometry::Brep(candidate) = geometry
+        && candidate.is_solid()
+        && check.status == crate::geometry_check::GeometryCheckStatus::Valid
+    {
+        return Some(candidate);
+    }
+    None
 }
 
 pub(super) struct FilletEdgeCommand;

@@ -139,7 +139,7 @@ int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_
 int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indices, size_t count,
     double distance, double accuracy, int rail_type, char *error, size_t capacity);
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
-                                   double radius, double accuracy, int require_ball,
+                                   double radius, double accuracy, int require_ball, int local_merge,
                                    char *error, size_t capacity);
 int vb_solid_validate_boundary(const VbSolid *solid, double tolerance, char *error, size_t capacity);
 int vb_solid_validate_endpoints(const VbSolid *solid, double tolerance, char *error, size_t capacity);

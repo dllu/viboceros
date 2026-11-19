@@ -65,7 +65,8 @@ SmBrep *vb_copy_brep(const SmBrep &source);
 size_t vb_divide_face_creases(SmBrep &brep, bool kinks, bool tangents, double tolerance);
 size_t vb_merge_coplanar_faces(SmBrep &brep, double tolerance, double angle_tolerance,
                                const std::vector<SmFace*> *selected = nullptr, bool region = false);
-void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets = false);
+void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets = false,
+                                        double shared_point_roundoff = 0.0);
 SmBrep *vb_import_brep(const VbBrepView &view, double tolerance, const size_t *components,
                        size_t component_count, const int *inward,
                        std::vector<size_t> *parents = nullptr,
