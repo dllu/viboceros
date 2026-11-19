@@ -20,13 +20,7 @@ pub(super) fn triangulate(
 }
 
 fn aspect(surface: &NurbsSurface, boundary: &[Point2]) -> Result<[Real; 2], GeometryError> {
-    let mut span = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
-    for point in boundary {
-        for (axis, uv) in point.to_array().into_iter().enumerate() {
-            span[axis][0] = span[axis][0].min(uv);
-            span[axis][1] = span[axis][1].max(uv);
-        }
-    }
+    let span = sampling::parameter_bounds(boundary);
     let middle = span.map(|[lo, hi]| lo.midpoint(hi));
     let mut lengths = [0.; 2];
     for (axis, length) in lengths.iter_mut().enumerate() {

@@ -4,6 +4,32 @@ mod cusp;
 pub(super) const SPARSE_MESH_VERTEX_LIMIT: usize = 2 * 1_048_576;
 pub(super) const SPARSE_POLYGON_VERTEX_LIMIT: usize = 4 * 1_048_576;
 
+fn grid_axes(spans: [usize; 2], samples: [usize; 2]) -> [usize; 2] {
+    std::array::from_fn(|axis| spans[axis].saturating_mul(samples[axis]).saturating_add(1))
+}
+
+fn sparse_grid_axes(axes: [usize; 2], limit: usize) -> [usize; 2] {
+    // A thin face can spend its unused short-axis budget along its long
+    // axis. The product still fits the same per-face allocation.
+    let short = usize::from(axes[1] < axes[0]);
+    let long = 1 - short;
+    let mut retained = axes;
+    retained[short] = axes[short].min(limit);
+    retained[long] = axes[long].min(limit.saturating_mul(limit) / retained[short]);
+    retained
+}
+
+pub(super) fn parameter_bounds(points: &[Point2]) -> [[Real; 2]; 2] {
+    let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
+    for point in points {
+        for (axis, uv) in point.to_array().into_iter().enumerate() {
+            bounds[axis][0] = bounds[axis][0].min(uv);
+            bounds[axis][1] = bounds[axis][1].max(uv);
+        }
+    }
+    bounds
+}
+
 #[derive(Clone, Copy)]
 pub(super) struct Sampling<'a> {
     pub edge: usize,
@@ -72,9 +98,11 @@ impl<'a> Sampling<'a> {
     }
     pub fn uses_sparse_grid(self, face: usize, surface: &NurbsSurface) -> bool {
         self.axis_limit.is_some_and(|limit| {
-            let [u, v] = self.grid(face);
-            surface.spans_u().count().saturating_mul(u) >= limit
-                || surface.spans_v().count().saturating_mul(v) >= limit
+            let axes = grid_axes(
+                [surface.spans_u().count(), surface.spans_v().count()],
+                self.grid(face),
+            );
+            sparse_grid_axes(axes, limit) != axes
         })
     }
     pub fn validate(self, faces: &[BrepFace]) -> Result<(), GeometryError> {
@@ -93,14 +121,9 @@ impl<'a> Sampling<'a> {
             let [u, v] = self.grid(index);
             let surface = &face.surface;
             let [spans_u, spans_v] = [surface.spans_u().count(), surface.spans_v().count()];
-            let count = if let Some(limit) = self
-                .axis_limit
-                .filter(|_| self.uses_sparse_grid(index, surface))
-            {
-                let axis = |samples: usize, spans: usize| {
-                    samples.saturating_mul(spans).saturating_add(1).min(limit)
-                };
-                axis(u, spans_u).checked_mul(axis(v, spans_v))
+            let count = if let Some(limit) = self.axis_limit {
+                let [nu, nv] = sparse_grid_axes(grid_axes([spans_u, spans_v], [u, v]), limit);
+                nu.checked_mul(nv)
             } else {
                 u.checked_add(1)
                     .and_then(|u| v.checked_add(1).and_then(|v| u.checked_mul(v)))
@@ -219,7 +242,8 @@ pub(super) fn append_trimmed_surface_grid_parameters(
     let sample_direction = |spans: Vec<(Real, Real)>,
                             samples_per_span: usize,
                             knots: &[Real],
-                            degree: usize|
+                            degree: usize,
+                            axis_limit: Option<usize>|
      -> Result<Vec<Real>, GeometryError> {
         let capacity = spans
             .len()
@@ -268,17 +292,44 @@ pub(super) fn append_trimmed_surface_grid_parameters(
         }
         Ok(result)
     };
+    let mut spans_u: Vec<_> = surface.spans_u().collect();
+    let mut spans_v: Vec<_> = surface.spans_v().collect();
+    let mut resolution = resolution;
+    if axis_limit.is_some() {
+        let bounds = parameter_bounds(&parameters[..loop_lengths[0]]);
+        for (axis, spans) in [&mut spans_u, &mut spans_v].into_iter().enumerate() {
+            let [lo, hi] = bounds[axis];
+            if lo > spans[0].0 || hi < spans.last().unwrap().1 {
+                spans.retain_mut(|span| {
+                    span.0 = span.0.max(lo);
+                    span.1 = span.1.min(hi);
+                    span.0 < span.1
+                });
+                // A linear direction still needs an interior station if its
+                // natural endpoints are both outside the trimmed material.
+                resolution[axis] = resolution[axis].max(2);
+            }
+        }
+        if spans_u.is_empty() || spans_v.is_empty() {
+            return Ok(());
+        }
+    }
+    let limits = axis_limit.map(|limit| {
+        sparse_grid_axes(grid_axes([spans_u.len(), spans_v.len()], resolution), limit)
+    });
     let parameters_u = sample_direction(
-        surface.spans_u().collect(),
+        spans_u,
         resolution[0],
         surface.knots_u(),
         surface.degree_u(),
+        limits.map(|axes| axes[0]),
     )?;
     let parameters_v = sample_direction(
-        surface.spans_v().collect(),
+        spans_v,
         resolution[1],
         surface.knots_v(),
         surface.degree_v(),
+        limits.map(|axes| axes[1]),
     )?;
     if parameters_u
         .len()
@@ -299,4 +350,30 @@ pub(super) fn append_trimmed_surface_grid_parameters(
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn sparse_grids_budget_cells_across_both_axes() {
+        assert_eq!(sparse_grid_axes([257, 5], 16), [51, 5]);
+        assert_eq!(sparse_grid_axes([5, 31], 16), [5, 31]);
+        assert_eq!(sparse_grid_axes([19, 45], 16), [16, 16]);
+    }
+
+    #[test]
+    fn sparse_grid_places_stations_inside_a_small_trim_on_a_large_support() {
+        let surface = NurbsSurface::try_bilinear(
+            [(0., 0.), (1., 0.), (1., 1.), (0., 1.)]
+                .map(|(x, y)| Point3::try_new(x, y, x * y).unwrap()),
+        )
+        .unwrap();
+        let mut uv = [(0.125, 0.25), (0.375, 0.25), (0.375, 0.75), (0.125, 0.75)]
+            .map(|(u, v)| Point2::try_new(u, v).unwrap())
+            .to_vec();
+        append_trimmed_surface_grid_parameters(&mut uv, &[4], &surface, [1, 1], Some(16)).unwrap();
+        assert_eq!(&uv[4..], &[Point2::try_new(0.25, 0.5).unwrap()]);
+    }
 }
