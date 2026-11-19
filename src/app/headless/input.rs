@@ -400,7 +400,10 @@ impl Session {
         }
         if let Some(ViewRef::Name(name)) = view {
             if let Ok(snapshot) = self.app.named_views.get(name) {
-                let mut viewport = Viewport::default();
+                let mut viewport = Viewport::new_for_layout(
+                    &self.app.viewports[self.app.active_viewport],
+                    ViewKind::Top,
+                );
                 viewport.restore_named_view(*snapshot);
                 return Ok(viewport);
             }

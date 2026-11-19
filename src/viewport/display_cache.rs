@@ -14,6 +14,23 @@ use std::rc::Rc;
 use viboceros_document::{GeometrySnapshot, Object};
 pub(super) type DraftColors = Rc<[[[u8; 3]; 3]]>;
 
+// Every span adds CURVE_SAMPLES_PER_SPAN drawing segments. Knot isocurves
+// in two directions otherwise cost O(u_spans * v_spans) on dense patches.
+const MAX_DISPLAY_ISOCURVE_SPANS: usize = 1024;
+
+fn isocurve_span_count(surface: &viboceros_geometry::NurbsSurface, density: i32) -> usize {
+    let u = surface.spans_u().count();
+    let v = surface.spans_v().count();
+    let interior = |spans: usize| match density {
+        ..0 => 0,
+        1 if spans == 1 => 1,
+        0 | 1 => spans - 1,
+        _ => spans.saturating_mul(density as usize).saturating_sub(1),
+    };
+    u.saturating_mul(interior(v))
+        .saturating_add(v.saturating_mul(interior(u)))
+}
+
 #[derive(Default)]
 pub(super) struct DisplayCache {
     analyses: Vec<AnalysisDrawing>,
@@ -305,14 +322,28 @@ impl DisplayGeometry {
                     }
                 }
                 Geometry::NurbsSurface(surface) => {
-                    if let Ok(curves) = surface.wireframe_curves(self.wire_density) {
+                    let density = if isocurve_span_count(surface, self.wire_density)
+                        > MAX_DISPLAY_ISOCURVE_SPANS
+                    {
+                        -1
+                    } else {
+                        self.wire_density
+                    };
+                    if let Ok(curves) = surface.wireframe_curves(density) {
                         for curve in curves {
                             curve.visit_segments(&mut visit);
                         }
                     }
                 }
                 Geometry::Brep(brep) => {
-                    if let Ok(curves) = brep.wireframe_curves(self.wire_density, self.tolerance) {
+                    let spans = brep.faces().iter().fold(0usize, |sum, face| {
+                        sum.saturating_add(isocurve_span_count(face.surface(), self.wire_density))
+                    });
+                    if self.wire_density < 0 || spans > MAX_DISPLAY_ISOCURVE_SPANS {
+                        lines.extend(self.edges().iter().flatten().copied());
+                    } else if let Ok(curves) =
+                        brep.wireframe_curves(self.wire_density, self.tolerance)
+                    {
                         for curve in curves {
                             curve.visit_segments(&mut visit);
                         }
