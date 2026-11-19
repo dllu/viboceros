@@ -7,9 +7,10 @@ source faces and trim holes remain in the caps when `Solid=Yes`.
 
 Start the command, select surfaces and press Enter, then click the path near
 the end you want to start from. Preselected surface objects and face components
-work. At the path picker, toggle `Solid`, `DeleteInput` or `SubCurve` by
-name or set them to `Yes` or `No`. Enter accepts a unique selected curve.
-You can also enter `Path=id` or `PathName=name`. Esc cancels the getter.
+work. At the path picker, toggle `Solid`, `DeleteInput`, `SubCurve` or
+`SplitAtTangents` by name or set them to `Yes` or `No`. Enter accepts a
+unique selected curve. You can also enter `Path=id` or `PathName=name`.
+Esc cancels the getter.
 
 With `SubCurve=Yes`, choose the path, then pick two points along it or type
 their coordinates. The first pick anchors the interval, and the second has a
@@ -36,8 +37,11 @@ produces an independent result. The headless command also accepts one selected
 path curve alongside its selected source faces. Named paths must be unique and
 selectable. Source picking preserves inline face selectors and options.
 
-Initial defaults are `Solid=No DeleteInput=No SubCurve=No Reverse=Auto`.
-A successful extrusion remembers `Solid`, `DeleteInput` and `SubCurve`.
+Initial defaults are `Solid=No DeleteInput=No SubCurve=No SplitAtTangents=No`
+and `Reverse=Auto`. A successful extrusion remembers the four Yes/No options.
+`SplitAtTangents=Yes` adds wall edges at tangent joins with a curvature break.
+Sharp bends in the rail split in either mode. The `SubCurve` preview shows
+both sets of edges as the endpoint moves.
 `Reverse=Yes` and `Reverse=No` explicitly choose the original end or start.
 Typed paths and Enter use the original start in automatic mode. `PathLength`
 takes an arc length from the chosen start. It accepts units in the path
@@ -48,23 +52,23 @@ retaining any remainder's identity, attributes and groups. All products stage
 before document edits and form one Undo/Redo entry. Frozen source snapshots
 prevent a changed face index from targeting another face during picking.
 
-The adapter delegates boundary chain construction and translational wall sweeps
-to usd-brep's `SmPrimitiveCreation::CreateCurveSweepFromEdges`. It copies actual
-source faces and translates copies by the path endpoint displacement for caps,
-then stitches, orients and validates the B-rep. An aggregate control-net budget
-bounds tensor-product allocation before invoking the native producer. Solid
-output must close as a manifold.
+The adapter uses usd-brep's exact translational sweeps for the prepared
+profile pieces and rail segments. It retains the actual source faces as caps
+and translates the far cap by the rail's endpoint displacement. It stitches
+the result and validates solid closure. An aggregate control-net budget
+bounds tensor-product allocation.
 
 Closed or degenerate paths, closed sources without a boundary, invalid face
 indices and unsupported native imports decline. Failed geometry leaves the
-picker and source selection available for retry. `ToBoundary` and
-`SplitAtTangents` remain future work. Self-intersection, folding and
-near-degenerate cases require broader qualification.
+picker and source selection available for retry. `ToBoundary` remains future
+work. Self-intersection, folding and near-degenerate cases require broader
+qualification.
 
 Headless Rhino 8 command captures cover the factory cap setting, clicks on
 both halves of a rail, whole-path confirmation, and `SubCurve` on linear,
-quadratic, rational and multispan rails. Seven independent Python
-`surface_path_extrusion` fixtures also exercise the kernel with planar and
+quadratic, rational and multispan rails. Tangent split captures cover smooth
+joins, corners, trim holes and sharp bends in the rail. Seven independent
+Python `surface_path_extrusion` fixtures also exercise the kernel with planar and
 warped caps, rational holes, partial paths and translated sources. The SDK
 probe calls [BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brepface/createextrusion).
 For the open ring, both commands return two one-face objects. The Rhino SDK

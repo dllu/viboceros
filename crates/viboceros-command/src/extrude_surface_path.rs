@@ -2,7 +2,7 @@
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 
-pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [SubCurve=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [SubCurve=Yes|No] [SplitAtTangents=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfacePathCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<SurfacePathOptions>>,
 }
@@ -11,6 +11,7 @@ pub struct SurfacePathOptions {
     pub solid: bool,
     pub delete_input: bool,
     pub subcurve: bool,
+    pub split_at_tangents: bool,
     pub reverse: Option<bool>,
     pub path_length: Option<f64>,
     pub path_range: Option<[f64; 2]>,
@@ -37,6 +38,7 @@ impl SurfacePathOptions {
                 "solid" => next.solid = toggle(next.solid)?,
                 "deleteinput" => next.delete_input = toggle(next.delete_input)?,
                 "subcurve" => next.subcurve = toggle(next.subcurve)?,
+                "splitattangents" => next.split_at_tangents = toggle(next.split_at_tangents)?,
                 "reverse" => {
                     let value = require_value()?;
                     next.reverse = if value.trim_start_matches('_').eq_ignore_ascii_case("Auto") {
@@ -84,10 +86,11 @@ impl SurfacePathOptions {
     }
     pub fn command_options(self) -> String {
         let mut result = format!(
-            "Solid={} DeleteInput={} SubCurve={} Reverse={}",
+            "Solid={} DeleteInput={} SubCurve={} SplitAtTangents={} Reverse={}",
             if self.solid { "Yes" } else { "No" },
             if self.delete_input { "Yes" } else { "No" },
             if self.subcurve { "Yes" } else { "No" },
+            if self.split_at_tangents { "Yes" } else { "No" },
             match self.reverse {
                 Some(true) => "Yes",
                 Some(false) => "No",
@@ -304,7 +307,12 @@ impl Command for ExtrudeSurfacePathCommand {
                         tolerance,
                     )?;
                     let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-                        .extruded_faces_along_curve(&native, input.options.solid, tolerance)?
+                        .extruded_faces_along_curve_with_tangents(
+                            &native,
+                            input.options.solid,
+                            input.options.split_at_tangents,
+                            tolerance,
+                        )?
                         .to_brep(tolerance)?
                         .transformed(
                             AffineTransform3::from_translation(zero.vector_to(origin)?),

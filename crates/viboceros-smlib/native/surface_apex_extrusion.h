@@ -2,7 +2,7 @@
 // Included after the bridge's private topology helpers and native owner types.
 #include "../../viboceros-opennurbs/native/curve_discontinuity_query.h"
 namespace {
-void vb_apex_boundary_segments(SmBSplineCurve &profile, bool split_tangents,
+void vb_sweep_curve_segments(SmBSplineCurve &profile, bool split_tangents,
     SmTArray<SmBSplineCurve*> &segments) {
     auto *context=SmApiGetOrCreateContext();
     const auto count=profile.GetNumberControlPoints();
@@ -10,25 +10,25 @@ void vb_apex_boundary_segments(SmBSplineCurve &profile, bool split_tangents,
     std::vector<double> controls(4*count),parameters(knots.size());
     for(ULONG i=0;i<count;++i) {
         SmPoint3d point;double weight;
-        check(profile.GetControlPoint(SM_CP_EUCLIDIAN_RATIONAL,i,point,weight),"read apex continuity controls");
+        check(profile.GetControlPoint(SM_CP_EUCLIDIAN_RATIONAL,i,point,weight),"read sweep continuity controls");
         controls[4*i]=point.x;controls[4*i+1]=point.y;controls[4*i+2]=point.z;controls[4*i+3]=weight;
     }
     size_t found=0;char error[1024]{};
     const auto status=vibo_curve_discontinuities(profile.GetDegree(),count,controls.data(),
         knots.size(),knots.data(),split_tangents?1:0,std::cos(0.1*std::acos(-1.)/180.),
         &found,parameters.data(),error,sizeof(error));
-    require(status==1,error[0]?error:"Apex boundary continuity query failed");
-    require(found<100000,"Surface apex boundary segment limit");
+    require(status==1,error[0]?error:"Sweep curve continuity query failed");
+    require(found<100000,"Sweep curve segment limit");
     // SMLib's segment constructor copies the input control net before trimming.
     // Bound that work before copying a large net once for every cut.
-    require(count<=4*limit/(found+1),"Surface apex boundary split work resource limit");
+    require(count<=4*limit/(found+1),"Sweep curve split work resource limit");
     const auto domain=profile.GetNaturalInterval();double start=domain.GetMin();
     for(size_t i=0;i<=found;++i) {
         const double end=i<found?parameters[i]:domain.GetMax();
         std::unique_ptr<SmBSplineCurve> segment(new (*context) SmBSplineCurve(profile));
         vb_preserve_curve_basis(*segment,knots);
         SmExtent1d interval(start,end);
-        check(segment->Trim(interval,FALSE),"trim apex boundary segment");
+        check(segment->Trim(interval,FALSE),"trim sweep curve segment");
         segments.Add(segment.release());start=end;
     }
 }
@@ -74,7 +74,7 @@ extern "C" int vb_shape_extrude_faces_to_point(const VbSolid *shape, const doubl
             auto interval=edges[i]->GetInterval();
             check(profile->Trim(interval,FALSE),"trim apex source edge");
             SmTArray<SmBSplineCurve*> segments;SmObjsDelete<SmBSplineCurve*> cleanup(&segments);
-            vb_apex_boundary_segments(*profile, split_at_tangents!=0, segments);
+            vb_sweep_curve_segments(*profile, split_at_tangents!=0, segments);
             require(segments.GetSize()>0 && segments.GetSize()<=100000,"Surface apex boundary segment limit");
             if(segments.GetSize()==1 && segments[0]->GetDegree()==profile->GetDegree()
                && segments[0]->GetNumberControlPoints()==profile->GetNumberControlPoints())

@@ -67,7 +67,7 @@ impl VibocerosApp {
         }
         if !words.iter().all(|word| {
             word.contains('=')
-                || ["Solid", "DeleteInput", "SubCurve"]
+                || ["Solid", "DeleteInput", "SubCurve", "SplitAtTangents"]
                     .iter()
                     .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
         }) {

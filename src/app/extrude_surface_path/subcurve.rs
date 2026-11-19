@@ -26,7 +26,7 @@ impl SurfacePathSession {
     pub(in crate::app) fn hint(&self) -> &'static str {
         match self.points.as_ref().map(|points| points.start) {
             None => {
-                "Select path curve near start. Solid / DeleteInput / SubCurve / Reverse / PathLength"
+                "Select path curve near start. Solid / DeleteInput / SubCurve / SplitAtTangents / Reverse / PathLength"
             }
             Some(None) => "Starting point on curve. Press Enter for whole path curve",
             Some(Some(_)) => "Ending point on curve",
@@ -60,6 +60,7 @@ impl SurfacePathSession {
             start: points.start?,
             reverse: points.reverse,
             solid: self.options.solid,
+            split_at_tangents: self.options.split_at_tangents,
         })
     }
 }

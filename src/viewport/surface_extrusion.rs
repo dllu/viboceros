@@ -37,6 +37,7 @@ pub(crate) struct SurfacePathPreview<'a> {
     pub start: f64,
     pub reverse: bool,
     pub solid: bool,
+    pub split_at_tangents: bool,
 }
 
 impl SurfaceExtrusionDraft {
@@ -170,6 +171,18 @@ impl Viewport {
                 rail.push([a, b]);
             }
         });
+        let rail_seams = if path.spans().nth(1).is_some() {
+            path.discontinuity_parameters(
+                viboceros_geometry::CurveContinuity::G1,
+                0.1_f64.to_radians(),
+            )
+            .unwrap_or_default()
+            .into_iter()
+            .filter_map(|parameter| origin.vector_to(path.evaluate(parameter).ok()?).ok())
+            .collect::<Vec<_>>()
+        } else {
+            Vec::new()
+        };
         let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
         let paint_segment = |a, b| {
             if let Some(segment) = self.project_segment(a, b, rect) {
@@ -192,7 +205,18 @@ impl Viewport {
                 paint_segment(a, b);
                 paint(a, b, displacement, displacement);
             }
-            for point in face.outline.boundary_rulings() {
+            for [a, b] in face.outline.rim() {
+                for &seam in &rail_seams {
+                    paint(a, b, seam, seam);
+                }
+            }
+            let seams = preview
+                .split_at_tangents
+                .then_some(face.tangent_seams.as_slice())
+                .into_iter()
+                .flatten()
+                .copied();
+            for point in face.outline.boundary_rulings().chain(seams) {
                 for &[from, to] in &rail {
                     paint(point, point, from, to);
                 }

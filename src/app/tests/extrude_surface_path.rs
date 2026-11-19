@@ -1,5 +1,6 @@
 use super::*;
 mod point_picks;
+mod tangents;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
