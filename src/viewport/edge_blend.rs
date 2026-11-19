@@ -1,39 +1,18 @@
 //! Size handles for the selected original B-rep edges.
 use super::*;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub(crate) enum HandleEnd {
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(crate) enum HandleLocation {
     Start,
     End,
     Seam,
+    Interior(f64),
 }
 
-impl HandleEnd {
-    pub(crate) fn label(self) -> &'static str {
-        match self {
-            Self::Start => "start",
-            Self::End => "end",
-            Self::Seam => "seam",
-        }
-    }
-
-    pub(crate) fn size(self, sizes: [f64; 2]) -> f64 {
-        sizes[usize::from(self == Self::End)]
-    }
-
-    pub(crate) fn set_size(self, sizes: &mut [f64; 2], size: f64) {
-        match self {
-            Self::Start => sizes[0] = size,
-            Self::End => sizes[1] = size,
-            Self::Seam => *sizes = [size; 2],
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) struct SizeHandleId {
     pub(crate) pick: ComponentPick,
-    pub(crate) end: HandleEnd,
+    pub(crate) location: HandleLocation,
 }
 
 #[derive(Debug)]
@@ -47,11 +26,21 @@ pub(crate) struct SizeHandle {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum HandleGesture {
     Pick(SizeHandleId),
+    Place(SizeHandleId),
     Drag {
         id: SizeHandleId,
         value: Option<f64>,
         finished: bool,
     },
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+pub(crate) enum HandleMode<'a> {
+    #[default]
+    Edit,
+    Copy,
+    Remove,
+    Place(&'a [(ComponentPick, &'a NurbsCurve)]),
 }
 
 pub(super) struct Drag {
@@ -69,6 +58,7 @@ impl Viewport {
         rect: Rect,
         handles: &[SizeHandle],
         show: bool,
+        mode: HandleMode<'_>,
     ) -> Option<HandleGesture> {
         if handles.is_empty() || response.ctx.input(|i| i.key_pressed(egui::Key::Escape)) {
             self.edge_blend_drag = None;
@@ -81,10 +71,10 @@ impl Viewport {
             response.hover_pos()
         };
         let mut nearest = None::<(f32, SizeHandleId)>;
-        let press = response
-            .drag_started_by(PointerButton::Primary)
-            .then(|| response.ctx.input(|i| i.pointer.press_origin()))
-            .flatten();
+        let press = (matches!(mode, HandleMode::Edit)
+            && response.drag_started_by(PointerButton::Primary))
+        .then(|| response.ctx.input(|i| i.pointer.press_origin()))
+        .flatten();
         let mut pressed_handle = None::<(f32, &SizeHandle)>;
         for handle in handles {
             let Some(position) = self
@@ -93,7 +83,14 @@ impl Viewport {
             else {
                 continue;
             };
-            let hit = pointer.map_or(f32::INFINITY, |pointer| pointer.distance(position));
+            let pickable = match mode {
+                HandleMode::Place(_) => false,
+                HandleMode::Remove => matches!(handle.id.location, HandleLocation::Interior(_)),
+                _ => true,
+            };
+            let hit = pointer
+                .filter(|_| pickable)
+                .map_or(f32::INFINITY, |pointer| pointer.distance(position));
             let hovered = hit <= PICK_CAPTURE_PIXELS;
             if hovered && nearest.is_none_or(|(distance, _)| hit < distance) {
                 nearest = Some((hit, handle.id));
@@ -121,6 +118,49 @@ impl Viewport {
                     color,
                 );
             }
+        }
+        if !matches!(mode, HandleMode::Edit) {
+            self.edge_blend_drag = None;
+        }
+        if let HandleMode::Place(edges) = mode {
+            let pointer = pointer?;
+            let mut nearest = None::<(f32, f64, SizeHandleId, Pos2)>;
+            for &(pick, curve) in edges {
+                let Some(t) = self.pick_edge_parameter(curve, pointer, rect, false) else {
+                    continue;
+                };
+                let domain = curve.domain();
+                let fraction = (t - domain.start()) / (domain.end() - domain.start());
+                if !(0. < fraction && fraction < 1.) {
+                    continue;
+                }
+                let Ok(point) = curve.evaluate(t) else {
+                    continue;
+                };
+                let Some(position) = self.project(point, rect) else {
+                    continue;
+                };
+                let distance = pointer.distance(position);
+                let depth = self.view_depth(point);
+                if distance <= PICK_CAPTURE_PIXELS
+                    && nearest.is_none_or(|(previous, farther, _, _)| {
+                        distance < previous || (distance == previous && depth < farther)
+                    })
+                {
+                    nearest = Some((
+                        distance,
+                        depth,
+                        SizeHandleId {
+                            pick,
+                            location: HandleLocation::Interior(fraction),
+                        },
+                        position,
+                    ));
+                }
+            }
+            let (_, _, id, position) = nearest?;
+            painter.circle_stroke(position, 6., Stroke::new(1.5, SELECTED_COLOR));
+            return clicked.then_some(HandleGesture::Place(id));
         }
         if let Some((press, (_, handle))) = press.zip(pressed_handle) {
             let scale = if self.kind == ViewKind::Perspective {

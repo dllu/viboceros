@@ -2,17 +2,61 @@
 use super::*;
 use crate::viewport::{
     ComponentPick,
-    edge_blend::{HandleEnd, HandleGesture, SizeHandle, SizeHandleId},
+    edge_blend::{HandleGesture, HandleLocation, SizeHandle, SizeHandleId},
 };
 use std::collections::{BTreeMap, BTreeSet};
+use viboceros_command::EdgeBlendSizes;
 use viboceros_command::component_selection::current;
 use viboceros_document::GeometrySnapshot;
 
+mod operations;
+use operations::HandleOperation;
+
 #[derive(Default)]
 pub(in crate::app) struct Adjustment {
-    sizes: BTreeMap<ComponentPick, (GeometrySnapshot, [f64; 2])>,
+    sizes: BTreeMap<ComponentPick, (GeometrySnapshot, EdgeBlendSizes)>,
     pub(super) active: Option<(SizeHandleId, GeometrySnapshot)>,
     pub(super) drag_size: Option<f64>,
+    operation: Option<HandleOperation>,
+}
+
+impl HandleLocation {
+    fn label(self) -> &'static str {
+        match self {
+            Self::Start => "start",
+            Self::End => "end",
+            Self::Seam => "seam",
+            Self::Interior(_) => "interior",
+        }
+    }
+
+    fn size(self, sizes: &EdgeBlendSizes) -> Option<f64> {
+        match self {
+            Self::Start | Self::Seam => Some(sizes.ends[0]),
+            Self::End => Some(sizes.ends[1]),
+            Self::Interior(t) => sizes.interior.iter().find(|(p, _)| *p == t).map(|s| s.1),
+        }
+    }
+
+    fn set_size(self, sizes: &mut EdgeBlendSizes, size: f64) {
+        match self {
+            Self::Start => sizes.ends[0] = size,
+            Self::End => sizes.ends[1] = size,
+            Self::Seam => sizes.ends = [size; 2],
+            Self::Interior(t) => {
+                if let Some((_, value)) = sizes.interior.iter_mut().find(|(p, _)| *p == t) {
+                    *value = size;
+                }
+            }
+        }
+    }
+}
+
+fn set_profile_size(sizes: &mut EdgeBlendSizes, size: f64) {
+    sizes.ends = [size; 2];
+    for (_, value) in &mut sizes.interior {
+        *value = size;
+    }
 }
 
 impl VibocerosApp {
@@ -46,6 +90,7 @@ impl VibocerosApp {
     pub(super) fn reopen_edge_blend_selection(&mut self, mut prompt: Prompt) {
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
+        self.edge_blend_adjustment.operation = None;
         prompt.adjusting = false;
         prompt.awaiting_value = false;
         self.edge_fillet_prompt = Some(prompt);
@@ -77,23 +122,24 @@ impl VibocerosApp {
         prompt: Prompt,
         pick: ComponentPick,
         trial: Option<f64>,
-    ) -> [f64; 2] {
+    ) -> EdgeBlendSizes {
         let mut sizes = self
             .edge_blend_adjustment
             .sizes
             .get(&pick)
             .filter(|(snapshot, _)| current(&self.document, pick, snapshot))
-            .map_or([prompt.radius; 2], |(_, sizes)| *sizes);
+            .map(|(_, sizes)| sizes.clone())
+            .unwrap_or_else(|| [prompt.radius; 2].into());
         if let Some(trial) = trial {
             match &self.edge_blend_adjustment.active {
-                None => return [trial; 2],
+                None => set_profile_size(&mut sizes, trial),
                 Some((id, source))
                     if prompt.link_handles && current(&self.document, id.pick, source) =>
                 {
-                    return [trial; 2];
+                    set_profile_size(&mut sizes, trial);
                 }
                 Some((id, source)) if id.pick == pick && current(&self.document, pick, source) => {
-                    id.end.set_size(&mut sizes, trial);
+                    id.location.set_size(&mut sizes, trial);
                 }
                 Some(_) => {}
             }
@@ -125,20 +171,23 @@ impl VibocerosApp {
             if !prompt.link_handles {
                 let size = std::mem::replace(&mut prompt.radius, default);
                 let mut sizes = self.edge_blend_sizes(*prompt, id.pick, None);
-                id.end.set_size(&mut sizes, size);
+                id.location.set_size(&mut sizes, size);
                 self.edge_blend_adjustment
                     .sizes
                     .insert(id.pick, (source, sizes));
                 self.push_log(format!(
                     "Edge {} {} {} = {size}",
                     id.pick.index,
-                    id.end.label(),
+                    id.location.label(),
                     prompt.parameter()
                 ));
                 return;
             }
         }
-        self.edge_blend_adjustment.sizes.clear();
+        self.edge_blend_adjustment.sizes.retain(|_, (_, profile)| {
+            set_profile_size(profile, prompt.radius);
+            !profile.interior.is_empty()
+        });
     }
 
     pub(in crate::app) fn edge_blend_size_handles(&self) -> Vec<SizeHandle> {
@@ -160,24 +209,34 @@ impl VibocerosApp {
                 continue;
             };
             let [a, b] = edge.vertices();
-            let ends: &[(HandleEnd, f64)] = if a == b {
-                &[(HandleEnd::Seam, 0.)]
+            let ends: &[(HandleLocation, f64)] = if a == b {
+                &[(HandleLocation::Seam, 0.)]
             } else {
-                &[(HandleEnd::Start, 0.08), (HandleEnd::End, 0.92)]
+                &[(HandleLocation::Start, 0.08), (HandleLocation::End, 0.92)]
             };
             let curve = edge.curve();
             let domain = curve.domain();
             let sizes = self.edge_blend_sizes(prompt, pick, self.edge_blend_adjustment.drag_size);
-            for &(end, fraction) in ends {
+            for ((location, fraction), size) in ends
+                .iter()
+                .copied()
+                .filter_map(|end| Some((end, end.0.size(&sizes)?)))
+                .chain(
+                    sizes
+                        .interior
+                        .iter()
+                        .map(|&(t, size)| ((HandleLocation::Interior(t), t), size)),
+                )
+            {
                 let parameter = (domain.end() - domain.start()).mul_add(fraction, *domain.start());
                 let Ok(point) = curve.evaluate(parameter) else {
                     continue;
                 };
-                let id = SizeHandleId { pick, end };
+                let id = SizeHandleId { pick, location };
                 handles.push(SizeHandle {
                     id,
                     point,
-                    size: end.size(sizes),
+                    size,
                     active: self
                         .edge_blend_adjustment
                         .active
@@ -204,7 +263,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let size = id.end.size(self.edge_blend_sizes(prompt, id.pick, None));
+        let Some(size) = id
+            .location
+            .size(&self.edge_blend_sizes(prompt, id.pick, None))
+        else {
+            return false;
+        };
         let Some(object) = self.document.object(id.pick.object) else {
             return false;
         };
@@ -215,7 +279,9 @@ impl VibocerosApp {
             return false;
         };
         let [a, b] = edge.vertices();
-        if (a == b) != (id.end == HandleEnd::Seam) {
+        if !matches!(id.location, HandleLocation::Interior(_))
+            && (a == b) != (id.location == HandleLocation::Seam)
+        {
             return false;
         }
         self.edge_blend_adjustment.active = Some((id, object.geometry_snapshot().clone()));
@@ -226,15 +292,19 @@ impl VibocerosApp {
         self.push_log(format!(
             "Edge {} {} {} = {size}. Enter a size or use FromCurve or FromTwoPoints.",
             id.pick.index,
-            id.end.label(),
+            id.location.label(),
             prompt.parameter()
         ));
         true
     }
 
     pub(in crate::app) fn edit_edge_blend_handle(&mut self, gesture: HandleGesture) -> bool {
+        if self.edge_blend_adjustment.operation.is_some() {
+            return self.use_edge_handle_operation(gesture);
+        }
         let (id, value, finished) = match gesture {
             HandleGesture::Pick(id) => return self.pick_edge_size_handle(id),
+            HandleGesture::Place(_) => return false,
             HandleGesture::Drag {
                 id,
                 value,

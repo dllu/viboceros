@@ -5,9 +5,10 @@ selected-edge fillet executive with a linear cross-section, retaining editable
 B-rep surfaces, trims and topology.
 
 Start `ChamferEdge`, select edges and press Enter to adjust their distances.
-Click or drag an endpoint handle, use `SetAll` for a common distance, or use
-`SelectEdges` to resume picking. `LinkHandles=Yes` applies each edit to every
-handle. Different endpoint sizes require `RailType=RollingBall`.
+Click or drag a handle, use `SetAll` for a common distance, or use
+`SelectEdges` to resume picking. Use `AddHandle`, `CopyHandle` and `RemoveHandle`
+as in [FilletEdge](fillet-edge.md). `LinkHandles=Yes` applies each edit to every
+handle. Varying sizes along an edge require `RailType=RollingBall`.
 `ShowChamferDistance=No` hides size labels until
 hovered. Press Enter from adjustment to apply. Edge-component preselection,
 click/window selection and component ambiguity choices work. Enter `Distance`
@@ -67,7 +68,7 @@ Licensed Rhino capture remains pending after the recorded
 [Wine startup failure](../oracle-sspi.md); full shape/getter parity and comparative
 performance are unqualified.
 
-Interior handles, variable `DistBetweenRails` distances, `DistFromEdge`, open polysurfaces,
+Variable `DistBetweenRails` distances, `DistFromEdge`, open polysurfaces,
 TrimAndJoin=No, History editing
 and saved native defaults remain future work. General collapsing offsets and
 self-intersections require broader qualification.

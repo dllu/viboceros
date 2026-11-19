@@ -2,7 +2,7 @@
 use super::*;
 use viboceros_geometry::Brep;
 mod sizes;
-pub use sizes::EdgeBlendProfile;
+pub use sizes::{EdgeBlendProfile, EdgeBlendSizes};
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EdgeBlendRailType {
     DistanceBetweenRails,

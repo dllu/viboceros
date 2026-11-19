@@ -10,11 +10,13 @@ FilletEdge Radius=1 All=Yes
 ```
 
 The first form starts viewport edge picking. Select edges and press Enter to
-open size adjustment. Click a start or end handle to type a radius, use
-`FromCurve` or `FromTwoPoints`, or drag the handle up or down. Open edges blend
-linearly between the two sizes over their curve parameter. A closed edge has
-one handle for its common radius. `LinkHandles=Yes` makes any size edit apply to
-every handle. Use `SetAll=2` to set all radii to 2, `SelectEdges` to resume picking, or
+open size adjustment. Click a handle to type a radius, use `FromCurve` or
+`FromTwoPoints`, or drag the handle up or down. `AddHandle` places a radius
+along a selected edge. `CopyHandle` asks for a source handle and a new location.
+`RemoveHandle` deletes a placed handle. SMLib interpolates the radii over the
+edge's curve parameter. An open edge with only endpoint handles varies
+linearly. `LinkHandles=Yes` makes any size edit apply to every handle. Use
+`SetAll=2` to set all radii to 2, `SelectEdges` to resume picking, or
 `ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.
 Esc leaves an active size getter or cancels the command from the handle prompt.
 Component preselection is retained for confirmation. The indexed form accepts
@@ -53,10 +55,9 @@ It tightens circular cross-section generation and validates closed input and
 output, boundary face intersections and unexpected contacts before conversion.
 Pole connectors require a continuous surface-image certificate at their vertex.
 
-This checkpoint supports endpoint variation on closed B-reps in Linux native
+This checkpoint supports variable radii on closed B-reps in Linux native
 builds. `Corner=Ball` requires a common radius on each solid.
-Interior handles, open polysurfaces, alternative
-rail types, editing old fillets and broader failure cases
+Open polysurfaces, alternative rail types, editing old fillets and broader failure cases
 remain work. The intersection guard bounds input and output to 362 faces. Kernel
 intersection curves must lie entirely on shared trimmed topological edges, and
 isolated contacts must lie on shared edges or vertices. Adjacent faces are

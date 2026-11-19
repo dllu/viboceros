@@ -1,6 +1,7 @@
 //! Stage owned circular, chamfer and G2 edge blends before document edits.
 use super::*;
 use viboceros_document::GeometrySnapshot;
+pub use viboceros_smlib::EdgeBlendSizes;
 mod face_edges;
 pub use face_edges::edge_blend_face_edges;
 mod sizes;
@@ -107,7 +108,7 @@ impl EdgeBlendKind {
 pub struct EdgeBlendPlan {
     kind: EdgeBlendKind,
     tolerance: Tolerance,
-    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, [Real; 2])>)>,
+    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, EdgeBlendSizes)>)>,
 }
 
 impl EdgeBlendSelection {
@@ -241,23 +242,33 @@ impl EdgeBlendPlan {
         picks: impl IntoIterator<Item = (ObjectId, usize, [Real; 2])>,
         kind: EdgeBlendKind,
     ) -> Result<Self, CommandError> {
-        let mut by_object = BTreeMap::<ObjectId, BTreeMap<usize, [Real; 2]>>::new();
+        Self::capture_profiles(
+            document,
+            picks
+                .into_iter()
+                .map(|(id, edge, sizes)| (id, edge, sizes.into())),
+            kind,
+        )
+    }
+
+    pub fn capture_profiles(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize, EdgeBlendSizes)>,
+        kind: EdgeBlendKind,
+    ) -> Result<Self, CommandError> {
+        let mut by_object = BTreeMap::<ObjectId, BTreeMap<usize, EdgeBlendSizes>>::new();
         for (count, (id, edge, sizes)) in picks.into_iter().enumerate() {
-            if count >= 100000
-                || sizes
-                    .into_iter()
-                    .any(|size| !size.is_finite() || size <= 0.)
-                || !document.is_object_selectable(id)
-            {
+            if count >= 100000 || !sizes.is_valid() || !document.is_object_selectable(id) {
                 return Err(CommandError::Usage(kind.usage()));
             }
-            if by_object
-                .entry(id)
-                .or_default()
-                .insert(edge, sizes)
-                .is_some_and(|prior| prior != sizes)
-            {
-                return Err(CommandError::Usage("An edge has conflicting blend sizes"));
+            match by_object.entry(id).or_default().entry(edge) {
+                std::collections::btree_map::Entry::Vacant(entry) => {
+                    entry.insert(sizes);
+                }
+                std::collections::btree_map::Entry::Occupied(entry) if entry.get() != &sizes => {
+                    return Err(CommandError::Usage("An edge has conflicting blend sizes"));
+                }
+                _ => {}
             }
         }
         if by_object.is_empty() {
@@ -274,9 +285,9 @@ impl EdgeBlendPlan {
             if !brep.is_solid() || edges.keys().any(|&edge| edge >= brep.edges().len()) {
                 return Err(CommandError::Usage(kind.usage()));
             }
-            if edges.iter().any(|(&edge, &[start, end])| {
+            if edges.iter().any(|(&edge, sizes)| {
                 let [a, b] = brep.edges()[edge].vertices();
-                a == b && start != end
+                a == b && sizes.ends[0] != sizes.ends[1]
             }) {
                 return Err(CommandError::Usage(
                     "A closed edge has one size at its seam",
@@ -302,8 +313,8 @@ impl EdgeBlendPlan {
             let Geometry::Brep(brep) = &*geometry else {
                 unreachable!("captured an edge blend on a B-rep");
             };
-            let size = edges[0].1[0];
-            let result = if edges.iter().all(|&(_, values)| values == [size; 2]) {
+            let size = edges[0].1.ends[0];
+            let result = if edges.iter().all(|(_, values)| values.all_equal_to(size)) {
                 let indices = edges.iter().map(|edge| edge.0).collect::<Vec<_>>();
                 blend(brep, &indices, size, self.kind, self.tolerance)?
             } else {

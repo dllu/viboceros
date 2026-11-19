@@ -435,6 +435,7 @@ pub struct ViewportInput<'a> {
     pub edge_blend_curves: &'a [NurbsCurve],
     pub(crate) edge_blend_handles: &'a [edge_blend::SizeHandle],
     pub(crate) show_edge_blend_handles: bool,
+    pub(crate) edge_blend_handle_mode: edge_blend::HandleMode<'a>,
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub select_uv_rows: Option<(
@@ -625,6 +626,7 @@ impl Default for ViewportInput<'_> {
             edge_blend_curves: &[],
             edge_blend_handles: &[],
             show_edge_blend_handles: true,
+            edge_blend_handle_mode: Default::default(),
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
@@ -2847,6 +2849,7 @@ impl Viewport {
             rect,
             input.edge_blend_handles,
             input.show_edge_blend_handles,
+            input.edge_blend_handle_mode,
         );
         for segment in projected.segments {
             painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));

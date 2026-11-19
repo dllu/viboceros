@@ -1356,16 +1356,22 @@ impl VibocerosApp {
             && component_pick == Some(crate::viewport::ComponentPickFilter::Edges);
         let chain_pick =
             self.chain_prompt.is_some() && !self.picking_edge_blend_chain() && model_input_active;
-        let edge_blend_handles = if model_input_active
+        let edge_handle_input = model_input_active
             && self.plane_prompt.is_none()
             && self.nested_measurement.is_none()
             && !self.zoom_window_pending
-            && self.zoom_target.is_none()
-        {
+            && self.zoom_target.is_none();
+        let edge_blend_handles = if edge_handle_input {
             self.edge_blend_size_handles()
         } else {
             Vec::new()
         };
+        let edge_placement_curves = if edge_handle_input {
+            self.edge_handle_placement_curves(&self.document)
+        } else {
+            Vec::new()
+        };
+        let edge_blend_handle_mode = self.edge_handle_mode(&edge_placement_curves);
         let show_edge_blend_handles = self.show_edge_size_handles();
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
@@ -1592,6 +1598,7 @@ impl VibocerosApp {
                             },
                             edge_blend_handles: &edge_blend_handles,
                             show_edge_blend_handles,
+                            edge_blend_handle_mode,
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()

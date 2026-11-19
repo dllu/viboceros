@@ -3,11 +3,12 @@
 `BlendEdge` uses usd-brep's native selected-edge executive with a quintic curvature (G2) cross-section and unit blend scale. It retains editable B-rep surfaces, trims and topology.
 
 Start `BlendEdge`, select edges and press Enter to open size adjustment. Click
-or drag an endpoint handle to edit its size, use `SetAll` to set every size, or
+or drag a handle to edit its size, use `SetAll` to set every size, or
 use `SelectEdges` to resume picking. `LinkHandles=Yes` applies each edit to every
-handle. Different endpoint sizes require `RailType=RollingBall`. Press Enter
+handle. Varying sizes along an edge require `RailType=RollingBall`. Press Enter
 again to apply. Edge preselection,
-viewport picking and [size adjustment](fillet-edge.md) work as in `FilletEdge`.
+viewport picking and [size adjustment](fillet-edge.md), including adding,
+copying and removing handles, work as in `FilletEdge`.
 
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, radius or rail update it.
@@ -39,6 +40,6 @@ On a right-angle straight edge the rolling mode has setback `r`; the width mode 
 
 See the [qualification record](../blend-edge-qualification.json) for tested shapes, failures, sanitizer configuration and current limits. Licensed Rhino capture remains pending the recorded [Wine startup failure](../oracle-sspi.md). Shape equality, native getter parity and comparative performance remain unqualified.
 
-Interior handles, variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, `TrimAndJoin=No`, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
+Variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, `TrimAndJoin=No`, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
 
 References: [Rhino BlendEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendedge.htm), [public BlendType](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BlendType.htm).

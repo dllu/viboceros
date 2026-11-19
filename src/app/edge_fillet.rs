@@ -57,7 +57,7 @@ impl Prompt {
                 "Enter edge radius with optional units"
             }
         } else if self.adjusting {
-            "Select a size handle, use SetAll or LinkHandles, or return to SelectEdges. Enter applies. Esc cancels."
+            "Select a size handle or use AddHandle, CopyHandle, SetAll, LinkHandles or SelectEdges. Enter applies. Esc cancels."
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
@@ -282,6 +282,9 @@ impl VibocerosApp {
             .unwrap_or((keyword, ""));
         let (option, inline_value) = name.split_once('=').unwrap_or((name, options));
         let set_all = option.eq_ignore_ascii_case("SetAll") && prompt.adjusting;
+        if prompt.adjusting && self.start_edge_handle_operation(prompt, keyword) {
+            return true;
+        }
         if prompt.adjusting && keyword.eq_ignore_ascii_case("SelectEdges") {
             self.reopen_edge_blend_selection(prompt);
             return true;
@@ -312,7 +315,7 @@ impl VibocerosApp {
             if self.finish_edge_blend_faces(true) {
                 return true;
             }
-            if !self.dismiss_edge_size_input() {
+            if !self.dismiss_edge_handle_operation() && !self.dismiss_edge_size_input() {
                 if prompt.adjusting {
                     self.finish_edge_fillet(true);
                 } else {
@@ -325,7 +328,7 @@ impl VibocerosApp {
             if self.finish_edge_blend_faces(false) {
                 return true;
             }
-            if !self.dismiss_edge_size_input() {
+            if !self.dismiss_edge_handle_operation() && !self.dismiss_edge_size_input() {
                 self.finish_edge_fillet(false);
             }
             return true;
@@ -457,15 +460,21 @@ impl VibocerosApp {
 
     pub(super) fn log_edge_blend_prompt(&mut self) {
         if let Some(prompt) = self.edge_fillet_prompt {
+            let hint = if self.picking_edge_blend_faces() {
+                FACE_EDGES_HINT
+            } else {
+                self.edge_handle_operation_hint()
+                    .unwrap_or_else(|| prompt.hint())
+            };
+            let remove = if prompt.adjusting && self.has_added_edge_handles() {
+                " Use RemoveHandle to delete an added handle."
+            } else {
+                ""
+            };
             self.push_log(format!(
-                "{} {}. {}",
+                "{} {}. {hint}{remove}",
                 prompt.name(),
-                prompt.options(),
-                if self.picking_edge_blend_faces() {
-                    FACE_EDGES_HINT
-                } else {
-                    prompt.hint()
-                }
+                prompt.options()
             ));
         }
     }
@@ -490,7 +499,7 @@ impl VibocerosApp {
                     self.edge_blend_sizes(prompt, p, trial_size),
                 )
             });
-        EdgeBlendPlan::capture_end_sizes(&self.document, picks, prompt.kind)
+        EdgeBlendPlan::capture_profiles(&self.document, picks, prompt.kind)
             .map_err(|error| error.to_string())
     }
 

@@ -910,7 +910,7 @@ struct BallCornerScope {
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
                           double radius, double accuracy, EdgeBlend kind, bool between_rails,
                           bool local_merge = false, const double *sizes = nullptr,
-                          const double *end_sizes = nullptr) {
+                          const double *parameters = nullptr, const size_t *offsets = nullptr) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
             "Invalid edge blend parameters");
     require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
@@ -927,15 +927,39 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     for (size_t i = 0; i < count; ++i) {
         require(indices[i] < seen.size(), "Fillet source edge index is out of range");
         if (sizes) {
-            require(!seen[indices[i]] && std::isfinite(sizes[i]) && sizes[i] > 0,
-                    "Invalid or repeated sized edge");
-            edge_sizes.Add(sizes[i]);
+            require(!seen[indices[i]], "Invalid or repeated sized edge");
+            const auto start = offsets[i], end = offsets[i + 1];
+            require(end >= start + 2 && parameters[start] == 0. && parameters[end - 1] == 1.,
+                    "Invalid edge size profile");
+            const double first = sizes[start];
+            bool varying = false;
+            for (auto j = start; j < end; ++j) {
+                require(std::isfinite(sizes[j]) && sizes[j] > 0 &&
+                            (j == start || parameters[j - 1] < parameters[j]),
+                        "Invalid edge size station");
+                varying |= sizes[j] != first;
+            }
+            edge_sizes.Add(first);
             SmFilletLaw *law = nullptr;
-            if (end_sizes && end_sizes[i] != sizes[i]) {
-                require(std::isfinite(end_sizes[i]) && end_sizes[i] > 0,
-                        "Invalid edge end size");
+            if (varying) {
                 require(!between_rails, "Varying sizes require RollingBall rails");
-                laws.emplace_back(new (context) SmLinearFilletLaw(sizes[i], end_sizes[i]));
+                if (end - start == 2) {
+                    laws.emplace_back(new (context) SmLinearFilletLaw(first, sizes[end - 1]));
+                } else {
+                    SmTArray<double> stations, radii;
+                    for (auto j = start; j < end; ++j) {
+                        stations.Add(parameters[j]);
+                        radii.Add(sizes[j]);
+                    }
+                    SmBoolean error = FALSE;
+                    // Zero end curvature allows the solver to extend open rails for corner trims.
+                    // A closed edge instead needs matching slopes across its seam.
+                    const SmEdge *edge = solid->source_edges[indices[i]];
+                    const auto mode = edge->GetStartVertex() == edge->GetEndVertex() ? 2 : 3;
+                    laws.emplace_back(new (context) SmBSplineFilletLaw(
+                        context, stations, radii, mode, SmExtent1d(0., 1.), error));
+                    require(!error, "Could not interpolate edge blend sizes");
+                }
                 law = laws.back().get();
             }
             radius_types.Add(law ? SM_FS_VARIABLE_RADIUS : constant_type);
@@ -1061,17 +1085,18 @@ extern "C" int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indic
 }
 
 extern "C" int vb_imported_solid_blend_edge_sizes(VbSolid *solid, const size_t *indices,
-                                                  const double *sizes, const double *end_sizes, size_t count, double minimum,
+                                                  const double *sizes, const double *parameters, const size_t *offsets,
+                                                  size_t count, double minimum,
                                                   double accuracy, int profile, int rail_type,
                                                   int local_merge, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        require(sizes && profile >= 0 && profile <= 2 && (rail_type == 0 || rail_type == 1) &&
+        require(sizes && parameters && offsets && profile >= 0 && profile <= 2 && (rail_type == 0 || rail_type == 1) &&
                     (local_merge == 0 || (local_merge == 1 && profile == 0)),
                 "Invalid per-edge blend options");
         const auto kind = profile == 0 ? EdgeBlend::Circular :
                           profile == 1 ? EdgeBlend::Chamfer : EdgeBlend::Curvature;
         blend_imported_edges(solid, indices, count, minimum, accuracy, kind, profile != 0 && rail_type == 0,
-                             local_merge != 0, sizes, end_sizes);
+                             local_merge != 0, sizes, parameters, offsets);
     });
 }
 
