@@ -3,6 +3,8 @@ use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 #[cfg(feature = "native-smlib")]
 mod boundary;
+#[cfg(feature = "native-smlib")]
+mod flat_boundary;
 pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [ToBoundary=id[:face]] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand {
     pub(super) preferences: std::sync::Arc<crate::remembered::Remembered<SurfaceApexOptions>>,
@@ -352,12 +354,17 @@ fn native_extrusion(
         .map(|face| face.transformed(shift, tolerance))
         .transpose()?;
     let shallow_cut = if let Some(boundary) = &boundary {
-        local.try_shallow_apex_to_planar_boundary(
+        let planar = local.try_shallow_apex_to_planar_boundary(
             apex,
             boundary,
             options.split_at_tangents,
             tolerance,
-        )?
+        )?;
+        if planar.is_some() {
+            planar
+        } else {
+            flat_boundary::truncate(&local, boundary, apex, options.split_at_tangents, tolerance)?
+        }
     } else {
         None
     };

@@ -1,0 +1,103 @@
+//! Cut a flat sweep at the picked face's intersection with the source plane.
+use super::*;
+use viboceros_geometry::{
+    BoundingBox3, Plane, SurfaceBrepIntersectionEvent, SurfaceIntersectionOutput,
+    surface_brep_intersection_events_with_operation,
+};
+use viboceros_smlib::Shape;
+
+pub(super) fn truncate(
+    source: &Brep,
+    cutter: &Brep,
+    apex: Point3,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<Option<Brep>, CommandError> {
+    let [base] = source.faces() else {
+        return Ok(None);
+    };
+    let Some(plane) = base.surface().plane(tolerance)? else {
+        return Ok(None);
+    };
+    let extent = source.bounds().union(BoundingBox3::from_points([apex])?)?;
+    let size = extent.min().distance_to(extent.max())?;
+    let rounding = (64. * f64::EPSILON * size).min(tolerance.absolute());
+    if plane.signed_distance_to(apex)?.abs() > rounding {
+        return Ok(None);
+    }
+    for control in base.surface().control_points() {
+        if plane.signed_distance_to(control.point())?.abs() > rounding {
+            return Ok(None);
+        }
+    }
+    if cutter.faces()[0].surface().plane(tolerance)?.is_some() {
+        return Ok(None);
+    }
+
+    let support = section_plane(plane, extent, tolerance)?;
+    let events = surface_brep_intersection_events_with_operation(
+        &support,
+        cutter,
+        tolerance,
+        &mut |a, b, tol| -> Result<_, CommandError> {
+            Ok(SurfaceIntersectionOutput::Clipped(
+                viboceros_smlib::surface_face_intersection_events(a, b, tol)?,
+            ))
+        },
+    )?;
+    let sections: Vec<_> = events
+        .into_iter()
+        .filter_map(|event| match event {
+            SurfaceBrepIntersectionEvent::Curve(curve) => Some(curve),
+            SurfaceBrepIntersectionEvent::Point(_) => None,
+        })
+        .collect();
+    let [section] = sections.as_slice() else {
+        return Err(CommandError::Usage(boundary::NO_SECTION));
+    };
+
+    // Extend the true plane section in the normal direction. Raising the
+    // apex then leaves every radial crossing unchanged in the source plane.
+    // The native cut can construct regular topology at a useful height.
+    let lift = plane.normal().as_vector().scaled(size)?;
+    let curtain = NurbsSurface::try_extruded_curve(section, lift.scaled(-1.)?, lift.scaled(2.)?)?;
+    let curtain = Brep::try_surface_face(curtain, tolerance)?;
+    let lifted_apex = apex.translated(lift)?;
+    let sweep = Shape::from_brep(source, tolerance)?
+        .extruded_faces_to_point_with_tangents(lifted_apex, true, split_at_tangents, tolerance)?
+        .to_brep(tolerance)?;
+    let cut = boundary::truncate(&sweep, &curtain, lifted_apex, tolerance)?;
+    Ok(Some(cut.try_projected_onto_plane(plane, tolerance)?))
+}
+
+fn section_plane(
+    plane: Plane,
+    bounds: BoundingBox3,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, CommandError> {
+    let frame = Frame3::try_from_unit_normal(plane.origin(), plane.normal())?;
+    let low = bounds.min().to_array();
+    let high = bounds.max().to_array();
+    let mut minimum = [f64::INFINITY; 2];
+    let mut maximum = [f64::NEG_INFINITY; 2];
+    for x in [low[0], high[0]] {
+        for y in [low[1], high[1]] {
+            for z in [low[2], high[2]] {
+                let [u, v, _] = frame.coordinates_of(Point3::try_new(x, y, z)?)?;
+                minimum[0] = minimum[0].min(u);
+                maximum[0] = maximum[0].max(u);
+                minimum[1] = minimum[1].min(v);
+                maximum[1] = maximum[1].max(v);
+            }
+        }
+    }
+    let padding = 8. * tolerance.absolute();
+    let [left, bottom] = minimum.map(|x| x - padding);
+    let [right, top] = maximum.map(|x| x + padding);
+    Ok(NurbsSurface::try_bilinear([
+        frame.point_at([left, bottom, 0.])?,
+        frame.point_at([right, bottom, 0.])?,
+        frame.point_at([right, top, 0.])?,
+        frame.point_at([left, top, 0.])?,
+    ])?)
+}

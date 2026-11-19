@@ -80,10 +80,15 @@ collapses to a line and the result has zero volume. The analytic cut also
 works with a perpendicular cutter for a flat sweep. Rhino declined that
 alignment in the captured rectangular case.
 
+Flat sweeps to a warped cutter use the picked face's intersection with the
+source plane as the rim. They require one connected section spanning the
+sweep. The cut retains the source and wall topology and uses a collapsed cap
+bounded by the rim. One tilted Rhino capture retained the full cutter face.
+
 Closed sources without a boundary, invalid face indices and unsupported
-imports decline. Coplanar cuts to warped surfaces, holes wholly enclosed by
-very shallow cuts, and general self-intersection and folding require broader
-qualification.
+imports decline. Very shallow nonflat cuts to warped surfaces, holes wholly
+enclosed by shallow cuts, and general self-intersection and folding require
+broader qualification.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,

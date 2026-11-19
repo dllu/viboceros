@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
-const NO_SECTION: &str =
+pub(super) const NO_SECTION: &str =
     "The boundary must span the complete extrusion between the source and the apex";
 
 pub(super) fn truncate(
