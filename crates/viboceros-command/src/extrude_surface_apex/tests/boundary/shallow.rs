@@ -173,3 +173,90 @@ fn surface_apex_very_shallow_cut_with_competing_sections_keeps_sources_and_histo
         assert_eq!(format!("{doc:?}"), before);
     }
 }
+
+#[test]
+fn surface_apex_shallow_transverse_section_retains_enclosed_cutter_holes() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    let normal = UnitVector3::try_new(1., 0., 0., tolerance).unwrap();
+    let registry = CommandRegistry::with_builtins();
+    // Rhino 8.32 reported six faces and 13 edges for the enclosed hole.
+    // The same cutter outside the section gives 12 edges. At the rim it fails.
+    for (height, fraction, radius, expected_edges) in [
+        (3e-5, 7. / 12., 1.5e-6, Some(13)),
+        (-3e-5, 7. / 12., 1.5e-6, Some(13)),
+        (1e-4, 7. / 12., 4e-6, Some(13)),
+        (3e-5, 0.3, 1.5e-6, Some(12)),
+        (3e-5, 0.5, 1.5e-6, None),
+    ] {
+        let mut doc = Document::new(tolerance);
+        let source = doc.add_geometry(planar_rectangle(0., 0.)).unwrap();
+        let center = p(4., 1.5, fraction * height);
+        let corners = [-4., 4., 4., -4., -4.];
+        let outer = Polyline3::try_new(
+            corners
+                .into_iter()
+                .zip([-4., -4., 4., 4., -4.])
+                .map(|(y, z)| p(4., y, z))
+                .collect(),
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let hole = Circle3::try_new(center, radius, normal, tolerance)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let cutter = Brep::try_planar_face_with_holes(&outer, &[hole], tolerance).unwrap();
+        let boundary = doc.add_geometry(Geometry::Brep(cutter)).unwrap();
+        doc.clear_history().unwrap();
+        let before = format!("{doc:?}");
+        let command = format!(
+            "ExtrudeSrfToPoint 6,1.5,{height} ToBoundary={boundary} FaceRefs={source}:0 DeleteInput=Yes"
+        );
+        let outcome = registry.execute(&mut doc, &command);
+        let Some(edges) = expected_edges else {
+            assert!(outcome.is_err());
+            assert_eq!(format!("{doc:?}"), before);
+            continue;
+        };
+        outcome
+            .unwrap_or_else(|error| panic!("height {height}, hole position {fraction}: {error}"));
+        let Geometry::Brep(cut) = doc.selected_objects().next().unwrap().geometry() else {
+            panic!("expected a truncated sweep");
+        };
+        assert_eq!([cut.faces().len(), cut.edges().len()], [6, edges]);
+        assert_eq!(cut.is_solid(), edges == 12);
+        for vertex in [
+            p(4., 0.75, 0.5 * height),
+            p(4., 1., height * 2. / 3.),
+            p(4., 2.25, 0.5 * height),
+            p(4., 2., height * 2. / 3.),
+        ] {
+            assert!(
+                cut.vertices()
+                    .iter()
+                    .any(|v| v.point().is_near(vertex, tolerance))
+            );
+        }
+        if edges == 13 {
+            let cap = cut
+                .faces()
+                .iter()
+                .find(|face| face.loops().len() == 2)
+                .unwrap();
+            let hole = &cap.loops()[1].trims()[0];
+            let curve = cut.edges()[hole.edge().unwrap()].curve();
+            for fraction in [0., 0.13, 0.48, 0.72, 1.] {
+                let point = curve
+                    .evaluate(curve.parameter_at(fraction).unwrap())
+                    .unwrap();
+                assert!((point.distance_to(center).unwrap() - radius).abs() < 1e-11);
+            }
+        }
+        assert!(doc.object(source).is_none());
+        assert!(doc.object(boundary).is_some());
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert!(doc.object(source).is_some());
+    }
+}

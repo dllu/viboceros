@@ -1,5 +1,7 @@
 use super::*;
 
+mod apertures;
+
 #[test]
 fn surface_apex_boundary_getter_picks_a_face_and_previews_only_to_the_boundary() {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};

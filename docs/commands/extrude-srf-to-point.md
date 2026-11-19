@@ -33,9 +33,9 @@ an independent result. Inline face selectors and options survive source picking.
 At the apex prompt, enter `ToBoundary`, pick one boundary surface or B-rep
 face, then place the apex beyond it. The preview ends at the boundary and the
 result uses the base and the picked surface as caps. Holes enclosed by the cut
-section remain open. Partial coverage and holes crossing the outer section
-leave the point prompt available for retry. Scripts can use `ToBoundary=id`
-or `ToBoundary=id:index`.
+section remain open and their rims appear in the preview. Partial coverage and
+holes crossing the section rim leave the point prompt available for retry.
+Scripts can use `ToBoundary=id` or `ToBoundary=id:index`.
 
 Initial options are `Solid=No DeleteInput=No SplitAtTangents=No`. A successful
 extrusion saves those choices for the next invocation. Esc discards provisional
@@ -75,10 +75,10 @@ When every wall is omitted, `Solid=No` produces a point at the apex. Rhino
 stores that point as a vertex-only B-rep.
 With a planar cutter, `ToBoundary` also accepts very shallow and coplanar
 sweeps when the picked face spans the full section. Perspective projection
-preserves the exact rim and the shared edge topology. A coplanar section
-collapses to a line and the result has zero volume. The analytic cut also
-works with a perpendicular cutter for a flat sweep. Rhino declined that
-alignment in the captured rectangular case.
+preserves the exact rim, enclosed cutter holes and shared edge topology. A
+coplanar section collapses to a line and the result has zero volume. The
+analytic cut also works with a perpendicular cutter for a flat sweep. Rhino
+declined that alignment in the captured rectangular case.
 
 Flat sweeps to a warped cutter use the picked face's intersection with the
 source plane as the rim. Sections outside the sweep are ignored. A flat cut
@@ -96,10 +96,12 @@ disconnected sections. The command keeps the nearest complete section and
 leaves the apex getter open if a closer partial section interferes. The
 viewport uses the first hit along each sampled ruling. Within one model
 tolerance of the source plane, competing hits on a ruling hide the preview.
+For a planar cutter that cannot be meshed, the preview intersects the plane
+and tests its trims directly.
 
 Closed sources without a boundary, invalid face indices and unsupported
-imports decline. Holes wholly enclosed by shallow cuts, extremely small
-nonzero heights, and general self-intersection and folding require broader
+imports decline. Extremely small nonzero heights, shallow near-parallel
+cutters, and general self-intersection and folding require broader
 qualification.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and

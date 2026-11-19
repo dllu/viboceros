@@ -5,6 +5,8 @@ use crate::{
     intersection::curve_plane_root_parameters,
 };
 
+mod apertures;
+
 const INCOMPLETE_SECTION: &str =
     "the boundary must span the complete extrusion between the source and the apex";
 const PROJECTIVE_POLE: &str = "the projected source carrier crosses the apex plane";
@@ -62,23 +64,6 @@ impl Brep {
                 )
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        // Complete rim coverage rules out holes crossing the cut. A hole
-        // may still lie inside a shallow section that has nonzero area.
-        // Delegate that case to the native cut, which opens the cap.
-        if height != 0.
-            && has_enclosed_boundary_hole(
-                self,
-                boundary,
-                SectionProjection {
-                    plane: source_plane,
-                    apex,
-                    distance: height,
-                },
-                tolerance,
-            )?
-        {
-            return Ok(None);
-        }
         let mut cap = projected_cap(&sweep, &projection, tolerance)?;
         let mut base = sweep.faces.pop().expect("one source face");
         base.reversed = height >= 0.;
@@ -99,6 +84,17 @@ impl Brep {
         {
             trim.vertices = trim.vertices.map(|vertex| vertex + vertex_count);
             trim.edge = trim.edge.map(|edge| edge + edge_count);
+        }
+        if height != 0. {
+            let inverse = SectionProjection {
+                plane: source_plane,
+                apex,
+                distance: height,
+            };
+            let holes = apertures::enclosed(&self.faces[0], boundary, inverse, tolerance)?;
+            if !apertures::append(&mut sweep, &mut cap, boundary, &holes, tolerance)? {
+                return Ok(None);
+            }
         }
 
         let mut radials = vec![None; vertex_count];
@@ -284,29 +280,6 @@ fn projected_cap(
         result => result?,
     };
     Ok(face)
-}
-
-fn has_enclosed_boundary_hole(
-    source: &Brep,
-    boundary: &Brep,
-    inverse: SectionProjection,
-    tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    let face = &source.faces[0];
-    for hole in &boundary.faces[0].loops[1..] {
-        let point = boundary.vertices[hole.trims[0].vertices[0]].point;
-        let factor = 1. - inverse.plane.signed_distance_to(point)? / inverse.distance;
-        if 0. < factor && factor < 1. {
-            let on_source = inverse.project(point, factor)?;
-            let (u, v) = face.surface.closest_parameters(on_source, tolerance)?;
-            if face.surface.evaluate(u, v)?.is_near(on_source, tolerance)
-                && face.contains_parameters(u, v, tolerance)?
-            {
-                return Ok(true);
-            }
-        }
-    }
-    Ok(false)
 }
 
 fn covers_curve(

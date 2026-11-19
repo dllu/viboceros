@@ -6,6 +6,8 @@ use std::{
 };
 use viboceros_geometry::{Brep, BrepFace, MeshProjectionIndex, Plane};
 
+mod apertures;
+
 #[derive(Debug)]
 pub(crate) struct SurfaceApexDraft {
     faces: Vec<FaceDraft>,
@@ -15,8 +17,15 @@ pub(crate) struct SurfaceApexDraft {
 
 #[derive(Debug)]
 struct BoundaryDraft {
-    mesh: Option<MeshProjectionIndex<'static>>,
+    projection: Option<BoundaryProjection>,
+    apertures: Option<apertures::SectionApertures>,
     frame: RefCell<Option<BoundaryFrame>>,
+}
+
+#[derive(Debug)]
+enum BoundaryProjection {
+    Mesh(MeshProjectionIndex<'static>),
+    Planar { plane: Plane, face: Box<BrepFace> },
 }
 
 #[derive(Debug)]
@@ -68,10 +77,8 @@ impl SurfaceApexDraft {
     pub(crate) fn set_boundary(&mut self, boundary: Option<&Brep>, tolerance: Tolerance) {
         self.hover = None;
         self.boundary = boundary.map(|brep| BoundaryDraft {
-            mesh: brep
-                .display_mesh(8, tolerance)
-                .ok()
-                .and_then(|mesh| MeshProjectionIndex::new_owned(mesh).ok()),
+            projection: BoundaryProjection::capture(brep, tolerance),
+            apertures: apertures::SectionApertures::capture(brep, tolerance),
             frame: RefCell::new(None),
         });
     }
@@ -85,13 +92,81 @@ impl BoundaryDraft {
         reject_competing: bool,
         tolerance: Tolerance,
     ) -> Option<Point3> {
+        match self.projection.as_ref()? {
+            BoundaryProjection::Mesh(mesh) => {
+                BoundaryProjection::mesh_hit(mesh, start, apex, reject_competing, tolerance)
+            }
+            BoundaryProjection::Planar { plane, face } => {
+                BoundaryProjection::planar_hit(*plane, face, start, apex, tolerance)
+            }
+        }
+    }
+
+    fn clipped_edges(
+        &self,
+        source: &SurfaceApexDraft,
+        apex: Point3,
+        tolerance: Tolerance,
+    ) -> Option<Vec<[Point3; 2]>> {
+        let mut edges = Vec::new();
+        for face in &source.faces {
+            let mut section = Vec::new();
+            let near_plane = face.plane.is_some_and(|plane| {
+                plane
+                    .signed_distance_to(apex)
+                    .is_ok_and(|distance| distance.abs() <= tolerance.absolute())
+            });
+            for &[a, b] in face.walls.iter().flat_map(|wall| &wall.rim) {
+                let cut = [
+                    self.project(a, apex, near_plane, tolerance)?,
+                    self.project(b, apex, near_plane, tolerance)?,
+                ];
+                edges.extend([[a, b], cut]);
+                if self.apertures.is_some() {
+                    section.push(cut);
+                }
+            }
+            for start in FaceDraft::rulings(face.walls.iter()) {
+                edges.push([start, self.project(start, apex, near_plane, tolerance)?]);
+            }
+            if let Some(apertures) = &self.apertures {
+                apertures.append(&section, apex, face.plane, &mut edges)?;
+            }
+        }
+        Some(edges)
+    }
+}
+
+impl BoundaryProjection {
+    fn capture(brep: &Brep, tolerance: Tolerance) -> Option<Self> {
+        if let Some(mesh) = brep
+            .display_mesh(8, tolerance)
+            .ok()
+            .and_then(|mesh| MeshProjectionIndex::new_owned(mesh).ok())
+        {
+            return Some(Self::Mesh(mesh));
+        }
+        // A valid trimmed plane can contain detail too small for a
+        // display mesh. Use the actual face trims to check those hits.
+        let [face] = brep.faces() else {
+            return None;
+        };
+        Some(Self::Planar {
+            plane: face.surface().plane(tolerance).ok()??,
+            face: Box::new(face.clone()),
+        })
+    }
+
+    fn mesh_hit(
+        mesh: &MeshProjectionIndex<'_>,
+        start: Point3,
+        apex: Point3,
+        reject_competing: bool,
+        tolerance: Tolerance,
+    ) -> Option<Point3> {
         let direction = start.direction_to(apex).ok()?.as_vector();
         let length = start.distance_to(apex).ok()?;
-        let hits = self
-            .mesh
-            .as_ref()?
-            .project_point(start, direction, tolerance)
-            .ok()?;
+        let hits = mesh.project_point(start, direction, tolerance).ok()?;
         // Mesh projection returns hits in increasing line parameter.
         let mut hits = hits.into_iter().filter_map(|point| {
             let distance = direction.dot(start.vector_to(point).ok()?).ok()?;
@@ -105,31 +180,27 @@ impl BoundaryDraft {
         Some(first)
     }
 
-    fn clipped_edges(
-        &self,
-        source: &SurfaceApexDraft,
+    fn planar_hit(
+        plane: Plane,
+        face: &BrepFace,
+        start: Point3,
         apex: Point3,
         tolerance: Tolerance,
-    ) -> Option<Vec<[Point3; 2]>> {
-        let mut edges = Vec::new();
-        for face in &source.faces {
-            let near_plane = face.plane.is_some_and(|plane| {
-                plane
-                    .signed_distance_to(apex)
-                    .is_ok_and(|distance| distance.abs() <= tolerance.absolute())
-            });
-            for &[a, b] in face.walls.iter().flat_map(|wall| &wall.rim) {
-                edges.push([a, b]);
-                edges.push([
-                    self.project(a, apex, near_plane, tolerance)?,
-                    self.project(b, apex, near_plane, tolerance)?,
-                ]);
-            }
-            for start in FaceDraft::rulings(face.walls.iter()) {
-                edges.push([start, self.project(start, apex, near_plane, tolerance)?]);
-            }
+    ) -> Option<Point3> {
+        let a = plane.signed_distance_to(start).ok()?;
+        let b = plane.signed_distance_to(apex).ok()?;
+        let fraction = a / (a - b);
+        let margin = tolerance.absolute() / start.distance_to(apex).ok()?;
+        if !(margin < fraction && fraction < 1. - margin) {
+            return None;
         }
-        Some(edges)
+        let point = start
+            .translated(start.vector_to(apex).ok()?.scaled(fraction).ok()?)
+            .ok()?;
+        let (u, v) = face.surface().closest_parameters(point, tolerance).ok()?;
+        let on_surface = face.surface().evaluate(u, v).ok()?;
+        (on_surface.is_near(point, tolerance) && face.contains_parameters(u, v, tolerance).ok()?)
+            .then_some(point)
     }
 }
 
