@@ -280,32 +280,22 @@ fn extrude(
     };
     let stock = swept.to_brep(tolerance)?;
     if oblique && !stock.is_solid() {
-        let plane = original.faces()[0]
-            .surface()
-            .plane(tolerance)?
-            .ok_or(REJECTED)?;
-        if oblique::has_wall_gap(&stock, plane, tolerance)? {
-            if curve.is_none() {
-                return Ok(Product {
-                    brep: stock.transformed(to_world, tolerance)?,
-                    reached_boundary: false,
-                });
-            }
-            return Err(REJECTED);
-        }
-        let result = oblique::trim(
+        let output = match (curve.is_some(), options.solid) {
+            (false, _) => oblique::Output::Surface,
+            (true, true) => oblique::Output::SolidCurve,
+            (true, false) => oblique::Output::CurveWalls,
+        };
+        let mut result = oblique::trim(
             &swept,
-            &stock,
+            stock,
             &original,
             &cutter,
             displacement,
-            curve.is_none() || options.solid,
+            output,
             tolerance,
         )?;
-        return Ok(Product {
-            brep: result.transformed(to_world, tolerance)?,
-            reached_boundary: true,
-        });
+        result.brep = result.brep.transformed(to_world, tolerance)?;
+        return Ok(result);
     }
     let base_face = source.faces()[0].surface();
     let end = temporary_end(&stock, direction, tolerance)?.clone();

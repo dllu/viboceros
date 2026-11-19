@@ -23,15 +23,18 @@ getter also accepts `Direction`. A successful cut uses the actual cutter
 surface as its end cap, including oblique and warped cutters. The temporary
 taper uses the diagonal of the combined source and cutter bounds, so a narrow
 cutter or a collapsing inward taper can fail even close to the source.
-A cutter hole inside the section leaves an opening. One that crosses the
-rim can leave the full temporary sweep and report a failed cut. A contracting
+A cutter hole inside a normal sweep's section leaves an opening. A crossing
+hole can leave the full temporary sweep and report a failed cut. A contracting
 source opening certified to collapse during the temporary sweep is filled by
 a separate face at the base. An oblique sweep with gaps between adjacent walls
 retains its base-capped temporary sweep and reports a failed cut. A continuous
 oblique sweep can use a planar cutter or a bilinear cutter that projects
 one-to-one along the sweep direction. The cutter must span the section.
-Other warped surfaces, cutter holes and partial results from collapse still
-need qualification for slanted sweeps.
+For an oblique sweep and a planar cutter, an enclosed cutter hole rejects
+the cut and keeps the getter open for another pick. A crossing hole can leave
+the full temporary sweep and report a failed cut. Holes outside the section
+leave it intact. Holes within warped sections and partial results from
+collapse still need qualification for slanted sweeps.
 
 With source objects selected:
 

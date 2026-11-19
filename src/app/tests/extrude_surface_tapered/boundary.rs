@@ -228,6 +228,107 @@ fn surface_taper_oblique_boundary_direction_and_viewport_click_close_the_disk() 
     }
 }
 
+#[test]
+fn surface_taper_oblique_boundary_viewport_retries_after_an_enclosed_cutter_hole() {
+    use viboceros_geometry::{Brep, Circle3, Polyline3, UnitVector3};
+
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let circle = Circle3::try_new(
+        point(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+        tolerance,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let source = app
+        .document
+        .add_geometry(Geometry::Brep(
+            Brep::try_planar_face(&circle, tolerance).unwrap(),
+        ))
+        .unwrap();
+    let outline = |[x, y, xx, yy]: [f64; 4], z| {
+        Polyline3::try_new(
+            vec![
+                point(x, y, z),
+                point(xx, y, z),
+                point(xx, yy, z),
+                point(x, yy, z),
+                point(x, y, z),
+            ],
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let mut cutters = Vec::new();
+    for (outer, hole, height) in [
+        ([-9., -9., 15., 13.], [0.8, -0.25, 1.3, 0.25], 5.),
+        ([-7., -8., 16., 12.], [7., -0.25, 8., 0.25], 4.),
+    ] {
+        let face = Brep::try_planar_face_with_holes(
+            &outline(outer, height),
+            &[outline(hole, height)],
+            tolerance,
+        )
+        .unwrap()
+        .try_split_kinky_edges(&[0, 1], tolerance.angular(), tolerance)
+        .unwrap()
+        .unwrap();
+        let chart = face.faces()[0].surface().clone();
+        cutters.push((
+            app.document.add_geometry(Geometry::Brep(face)).unwrap(),
+            chart,
+        ));
+    }
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeSrfTapered ToBoundary DraftAngle=-10 DeleteInput=Yes",
+    );
+    enter(&mut app, "Direction");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,6");
+    assert!(app.picking_tapered_boundary(), "{:?}", app.command_log);
+    let scene_bounds = [point(-10., -10., 0.), point(17., 14., 8.)];
+    pick_boundary_in_top_view(&mut app, scene_bounds, point(-8., -2., 5.));
+    assert!(app.picking_tapered_boundary(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().len(), 3);
+    assert!(!app.document.can_undo());
+    assert!(app.document.is_selected(source));
+    assert!(app.document.is_selected(cutters[0].0));
+
+    pick_boundary_in_top_view(&mut app, scene_bounds, point(15.5, -2., 4.));
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(app.document.object(source).is_none());
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|object| cutters.iter().all(|(id, _)| *id != object.id()))
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a trimmed extrusion");
+    };
+    assert!(result.is_solid());
+    assert!(
+        result
+            .faces()
+            .iter()
+            .any(|face| face.surface() == &cutters[1].1)
+    );
+    enter(&mut app, "Undo");
+    assert!(app.document.object(source).is_some());
+    enter(&mut app, "Redo");
+    assert!(app.document.object(source).is_none());
+}
+
 fn pick_boundary_in_top_view(app: &mut VibocerosApp, bounds: [Point3; 2], aim: Point3) {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
 

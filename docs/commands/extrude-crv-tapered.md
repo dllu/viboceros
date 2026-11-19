@@ -25,9 +25,12 @@ outward convex line-and-arc profile and a parallel rectangular cutter, the
 cutter must span the section. Other cuts use a temporary taper whose length
 comes from the combined bounds. A slanted sweep with a continuous rim can be
 cut by a planar or bilinear cutter that spans the section. A warped bilinear
-cutter must project one-to-one along the sweep direction. Cutter holes, other
-warped surfaces and partial results from gapped or collapsing slanted sweeps
-still need qualification.
+cutter must project one-to-one along the sweep direction. Holes outside the
+cut section leave it intact. For a planar cutter, `Solid=Yes` fills each
+enclosed hole with a separate cap face and `Solid=No` leaves the cut walls.
+A hole that crosses the rim rejects the cut. Rhino's cursor-dependent
+fallback for that case, holes within warped sections, and partial results
+from gapped or collapsing slanted sweeps remain open.
 
 Headless examples, with curves selected:
 

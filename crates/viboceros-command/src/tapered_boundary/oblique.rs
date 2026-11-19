@@ -2,6 +2,15 @@
 use super::*;
 use crate::surface_boundary_cut::{boundary_tool, mount_planar_cap};
 
+mod holes;
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Output {
+    Surface,
+    SolidCurve,
+    CurveWalls,
+}
+
 pub(super) fn crosses_circular_focal_radius(
     source: &Brep,
     direction: Vector3,
@@ -22,7 +31,7 @@ pub(super) fn crosses_circular_focal_radius(
     Ok(inset >= radius * cosine * cosine - tolerance.absolute())
 }
 
-pub(super) fn has_wall_gap(
+fn has_wall_gap(
     stock: &Brep,
     base: Plane,
     tolerance: Tolerance,
@@ -43,6 +52,77 @@ pub(super) fn has_wall_gap(
 
 pub(super) fn trim(
     sweep: &Shape,
+    stock: Brep,
+    source: &Brep,
+    cutter: &Brep,
+    displacement: Vector3,
+    output: Output,
+    tolerance: Tolerance,
+) -> Result<Product, CommandError> {
+    let source_plane = source.faces()[0]
+        .surface()
+        .plane(tolerance)?
+        .ok_or(REJECTED)?;
+    if has_wall_gap(&stock, source_plane, tolerance)? {
+        return if output == Output::Surface {
+            Ok(Product {
+                brep: stock,
+                reached_boundary: false,
+            })
+        } else {
+            Err(REJECTED)
+        };
+    }
+    let cap = output != Output::CurveWalls;
+    let brep = if cutter.faces()[0].loops().len() > 1 {
+        // Intersect the filled outline first so the actual section rim is
+        // available on the cutter's chart, even for a wall-only result.
+        let outline = cutter.try_remove_all_holes(tolerance)?.ok_or(REJECTED)?;
+        let closed = clip(
+            sweep,
+            &stock,
+            source,
+            &outline,
+            displacement,
+            true,
+            tolerance,
+        )?;
+        let section = closed.faces().last().ok_or(REJECTED)?;
+        let planar = section.surface().plane(tolerance)?.is_some();
+        let enclosed = match holes::section_holes(cutter, &closed, section, tolerance)? {
+            Some(enclosed) => enclosed,
+            None if planar && output == Output::Surface => {
+                return Ok(Product {
+                    brep: stock,
+                    reached_boundary: false,
+                });
+            }
+            None => return Err(REJECTED),
+        };
+        match output {
+            Output::CurveWalls if planar || enclosed.is_empty() => {
+                let walls = (0..closed.faces().len() - 1)
+                    .filter(|&i| !on_plane(closed.faces()[i].surface(), source_plane, tolerance))
+                    .collect::<Vec<_>>();
+                closed.sub_brep(&walls, tolerance)?
+            }
+            _ if enclosed.is_empty() => closed,
+            Output::SolidCurve if planar => {
+                holes::partition_cap(closed, cutter, &enclosed, tolerance)?
+            }
+            _ => return Err(REJECTED),
+        }
+    } else {
+        clip(sweep, &stock, source, cutter, displacement, cap, tolerance)?
+    };
+    Ok(Product {
+        brep,
+        reached_boundary: true,
+    })
+}
+
+fn clip(
+    sweep: &Shape,
     stock: &Brep,
     source: &Brep,
     cutter: &Brep,
@@ -51,9 +131,6 @@ pub(super) fn trim(
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
     let face = &cutter.faces()[0];
-    if face.loops().len() != 1 {
-        return Err(REJECTED);
-    }
     let epsilon = tolerance.absolute();
     let plane = face.surface().plane(tolerance)?;
     if let Some(plane) = plane {

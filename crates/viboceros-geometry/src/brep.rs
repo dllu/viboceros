@@ -190,6 +190,12 @@ impl BrepEdge {
         self.vertices
     }
 
+    /// Remaps this edge into another B-rep's vertex index space.
+    pub fn with_vertices(mut self, vertices: [usize; 2]) -> Self {
+        self.vertices = vertices;
+        self
+    }
+
     #[inline]
     pub const fn curve(&self) -> &NurbsCurve {
         &self.curve

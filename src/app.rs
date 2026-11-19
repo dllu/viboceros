@@ -1351,6 +1351,7 @@ impl VibocerosApp {
                 name.trim_start_matches(['_', '-'])
                     .eq_ignore_ascii_case("CrvDeviation")
             }) && self.commands.curve_deviation_view(&self.document).is_some();
+        let picking_tapered_boundary = self.picking_tapered_boundary();
         if !continuing_curve_deviation {
             self.cancel_interactive_command(false);
         }
@@ -1413,11 +1414,13 @@ impl VibocerosApp {
             Err(error) => {
                 self.command_file.fail_dispatch();
                 self.push_log(format!("Error: {error}"));
-                // A rejected boundary finishes its picker and can leave an undoable solid.
-                matches!(
-                    error,
-                    viboceros_command::CommandError::SurfaceExtrusionBoundaryRejected
-                )
+                // The tapered picker handles rejection based on whether the
+                // command committed a fallback sweep.
+                !picking_tapered_boundary
+                    && matches!(
+                        error,
+                        viboceros_command::CommandError::SurfaceExtrusionBoundaryRejected
+                    )
             }
         }
     }
