@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 #[path = "../../viboceros-geometry/tests/support/endpoint_orders.rs"]
 mod orders;
 #[test]

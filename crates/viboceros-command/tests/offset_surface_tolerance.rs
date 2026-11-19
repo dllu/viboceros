@@ -66,7 +66,7 @@ fn native_trim_reference_edges_are_admitted_at_their_captured_fit_budget() {
 
 fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
     let mut count = 0;
-    let mut declined = 0;
+    let declined = 0;
     for (id, v) in rows {
         println!("{prefix}_CASE {id}");
         let mut d = tolerance::setup(&v);
@@ -74,23 +74,6 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
         tolerance::check(&d, &v["before"], false, 1e-6, d.tolerance().absolute());
         inputs::select_sources(&mut d);
         let started = std::time::Instant::now();
-        if !tolerance::supported(&id, &v) {
-            let before = format!("{d:?}");
-            let registry = CommandRegistry::with_builtins();
-            let error = registry.execute(&mut d, &inputs::command(&v)).unwrap_err();
-            assert_eq!(
-                registry.offset_surface_options().tolerance,
-                tolerance::options(&v).tolerance
-            );
-            if cfg!(feature = "native-smlib") {
-                assert!(error.to_string().contains("outside"), "{error}");
-            }
-            assert_eq!(before, format!("{d:?}"));
-            assert!(d.can_redo());
-            println!("{prefix}_COMMAND_DECLINED {id}");
-            declined += 1;
-            continue;
-        }
         if inputs::success(&v) {
             let r = CommandRegistry::with_builtins();
             let text = inputs::command(&v);
@@ -141,7 +124,6 @@ fn replay(rows: Vec<(String, serde_json::Value)>, prefix: &str) {
     println!("{prefix}_COMMAND_COUNT {count} DECLINED {declined}");
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn trimmed_curvature_breaks_decline_atomically_and_preserve_redo() {
     use viboceros_document::Geometry;
@@ -178,7 +160,6 @@ fn trimmed_curvature_breaks_decline_atomically_and_preserve_redo() {
     assert!(!d.can_undo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn unresolved_precision_declines_atomically_and_preserves_redo() {
     let (_, v) = tolerance::rows()
@@ -198,7 +179,6 @@ fn unresolved_precision_declines_atomically_and_preserves_redo() {
     assert!(!d.can_undo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rational_curvature_break_matches_retained_native_capture() {
     replay(
@@ -210,7 +190,6 @@ fn rational_curvature_break_matches_retained_native_capture() {
     );
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rational_fine_fit_declines_atomically_and_preserves_redo() {
     let (_, v) = tolerance::rows()
@@ -232,7 +211,6 @@ fn rational_fine_fit_declines_atomically_and_preserves_redo() {
     assert!(!d.can_undo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rational_patch_sign_orientation_and_both_sides_preserve_history() {
     use viboceros_document::Geometry;

@@ -65,7 +65,7 @@ fn surface_extrusion_boundary_picker_accepts_a_viewport_face_after_direction() {
     let pointer = screen_point(&app, point(3.5, 4., 6.));
     assert!(app.viewports[0].screen_rect().unwrap().contains(pointer));
     viewport_click(&mut app, &context, pointer);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         assert!(app.document.object(source).is_none());
         assert!(app.document.object(boundary).is_some());
@@ -95,9 +95,6 @@ fn surface_extrusion_boundary_picker_accepts_a_viewport_face_after_direction() {
         assert!(!app.document.is_selected(boundary));
         enter(&mut app, "Redo");
         assert!(app.document.object(source).is_none());
-    } else {
-        assert!(app.picking_surface_boundary());
-        assert_eq!(format!("{:?}", app.document), before);
     }
 }
 
@@ -124,7 +121,6 @@ fn surface_extrusion_boundary_picker_cancels_and_rejects_invalid_references() {
     assert_eq!(format!("{:?}", app.document), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_inline_boundary_survives_source_selection() {
     let mut app = test_app();
@@ -154,7 +150,6 @@ fn surface_extrusion_inline_boundary_survives_source_selection() {
     );
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_to_boundary_keeps_tangent_split_topology() {
     for (split, faces, edges) in [("No", 3, 3), ("Yes", 6, 12)] {
@@ -191,7 +186,6 @@ fn surface_extrusion_to_boundary_keeps_tangent_split_topology() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_rejected_boundary_commits_retained_solid_and_finishes_getter() {
     let mut app = test_app();
@@ -243,7 +237,6 @@ fn surface_extrusion_rejected_boundary_commits_retained_solid_and_finishes_gette
     );
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_boundary_miss_preserves_existing_redo() {
     let mut app = test_app();
@@ -281,7 +274,6 @@ fn surface_extrusion_boundary_miss_preserves_existing_redo() {
     assert_eq!(app.document.redo_label(), Some("Point"));
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_rejected_capsule_uses_padded_trim_bounds_and_unsplit_walls() {
     let mut app = test_app();
@@ -319,7 +311,6 @@ fn surface_extrusion_rejected_capsule_uses_padded_trim_bounds_and_unsplit_walls(
     assert!((solid.bounds().max().z() - 11.948221624995078).abs() < 1e-6);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_mixed_boundary_results_commit_together() {
     let mut app = test_app();

@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 use super::frozen_scene;
 use super::mesh_boolean_tests::native as boolean;
 use super::*;

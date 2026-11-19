@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use std::ops::RangeInclusive;
 use viboceros_geometry::{Brep, NurbsSurface, Point3, Tolerance, WeightedPoint3};
 use viboceros_smlib::Shape;

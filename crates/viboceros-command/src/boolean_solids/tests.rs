@@ -234,7 +234,6 @@ fn compare_physical(
         if native["source"].is_null() && native["solid"] == true {
             let actual_orientation = b.solid_orientation().unwrap();
             let prior_unknown = matches!(case, "d_rounded_uv" | "u_rounded_uv");
-            #[cfg(feature = "native-smlib")]
             if actual_orientation == BrepSolidOrientation::Unknown && !prior_unknown {
                 // Physical mass and boundary checks above remain mandatory.
                 // Record incomplete exact witnesses separately from winding.
@@ -244,7 +243,7 @@ fn compare_physical(
                 );
                 continue;
             }
-            let expected = if cfg!(feature = "native-smlib") && prior_unknown {
+            let expected = if prior_unknown {
                 BrepSolidOrientation::Unknown
             } else {
                 BrepSolidOrientation::Outward
@@ -350,12 +349,6 @@ fn replays_native_polyhedral_commands_including_nonmanifold_boundary() {
         }
     }
     assert_eq!(matched, 65);
-    #[cfg(not(feature = "native-smlib"))]
-    let expected: Vec<Value> = serde_json::from_str(include_str!(
-        "../../../../docs/polyhedral-command-partitions.json"
-    ))
-    .unwrap();
-    #[cfg(feature = "native-smlib")]
     let expected: Vec<Value> = serde_json::from_str::<Value>(include_str!(
         "../../../../docs/smlib-intersection-representation.json"
     ))

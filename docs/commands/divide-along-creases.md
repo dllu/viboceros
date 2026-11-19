@@ -13,7 +13,7 @@ continuous tangent directions. These choices work independently. Knot
 multiplicity alone does not determine a split: a geometrically smooth surface
 with a parameter-speed change remains intact.
 
-The operation requires `native-smlib`. It delegates continuity classification,
+The operation delegates continuity classification,
 exact tensor isocurve extraction, UV segment creation and face subdivision to
 usd-brep. New faces remain joined in the same object with their trimmed regions
 and shared edges. Division adds boundaries on existing surface geometry; it does

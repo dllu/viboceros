@@ -1,7 +1,6 @@
 # Project onto meshes
 
-[Project](project.md) accepts mesh targets for point and curve inputs in both
-portable and `native-smlib` builds. Picking, preselection, direction, output
+[Project](project.md) accepts mesh targets for point and curve inputs. Picking, preselection, direction, output
 layers and DeleteInput use the same workflow as surface targets.
 `Direction=Custom` uses the shared two-point drafting getter described in the
 [Project reference](project.md).
@@ -57,9 +56,9 @@ Live Rhino parity and comparative performance remain unqualified.
 
 ```sh
 cargo test -p viboceros-geometry --lib mesh::projection
-cargo test -p viboceros-command --features native-smlib project::tests
+cargo test -p viboceros-command project::tests
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/project_mesh.json --native-smlib
+  tools/rhino_oracle/fixtures/project_mesh.json
 ```
 
 See the [qualification record](../project-mesh-qualification.json) for retained

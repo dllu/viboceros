@@ -2,7 +2,6 @@ use super::*;
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
-#[cfg(feature = "native-smlib")]
 mod general;
 fn scene() -> (Document, ObjectId, ObjectId) {
     let mut doc = Document::default();

@@ -45,7 +45,6 @@ fn command_first_keeps_geometry_until_confirmation_and_escape_cancels() {
         &original
     );
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn picked_edge_confirmation_creates_one_undoable_fillet() {
     let mut app = test_app();

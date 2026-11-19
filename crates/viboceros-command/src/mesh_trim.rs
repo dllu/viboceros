@@ -3,7 +3,6 @@ use crate::*;
 mod arguments;
 mod cutters;
 mod execute;
-#[cfg(feature = "native-smlib")]
 mod geometry;
 use arguments::Arguments;
 pub use cutters::MeshTrimCutters;

@@ -1,6 +1,6 @@
 # Native surface offsets
 
-Linux builds with `--features native-smlib` use usd-brep's offset and shell
+Viboceros uses usd-brep's offset and shell
 operations for OffsetSrf's general geometry stage. The previous planar normal,
 profile and rectangular-solid adapter is compiled only in other builds.
 Canonical spheres, cylinders, cones and tori retain their qualified exact

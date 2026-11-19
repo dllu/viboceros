@@ -11,7 +11,6 @@ pub fn unsupported(error: &viboceros_command::CommandError) -> bool {
     ) {
         return true;
     }
-    #[cfg(feature = "native-smlib")]
     if matches!(
         error,
         CommandError::NativeSmlib(viboceros_smlib::Error::Geometry(

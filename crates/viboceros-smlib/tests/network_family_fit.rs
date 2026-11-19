@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{CurveFitStation, NurbsCurve, Point3, Tolerance};
 use viboceros_smlib::{
     GordonCurveFitClock, GordonCurveFitInput, fit_gordon_curve_family,

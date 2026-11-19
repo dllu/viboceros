@@ -17,7 +17,6 @@ fn midpoint(op: &serde_json::Value) -> bool {
 fn continuity_sdk_matches_native_smooth_groups_and_records_pending_cusp_fans() {
     replay(None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn continuity_sdk_with_usd_brep_matches_native_smooth_groups_and_records_pending_cusp_fans() {
     replay(Some(viboceros_smlib::curve_offset_operations()));
@@ -76,7 +75,6 @@ fn continuity_commands_match_supported_geometry_metadata_history_and_3dm() {
 fn curvature_limits_match_native_g2_grouping() {
     cusps::replay_family("inset_continuity_limits", (6, 0), None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn curvature_limits_with_usd_brep_match_native_g2_grouping() {
     cusps::replay_family(

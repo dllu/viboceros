@@ -96,7 +96,6 @@ pub fn analyze(
             }
         }
     }
-    #[cfg(feature = "native-smlib")]
     {
         let Some(intervals) = viboceros_smlib::projected_curve_intervals(first, second, tolerance)?
         else {
@@ -145,13 +144,6 @@ pub fn analyze(
             marker_tolerance: tolerance.absolute(),
             approximate_overlap: true,
         }))
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = tolerance;
-        Err(CommandError::Usage(
-            "CrvDeviation for curved inputs requires native-smlib",
-        ))
     }
 }
 

@@ -52,18 +52,15 @@ pub(super) fn run(
                 .is_solid()
                 .then(|| b.signed_volume(tolerance).map(f64::abs))
                 .transpose()?;
-            #[cfg(feature = "native-smlib")]
             let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
                 .and_then(|s| s.tight_bounds())
                 .map_err(CommandError::from)?;
-            #[cfg(not(feature = "native-smlib"))]
-            let bounds = b.bounds();
             outputs.push(json!({"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":volume,"bounds":[bounds.min().to_array(),bounds.max().to_array()]}));
         }
         Ok(json!({"breps":outputs}))
     })
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
 

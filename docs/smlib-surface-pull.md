@@ -40,7 +40,7 @@ cases change from empty to correctly clipped intervals; the other nine remain
 unchanged.
 
 The Python oracle operation `pull_curve_surface` takes full NURBS `curve` and
-`surface` definitions. Viboceros requires `--native-smlib`; Rhino uses public
+`surface` definitions. Rhino uses the public
 [Curve.PullToBrepFace](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.curve/pulltobrepface).
 It returns arc-length samples, length and closedness, preserving raw native seam
 witnesses. Closed seams are not canonicalized. Six retained native recipes cover
@@ -52,9 +52,9 @@ source, surface, face and result cleanup at SDK failure boundaries.
 
 ```sh
 cargo test -p viboceros-smlib --features native --lib surface_pull
-cargo test -p viboceros-oracle --features native-smlib --lib surface_pull
+cargo test -p viboceros-oracle --lib surface_pull
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/pull_curve_surface.json --native-smlib
+  tools/rhino_oracle/fixtures/pull_curve_surface.json
 python3 -m unittest tools.rhino_oracle.test_surface_pull
 ```
 

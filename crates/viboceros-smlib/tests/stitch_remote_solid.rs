@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Brep, Frame3, Point3, Tolerance, Vector3};
 use viboceros_smlib::Shape;
 

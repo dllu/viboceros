@@ -43,7 +43,6 @@ pub(super) fn replay_command_cases(
 fn cusp_sdk_offsets_match_native_trimmed_loops() {
     replay(None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn cusp_sdk_offsets_with_usd_brep_match_native_trimmed_loops() {
     replay(Some(viboceros_smlib::curve_offset_operations()));

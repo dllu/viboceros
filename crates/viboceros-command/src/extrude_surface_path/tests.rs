@@ -1,5 +1,4 @@
 use super::*;
-#[cfg(feature = "native-smlib")]
 mod boundary;
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
@@ -143,18 +142,6 @@ fn assert_displacement(curve: &NurbsCurve, expected: [f64; 3]) {
         assert!((actual - expected).abs() < 1e-8, "{displacement:?}");
     }
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_path_portable_decline_is_atomic() {
-    let (mut doc, _, _) = setup();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins().execute(&mut doc, "ExtrudeSrfAlongCrv DeleteInput=Yes"),
-        Err(CommandError::SurfacePathExtrusionRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_curved_caps_delete_and_history_keep_the_path() {
     let (mut doc, s, path) = setup();
@@ -178,7 +165,6 @@ fn surface_path_curved_caps_delete_and_history_keep_the_path() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert!(doc.object(s).is_none());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_reverse_partial_explicit_refs_and_failure_preserve_sources() {
     let (mut doc, s, path) = setup();
@@ -214,7 +200,6 @@ fn surface_path_reverse_partial_explicit_refs_and_failure_preserve_sources() {
     assert!(doc.can_redo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_path_later_tangent_face_preserves_batch_selection_and_redo() {
     let (mut doc, s, path) = setup();

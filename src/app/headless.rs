@@ -127,7 +127,7 @@ impl Session {
             Request::Info => json!({
                 "protocol": PROTOCOL,
                 "version": env!("CARGO_PKG_VERSION"),
-                "native_smlib": cfg!(feature = "native-smlib"),
+                "native_smlib": true,
                 "path": self.app.document_path,
                 "units": document.units().name(),
                 "absolute_tolerance": document.tolerance().absolute(),

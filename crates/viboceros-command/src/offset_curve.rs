@@ -17,14 +17,7 @@ mod tests;
 const USAGE: &str = "Offset distance side-point [BothSides=Yes|No] [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset distance BothSides=Yes [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input] | Offset ThroughPoint=point [Corner=Sharp|Chamfer|Round|None] [OutputLayer=Current|Input]";
 
 pub(super) fn offset_operations() -> Option<viboceros_geometry::CurveOffsetOperations> {
-    #[cfg(feature = "native-smlib")]
-    {
-        Some(viboceros_smlib::curve_offset_operations())
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        None
-    }
+    Some(viboceros_smlib::curve_offset_operations())
 }
 
 pub(super) struct OffsetCommand(pub std::sync::Arc<remembered::Remembered<Settings>>);

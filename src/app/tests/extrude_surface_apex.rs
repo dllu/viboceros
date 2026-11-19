@@ -70,22 +70,6 @@ fn surface_apex_changed_face_source_keeps_point_getter() {
     assert_eq!(format!("{:?}", app.document), before);
     assert!(app.command_log.back().unwrap().contains("source changed"));
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_apex_portable_failure_retains_points_and_frozen_sources() {
-    let mut app = test_app();
-    let s = source(&mut app);
-    app.document
-        .select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "ExtrudeSrfToPoint");
-    let before = format!("{:?}", app.document);
-    assert!(!app.accept_drafting_point(point(1., 1.5, 6.)));
-    assert!(app.active_command.is_some());
-    assert!(app.surface_extrusion_sources.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_component_source_and_typed_point_commit_one_history_entry() {
     let mut app = test_app();
@@ -186,7 +170,6 @@ fn check_surface_apex_viewport(source_z: f64) {
     assert_eq!(format!("{:?}", app.document), before);
     let (pixel, _target) = apex.unwrap();
     viewport_click(&mut app, &context, pixel);
-    #[cfg(feature = "native-smlib")]
     {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
@@ -206,11 +189,6 @@ fn check_surface_apex_viewport(source_z: f64) {
         }
         enter(&mut app, "Undo");
         assert_eq!(app.document.objects().count(), 1);
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        assert!(app.active_command.is_some());
-        assert_eq!(format!("{:?}", app.document), before);
     }
     assert!(app.document.object(source).is_some());
 }
@@ -290,7 +268,7 @@ fn surface_apex_tangent_preview_updates_at_the_current_apex_and_boundary() {
         assert!(has_seam(&app, &split_again), "boundary={to_boundary}");
         assert_eq!(format!("{:?}", app.document), before);
 
-        if cfg!(feature = "native-smlib") && !to_boundary {
+        if !to_boundary {
             viewport_click(&mut app, &context, apex);
             assert!(app.active_command.is_none(), "{:?}", app.command_log);
             let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
@@ -364,7 +342,6 @@ fn surface_apex_replays_the_hovered_apex_in_the_other_viewports() {
     assert!(!app.document.can_undo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_apex_zero_uses_the_requested_origin_and_acceptance_remembers_options() {
     let mut app = test_app();

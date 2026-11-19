@@ -8,7 +8,6 @@ fn pending_midpoint(op: &serde_json::Value) -> bool {
 fn collinear_subdivisions_connect_to_native_nearer_cap_endpoints() {
     replay(None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn collinear_subdivisions_with_usd_brep_connect_to_native_nearer_cap_endpoints() {
     replay(Some(viboceros_smlib::curve_offset_operations()));

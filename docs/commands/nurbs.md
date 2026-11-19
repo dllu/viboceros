@@ -16,7 +16,7 @@ the source in homogeneous space at the new Greville abscissae. Degree changes
 support values 1 through 11 and can turn periodic directions into clamped
 ones, matching Rhino.
 
-Linux `native-smlib` builds use native elevation and homogeneous interpolation
+Viboceros uses native elevation and homogeneous interpolation
 for every mode; see [qualification and limits](../smlib-degree-change.md).
 
 `MakeUniform` replaces selected curves and untrimmed NURBS surfaces in place
@@ -45,8 +45,7 @@ the equivalent clamped form in place. It preserves the active domains,
 parameterization, shape, object identity, attributes, and selection; surfaces
 are clamped in every periodic direction.
 
-Linux `native-smlib` builds share the native endpoint-split adapter for this
-conversion; see [qualification and limits](../smlib-nonperiodic.md).
+The command shares the usd-brep endpoint-split adapter for this conversion. See [qualification and limits](../smlib-nonperiodic.md).
 
 [InsertControlPoint](insert-control-point.md) provides repeated shape-changing
 picks, Midpoint placement, surface-net extension and transactional previews.
@@ -68,7 +67,7 @@ preserved.
 
 In this explicit form, Direction names the parameter axis being refined.
 
-Linux `native-smlib` builds use usd-brep for curve/tensor knot refinement.
+Viboceros uses usd-brep for curve/tensor knot refinement.
 See [native behavior, qualification and limits](../smlib-knot-refinement.md).
 
 For repeated picking, shape previews, local Undo, temporary curves and periodic
@@ -83,7 +82,7 @@ abscissae; rational weights, object identity, attributes, selection, and undo
 are preserved. Periodic directions are rejected, while non-clamped directions
 are first clamped without changing their active domain.
 
-Linux `native-smlib` builds use the shared native homogeneous fitting adapter;
+Viboceros uses the shared native homogeneous fitting adapter;
 see [qualification and limits](../smlib-knot-removal.md).
 
 For viewport control and row picking, see [RemoveControlPoint](remove-control-point.md).
@@ -108,8 +107,7 @@ are preserved; periodic directions are rejected atomically. Non-clamped inputs
 are first clamped to their existing active domains so the output knot vectors
 remain valid.
 
-Linux `native-smlib` builds delegate ordered group refits to the shared native
-interpolator; see [qualification and limits](../smlib-multiple-knot-removal.md).
+The command delegates ordered group refits to the shared native interpolator. See [qualification and limits](../smlib-multiple-knot-removal.md).
 
 ## Exact conversion
 

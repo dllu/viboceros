@@ -179,17 +179,8 @@ fn through_grid(
     closed: [bool; 2],
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::point_grid_brep(points, count, degree, closed, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(Brep::try_through_point_grid(
-            points, count, degree, closed, tolerance,
-        )?)
-    }
+    viboceros_smlib::point_grid_brep(points, count, degree, closed, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

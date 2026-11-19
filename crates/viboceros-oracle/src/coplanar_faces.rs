@@ -29,12 +29,9 @@ pub(super) fn run(
                 "Coplanar merge output must be a B-rep",
             ));
         };
-        #[cfg(feature = "native-smlib")]
         let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
             .and_then(|shape| shape.tight_bounds())
             .map_err(CommandError::from)?;
-        #[cfg(not(feature = "native-smlib"))]
-        let bounds = b.tight_bounds(tolerance)?;
         let mut loops = b
             .faces()
             .iter()
@@ -53,7 +50,7 @@ pub(super) fn run(
         )
     })
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

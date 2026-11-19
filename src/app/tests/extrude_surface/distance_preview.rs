@@ -57,7 +57,7 @@ fn surface_extrusion_distance_preview_uses_the_hovered_axis_and_options() {
     viewport_frame(&mut app, &ctx, vec![]);
     let (pointer, _) = hover(&mut app);
     viewport_click(&mut app, &ctx, pointer);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         assert!(app.document.object(id).is_none());
         let Geometry::Brep(cut) = app.document.selected_objects().next().unwrap().geometry() else {
@@ -68,8 +68,6 @@ fn surface_extrusion_distance_preview_uses_the_hovered_axis_and_options() {
         assert!((cut.bounds().max().z() - 6.).abs() < 1e-5);
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrf"));
         enter(&mut app, "Undo");
-    } else {
-        assert!(app.active_command.is_some());
     }
     assert!(app.document.object(id).is_some());
 }
@@ -108,7 +106,7 @@ fn surface_extrusion_end_on_mouse_distance_matches_the_preview() {
         );
         assert!(app.document.undo_label().is_none());
         viewport_click(&mut app, &ctx, pointer);
-        if cfg!(feature = "native-smlib") {
+        {
             assert!(app.active_command.is_none(), "{:?}", app.command_log);
             let Geometry::Brep(cut) = app.document.selected_objects().next().unwrap().geometry()
             else {
@@ -119,13 +117,10 @@ fn surface_extrusion_end_on_mouse_distance_matches_the_preview() {
             let shifted = 2. + expected;
             assert!((cut.bounds().min().z() - shifted.min(2.)).abs() < 1e-5);
             assert!((cut.bounds().max().z() - shifted.max(2.)).abs() < 1e-5);
-        } else {
-            assert!(app.active_command.is_some());
         }
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_distance_points_use_the_source_bounds_and_native_guide_stages() {
     for (steps, warp, expected_max) in [
@@ -206,7 +201,6 @@ fn surface_extrusion_distance_points_use_the_source_bounds_and_native_guide_stag
     assert!((cut.bounds().max().z() - 2.).abs() < 1e-9);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_typed_distance_uses_the_live_side() {
     for (distance, expected) in [("2", [0., 2.]), ("-2", [2., 4.])] {
@@ -231,7 +225,6 @@ fn surface_extrusion_typed_distance_uses_the_live_side() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_repeats_the_last_successful_distance_and_toggles() {
     let mut app = test_app();

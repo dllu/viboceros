@@ -8,7 +8,7 @@ and groups. They are unselected; surviving cutters remain selected. Undo restore
 original geometry storage and any productive preselection. Computation finishes
 before document edits, so failure preserves geometry, selection and Redo.
 
-Build with `native-smlib`. The command uses the shared
+The command uses the shared
 [usd-brep/SMLib partition kernel](../mesh-split-kernel.md). Curves extrude along the
 active CPlane's Z axis. `IP` uses the existing infinite-plane picker, including
 three points, world/CPlane axes, through-point, planar objects and named CPlanes.

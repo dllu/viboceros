@@ -54,6 +54,6 @@ the source unchanged. [Fan diagnostics](../geometry/inset-fans.md) retain the
 pending native cases.
 
 ```sh
-cargo test -p viboceros-oracle --features native-smlib --test inset_surface closed_curves
+cargo test -p viboceros-oracle --test inset_surface closed_curves
 python3 -m unittest tools.rhino_oracle.test_inset_closed_networks
 ```

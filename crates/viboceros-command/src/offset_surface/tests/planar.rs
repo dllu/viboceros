@@ -128,13 +128,22 @@ fn trimmed_planar_brep_offset_follows_face_orientation() {
         .unwrap();
     registry.execute(&mut document, "SelAll").unwrap();
     let source = result_geometry(&document);
-    let normal = planar_normal(&source, document.tolerance()).unwrap();
     let Geometry::Brep(original) = &source else {
         panic!("planar source is a B-rep")
     };
     let surface = original.faces()[0].surface();
-    let source_point = surface
-        .evaluate(*surface.domain_u().start(), *surface.domain_v().start())
+    let (u, v) = (*surface.domain_u().start(), *surface.domain_v().start());
+    let source_point = surface.evaluate(u, v).unwrap();
+    let signed = if original.faces()[0].is_reversed() {
+        -1.0
+    } else {
+        1.0
+    };
+    let normal = surface
+        .normal_at(u, v)
+        .unwrap()
+        .as_vector()
+        .scaled(signed)
         .unwrap();
     registry
         .execute(
@@ -262,12 +271,6 @@ fn unsupported_selection_does_not_create_partial_offsets() {
         &mut warped,
         "OffsetSrf 2 Solid=Yes BothSides=No DeleteInput=No",
     );
-    #[cfg(not(feature = "native-smlib"))]
-    assert!(matches!(
-        result,
-        Err(CommandError::OffsetSurfaceRequiresPlanarFaces)
-    ));
-    #[cfg(feature = "native-smlib")]
     {
         result.unwrap();
         let Geometry::Brep(offset) = &result_geometry(&warped) else {

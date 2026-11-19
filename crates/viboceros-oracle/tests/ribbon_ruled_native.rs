@@ -18,7 +18,6 @@ fn build(
     t: Tolerance,
 ) -> Result<(Brep, Vec<NurbsSurface>), String> {
     let mut parents = Vec::new();
-    #[cfg(feature = "native-smlib")]
     {
         let brep = try_loose_ribbon_with_ruled(
             s,
@@ -33,16 +32,6 @@ fn build(
                 Ok::<_, viboceros_smlib::Error>(surface)
             },
         )
-        .map_err(|e| e.to_string())?;
-        Ok((brep, parents))
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let brep = try_loose_ribbon_with_ruled(s, d, both, n, t, None, &mut |a, b| {
-            let surface = NurbsSurface::try_ruled_from_curves(a, b)?;
-            parents.push(surface.try_reparameterized(0. ..=d.abs(), s.domain())?);
-            Ok::<_, GeometryError>(surface)
-        })
         .map_err(|e| e.to_string())?;
         Ok((brep, parents))
     }

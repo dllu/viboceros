@@ -49,14 +49,12 @@ pub(super) fn solve(
                 if nurbs[j].is_none() {
                     nurbs[j] = Some(second.as_ref().to_nurbs().map_err(map_offset_error)?);
                 }
-                !nurbs[i]
-                    .as_ref()
-                    .expect("cached first curve")
-                    .intersection_events_with_curve(
-                        nurbs[j].as_ref().expect("cached second curve"),
-                        tolerance,
-                    )?
-                    .is_empty()
+                !crate::curve_intersections::events(
+                    nurbs[i].as_ref().expect("cached first curve"),
+                    nurbs[j].as_ref().expect("cached second curve"),
+                    tolerance,
+                )?
+                .is_empty()
             };
             if intersects {
                 return Err(GeometryError::IntersectingOffsetRegions.into());

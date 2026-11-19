@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Point3, Tolerance};
 use viboceros_smlib::Solid;
 fn p(x: f64, y: f64, z: f64) -> Point3 {

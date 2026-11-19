@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsCurve, Point3, WeightedPoint3};
 use viboceros_smlib::reduce_curve_knots_in_range;
 

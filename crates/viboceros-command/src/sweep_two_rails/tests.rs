@@ -49,7 +49,6 @@ fn sweep_two_rail_arguments_and_selection_failures_preserve_document_and_redo() 
     assert!(r.command_names().contains(&"Sweep2"));
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn sweep_two_rail_ordered_and_named_inputs_create_one_undoable_brep() {
     for named in [false, true] {
@@ -108,22 +107,4 @@ fn sweep_two_rail_ordered_and_named_inputs_create_one_undoable_brep() {
         r.execute(&mut d, "Redo").unwrap();
         assert_eq!(d.object(result.id()), Some(&result));
     }
-}
-
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn sweep_two_rail_without_native_leaves_selected_inputs_and_history_unchanged() {
-    let r = CommandRegistry::with_builtins();
-    let mut d = Document::default();
-    let ids = sources(&mut d);
-    d.select_objects_direct(ids, SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{d:?}");
-    assert!(
-        r.execute(&mut d, "Sweep2")
-            .unwrap_err()
-            .to_string()
-            .contains("native-smlib")
-    );
-    assert_eq!(format!("{d:?}"), before);
 }

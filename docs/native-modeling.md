@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Architecture](architecture.md) · [Build and tests](usd-brep.md)
 
-The optional `native-smlib` feature uses usd-brep/SMLib for native B-rep modeling.
+All Viboceros builds use usd-brep/SMLib for B-rep and NURBS modeling.
 These pages record integration details and qualification limits. Start with
 [USD BRep integration](usd-brep.md) and [current limitations](usd-brep-limitations.md).
 

@@ -1,7 +1,7 @@
 # ExtrudeCrvTapered
 
 `ExtrudeCrvTapered` creates tapered sheets or capped B-reps through usd-brep's
-native draft-extrusion producer. Build with `--features native-smlib`.
+native draft-extrusion producer.
 
 Start the command, select curves and press Enter, then type a distance or
 click a point that sets it along the extrusion axis. Preselection works too.
@@ -80,6 +80,6 @@ See the [qualification record](../tapered-extrusion-qualification.json) and
 
 ```sh
 cargo test -p viboceros-smlib --features native --test tapered
-cargo test -p viboceros-command -p viboceros --features native-smlib extrude_tapered
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/tapered_extrusion.json --native-smlib
+cargo test -p viboceros-command -p viboceros extrude_tapered
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/tapered_extrusion.json
 ```

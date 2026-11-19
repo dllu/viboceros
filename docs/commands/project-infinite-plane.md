@@ -78,10 +78,10 @@ control-point projections. This projection corpus has not been refreshed for
 the current Rhino setup.
 
 ```sh
-cargo test -p viboceros-command --features native-smlib project::tests
+cargo test -p viboceros-command project::tests
 cargo test -p viboceros app::tests::project
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/project_curve_plane.json --native-smlib
+  tools/rhino_oracle/fixtures/project_curve_plane.json
 python3 -m unittest tools.rhino_oracle.test_project_plane
 ```
 

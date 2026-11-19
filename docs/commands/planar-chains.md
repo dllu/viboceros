@@ -61,5 +61,4 @@ cargo test -p viboceros planar_chains
 python3 -m unittest tools.rhino_oracle.test_planar_chains
 ```
 
-Repeat Rust checks with `--features native-smlib` for the usd-brep adapter.
 Native captures use the private Xvfb launcher; no desktop windows are needed.

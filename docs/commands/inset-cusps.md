@@ -40,6 +40,6 @@ error bound.
 ```sh
 cargo test -p viboceros-geometry --lib cusp_
 cargo test -p viboceros-oracle --test inset_surface cusp_
-cargo test -p viboceros-oracle --features native-smlib --test inset_surface cusp_
+cargo test -p viboceros-oracle --test inset_surface cusp_
 python3 -m unittest tools.rhino_oracle.test_inset_cusps
 ```

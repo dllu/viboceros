@@ -3,7 +3,6 @@ use super::*;
 #[cfg(test)]
 #[path = "project_tests.rs"]
 mod tests;
-#[cfg(feature = "native-smlib")]
 use viboceros_geometry::{SurfaceIntersectionInput, SurfaceSurfaceIntersectionEvent};
 
 pub const PROJECT_USAGE: &str = "Project [Sources=id[,id...]] [Targets=id[,id...]] [InfinitePlane=definition] [SubCrv=id,start,end] [SubCrvLength=id,start,signed-length] [Direction=CPlaneZ|View|Custom|x,y,z] [DirectionStart=x,y,z DirectionEnd=x,y,z] [DeleteInput=Yes|No] [OutputLayer=Current|Input|TargetObject] [Loose=Yes|No]";
@@ -183,7 +182,6 @@ fn curve_output(
             }
             continue;
         }
-        #[cfg(feature = "native-smlib")]
         {
             // Split source kinks into regular ruled projection surfaces. The
             // source relation C(u)+v*d is exact; coupled intersection certificates
@@ -220,11 +218,6 @@ fn curve_output(
                 }
             }
         }
-        #[cfg(not(feature = "native-smlib"))]
-        return Err(CommandError::Usage(
-            "Project curved targets requires native-smlib",
-        ));
-        #[cfg(feature = "native-smlib")]
         if output.len() > MAX_INTERSECT_OUTPUTS {
             return Err(CommandError::TooManyIntersectOutputs {
                 maximum: MAX_INTERSECT_OUTPUTS,

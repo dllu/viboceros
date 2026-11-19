@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{Point3, Tolerance, TriangleMesh};
 use viboceros_smlib::mesh_self_intersections;

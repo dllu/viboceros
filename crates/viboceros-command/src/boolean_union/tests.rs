@@ -78,7 +78,6 @@ pub(crate) fn snapshot(
     snapshot_with_mass(doc, ids, layers, groups, true)
 }
 
-#[cfg(feature = "native-smlib")]
 pub(crate) fn metadata_snapshot(
     doc: &Document,
     ids: &[ObjectId],
@@ -230,7 +229,6 @@ pub(crate) fn witnesses(a: &Boundary, b: &Boundary, label: &str) {
 fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() {
     let capture = capture();
     let mut count = 0;
-    #[cfg(feature = "native-smlib")]
     let mut partitions = Vec::new();
     for row in capture["results"].as_array().unwrap() {
         let case = row["id"]
@@ -288,7 +286,6 @@ fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() 
             .iter()
             .any(|r| r["source"].is_null());
         assert_eq!(result.is_ok(), success, "{case}: {result:?}");
-        #[cfg(feature = "native-smlib")]
         let expected = {
             let actual = snapshot(&doc, &ids, &layers, &groups);
             let mut expected = expected.clone();
@@ -306,7 +303,6 @@ fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() 
             }
             expected
         };
-        #[cfg(feature = "native-smlib")]
         let expected = &expected;
         compare(&snapshot(&doc, &ids, &layers, &groups), expected, case);
         if success {
@@ -340,7 +336,6 @@ fn replays_27_closed_command_outcomes_metadata_selection_geometry_and_history() 
             }
         }
     }
-    #[cfg(feature = "native-smlib")]
     {
         eprintln!(
             "Native Union partitions: {}",

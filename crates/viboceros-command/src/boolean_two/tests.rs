@@ -11,7 +11,6 @@ fn boolean_two_replays_native_cycle_geometry_identity_metadata_and_history() {
     replay_closed_cycles(&q);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn split_boxes_match_public_branch_order_geometry_metadata_and_history() {
     let q: Value = serde_json::from_str(include_str!(
@@ -126,7 +125,7 @@ fn boolean_two_script_syntax_and_unsupported_geometry_fail_without_edits() {
     let ids = doc.objects().map(|o| o.id()).collect::<Vec<_>>();
     doc.clear_history().unwrap();
     let before = doc.objects().cloned().collect::<Vec<_>>();
-    let mut invalid = vec![
+    let invalid = vec![
         format!(
             "Boolean2Objects Sources={},{} Mode=NoSuchMode",
             ids[0], ids[1]
@@ -136,9 +135,6 @@ fn boolean_two_script_syntax_and_unsupported_geometry_fail_without_edits() {
             ids[0], ids[1]
         ),
     ];
-    if !cfg!(feature = "native-smlib") {
-        invalid.push(format!("Boolean2Objects Sources={},{}", ids[0], ids[1]));
-    }
     for input in invalid {
         assert!(registry.execute(&mut doc, &input).is_err());
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);

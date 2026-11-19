@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 #[path = "support/compare.rs"]
 mod diagnostic_comparison;
 #[path = "support/surface_apex.rs"]

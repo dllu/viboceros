@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     Brep, Circle3, Frame3, NurbsCurve, NurbsSurface, Point3, Tolerance, UnitVector3, Vector3,
 };

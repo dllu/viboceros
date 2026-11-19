@@ -38,10 +38,7 @@ pub(super) fn run(
         )?;
         let regions=document.objects().filter(|o|!ids.contains(&o.id())).map(|o| {
             let Geometry::Brep(b)=o.geometry() else {return Err(ProbeError::FixtureInvariant("planar B-rep"));};
-            #[cfg(feature="native-smlib")]
             let bounds=viboceros_smlib::Shape::from_brep(b,tolerance).and_then(|s|s.tight_bounds()).map_err(CommandError::from)?;
-            #[cfg(not(feature="native-smlib"))]
-            let bounds=b.bounds();
             Ok(json!({"faces":b.faces().len(),"loops":b.faces().iter().map(|f|f.loops().len()).collect::<Vec<_>>(),
                 "area":b.area(tolerance)?,"min":bounds.min().to_array(),"max":bounds.max().to_array()}))
         }).collect::<Result<Vec<_>,ProbeError>>()?;

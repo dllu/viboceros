@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Brep, NurbsSurface, Point3, Tolerance};
 use viboceros_smlib::Shape;
 fn p(x: f64, y: f64, z: f64) -> Point3 {

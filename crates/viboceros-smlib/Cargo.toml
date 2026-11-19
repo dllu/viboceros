@@ -6,56 +6,20 @@ license.workspace = true
 rust-version.workspace = true
 
 [features]
-default = []
-native = ["dep:cmake", "dep:viboceros-geometry", "dep:viboceros-opennurbs", "dep:thiserror", "dep:i_overlay"]
+# Compatibility for existing build commands. USD BRep is always linked.
+native = []
 
 [dependencies]
-viboceros-geometry = { workspace = true, optional = true }
-viboceros-opennurbs = { workspace = true, optional = true }
-thiserror = { workspace = true, optional = true }
-i_overlay = { workspace = true, optional = true }
+viboceros-geometry.workspace = true
+viboceros-opennurbs.workspace = true
+thiserror.workspace = true
+i_overlay.workspace = true
 
 [build-dependencies]
-cmake = { version = "0.1.58", optional = true }
+cmake = "0.1.58"
 
 [dev-dependencies]
 flate2.workspace = true
 serde_json.workspace = true
 viboceros-io.workspace = true
 tempfile = "3.27.0"
-
-[[example]]
-name = "perforated_plate"
-required-features = ["native"]
-
-[[example]]
-name = "reference"
-required-features = ["native"]
-
-[[example]]
-name = "network_parameterization"
-required-features = ["native"]
-
-[[example]]
-name = "network_family_parameterization"
-required-features = ["native"]
-
-[[example]]
-name = "fitted_network"
-required-features = ["native"]
-
-[[example]]
-name = "export_breps"
-required-features = ["native"]
-
-[[example]]
-name = "fillet_edges"
-required-features = ["native"]
-
-[[example]]
-name = "blend_surface"
-required-features = ["native"]
-
-[[example]]
-name = "surface_fillets"
-required-features = ["native"]

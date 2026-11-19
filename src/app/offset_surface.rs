@@ -146,11 +146,7 @@ impl VibocerosApp {
         {
             return false;
         }
-        let filter = if cfg!(feature = "native-smlib") {
-            viboceros_command::ObjectSelectionFilter::SurfaceComponents
-        } else {
-            viboceros_command::ObjectSelectionFilter::Surfaces
-        };
+        let filter = viboceros_command::ObjectSelectionFilter::SurfaceComponents;
         if self
             .document
             .selected_objects()

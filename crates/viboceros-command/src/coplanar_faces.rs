@@ -122,7 +122,6 @@ fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, C
     merge_brep(source, tolerance, None)
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn within_native_merge_budget(source: &Brep) -> bool {
     source.faces().len() <= 362
         && source.faces().iter().fold(0usize, |n, face| {
@@ -135,43 +134,35 @@ fn merge_brep(
     tolerance: Tolerance,
     selection: Option<(&[usize], bool)>,
 ) -> Result<Option<(Brep, usize)>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        if !within_native_merge_budget(source) {
-            return Err(CommandError::Usage(
-                "Coplanar face merging supports at most 362 faces and 2,000,000 surface controls per B-rep",
-            ));
-        }
-        let origin = source
-            .vertices()
-            .first()
-            .map(|v| v.point())
-            .unwrap_or_else(|| source.bounds().min());
-        let zero = Point3::try_new(0., 0., 0.)?;
-        let local = source.transformed(
-            AffineTransform3::from_translation(origin.vector_to(zero)?),
-            tolerance,
-        )?;
-        let result = if let Some((faces, region)) = selection {
-            viboceros_smlib::Shape::merge_brep_coplanar_subset(&local, faces, region, tolerance)?
-        } else {
-            viboceros_smlib::Shape::from_brep(&local, tolerance)?.merge_coplanar_faces(tolerance)?
-        };
-        match result {
-            None => Ok(None),
-            Some((merged, count)) => Ok(Some((
-                merged.to_brep(tolerance)?.transformed(
-                    AffineTransform3::from_translation(zero.vector_to(origin)?),
-                    tolerance,
-                )?,
-                count,
-            ))),
-        }
+    if !within_native_merge_budget(source) {
+        return Err(CommandError::Usage(
+            "Coplanar face merging supports at most 362 faces and 2,000,000 surface controls per B-rep",
+        ));
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (source, tolerance, selection);
-        Err(CommandError::CoplanarMergeRequiresNativeKernel)
+    let origin = source
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| source.bounds().min());
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let local = source.transformed(
+        AffineTransform3::from_translation(origin.vector_to(zero)?),
+        tolerance,
+    )?;
+    let result = if let Some((faces, region)) = selection {
+        viboceros_smlib::Shape::merge_brep_coplanar_subset(&local, faces, region, tolerance)?
+    } else {
+        viboceros_smlib::Shape::from_brep(&local, tolerance)?.merge_coplanar_faces(tolerance)?
+    };
+    match result {
+        None => Ok(None),
+        Some((merged, count)) => Ok(Some((
+            merged.to_brep(tolerance)?.transformed(
+                AffineTransform3::from_translation(zero.vector_to(origin)?),
+                tolerance,
+            )?,
+            count,
+        ))),
     }
 }
 impl Command for MergeAllCoplanarFacesCommand {

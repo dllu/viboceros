@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 //! Authored inputs only; retained public SDK outputs are expectations.
 use serde_json::{Value, json};
 use std::{fs::File, path::Path};

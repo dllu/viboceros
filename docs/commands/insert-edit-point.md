@@ -50,5 +50,4 @@ cargo test -p viboceros --bin viboceros tests::insert_edit_point
 cargo test -p viboceros-geometry --lib edit_point_insertion
 ```
 
-Add `--features native-smlib` to run the command/API and application replays
-through the native B-rep build. Saved replays do not launch Rhino.
+Saved replays run locally.

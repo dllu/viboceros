@@ -43,7 +43,6 @@ fn surface_apex_boundary_getter_picks_a_face_and_previews_only_to_the_boundary()
     assert!(preview.iter().flatten().all(|p| p.y >= rim.y - 1e-3));
     assert_eq!(format!("{:?}", app.document), before);
     viewport_click(&mut app, &context, apex);
-    #[cfg(feature = "native-smlib")]
     {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         let Geometry::Brep(result) = app.document.selected_objects().next().unwrap().geometry()
@@ -58,8 +57,6 @@ fn surface_apex_boundary_getter_picks_a_face_and_previews_only_to_the_boundary()
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
         enter(&mut app, "Undo");
     }
-    #[cfg(not(feature = "native-smlib"))]
-    assert!(app.active_command.is_some());
     assert_eq!(app.document.objects().len(), 2);
     assert!(app.document.object(source).is_some());
     assert!(app.document.object(boundary).is_some());
@@ -115,7 +112,7 @@ fn surface_apex_boundary_previews_and_accepts_a_coplanar_mouse_target() {
     );
     assert_eq!(format!("{:?}", app.document), before);
     viewport_click(&mut app, &context, apex);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         assert!(app.document.object(source).is_none());
         let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
@@ -129,8 +126,6 @@ fn surface_apex_boundary_previews_and_accepts_a_coplanar_mouse_target() {
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
         enter(&mut app, "Undo");
-    } else {
-        assert!(app.active_command.is_some());
     }
     assert!(app.document.object(source).is_some());
     assert!(app.document.object(boundary).is_some());
@@ -227,7 +222,7 @@ fn check_warped_boundary_mouse_sweep(height: f64, expected: Point3) {
     );
     assert_eq!(format!("{:?}", app.document), before);
     viewport_click(&mut app, &context, apex);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         assert!(app.document.object(source).is_none());
         let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
@@ -243,8 +238,6 @@ fn check_warped_boundary_mouse_sweep(height: f64, expected: Point3) {
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
         enter(&mut app, "Undo");
-    } else {
-        assert!(app.active_command.is_some());
     }
     assert!(app.document.object(source).is_some());
     assert!(app.document.object(boundary).is_some());
@@ -357,7 +350,7 @@ fn surface_apex_previews_the_nearest_raised_cut_after_ambiguous_shallow_picks() 
     );
     assert_eq!(format!("{:?}", app.document), before);
     viewport_click(&mut app, &context, apex);
-    if cfg!(feature = "native-smlib") {
+    {
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         let Geometry::Brep(sweep) = app.document.selected_objects().next().unwrap().geometry()
         else {
@@ -372,8 +365,6 @@ fn surface_apex_previews_the_nearest_raised_cut_after_ambiguous_shallow_picks() 
         );
         assert!(app.document.object(source).is_none());
         enter(&mut app, "Undo");
-    } else {
-        assert!(app.active_command.is_some());
     }
     assert!(app.document.object(source).is_some());
 }

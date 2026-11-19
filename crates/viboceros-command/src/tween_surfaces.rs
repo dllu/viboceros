@@ -195,32 +195,14 @@ fn surface_backend(
     number: usize,
     sample_number: usize,
 ) -> Result<Vec<NurbsSurface>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let result = match method {
-            Method::Sampled => {
-                viboceros_smlib::surface_tweens_sampled(start, end, number, sample_number)
-            }
-            Method::Control => viboceros_smlib::surface_tweens(start, end, number),
-            Method::Refit => viboceros_smlib::surface_tweens_refitted(start, end, number),
-        };
-        result.map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(match method {
-            Method::Sampled => viboceros_geometry::try_tween_nurbs_surfaces_sampled(
-                start,
-                end,
-                number,
-                sample_number,
-            )?,
-            Method::Control => viboceros_geometry::try_tween_nurbs_surfaces(start, end, number)?,
-            Method::Refit => {
-                viboceros_geometry::try_tween_nurbs_surfaces_refitted(start, end, number)?
-            }
-        })
-    }
+    let result = match method {
+        Method::Sampled => {
+            viboceros_smlib::surface_tweens_sampled(start, end, number, sample_number)
+        }
+        Method::Control => viboceros_smlib::surface_tweens(start, end, number),
+        Method::Refit => viboceros_smlib::surface_tweens_refitted(start, end, number),
+    };
+    result.map_err(knot_refinement::native_geometry_error)
 }
 impl Options {
     pub fn arguments(&self) -> String {

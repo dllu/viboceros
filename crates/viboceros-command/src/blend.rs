@@ -35,10 +35,7 @@ impl Command for BlendCurveCommand {
             return Err(CommandError::BlendRequiresTwoCurves);
         };
         let (default_first, default_second) = super::fillet::nearest_ends(first, second)?;
-        #[cfg(feature = "native-smlib")]
         let construct = viboceros_smlib::blend_curve;
-        #[cfg(not(feature = "native-smlib"))]
-        let construct = viboceros_geometry::try_blend_curve;
         let blend = construct(
             first,
             options.picks[0].unwrap_or(default_first),

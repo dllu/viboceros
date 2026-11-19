@@ -46,7 +46,6 @@ pub(super) fn run(
     };
     let before = json!({"vertices":f.vertices,"parameters":source.parameters()});
     let (breps, elapsed) = measure_probe(iterations, || -> Result<Vec<Brep>, ProbeError> {
-        #[cfg(feature = "native-smlib")]
         {
             Ok(viboceros_geometry::try_polyline_ribbon_with_ruled(
                 &source,
@@ -58,17 +57,6 @@ pub(super) fn run(
                 &mut viboceros_smlib::ruled_surface,
             )
             .map_err(CommandError::from)?)
-        }
-        #[cfg(not(feature = "native-smlib"))]
-        {
-            Ok(viboceros_geometry::try_polyline_ribbon(
-                &source,
-                f.distance,
-                f.both_sides,
-                normal,
-                tolerance,
-                corner,
-            )?)
         }
     })?;
     let definitions = breps

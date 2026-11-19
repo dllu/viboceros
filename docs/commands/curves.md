@@ -175,7 +175,7 @@ Undo/Redo operation.
 input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp
 `Close=` modes, and start/end tangent directions on open cubics.
-Linux `native-smlib` builds use usd-brep basis and matrix routines for cubic
+Viboceros uses usd-brep basis and matrix routines for cubic
 InterpCrv and interpolated CurveThrough construction. See
 [point interpolation](../smlib-curve-interpolation.md) for qualification and limits.
 
@@ -195,7 +195,7 @@ and leaves both sources selected. `MatchMethod=None` connects corresponding
 NURBS control locations and weights, including Rhino's last-control rule when
 the counts differ. `MatchMethod=SamplePoints` supports 2 through 9999
 equal-length divisions with bounded, linear-memory interpolation.
-Linux `native-smlib` builds use usd-brep banded solving for nonlinear sampled
+Viboceros uses usd-brep banded solving for nonlinear sampled
 sources across this full range. See [native sampling](../smlib-curve-tween.md).
 `OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
 and `FlipEnd=Yes`
@@ -213,9 +213,8 @@ Kink and endpoint tangents use [exact one-sided limits](../curve-sided-evaluatio
 including stationary points with a nonzero higher derivative.
 Failing spans are bisected rather than inserting knots at their worst sampled
 point, which could cluster knots and leave large gaps unresolved. Cubic fits use
-a banded solve with exact endpoint/kink handle constraints. Linux `native-smlib`
-builds use usd-brep basis and banded solving for all degrees; portable builds
-retain dense full-pivot solves for other degrees. See [native FitCrv](../smlib-curve-fit.md).
+a banded solve with exact endpoint and kink handle constraints. The command
+uses usd-brep basis and banded solving for all degrees. See [native FitCrv](../smlib-curve-fit.md).
 Repeated error checks cache exact floating-point source
 distances locally (at most 32,768 points), without quantization. Accuracy remains
 sampled, with a 4,096-control cubic budget and 512-control budget for other

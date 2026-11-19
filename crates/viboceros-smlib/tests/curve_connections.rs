@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     Curve3, CurveArcExtensionStyle as A, CurveChamferExtensionStyles as H,
     CurveFilletExtensionStyles as F, CurveOtherExtensionStyle as O, CurveRef, CurveSegment3 as S,

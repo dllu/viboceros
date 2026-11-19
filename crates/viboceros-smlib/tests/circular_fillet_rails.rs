@@ -1,5 +1,3 @@
-#![cfg(feature = "native")]
-
 #[test]
 fn circular_fillets_preserve_the_same_parameter_on_both_rails() {
     let result = std::process::Command::new(env!("VIBOCEROS_NATIVE_CIRCULAR_FILLET_RAILS_PROBE"))

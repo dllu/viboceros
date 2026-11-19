@@ -64,14 +64,12 @@ fn surface_taper_boundary_direction_returns_to_frozen_postselection_and_cancels(
     assert!(!app.document.can_undo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion() {
     let (mut app, source, cutter) = scene();
     check_viewport_cut(&mut app, source, cutter, "ExtrudeSrfTapered");
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn curve_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion() {
     let mut app = test_app();
@@ -96,7 +94,6 @@ fn curve_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion()
     check_viewport_cut(&mut app, source, cutter, "ExtrudeCrvTapered");
 }
 
-#[cfg(feature = "native-smlib")]
 fn check_viewport_cut(app: &mut VibocerosApp, source: ObjectId, cutter: ObjectId, command: &str) {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
 

@@ -2,9 +2,8 @@
 
 Project curves and points in both directions along the finishing viewport's
 construction-plane Z axis onto finite NURBS surfaces, B-rep faces or meshes. Face
-boundaries and holes clip results with `Loose=No`. The default build supports planar curve
-targets and the existing analytic point contact queries; `native-smlib` adds
-curved curve targets and general point contacts.
+boundaries and holes clip results with `Loose=No`. Project supports curve and
+point inputs on planar and curved targets.
 
 See [mesh projection](project-mesh.md) for triangle conventions and qualification.
 
@@ -115,13 +114,13 @@ the current Wine dependency failure prevents fresh captures. See the
 [subcurve qualification record](../project-subcurve-qualification.json).
 
 ```sh
-cargo test -p viboceros-command --features native-smlib project::tests
+cargo test -p viboceros-command project::tests
 cargo test -p viboceros app::tests::project
 python3 -m tools.rhino_oracle viboceros \
-  tools/rhino_oracle/fixtures/project_curve_surface.json --native-smlib
+  tools/rhino_oracle/fixtures/project_curve_surface.json
 # Run Rhino in the private display and settings scheme:
 tools/rhino_oracle/run_headless.sh compare \
-  tools/rhino_oracle/fixtures/project_curve_surface.json --native-smlib \
+  tools/rhino_oracle/fixtures/project_curve_surface.json \
   --scheme VibocerosOracleProject --absolute-epsilon 1e-6 --relative-epsilon 1e-10
 ```
 

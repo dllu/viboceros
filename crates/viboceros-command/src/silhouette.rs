@@ -111,36 +111,28 @@ fn produce(
     internal: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<NurbsCurve>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let brep = match geometry {
-            Geometry::Brep(brep) => brep.clone(),
-            Geometry::NurbsSurface(surface) => Brep::try_surface_face(surface.clone(), tolerance)?,
-            Geometry::Mesh(mesh) => {
-                // Preserve the mesh's actual triangle image, including warped quads.
-                let triangles = TriangleMesh::try_new(
-                    mesh.vertices().to_vec(),
-                    mesh.triangles().to_vec(),
-                    tolerance,
-                )?;
-                Brep::try_from_mesh(&triangles, true, tolerance)?
-            }
-            _ => return Err(CommandError::Usage(USAGE)),
-        };
-        Ok(
-            viboceros_smlib::Shape::from_brep(&brep, tolerance)?.parallel_silhouette_curves(
-                direction,
-                tolerance.absolute(),
-                0.05,
-                internal,
-            )?,
-        )
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (geometry, direction, internal, tolerance);
-        Err(CommandError::SilhouetteRequiresNativeKernel)
-    }
+    let brep = match geometry {
+        Geometry::Brep(brep) => brep.clone(),
+        Geometry::NurbsSurface(surface) => Brep::try_surface_face(surface.clone(), tolerance)?,
+        Geometry::Mesh(mesh) => {
+            // Preserve the mesh's actual triangle image, including warped quads.
+            let triangles = TriangleMesh::try_new(
+                mesh.vertices().to_vec(),
+                mesh.triangles().to_vec(),
+                tolerance,
+            )?;
+            Brep::try_from_mesh(&triangles, true, tolerance)?
+        }
+        _ => return Err(CommandError::Usage(USAGE)),
+    };
+    Ok(
+        viboceros_smlib::Shape::from_brep(&brep, tolerance)?.parallel_silhouette_curves(
+            direction,
+            tolerance.absolute(),
+            0.05,
+            internal,
+        )?,
+    )
 }
 
 #[cfg(test)]

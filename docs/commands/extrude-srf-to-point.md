@@ -1,6 +1,6 @@
 # ExtrudeSrfToPoint
 
-Build with `--features native-smlib`. `ExtrudeSrfToPoint` creates ruled walls
+`ExtrudeSrfToPoint` creates ruled walls
 from surface boundaries to an explicit apex. `Solid=Yes` retains the actual
 source surface as the base cap, including curved surfaces and trim holes.
 
@@ -130,8 +130,8 @@ the command corpus verifies separate output objects. See
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_apex_extrusion
-cargo test -p viboceros-oracle --features native-smlib --test surface_apex_native
+cargo test -p viboceros-oracle --test surface_apex_native
 python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/surface_apex_tangents.json \
   --observations tools/rhino_oracle/observations/surface_apex_tangents.json \
-  --native-smlib --absolute-epsilon 1e-6 --relative-epsilon 0
+  --absolute-epsilon 1e-6 --relative-epsilon 0
 ```

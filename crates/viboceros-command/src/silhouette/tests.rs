@@ -32,23 +32,6 @@ fn silhouette_rejects_bad_options_without_geometry_or_history_changes() {
     }
 }
 
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn silhouette_reports_the_native_requirement_without_editing_sources() {
-    let registry = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    let id = source(&mut doc);
-    doc.select_objects_direct([id], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        registry.execute(&mut doc, "Silhouette"),
-        Err(CommandError::SilhouetteRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-
-#[cfg(feature = "native-smlib")]
 #[test]
 fn silhouette_box_outputs_spatial_top_curves_and_replays_one_undo_entry() {
     let registry = CommandRegistry::with_builtins();
@@ -81,7 +64,6 @@ fn silhouette_box_outputs_spatial_top_curves_and_replays_one_undo_entry() {
     assert_eq!(doc.object(id).unwrap(), &before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn later_unsupported_mesh_rolls_back_earlier_staged_silhouettes_and_preserves_redo() {
     let registry = CommandRegistry::with_builtins();
@@ -111,7 +93,6 @@ fn later_unsupported_mesh_rolls_back_earlier_staged_silhouettes_and_preserves_re
     assert!(doc.can_redo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn silhouette_accepts_naked_surfaces_from_both_sides_and_manifold_meshes() {
     let p = |x, y, z| Point3::try_new(x, y, z).unwrap();

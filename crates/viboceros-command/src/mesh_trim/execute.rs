@@ -62,7 +62,6 @@ impl MeshTrimCutters {
         Ok((message, ids))
     }
 }
-#[cfg(feature = "native-smlib")]
 fn compute(
     doc: &Document,
     target: ObjectId,
@@ -99,15 +98,4 @@ fn compute(
             &result.iter().collect::<Vec<_>>(),
         )?)
     })
-}
-#[cfg(not(feature = "native-smlib"))]
-fn compute(
-    _: &Document,
-    _: ObjectId,
-    _: &MeshTrimCutters,
-    _: &[String],
-    _: Point3,
-    _: CommandContext,
-) -> Result<Option<TriangleMesh>, CommandError> {
-    Err(CommandError::MeshTrimRequiresNativeKernel)
 }

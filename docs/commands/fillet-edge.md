@@ -1,9 +1,7 @@
 # FilletEdge
 
 `FilletEdge` rounds selected edges of closed B-reps with a constant circular
-rolling-ball radius. Build with `--features native-smlib` to enable the native
-kernel. Default builds expose the command and report the missing backend without
-changing geometry.
+rolling-ball radius using usd-brep.
 
 ```text
 FilletEdge Radius=1

@@ -61,7 +61,6 @@ pub(super) fn family(family: &str, expected: usize) {
         };
         let before = source.clone();
         let d = sign * op["distance"].as_f64().unwrap();
-        #[cfg(feature = "native-smlib")]
         let parts = try_polyline_ribbon_with_ruled(
             &source,
             d,
@@ -70,16 +69,6 @@ pub(super) fn family(family: &str, expected: usize) {
             captured::model_tolerance(),
             corner,
             &mut viboceros_smlib::ruled_surface,
-        )
-        .unwrap();
-        #[cfg(not(feature = "native-smlib"))]
-        let parts = try_polyline_ribbon(
-            &source,
-            d,
-            op["both_sides"] == true,
-            normal,
-            captured::model_tolerance(),
-            corner,
         )
         .unwrap();
         assert_eq!(source, before);

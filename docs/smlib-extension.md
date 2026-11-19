@@ -51,7 +51,7 @@ collapsed-pole laws provide independent geometric expectations.
 The [Python comparison](../tools/numerics/compare_native_extensions.py) combines
 six existing SDK and scripted-command fixtures with stable prefixed identifiers.
 It can capture fresh Rhino observations in a private Xvfb session and replay
-them through `OracleClient(native_smlib=True)`. Complete output definitions and
+them through `OracleClient()`. Complete output definitions and
 command metadata are checked; existing documented command epsilon ceilings
 are retained. Its timings are harness diagnostics, not a kernel-speed claim.
 
@@ -75,7 +75,7 @@ cargo test --release -p viboceros-command -p viboceros-oracle \
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.numerics.compare_native_extensions \
   /tmp/extensions.json --capture-rhino --timeout 900
 python3 -m tools.numerics.compare_native_extensions /tmp/extensions-replay.json
-python3 -m tools.numerics.compare_native_extensions /tmp/extensions-portable.json --portable-baseline
+python3 -m tools.numerics.compare_native_extensions /tmp/extensions-portable.json --portable-baseline /path/to/portable-response.json
 
 cmake -S tools/usd_brep -B /tmp/extension-before -DCMAKE_BUILD_TYPE=Release \
   -DVIBOCEROS_EXTENSION_BREAK_PATCH=OFF

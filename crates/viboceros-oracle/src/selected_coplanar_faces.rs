@@ -32,12 +32,9 @@ pub(super) fn run(
         )?;
         match (doc.object(id).unwrap().geometry(), &source) {
             (Geometry::Brep(b), Geometry::Brep(before)) => {
-                #[cfg(feature = "native-smlib")]
                 let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
                     .and_then(|shape| shape.tight_bounds())
                     .map_err(CommandError::from)?;
-                #[cfg(not(feature = "native-smlib"))]
-                let bounds = b.tight_bounds(tolerance)?;
                 let mut loops = b
                     .faces()
                     .iter()
@@ -121,7 +118,6 @@ mod tests {
             true,
         );
     }
-    #[cfg(feature = "native-smlib")]
     #[test]
     fn selected_brep_commands_match_independent_pair_and_region_expectations() {
         check(

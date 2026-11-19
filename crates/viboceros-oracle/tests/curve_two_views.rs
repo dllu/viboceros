@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 //! Experimental producer measurements. A bounded recorded gap is not parity.
 use serde_json::Value;
 #[path = "support/curve_boolean.rs"]

@@ -177,20 +177,6 @@ pub fn picked_face(doc: &Document, xyz: &Value) -> (ObjectId, usize) {
     assert_eq!(found.len(), 1);
     found[0]
 }
-pub fn supported(doc: &Document, v: &Value) -> bool {
-    cfg!(feature = "native-smlib")
-        || !success(v)
-        || viboceros_command::shell::ShellInput::parse(
-            &command(doc, v)
-                .split_whitespace()
-                .skip(1)
-                .collect::<Vec<_>>(),
-        )
-        .unwrap()
-        .options
-        .thickness
-            == 0.
-}
 
 pub fn source_geometry(source: &Value, tolerance: Tolerance) -> Geometry {
     match source["type"].as_str().unwrap() {

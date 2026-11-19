@@ -1,8 +1,8 @@
 # Shell
 
 `Shell` removes chosen faces from a closed manifold polysurface and hollows the
-remaining faces inward. Positive thickness requires `--features native-smlib`;
-zero thickness also works in the portable build.
+remaining faces inward using usd-brep. Zero thickness removes the selected
+faces without offsetting the remaining faces.
 
 Start `Shell`, pick opening faces, and press Enter. At least one face per source
 must remain. `Thickness` opens a numeric getter; numbers and unit suffixes such

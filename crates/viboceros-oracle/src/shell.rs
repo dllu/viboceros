@@ -57,12 +57,9 @@ pub(super) fn run(
             let Geometry::Brep(b) = o.geometry() else {
                 return Err(ProbeError::FixtureInvariant("Shell output is not a B-rep"));
             };
-            #[cfg(feature = "native-smlib")]
             let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
                 .and_then(|s| s.tight_bounds())
                 .map_err(CommandError::from)?;
-            #[cfg(not(feature = "native-smlib"))]
-            let bounds = b.bounds();
             let mut row = json!({"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":b.signed_volume(tolerance)?.abs(),"bounds":[bounds.min().to_array(),bounds.max().to_array()]});
             if f.include_geometry {
                 row["geometry"] = crate::brep_interchange::definition_record(b)?;
@@ -102,7 +99,7 @@ mod input_tests {
         ));
     }
 }
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

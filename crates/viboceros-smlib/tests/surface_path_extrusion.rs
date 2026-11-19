@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{Brep, Circle3, NurbsCurve, NurbsSurface, Point3, Tolerance, UnitVector3};
 use viboceros_smlib::{KernelCurve, Shape};
 fn p(x: f64, y: f64, z: f64) -> Point3 {

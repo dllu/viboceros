@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::{Value, json};
 use viboceros_geometry::{NurbsCurve, NurbsSurface};
 use viboceros_smlib::{change_curve_degree, change_surface_degree};

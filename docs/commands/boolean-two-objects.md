@@ -36,7 +36,7 @@ Boolean2Objects Mode=Intersection DeleteInput=No
 Boolean2Objects Sources=<a-id>,<b-id> Mode=InverseIntersection
 ```
 
-With `--features native-smlib`, closed operands enter [usd-brep directly](../smlib-boolean-two.md),
+Closed operands enter [usd-brep directly](../smlib-boolean-two.md),
 including qualified curved solids. Each choice uses copies of the original
 operands, and the cached results share the existing preview and acceptance flow.
 Other builds accept certified closed polyhedral B-reps. Affine planar sheets

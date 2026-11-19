@@ -69,22 +69,6 @@ fn surface_extrusion_options_validate_atomically_and_face_targets_are_checked() 
         vec![(id, 0)]
     );
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn surface_extrusion_portable_decline_preserves_history_and_geometry() {
-    let mut doc = Document::default();
-    let registry = CommandRegistry::with_builtins();
-    let id = doc.add_geometry(patch(false)).unwrap();
-    doc.select_objects_direct([id], SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        registry.execute(&mut doc, "ExtrudeSrf 2"),
-        Err(CommandError::SurfaceExtrusionRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_curved_caps_both_sides_delete_and_history() {
     let mut doc = Document::default();
@@ -114,7 +98,6 @@ fn surface_extrusion_curved_caps_both_sides_delete_and_history() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert!(doc.object(id).is_none());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_selected_faces_remove_only_used_faces_and_replay_groups() {
     let mut doc = Document::default();
@@ -149,7 +132,6 @@ fn surface_extrusion_selected_faces_remove_only_used_faces_and_replay_groups() {
     registry.execute(&mut doc, "Redo").unwrap();
     assert_eq!(doc.objects().count(), 3);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_later_tangent_face_rolls_back_sources_picks_and_redo() {
     let mut doc = Document::default();
@@ -180,7 +162,6 @@ fn surface_extrusion_later_tangent_face_rolls_back_sources_picks_and_redo() {
     assert_eq!(format!("{doc:?}"), before);
     assert!(doc.can_redo());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_explicit_face_refs_work_without_object_selection() {
     let mut doc = Document::default();
@@ -201,7 +182,6 @@ fn surface_extrusion_explicit_face_refs_work_without_object_selection() {
     assert_eq!(b.faces().len(), 4);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_numeric_distance_uses_native_plane_normal_independently_of_cplane() {
     let mut doc = Document::default();

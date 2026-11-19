@@ -1,7 +1,7 @@
 # MergeAllCoplanarFaces
 
-Meshes merge through OpenNURBS in every build. Enable `--features native-smlib`
-to also merge adjacent planar B-rep faces through usd-brep. Select meshes,
+Meshes merge through OpenNURBS. Adjacent planar B-rep faces merge through
+usd-brep. Select meshes,
 surfaces or polysurfaces and run `MergeAllCoplanarFaces`, or
 start the command, select objects and press Enter. Cancel/Esc releases the getter;
 errors retain picked objects for retry. The command has no options and uses the

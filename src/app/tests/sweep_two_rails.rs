@@ -41,7 +41,6 @@ fn sweep_two_rail_picker_filters_and_cancels_without_model_edits() {
     assert!(app.object_prompt.is_none());
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
     for pre in [false, true] {
@@ -78,23 +77,4 @@ fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
         enter(&mut app, "Redo");
         assert_eq!(app.document.object(result.id()), Some(&result));
     }
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn sweep_two_rail_unavailable_native_backend_keeps_getter_and_sources() {
-    let mut app = test_app();
-    let ids = sources(&mut app);
-    enter(&mut app, "Sweep2");
-    for id in &ids {
-        app.apply_selection_click(SelectionClick {
-            object_id: Some(*id),
-            mode: SelectionMode::Add,
-        });
-    }
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "");
-    assert!(app.object_prompt.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
-    enter(&mut app, "Cancel");
-    assert!(app.object_prompt.is_none());
 }

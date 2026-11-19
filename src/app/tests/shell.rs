@@ -127,26 +127,6 @@ fn shell_remembers_options_on_cancel_without_adding_model_history() {
         viboceros_command::shell::ShellOptions::default()
     );
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn shell_portable_failure_retains_face_picks() {
-    let mut app = test_app();
-    let s = source(&mut app);
-    enter(&mut app, "Shell");
-    pick(&mut app, s, 0, Default::default());
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "");
-    assert!(app.shell_prompt.is_some());
-    assert_eq!(
-        app.component_selection
-            .checked_picks(&app.document)
-            .unwrap()
-            .len(),
-        1
-    );
-    assert_eq!(format!("{:?}", app.document), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn shell_component_preselection_and_thickness_failure_repair_commit_one_history_step() {
     let mut app = test_app();
@@ -188,9 +168,6 @@ fn shell_getters_match_native_geometry_metadata_identity_history_and_archives() 
         }
         let mut app = test_app();
         app.document = native_inputs::setup(&value);
-        if !native_inputs::supported(&app.document, &value) {
-            continue;
-        }
         println!("SHELL_UI_CASE {id}");
         let state = native_inputs::State::capture(&app.document);
         native_inputs::check(&app.document, &value["before"], false);

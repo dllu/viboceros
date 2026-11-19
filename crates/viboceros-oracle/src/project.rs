@@ -247,7 +247,6 @@ mod tests {
         }
         assert!(run_request(&q).is_err());
     }
-    #[cfg(feature = "native-smlib")]
     #[test]
     fn project_curve_surface_protocol_covers_finite_and_curved_targets() {
         let request: ProbeRequest = serde_json::from_str(include_str!(

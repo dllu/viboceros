@@ -53,7 +53,7 @@ the translated-chart executions and remaining matching limits.
 ```sh
 cargo test -p viboceros-smlib --features native --test unclamped_brep
 cargo test -p viboceros-command --features native-smlib --test native_unclamped_join
-python3 -m tools.rhino_oracle audit tools/rhino_oracle/fixtures/join_curved_certificates.json --native-smlib
+python3 -m tools.rhino_oracle audit tools/rhino_oracle/fixtures/join_curved_certificates.json
 ```
 
 The audit command retains execution outcomes. Strict comparison with the saved

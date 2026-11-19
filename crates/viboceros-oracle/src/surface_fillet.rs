@@ -24,7 +24,6 @@ fn explicit_trim<'de, D: serde::Deserializer<'de>>(
 ) -> Result<Option<bool>, D::Error> {
     bool::deserialize(deserializer).map(Some)
 }
-#[cfg(feature = "native-smlib")]
 pub(super) fn run(
     f: &Fixture,
     iterations: u32,
@@ -123,7 +122,6 @@ pub(super) fn run(
     })
 }
 
-#[cfg(feature = "native-smlib")]
 fn closest_point(brep: &Brep, target: Point3, tolerance: Tolerance) -> Result<Point3, ProbeError> {
     let mut best = None;
     for (i, face) in brep.faces().iter().enumerate() {
@@ -139,24 +137,18 @@ fn closest_point(brep: &Brep, target: Point3, tolerance: Tolerance) -> Result<Po
         "surface fillet closest point failed",
     ))
 }
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn run(_: &Fixture, _: u32, _: Tolerance) -> Result<(Value, u64), ProbeError> {
-    Err(ProbeError::FixtureInvariant(
-        "surface fillet producer requires native-smlib",
-    ))
-}
 
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 #[path = "surface_fillet_conditioning.rs"]
 mod conditioning;
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 #[path = "surface_fillet_images.rs"]
 mod images;
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 #[path = "surface_fillet_parent_tests.rs"]
 mod parent_tests;
 
-#[cfg(all(test, feature = "native-smlib"))]
+#[cfg(test)]
 mod tests {
     use super::*;
     #[test]

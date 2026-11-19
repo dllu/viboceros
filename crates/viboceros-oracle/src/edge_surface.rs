@@ -149,9 +149,6 @@ pub(super) fn build_brep(
 }
 
 fn construct(curves: &[NurbsCurve], tolerance: Tolerance) -> Result<Brep, ProbeError> {
-    #[cfg(not(feature = "native-smlib"))]
-    let brep = Brep::try_edge_surface(curves, tolerance)?;
-    #[cfg(feature = "native-smlib")]
     let brep = viboceros_smlib::Shape::from_edge_curves(curves, tolerance)
         .and_then(|shape| shape.to_brep(tolerance))
         .map_err(CommandError::from)?;

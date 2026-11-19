@@ -105,27 +105,19 @@ impl Command for ExtrudeSurfaceTaperedCommand {
                 if !positional.is_empty() {
                     return Err(CommandError::Usage(USAGE));
                 }
-                #[cfg(feature = "native-smlib")]
-                {
-                    let options = settings.boundary_options(input.options);
-                    let count = crate::tapered_boundary::apply(
-                        doc,
-                        crate::tapered_boundary::Inputs::Faces(&input.faces),
-                        options,
-                        reference,
-                        context.construction_plane,
-                    )?;
-                    self.settings.set(TaperedExtrusionSettings::after_success(
-                        options,
-                        settings.distance,
-                    ));
-                    return Ok(format!("Tapered {count} surface face(s) to the boundary"));
-                }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    reference.capture(doc)?;
-                    return Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel);
-                }
+                let options = settings.boundary_options(input.options);
+                let count = crate::tapered_boundary::apply(
+                    doc,
+                    crate::tapered_boundary::Inputs::Faces(&input.faces),
+                    options,
+                    reference,
+                    context.construction_plane,
+                )?;
+                self.settings.set(TaperedExtrusionSettings::after_success(
+                    options,
+                    settings.distance,
+                ));
+                return Ok(format!("Tapered {count} surface face(s) to the boundary"));
             }
         }
         let distance =
@@ -172,32 +164,24 @@ pub fn produce_surface(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
-        let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
-        let (displacement, draft) =
-            crate::extrude_tapered::displacement_and_draft(distance, options, || {
-                crate::extrude_surface::face_extrusion_direction(&shape, None, cplane, tolerance)
-            })?;
-        let restore =
-            AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
-        Ok(shape
-            .tapered_face(
-                displacement,
-                draft,
-                options.corners.kernel(),
-                options.solid,
-                tolerance,
-            )?
-            .to_brep(tolerance)?
-            .transformed(restore, tolerance)?)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (brep, distance, options, cplane, tolerance);
-        Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel)
-    }
+    let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
+    let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
+    let (displacement, draft) =
+        crate::extrude_tapered::displacement_and_draft(distance, options, || {
+            crate::extrude_surface::face_extrusion_direction(&shape, None, cplane, tolerance)
+        })?;
+    let restore =
+        AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
+    Ok(shape
+        .tapered_face(
+            displacement,
+            draft,
+            options.corners.kernel(),
+            options.solid,
+            tolerance,
+        )?
+        .to_brep(tolerance)?
+        .transformed(restore, tolerance)?)
 }
 
 #[cfg(test)]

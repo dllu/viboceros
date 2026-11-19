@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use std::collections::BTreeSet;
 use viboceros_geometry::{Point3, Tolerance};

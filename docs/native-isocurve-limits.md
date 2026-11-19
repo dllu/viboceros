@@ -62,7 +62,7 @@ cargo test -p viboceros-smlib --features native \
 python3 -m tools.rhino_oracle replay \
   tools/rhino_oracle/fixtures/surface_isocurve_geometry.json \
   --observations tools/rhino_oracle/observations/surface_isocurve_geometry.json \
-  --native-smlib --timeout 1800
+  --timeout 1800
 ```
 
 General optional trimmed-domain pairing, arbitrary numerical ranges, native

@@ -1,21 +1,8 @@
 //! Shared ID-set parsing and original-face coplanar merging.
 use super::*;
-#[cfg(not(feature = "native-smlib"))]
-use viboceros_geometry::{BrepDifferenceComponent, BrepUnionComponent};
 use viboceros_geometry::{BrepPolyhedralBooleanComponent, BrepSetIntersection};
-#[cfg(not(feature = "native-smlib"))]
-mod common;
 mod compound;
-#[cfg(feature = "native-smlib")]
 pub(super) mod native;
-
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn common_intersection(
-    breps: &[&Brep],
-    tolerance: Tolerance,
-) -> Result<Vec<ShellIntersection>, GeometryError> {
-    common::intersection(breps, tolerance)
-}
 
 /// Only an unsupported convex certificate selects the polyhedral path. Work,
 /// arithmetic and output-topology failures are never swallowed as fallbacks.
@@ -50,17 +37,6 @@ pub(super) fn interactions(
 }
 
 impl Kernel {
-    #[cfg(not(feature = "native-smlib"))]
-    pub(super) fn union(
-        self,
-        breps: &[&Brep],
-        tolerance: Tolerance,
-    ) -> Result<Vec<BrepUnionComponent>, GeometryError> {
-        match self {
-            Self::Convex => viboceros_geometry::union_convex_breps(breps, tolerance),
-            Self::Polyhedral => viboceros_geometry::union_polyhedral_breps(breps, tolerance),
-        }
-    }
     pub(super) fn sets(
         self,
         first: &[&Brep],
@@ -76,97 +52,6 @@ impl Kernel {
             }
         }
     }
-    #[cfg(not(feature = "native-smlib"))]
-    pub(super) fn difference(
-        self,
-        target: &Brep,
-        cutters: &[&Brep],
-        tolerance: Tolerance,
-    ) -> Result<Vec<BrepDifferenceComponent>, GeometryError> {
-        match self {
-            Self::Convex => viboceros_geometry::subtract_convex_breps(target, cutters, tolerance),
-            Self::Polyhedral => {
-                viboceros_geometry::subtract_polyhedral_breps(target, cutters, tolerance)
-            }
-        }
-    }
-}
-
-/// Resolve interaction participation per original shell, before output merging
-/// removes face provenance. Object pairs restrict the participating operands
-/// (Difference uses only target/cutter pairs).
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn active_faces(
-    breps: &[&Brep],
-    pairs: &[[usize; 2]],
-    tolerance: Tolerance,
-    include_edges: bool,
-) -> Result<Vec<Vec<bool>>, GeometryError> {
-    let components = breps
-        .iter()
-        .map(|b| b.edge_connected_face_components())
-        .collect::<Vec<_>>();
-    let mut result = breps
-        .iter()
-        .map(|b| vec![false; b.faces().len()])
-        .collect::<Vec<_>>();
-    if components.iter().all(|c| c.len() == 1) {
-        for pair in pairs {
-            for &i in pair {
-                result[i].fill(true);
-            }
-        }
-        return Ok(result);
-    }
-    let mut parts = Vec::new();
-    let mut owners = Vec::new();
-    for (input, components) in components.iter().enumerate() {
-        for faces in components {
-            parts.push(breps[input].duplicate_faces(faces, tolerance)?);
-            owners.push((input, faces));
-        }
-    }
-    let refs = parts.iter().collect::<Vec<_>>();
-    let (_, contacts) = interactions(&refs, tolerance, include_edges)?;
-    for [a, b] in contacts {
-        let original = [owners[a].0.min(owners[b].0), owners[a].0.max(owners[b].0)];
-        if original[0] == original[1] || !pairs.contains(&original) {
-            continue;
-        }
-        for part in [a, b] {
-            for &face in owners[part].1 {
-                result[owners[part].0][face] = true;
-            }
-        }
-    }
-    Ok(result)
-}
-
-#[cfg(not(feature = "native-smlib"))]
-pub(super) type ShellWithSources = (Brep, Vec<[usize; 2]>);
-
-#[cfg(not(feature = "native-smlib"))]
-pub(super) fn participating_shells(
-    brep: Brep,
-    sources: &[[usize; 2]],
-    active: &[Vec<bool>],
-    tolerance: Tolerance,
-) -> Result<Vec<ShellWithSources>, GeometryError> {
-    let components = brep.edge_connected_face_components();
-    let mut result = Vec::new();
-    for faces in components {
-        if !faces.iter().any(|&i| active[sources[i][0]][sources[i][1]]) {
-            continue;
-        }
-        let shell = brep.duplicate_faces(&faces, tolerance)?;
-        let shell = match shell.solid_orientation()? {
-            viboceros_geometry::BrepSolidOrientation::Inward => shell.reversed(),
-            viboceros_geometry::BrepSolidOrientation::Outward => shell,
-            _ => return Err(GeometryError::UnrepresentableBrepBoolean),
-        };
-        result.push((shell, faces.iter().map(|&i| sources[i]).collect()));
-    }
-    Ok(result)
 }
 
 pub(super) struct ShellIntersection {

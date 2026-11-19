@@ -6,14 +6,7 @@ use viboceros_geometry::*;
 mod captured;
 
 fn interpolate(source: &NurbsSurface, degree: [usize; 2], knots: [&[f64]; 2]) -> NurbsSurface {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::interpolate_surface_in_basis(source, degree, knots).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_interpolate_surface_in_basis(source, degree, knots).unwrap()
-    }
+    viboceros_smlib::interpolate_surface_in_basis(source, degree, knots).unwrap()
 }
 
 fn fit(
@@ -22,14 +15,7 @@ fn fit(
     knots: [&[f64]; 2],
     limit: f64,
 ) -> Option<BoundedSurfaceFit> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::fit_surface_in_basis(source, degree, knots, limit).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_fit_surface_in_basis(source, degree, knots, limit).unwrap()
-    }
+    viboceros_smlib::fit_surface_in_basis(source, degree, knots, limit).unwrap()
 }
 
 #[test]

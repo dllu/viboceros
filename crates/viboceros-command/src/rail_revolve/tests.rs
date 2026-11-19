@@ -41,7 +41,6 @@ fn rail_revolve_options_roles_and_failures_keep_geometry_history_and_redo() {
         RailRevolveOptions::default()
     );
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn rail_revolve_named_and_ordered_closed_rails_produce_one_undoable_surface() {
     for named in [false, true] {
@@ -91,21 +90,4 @@ fn rail_revolve_named_and_ordered_closed_rails_produce_one_undoable_surface() {
             assert_eq!(doc.object(output.id()), Some(&output));
         }
     }
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn rail_revolve_without_native_rejects_without_losing_sources() {
-    let r = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    let ids = sources(&mut doc);
-    doc.select_objects_direct(ids, SelectionMode::Replace)
-        .unwrap();
-    let before = format!("{doc:?}");
-    assert!(
-        r.execute(&mut doc, "RailRevolve 0,0,0 0,0,1")
-            .unwrap_err()
-            .to_string()
-            .contains("native-smlib")
-    );
-    assert_eq!(format!("{doc:?}"), before);
 }

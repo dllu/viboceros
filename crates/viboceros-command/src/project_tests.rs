@@ -202,7 +202,6 @@ fn project_respects_hole_and_target_output_layer() {
         }
     }
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn project_native_curved_graph_preserves_direction_and_surface_relation() {
     let target = NurbsSurface::try_bilinear([
@@ -273,7 +272,6 @@ fn project_points_keep_multiple_solid_hits() {
     assert!(z[0].abs() < 1e-8);
     assert!((z[1] - 10.).abs() < 1e-8);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn project_native_curved_partial_face_clips_in_original_uv() {
     let surface = NurbsSurface::try_bilinear([
@@ -806,7 +804,6 @@ fn project_invalid_later_subcurve_is_read_only_and_preserves_redo() {
     assert_eq!(format!("{d:?}"), before);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn project_native_subcurve_clips_the_source_before_curved_surface_projection() {
     let s = NurbsSurface::try_bilinear([

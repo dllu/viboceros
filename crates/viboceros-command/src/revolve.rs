@@ -2,7 +2,6 @@
 use super::*;
 
 mod construction;
-#[cfg(feature = "native-smlib")]
 mod native;
 mod options;
 mod profile;

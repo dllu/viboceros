@@ -107,16 +107,6 @@ impl MeshBooleanCommand {
     }
 }
 
-#[cfg(not(feature = "native-smlib"))]
-fn stage(
-    _: Kind,
-    _: &[&TriangleMesh],
-    _: usize,
-    _: Tolerance,
-) -> Result<Vec<Geometry>, CommandError> {
-    Err(CommandError::MeshBooleanRequiresNativeKernel)
-}
-#[cfg(feature = "native-smlib")]
 fn stage(
     kind: Kind,
     meshes: &[&TriangleMesh],

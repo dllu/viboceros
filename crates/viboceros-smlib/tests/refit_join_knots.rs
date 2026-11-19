@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 #[path = "../../viboceros-geometry/tests/support/refit_join_knots.rs"]
 mod support;
 

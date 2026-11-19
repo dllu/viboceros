@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{GeometryError, NurbsCurve, Point3, WeightedPoint3};
 use viboceros_smlib::{Error, trim_curve};
 

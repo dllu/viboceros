@@ -17,22 +17,6 @@ fn fillet_edge_prompt_owns_radius_and_edge_filter() {
     );
 }
 
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn unavailable_native_kernel_does_not_change_selected_geometry() {
-    let registry = CommandRegistry::with_builtins();
-    let mut doc = Document::default();
-    registry.execute(&mut doc, "Box 0,0,0 10,10,0 10").unwrap();
-    registry.execute(&mut doc, "SelAll").unwrap();
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        registry.execute(&mut doc, "FilletEdge Radius=1 All=Yes"),
-        Err(CommandError::FilletEdgeRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-
-#[cfg(feature = "native-smlib")]
 mod native {
     use super::*;
     fn selected_box() -> (CommandRegistry, Document, ObjectId) {

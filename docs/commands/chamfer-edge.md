@@ -1,6 +1,6 @@
 # ChamferEdge
 
-Build with `--features native-smlib`. `ChamferEdge` uses usd-brep's native
+`ChamferEdge` uses usd-brep's native
 selected-edge fillet executive with a linear cross-section, retaining editable
 B-rep surfaces, trims and topology.
 

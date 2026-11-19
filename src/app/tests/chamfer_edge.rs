@@ -46,25 +46,6 @@ fn chamfer_getter_units_preselection_options_and_cancel_preserve_source() {
     assert!(app.edge_fillet_prompt.is_none());
     assert_eq!(app.document.object(p.object), Some(&original));
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn chamfer_portable_failure_keeps_getter_and_picks() {
-    let mut app = test_app();
-    let p = source(&mut app);
-    enter(&mut app, "ChamferEdge 1");
-    pick(&mut app, p, false);
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "");
-    assert!(app.edge_fillet_prompt.is_some());
-    assert_eq!(
-        app.component_selection
-            .checked_picks(&app.document)
-            .unwrap(),
-        vec![p]
-    );
-    assert_eq!(format!("{:?}", app.document), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn chamfer_failure_can_be_repaired_and_committed_as_one_history_step() {
     let mut app = test_app();

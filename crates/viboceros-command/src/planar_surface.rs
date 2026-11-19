@@ -1,13 +1,8 @@
-//! Planar-region command policy with interchangeable geometry adapters.
+//! Planar-region command policy and boundary selection.
 use super::*;
 mod chains;
-mod portable;
-#[cfg(not(feature = "native-smlib"))]
-use portable as backend;
-#[cfg(feature = "native-smlib")]
 mod native;
-#[cfg(feature = "native-smlib")]
-use native as backend;
+mod portable;
 
 const PLANAR_SURFACE_USAGE: &str = "PlanarSrf [DeleteInput=Yes|No]";
 
@@ -117,7 +112,7 @@ fn stage_profiles(
     tolerance: Tolerance,
     independent_contacts: bool,
 ) -> Result<(Vec<Brep>, Vec<usize>), CommandError> {
-    backend::stage(
+    native::stage(
         profiles.into_iter().enumerate().collect(),
         tolerance,
         independent_contacts,

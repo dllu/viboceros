@@ -2,7 +2,6 @@
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 pub use crate::surface_reference::{BoundaryInput, BoundaryRef};
-#[cfg(feature = "native-smlib")]
 mod boundary;
 pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [ToBoundary=id[:face]] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand {
@@ -217,7 +216,6 @@ impl Command for ExtrudeSurfaceToPointCommand {
             &input.faces,
             input.options.delete_input,
             |brep, tolerance| {
-                #[cfg(feature = "native-smlib")]
                 {
                     let coplanar = if boundary.is_none() {
                         brep.try_extruded_face_to_coplanar_point(
@@ -254,11 +252,6 @@ impl Command for ExtrudeSurfaceToPointCommand {
                             .collect())
                     }
                 }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    let _ = (brep, tolerance, apex, capped);
-                    Err(CommandError::SurfaceApexExtrusionRequiresNativeKernel)
-                }
             },
         )?;
         self.preferences.set(input.options);
@@ -271,7 +264,6 @@ impl Command for ExtrudeSurfaceToPointCommand {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 fn native_extrusion(
     brep: &Brep,
     apex: Point3,

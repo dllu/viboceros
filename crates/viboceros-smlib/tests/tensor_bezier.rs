@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use std::process::Command;
 
 #[test]

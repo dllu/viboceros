@@ -17,26 +17,12 @@ fn data(family: &str) -> (Value, Value) {
     (query, captured::read(family))
 }
 fn fit(source: &NurbsSurface, options: SurfaceFitOptions, limit: f64) -> Option<BoundedSurfaceFit> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::fit_surface_with_bound(source, options, limit).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_fit_surface_with_bound(source, options, limit).unwrap()
-    }
+    viboceros_smlib::fit_surface_with_bound(source, options, limit).unwrap()
 }
 fn interpolate(source: &NurbsSurface, expected: &NurbsSurface) -> NurbsSurface {
     let degree = [expected.degree_u(), expected.degree_v()];
     let knots = [expected.knots_u(), expected.knots_v()];
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::interpolate_surface_in_basis(source, degree, knots).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_interpolate_surface_in_basis(source, degree, knots).unwrap()
-    }
+    viboceros_smlib::interpolate_surface_in_basis(source, degree, knots).unwrap()
 }
 fn archive_bound(surface: &NurbsSurface) -> f64 {
     let brep = Brep::try_rectangular_surface_face_with_surface_edge_domains(

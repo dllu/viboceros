@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{NurbsCurve, Point3, Tolerance};
 use viboceros_smlib::{KernelCurve, Shape};
 

@@ -112,11 +112,7 @@ fn replays_44_native_outcomes_geometry_metadata_selection_preferences_and_histor
             // metadata, mass-property and bidirectional boundary comparisons.
             assert_eq!(original[0]["faces"], 13);
             assert_eq!(original[0]["edges"], 33);
-            let counts = if cfg!(feature = "native-smlib") {
-                [10, 24]
-            } else {
-                [13, 31]
-            };
+            let counts = [10, 24];
             assert_eq!(
                 snapshot(&doc, &ids, &layers, &groups)[0]["faces"],
                 counts[0]

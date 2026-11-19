@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{NurbsSurface, Point3};
 use viboceros_smlib::interpolate_point_grid;

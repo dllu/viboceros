@@ -98,13 +98,7 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
     let before_members = document.group(group).unwrap().members().collect::<Vec<_>>();
     // Native stitching also admits the sum of the stored entity tolerances.
     // This fixture's exact edges inherit one model tolerance each.
-    let cutoff = if post {
-        2.1
-    } else if cfg!(feature = "native-smlib") {
-        2.
-    } else {
-        1.8
-    };
+    let cutoff = if post { 2.1 } else { 2. };
     let joined = ratio < cutoff;
     let result = execute(&registry, &mut document, copy, post);
     if post && !joined {
@@ -147,15 +141,6 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
                 assert_eq!(face.surface(), original.faces()[0].surface());
             }
             let seam = origin + gap * 0.5;
-            #[cfg(not(feature = "native-smlib"))]
-            assert_eq!(
-                brep.vertices()
-                    .iter()
-                    .filter(|v| (v.point().y() - seam).abs() < 1e-12)
-                    .count(),
-                2
-            );
-            #[cfg(feature = "native-smlib")]
             {
                 // SMLib retains a candidate vertex rather than averaging the
                 // two boundaries. Both seam vertices stay inside the gap.
@@ -168,9 +153,6 @@ fn check(absolute: f64, origin: f64, ratio: f64, copy: bool, post: bool) {
                 assert!(vertices.iter().all(|v| v.tolerance() >= gap * 0.5));
             }
         } else {
-            #[cfg(not(feature = "native-smlib"))]
-            assert_eq!(output.geometry(), &originals[index]);
-            #[cfg(feature = "native-smlib")]
             {
                 // Native import/export gives untouched outputs model-sized
                 // uncertainty and edge-aligned UV parameter domains. Their

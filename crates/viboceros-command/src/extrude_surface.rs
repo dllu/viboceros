@@ -2,7 +2,6 @@
 use super::*;
 use crate::surface_reference::{BoundaryInput, BoundaryRef};
 mod apply;
-#[cfg(feature = "native-smlib")]
 mod boundary;
 pub(super) use apply::{apply_face_extrusion_products, apply_staged_products, capture_source_face};
 
@@ -336,22 +335,14 @@ impl Command for ExtrudeSurfaceCommand {
                 (count, Some(display_distance), input.options.both_sides)
             }
             BoundaryInput::Reference(reference) if positional.is_empty() => {
-                #[cfg(feature = "native-smlib")]
-                {
-                    let count = boundary::apply(
-                        doc,
-                        &input.faces,
-                        reference,
-                        input.options,
-                        context.construction_plane,
-                    )?;
-                    (count, settings.distance, false)
-                }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    reference.capture(doc)?;
-                    return Err(CommandError::SurfaceExtrusionRequiresNativeKernel);
-                }
+                let count = boundary::apply(
+                    doc,
+                    &input.faces,
+                    reference,
+                    input.options,
+                    context.construction_plane,
+                )?;
+                (count, settings.distance, false)
             }
             _ => return Err(CommandError::Usage(USAGE)),
         };
@@ -366,7 +357,6 @@ impl Command for ExtrudeSurfaceCommand {
         Ok(format!("Extruded {count} surface face(s)"))
     }
 }
-#[cfg(feature = "native-smlib")]
 pub(super) fn sweep_surface_key(surface: &NurbsSurface) -> u64 {
     use std::hash::{DefaultHasher, Hash, Hasher};
 
@@ -414,7 +404,6 @@ pub(super) fn parse_face_extrusion_distance(
         Ok(Distance::Explicit(v))
     }
 }
-#[cfg(feature = "native-smlib")]
 pub(super) fn face_extrusion_direction(
     source: &viboceros_smlib::Shape,
     direction: Option<Vector3>,
@@ -449,24 +438,14 @@ pub fn surface_extrusion_reference_normal(
     brep: &Brep,
     tolerance: Tolerance,
 ) -> Result<Option<Vector3>, CommandError> {
-    #[cfg(feature = "native-smlib")]
     let normal = {
         let (_, local) = local_sweep_source(brep, tolerance)?;
         let source = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
         source.single_face_plane_normal(tolerance)?
     };
-    #[cfg(not(feature = "native-smlib"))]
-    let normal = match brep.faces() {
-        [face] => face
-            .surface()
-            .plane(tolerance)?
-            .map(|plane| plane.normal().as_vector()),
-        _ => None,
-    };
     Ok(normal.map(oriented_plane_normal).transpose()?)
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn local_sweep_source(
     brep: &Brep,
     tolerance: Tolerance,
@@ -483,7 +462,6 @@ pub(super) fn local_sweep_source(
     )?;
     Ok((origin, local))
 }
-#[cfg(feature = "native-smlib")]
 pub(super) fn split_wall_edges(
     source: &Brep,
     split_at_tangents: bool,
@@ -506,59 +484,42 @@ fn produce(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Vec<Geometry>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let (origin, local) = local_sweep_source(brep, tolerance)?;
-        let local = split_wall_edges(&local, options.split_at_tangents, tolerance)?;
-        let source = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
-        let zero = Point3::try_new(0., 0., 0.)?;
-        let vector = match distance {
-            Distance::Explicit(v) => v,
-            Distance::Numeric(h) => {
-                let normal =
-                    face_extrusion_direction(&source, options.direction, cplane, tolerance)?;
-                normal.scaled(h)?
-            }
-        };
-        let (start, displacement) = if options.both_sides {
-            (vector.scaled(-1.)?, vector.scaled(2.)?)
-        } else {
-            (Vector3::try_new(0., 0., 0.)?, vector)
-        };
-        let result = source
-            .extruded_faces(displacement, options.solid, tolerance)?
-            .to_brep(tolerance)?
-            .transformed(
-                AffineTransform3::from_translation(zero.vector_to(origin.translated(start)?)?),
-                tolerance,
-            )?;
-        if options.solid && !result.is_solid() {
-            return Err(CommandError::Usage(
-                "ExtrudeSrf did not produce a closed solid",
-            ));
+    let (origin, local) = local_sweep_source(brep, tolerance)?;
+    let local = split_wall_edges(&local, options.split_at_tangents, tolerance)?;
+    let source = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let vector = match distance {
+        Distance::Explicit(v) => v,
+        Distance::Numeric(h) => {
+            let normal = face_extrusion_direction(&source, options.direction, cplane, tolerance)?;
+            normal.scaled(h)?
         }
-        if options.solid {
-            Ok(vec![Geometry::Brep(result)])
-        } else {
-            Ok(result
-                .into_edge_connected_components(tolerance)?
-                .into_iter()
-                .map(Geometry::Brep)
-                .collect())
-        }
+    };
+    let (start, displacement) = if options.both_sides {
+        (vector.scaled(-1.)?, vector.scaled(2.)?)
+    } else {
+        (Vector3::try_new(0., 0., 0.)?, vector)
+    };
+    let result = source
+        .extruded_faces(displacement, options.solid, tolerance)?
+        .to_brep(tolerance)?
+        .transformed(
+            AffineTransform3::from_translation(zero.vector_to(origin.translated(start)?)?),
+            tolerance,
+        )?;
+    if options.solid && !result.is_solid() {
+        return Err(CommandError::Usage(
+            "ExtrudeSrf did not produce a closed solid",
+        ));
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        match distance {
-            Distance::Numeric(h) => {
-                let _ = h;
-            }
-            Distance::Explicit(v) => {
-                let _ = v;
-            }
-        }
-        let _ = (brep, options, cplane, tolerance);
-        Err(CommandError::SurfaceExtrusionRequiresNativeKernel)
+    if options.solid {
+        Ok(vec![Geometry::Brep(result)])
+    } else {
+        Ok(result
+            .into_edge_connected_components(tolerance)?
+            .into_iter()
+            .map(Geometry::Brep)
+            .collect())
     }
 }
 #[cfg(test)]

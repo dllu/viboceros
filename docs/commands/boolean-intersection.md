@@ -1,6 +1,6 @@
 # BooleanIntersection
 
-Linux builds with `--features native-smlib` use
+Viboceros uses
 [usd-brep directly](../smlib-set-booleans.md) for common and closed two-set
 intersections. Open two-set inputs retain the qualified Rust path. Geometry
 and policy failures propagate before document changes.
@@ -70,10 +70,8 @@ replacement. Boundary-contained solids with an intersecting boundary can succeed
 ## Current scope and native evidence
 
 Closed embedded polyhedral inputs can have concave faces, holes, multiple shells,
-cavities, and straight edges from earlier Boolean results. The convex certificate
-selects the faster construction when available; otherwise the general exact
-polyhedral certificate applies in builds without `native-smlib`. Native builds
-delegate these closed inputs and qualified curved solids to SMLib. Curved open inputs, intersecting input
+cavities, and straight edges from earlier Boolean results. SMLib handles closed solids and
+qualified curved inputs. Curved open inputs, intersecting input
 shells, unsupported plane roundoff, resource exhaustion, and uncertified singular topology
 return errors before model edits. See [chained command scope and compound shell
 policies](../polyhedral-boolean-commands.md) for the additional native evidence

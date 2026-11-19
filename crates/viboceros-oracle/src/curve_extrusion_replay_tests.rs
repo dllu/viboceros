@@ -21,7 +21,6 @@ fn numeric_curve_extrusion_matches_recorded_rhino_directions_and_raw_surfaces() 
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn short_span_extrusion_matches_recorded_rhino_basis_and_direction() {
     let mut request: ProbeRequest = serde_json::from_str(include_str!(

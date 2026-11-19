@@ -53,20 +53,6 @@ fn shell_thickness_uses_model_units_and_converts_explicit_units_atomically() {
         assert_eq!(options, parsed.options);
     }
 }
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn shell_portable_decline_preserves_document_and_history() {
-    let mut doc = Document::default();
-    let s = source(&mut doc);
-    let before = format!("{doc:?}");
-    assert!(matches!(
-        CommandRegistry::with_builtins()
-            .execute(&mut doc, &format!("Shell Thickness=1 FaceRefs={s}:0")),
-        Err(CommandError::ShellRequiresNativeKernel)
-    ));
-    assert_eq!(format!("{doc:?}"), before);
-}
-#[cfg(feature = "native-smlib")]
 #[test]
 fn shell_replaces_source_retains_attributes_groups_and_replays_history() {
     let mut doc = Document::default();
@@ -95,7 +81,6 @@ fn shell_replaces_source_retains_attributes_groups_and_replays_history() {
     assert_ne!(doc.object(s), Some(&original));
     assert!(doc.object(id).is_some());
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn shell_preserves_input_when_requested_and_later_failure_rolls_back() {
     let mut doc = Document::default();
@@ -134,7 +119,6 @@ fn shell_preserves_input_when_requested_and_later_failure_rolls_back() {
     assert!(doc.can_redo());
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn shell_disconnected_walls_inherit_source_groups_as_separate_solids() {
     let mut doc = Document::default();
@@ -178,7 +162,6 @@ fn shell_disconnected_walls_inherit_source_groups_as_separate_solids() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn native_shell_ring_retains_points_past_the_inner_cavity_corner() {
     let mut doc = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());

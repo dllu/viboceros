@@ -52,7 +52,7 @@ CrvDeviation End
 See the [temporary-input validation](../curve-deviation-subcurves-validation.json)
 and [native command comparison](../../tools/rhino_oracle/observations/curve_deviation_subcurves_comparison_20261016.json).
 
-Line pairs work in the portable build. They use an analytic correspondence in
+Line pairs use an analytic correspondence in
 planes perpendicular to the aligned direction bisector, with exact rational
 clipping and minimization after computing that direction. This reproduces the
 original parallel, partial, reversed, and centered angled fixtures: the maximum for
@@ -63,7 +63,7 @@ of perpendicular are treated as ambiguous. The broader asymmetric and nearby
 endpoint captures expose additional line interval and distance differences;
 the report therefore identifies line correspondence as approximate too.
 
-Curved inputs require `native-smlib`. They reuse the usd-brep/SMLib
+Curved inputs use the usd-brep/SMLib
 [distance backend](../curve-distance-queries.md) with projected endpoint ranges.
 Corresponding natural ends perpendicular to the aligned endpoint chords are
 preserved within model tolerance, so translated profiles retain their ends.
@@ -100,7 +100,7 @@ maximum differences remain explicit failing comparisons.
 To reproduce the command-side local observations:
 
 ```sh
-cargo run --quiet -p viboceros-oracle --features native-smlib -- \
+cargo run --quiet -p viboceros-oracle -- \
   tools/rhino_oracle/fixtures/curve_deviation_workflows.json /tmp/crv-deviation.json
 python3 -m tools.rhino_oracle.curve_deviation_comparison \
   tools/rhino_oracle/fixtures/curve_deviation_workflows.json /tmp/crv-deviation.json \

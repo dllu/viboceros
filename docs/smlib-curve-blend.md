@@ -52,7 +52,7 @@ cargo test --release -p viboceros-command --features native-smlib blend::tests
 python3 -m tools.numerics.compare_native_curve_blends /tmp/blend-replay.json
 python3 -m tools.rhino_oracle replay tools/rhino_oracle/fixtures/blend_lines.json \
   --observations tools/rhino_oracle/observations/blend_lines.json \
-  --native-smlib --absolute-epsilon 5e-8 --timeout 600
+  --absolute-epsilon 5e-8 --timeout 600
 ```
 
 The earlier [surface performance record](smlib-blend-hermite-performance.json)

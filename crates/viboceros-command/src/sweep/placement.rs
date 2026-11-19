@@ -26,7 +26,6 @@ fn sections_with_direction(
     let mut rail = source.to_nurbs()?;
     let mut sections = Vec::with_capacity(profiles.len());
     for curve in profiles {
-        #[cfg(feature = "native-smlib")]
         let minimum = {
             let seed = viboceros_smlib::curve_minimum_distance(
                 CurveRef::NurbsCurve(&rail),
@@ -40,8 +39,6 @@ fn sections_with_direction(
             })?;
             rail.minimum_distance_with_curve_seeded(&curve, tolerance, seed.parameters)?
         };
-        #[cfg(not(feature = "native-smlib"))]
-        let minimum = rail.minimum_distance_with_curve(&curve, tolerance)?;
         let minimum = minimum.ok_or(GeometryError::InvalidSweep {context:"section placement exceeded the certified curve-distance query limits; supply explicit Parameters"})?;
         // The public Rhino command transports analytic arcs using their native
         // station directly in the rational rail chart. Keep that compatibility

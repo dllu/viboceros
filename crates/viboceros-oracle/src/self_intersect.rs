@@ -82,7 +82,6 @@ pub fn run(
     })
 }
 
-#[cfg(feature = "native-smlib")]
 fn api_events(source: &Geometry, tolerance: Tolerance) -> Result<Value, ProbeError> {
     use viboceros_geometry::CurveCurveIntersectionEvent;
     let curve = source
@@ -100,12 +99,6 @@ fn api_events(source: &Geometry, tolerance: Tolerance) -> Result<Value, ProbeErr
         CurveCurveIntersectionEvent::Overlap(o)=>json!({"type":"overlap","a":[o.start().first_parameter(),o.end().first_parameter()],
             "b":[o.start().second_parameter(),o.end().second_parameter()],"points":[o.start().point().to_array(),o.end().point().to_array()]}),
     }).collect()))
-}
-#[cfg(not(feature = "native-smlib"))]
-fn api_events(_: &Geometry, _: Tolerance) -> Result<Value, ProbeError> {
-    Err(ProbeError::FixtureInvariant(
-        "self-intersection paired-parameter API requires native-smlib",
-    ))
 }
 
 #[cfg(test)]

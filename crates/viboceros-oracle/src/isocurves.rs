@@ -1,5 +1,4 @@
 //! Trim-aware isocurve probes with parameter-domain-independent sampling.
-#[cfg(feature = "native-smlib")]
 use super::CommandError;
 use super::{ProbeError, TrimmedBrepFixture, measure_probe, trimmed_brep};
 use serde_json::Value;
@@ -55,35 +54,17 @@ fn extract(
     direction: SurfaceKnotDirection,
     parameter: f64,
 ) -> Result<NurbsCurve, ProbeError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::surface_isocurve(source, direction, parameter)
-            .map_err(CommandError::from)
-            .map_err(ProbeError::from)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        match direction {
-            SurfaceKnotDirection::U => Ok(source.isocurve_u(parameter)?),
-            SurfaceKnotDirection::V => Ok(source.isocurve_v(parameter)?),
-            SurfaceKnotDirection::Both => unreachable!(),
-        }
-    }
+    viboceros_smlib::surface_isocurve(source, direction, parameter)
+        .map_err(CommandError::from)
+        .map_err(ProbeError::from)
 }
 fn trim(
     source: &NurbsCurve,
     interval: std::ops::RangeInclusive<f64>,
 ) -> Result<NurbsCurve, ProbeError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::trim_curve(source, interval)
-            .map_err(CommandError::from)
-            .map_err(ProbeError::from)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(source.try_trimmed(interval)?)
-    }
+    viboceros_smlib::trim_curve(source, interval)
+        .map_err(CommandError::from)
+        .map_err(ProbeError::from)
 }
 
 fn sample(curves: Vec<NurbsCurve>) -> Result<Vec<Vec<[f64; 3]>>, GeometryError> {

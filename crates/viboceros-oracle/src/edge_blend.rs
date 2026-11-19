@@ -64,12 +64,9 @@ pub(super) fn run(
                 "Edge blend output must be a B-rep",
             ));
         };
-        #[cfg(feature = "native-smlib")]
         let bounds = viboceros_smlib::Shape::from_brep(b, tolerance)
             .and_then(|s| s.tight_bounds())
             .map_err(CommandError::from)?;
-        #[cfg(not(feature = "native-smlib"))]
-        let bounds = b.bounds();
         Ok(
             json!({"breps":[{"is_solid":b.is_solid(),"face_count":b.faces().len(),"volume":b.signed_volume(tolerance)?.abs(),"bounds":[bounds.min().to_array(),bounds.max().to_array()]}]}),
         )

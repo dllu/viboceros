@@ -97,23 +97,8 @@ fn match_backend(
     preserve: CurveMatchPreserveEnd,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::match_curve_end(source, reference, continuity, preserve, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_match_curve_end(
-            source.0,
-            source.1,
-            reference.0,
-            reference.1,
-            continuity,
-            preserve,
-            tolerance,
-        )?)
-    }
+    viboceros_smlib::match_curve_end(source, reference, continuity, preserve, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 fn average_backend(
@@ -123,17 +108,8 @@ fn average_backend(
     preserve: CurveMatchPreserveEnd,
     tolerance: Tolerance,
 ) -> Result<(NurbsCurve, NurbsCurve), CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::average_match_curve_ends(first, second, continuity, preserve, tolerance)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_average_match_curve_ends(
-            first.0, first.1, second.0, second.1, continuity, preserve, tolerance,
-        )?)
-    }
+    viboceros_smlib::average_match_curve_ends(first, second, continuity, preserve, tolerance)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {

@@ -588,7 +588,6 @@ impl VibocerosApp {
         });
         let edge_curve = edge_curve.or_else(|| surface_path?.point_curve(&self.document));
         let surface_path_extrusion = surface_path.and_then(|path| path.preview(&self.document));
-        #[cfg(feature = "native-smlib")]
         let surface_path_boundary =
             surface_path.and_then(|path| path.boundary_preview(&self.document));
         let edge_parameters = surface_path.map_or_else(
@@ -1055,7 +1054,6 @@ impl VibocerosApp {
         let solid_axial_fit = model_input_active
             .then(|| self.solid_axial_fit_preview())
             .flatten();
-        #[cfg(feature = "native-smlib")]
         let tapered_extrusion = self
             .tapered_extrusion_session
             .as_ref()
@@ -1381,10 +1379,8 @@ impl VibocerosApp {
                                 .map(direction::Session::overlay),
                             surface_apex,
                             surface_extrusion,
-                            #[cfg(feature = "native-smlib")]
                             tapered_extrusion,
                             surface_path_extrusion,
-                            #[cfg(feature = "native-smlib")]
                             surface_path_boundary,
                             insert_edges,
                             insert_mesh,
@@ -1823,7 +1819,6 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
-        #[cfg(feature = "native-smlib")]
         self.update_surface_path_boundary_preview(
             viewport_outputs
                 .iter()
@@ -1894,10 +1889,7 @@ impl VibocerosApp {
         if self.update_surface_apex_hover(apex_hover) {
             ui.ctx().request_repaint();
         }
-        #[cfg(feature = "native-smlib")]
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
-        #[cfg(not(feature = "native-smlib"))]
-        self.update_tapered_hover(apex_hover);
         if self.observe_surface_extrusion_hover(apex_hover) {
             ui.ctx().request_repaint();
         }

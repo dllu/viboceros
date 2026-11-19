@@ -1,4 +1,4 @@
-"""Compare native extension outputs with Rhino or the portable producer."""
+"""Compare native extension outputs with Rhino or a saved portable response."""
 import argparse
 import copy
 import hashlib
@@ -34,7 +34,8 @@ def main():
     parser.add_argument("output", type=Path)
     reference_mode = parser.add_mutually_exclusive_group()
     reference_mode.add_argument("--capture-rhino", action="store_true")
-    reference_mode.add_argument("--portable-baseline", action="store_true")
+    reference_mode.add_argument("--portable-baseline", type=Path,
+                                help="saved response from an older portable build")
     parser.add_argument("--scheme", default="VibocerosOracleNativeExtensions20261014")
     parser.add_argument("--include-boundaries", action="store_true")
     parser.add_argument("--timeout", type=float, default=1800.)
@@ -43,10 +44,11 @@ def main():
     request = combined_request(fixtures)
     reference_path = (Path("tools/rhino_oracle/observations/native_boundary_extensions.json")
                       if args.include_boundaries else REFERENCE)
-    client = OracleClient(native_smlib=True, settings_scheme=args.scheme)
+    client = OracleClient(settings_scheme=args.scheme)
     if args.portable_baseline:
-        reference = OracleClient(native_smlib=False).run_viboceros(request, timeout=args.timeout)
-        print("Captured", len(reference["results"]), "portable outputs", flush=True)
+        reference = load_request(args.portable_baseline)
+        if reference.get("engine") != "viboceros" or reference.get("iterations") != request["iterations"]:
+            parser.error("portable baseline must be a Viboceros response with matching iterations")
     elif args.capture_rhino:
         reference = client.run_rhino(request, timeout=args.timeout)
         (ROOT/reference_path).write_text(json.dumps(reference, indent=2, allow_nan=False)+"\n")

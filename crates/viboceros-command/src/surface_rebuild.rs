@@ -299,17 +299,8 @@ fn rebuild_backend(
     count: [usize; 2],
     degree: [usize; 2],
 ) -> Result<NurbsSurface, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::rebuild_surface(source, count, degree)
-            .map_err(knot_refinement::native_geometry_error)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        Ok(viboceros_geometry::try_rebuild_nurbs_surface(
-            source, count, degree,
-        )?)
-    }
+    viboceros_smlib::rebuild_surface(source, count, degree)
+        .map_err(knot_refinement::native_geometry_error)
 }
 
 pub(super) fn run(doc: &mut Document, options: Options) -> Result<String, CommandError> {

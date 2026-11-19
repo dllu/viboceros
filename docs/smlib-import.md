@@ -1,6 +1,6 @@
 # SMLib import and native BooleanDifference
 
-`Solid::from_brep` imports closed Rust B-reps into the optional Linux native
+`Solid::from_brep` imports closed Rust B-reps into the Linux native
 kernel. It copies NURBS controls, weights and knots, preserves shared topology,
 and constructs native faces and edgeuses without fitting, analytic replacement
 or healing. UV curves are oriented in the spatial edge direction and mapped to
@@ -30,7 +30,7 @@ the final explicit region graph retains that regression.
 
 ```sh
 GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release --features native-smlib
+CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run --release
 ```
 
 Compiler, CMake and system TBB requirements are in the [bridge guide](smlib-bridge.md).
@@ -89,8 +89,8 @@ These cases remain further work.
 
 ```sh
 cargo test -p viboceros-smlib --features native --release
-cargo test -p viboceros-command --features native-smlib --release
-cargo run -p viboceros-command --features native-smlib --release \
+cargo test -p viboceros-command --release
+cargo run -p viboceros-command --release \
   --example curved_difference -- /tmp/viboceros-curved-difference
 ```
 

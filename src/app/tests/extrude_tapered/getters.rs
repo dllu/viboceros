@@ -102,7 +102,6 @@ fn tapered_getters_edit_the_distance_base_direction_and_options_independently() 
     }
 }
 
-#[cfg(feature = "native-smlib")]
 fn result(app: &VibocerosApp, source: ObjectId) -> &viboceros_geometry::Brep {
     let Some(Geometry::Brep(result)) = app
         .document
@@ -115,7 +114,6 @@ fn result(app: &VibocerosApp, source: ObjectId) -> &viboceros_geometry::Brep {
     result
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_distance_and_reverse_direction_match_rhino_signed_draft_and_selection() {
     for surface in [false, true] {
@@ -162,7 +160,6 @@ fn tapered_distance_and_reverse_direction_match_rhino_signed_draft_and_selection
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_enter_uses_the_last_signed_distance_and_successful_options() {
     let mut app = test_app();
@@ -183,7 +180,6 @@ fn tapered_enter_uses_the_last_signed_distance_and_successful_options() {
     assert_eq!(result(&app, source), &initial);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_smooth_rectangle_matches_rhino_solids_and_remembers_the_corner_mode() {
     for surface in [false, true] {
@@ -218,7 +214,6 @@ fn tapered_smooth_rectangle_matches_rhino_solids_and_remembers_the_corner_mode()
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn tapered_viewport_hover_previews_the_same_draft_and_height_as_click() {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};

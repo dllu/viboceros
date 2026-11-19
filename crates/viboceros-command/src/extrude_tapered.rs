@@ -25,7 +25,6 @@ impl Default for TaperedExtrusionSettings {
 }
 
 impl TaperedExtrusionSettings {
-    #[cfg(feature = "native-smlib")]
     pub(super) fn boundary_options(
         self,
         mut options: TaperedExtrusionOptions,
@@ -67,7 +66,6 @@ impl TaperCorners {
         }
     }
 
-    #[cfg(feature = "native-smlib")]
     pub(super) fn kernel(self) -> viboceros_smlib::TaperCorner {
         use viboceros_smlib::TaperCorner;
 
@@ -261,27 +259,19 @@ impl Command for ExtrudeTaperedCommand {
                 if !positional.is_empty() {
                     return Err(CommandError::Usage(USAGE));
                 }
-                #[cfg(feature = "native-smlib")]
-                {
-                    let options = settings.boundary_options(options);
-                    let count = crate::tapered_boundary::apply(
-                        doc,
-                        crate::tapered_boundary::Inputs::Curves,
-                        options,
-                        reference,
-                        context.construction_plane,
-                    )?;
-                    self.settings.set(TaperedExtrusionSettings::after_success(
-                        options,
-                        settings.distance,
-                    ));
-                    return Ok(format!("Tapered {count} curve object(s) to the boundary"));
-                }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    reference.capture(doc)?;
-                    return Err(CommandError::TaperedExtrusionRequiresNativeKernel);
-                }
+                let options = settings.boundary_options(options);
+                let count = crate::tapered_boundary::apply(
+                    doc,
+                    crate::tapered_boundary::Inputs::Curves,
+                    options,
+                    reference,
+                    context.construction_plane,
+                )?;
+                self.settings.set(TaperedExtrusionSettings::after_success(
+                    options,
+                    settings.distance,
+                ));
+                return Ok(format!("Tapered {count} curve object(s) to the boundary"));
             }
         }
         let distance =
@@ -339,7 +329,6 @@ impl Distance {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn displacement_and_draft(
     distance: Distance,
     options: TaperedExtrusionOptions,
@@ -372,7 +361,6 @@ pub(super) fn retain_selected_inputs(
     Ok(())
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn local_profile(
     curve: &NurbsCurve,
 ) -> Result<(Point3, viboceros_smlib::KernelCurve), CommandError> {
@@ -385,7 +373,6 @@ pub(super) fn local_profile(
     ))
 }
 
-#[cfg(feature = "native-smlib")]
 pub(super) fn profile_normal(
     profile: &viboceros_smlib::KernelCurve,
     tolerance: Tolerance,
@@ -402,16 +389,8 @@ pub fn curve_reference_normal(
     curve: &NurbsCurve,
     tolerance: Tolerance,
 ) -> Result<Option<Vector3>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let (_, profile) = local_profile(curve)?;
-        profile_normal(&profile, tolerance)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (curve, tolerance);
-        Ok(None)
-    }
+    let (_, profile) = local_profile(curve)?;
+    profile_normal(&profile, tolerance)
 }
 
 /// Construct the same model-space sweep for document edits and interactive previews.
@@ -422,39 +401,31 @@ pub fn produce_curve(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        use viboceros_smlib::Shape;
-        let (origin, profile) = local_profile(curve)?;
-        let (displacement, draft) = displacement_and_draft(distance, options, || {
-            Ok(profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector()))
-        })?;
-        let cap = options.solid && curve.is_closed()?;
-        let brep = Shape::tapered_extrusion(
-            &profile,
-            displacement,
-            draft,
-            options.corners.kernel(),
-            cap,
-            tolerance,
-        )?
-        .to_brep(tolerance)?
-        .transformed(
-            AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?),
-            tolerance,
-        )?;
-        if cap && !brep.is_solid() {
-            return Err(CommandError::Usage(
-                "Tapered extrusion did not produce a closed solid",
-            ));
-        }
-        Ok(brep)
+    use viboceros_smlib::Shape;
+    let (origin, profile) = local_profile(curve)?;
+    let (displacement, draft) = displacement_and_draft(distance, options, || {
+        Ok(profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector()))
+    })?;
+    let cap = options.solid && curve.is_closed()?;
+    let brep = Shape::tapered_extrusion(
+        &profile,
+        displacement,
+        draft,
+        options.corners.kernel(),
+        cap,
+        tolerance,
+    )?
+    .to_brep(tolerance)?
+    .transformed(
+        AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?),
+        tolerance,
+    )?;
+    if cap && !brep.is_solid() {
+        return Err(CommandError::Usage(
+            "Tapered extrusion did not produce a closed solid",
+        ));
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (curve, distance, options, cplane, tolerance);
-        Err(CommandError::TaperedExtrusionRequiresNativeKernel)
-    }
+    Ok(brep)
 }
 #[cfg(test)]
 mod tests;

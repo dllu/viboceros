@@ -225,12 +225,6 @@ fn replays_oriented_pairs_common_shell_participation_and_open_contacts() {
         count += 1;
     }
     assert_eq!((count, open), (46, 2));
-    #[cfg(not(feature = "native-smlib"))]
-    let recorded: Vec<Value> = serde_json::from_str(include_str!(
-        "../../../../../docs/compound-pairs-partitions.json"
-    ))
-    .unwrap();
-    #[cfg(feature = "native-smlib")]
     let recorded: Vec<Value> = serde_json::from_str::<Value>(include_str!(
         "../../../../../docs/smlib-intersection-representation.json"
     ))

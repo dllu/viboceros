@@ -57,7 +57,6 @@ fn crease_division_picker_filters_objects_edits_options_and_cancels() {
     assert!(app.object_prompt.is_none());
     assert_eq!(app.document.object(id), Some(&before));
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn crease_division_preselection_and_clicked_input_make_one_undoable_polysurface() {
     for pre in [false, true] {
@@ -86,19 +85,4 @@ fn crease_division_preselection_and_clicked_input_make_one_undoable_polysurface(
         enter(&mut app, "Redo");
         assert_eq!(app.document.object(id), Some(&after));
     }
-}
-#[cfg(not(feature = "native-smlib"))]
-#[test]
-fn crease_division_without_native_keeps_the_getter_and_source_available() {
-    let mut app = test_app();
-    let id = source(&mut app);
-    enter(&mut app, "DivideAlongCreases");
-    app.apply_selection_click(SelectionClick {
-        object_id: Some(id),
-        mode: SelectionMode::Replace,
-    });
-    let before = format!("{:?}", app.document);
-    enter(&mut app, "");
-    assert!(app.object_prompt.is_some());
-    assert_eq!(format!("{:?}", app.document), before);
 }

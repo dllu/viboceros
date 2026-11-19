@@ -35,8 +35,7 @@ Certification uses exact coordinate predicates and requires straight edges,
 convex face polygons, and a consistent closed boundary. Cavities that touch or
 overlap another shell, or lie outside the outer shell, do not receive void
 semantics. Other edge-disconnected shells become separate STEP surface models.
-With the `native-smlib` application feature, closed multi-shell inputs also use
-native shell intersection and nesting checks. Curved outer shells and cavities
+Closed multi-shell inputs use SMLib intersection and nesting checks. Curved outer shells and cavities
 retain one `BREP_WITH_VOIDS` shape per material region; nested islands and
 disjoint solids remain separate shapes. Only the resulting component plan is
 used: source geometry and document history are unchanged. Classification errors

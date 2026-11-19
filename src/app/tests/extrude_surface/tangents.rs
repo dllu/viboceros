@@ -46,7 +46,6 @@ fn surface_extrusion_near_tangent_boundaries_match_rhino_splits() {
     }
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn surface_extrusion_tangent_splits_match_rhino_topology() {
     let tolerance = viboceros_geometry::Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();

@@ -1,5 +1,3 @@
-#![cfg(feature = "native")]
-
 #[test]
 fn native_blend_producer_preserves_domain_and_requested_boundary_correspondence() {
     for case in 0..4 {

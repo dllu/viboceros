@@ -7,7 +7,6 @@ from .client import OracleClient
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('--native-smlib', action='store_true')
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     folder = Path(__file__).parent
@@ -23,7 +22,7 @@ def main():
             observation = r
         else:
             observation['results'].extend(r['results'])
-    report = OracleClient(native_smlib=args.native_smlib).replay(request, observation, 1e-8, 1e-12, timeout=300.)
+    report = OracleClient().replay(request, observation, 1e-8, 1e-12, timeout=300.)
     args.output.write_text(json.dumps(report.as_dict(), indent=2, allow_nan=False) + '\n')
     print('Matched', report.matched, 'of', len(report.operations), 'Weight workflows')
     if not report.passed:

@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::Value;
 use viboceros_geometry::{
     NurbsSurface, Point3, WeightedPoint3, try_tween_nurbs_surfaces,

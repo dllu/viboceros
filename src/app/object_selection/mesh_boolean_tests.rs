@@ -1,4 +1,3 @@
-#![cfg(feature = "native-smlib")]
 use super::*;
 use super::{frozen_scene, mesh_reference};
 use crate::app::tests::test_app;

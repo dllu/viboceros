@@ -1,13 +1,9 @@
-# Optional Rust SMLib bridge
+# Rust SMLib bridge
 
-The `viboceros-smlib` crate adds a narrow C ABI adapter for the pinned NVIDIA
-[USD BRep kernel](usd-brep.md). Linux builds can opt in with the `native`
-feature. Default workspace builds do not compile SMLib or require its submodule
-or TBB. Application curved Boolean commands can opt in with `native-smlib`;
-see [difference/import](smlib-import.md), [union/intersection](smlib-set-booleans.md)
-and [split](smlib-boolean-split.md).
-The same application feature enables [curved STEP material regions](step-regions.md)
-and [circular edge fillets](fillet-edge.md).
+The `viboceros-smlib` crate links the pinned NVIDIA [USD BRep kernel](usd-brep.md)
+through a C ABI adapter. All application builds use it for operations including
+[solid Booleans](smlib-import.md), [curved STEP material regions](step-regions.md)
+and [edge fillets](fillet-edge.md).
 Native [surface offsets](smlib-offset-surfaces.md) use a separate `Shape` handle
 for manifold sheets or solids, sharing payload transfer with strict `Solid`
 imports. Reversed sheets use native UV swapping to preserve physical normals.
@@ -17,18 +13,16 @@ kernel's achieved bound; `Solid::to_brep` retains exact-transfer requirements.
 
 ## Build and exercise
 
-Install a C++17 compiler, CMake 3.20+ and system oneTBB development libraries
-(`libtbb-dev` on Ubuntu), then run:
+Follow the [Viboceros build setup](../README.md#build-and-run), then run:
 
 ```sh
-GIT_LFS_SKIP_SMUDGE=1 git submodule update --init third_party/usd-brep
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --features native --release
-CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run -p viboceros-smlib --features native \
+CMAKE_BUILD_PARALLEL_LEVEL=10 cargo test -p viboceros-smlib --release
+CMAKE_BUILD_PARALLEL_LEVEL=10 cargo run -p viboceros-smlib \
   --example perforated_plate --release -- /tmp/viboceros-smlib-plate.obj
 ```
 
 Cargo builds static SMLib, SM_API and bridge libraries directly from the
-unmodified upstream sources. No Packman, OpenUSD or Python runtime is involved.
+pinned upstream sources with the repository patches.
 The example subtracts sixteen cylindrical cutters from a plate, checks its
 analytic volume and closed mesh topology, and writes double-precision OBJ
 vertices. This is a diagnostic example rather than an application file format.
@@ -37,7 +31,7 @@ opened in an OBJ viewer. The `reference` example emits JSON measurements for the
 fixed Rhino recipes:
 
 ```sh
-cargo run -p viboceros-smlib --features native --example reference --release
+cargo run -p viboceros-smlib --example reference --release
 ```
 
 ## API and ownership

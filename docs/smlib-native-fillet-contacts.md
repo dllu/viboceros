@@ -81,7 +81,8 @@ cargo test --release -p viboceros-smlib --features native --test fillet_contacts
 cargo test --release -p viboceros-geometry --lib fillet
 python3 -m tools.numerics.compare_native_curve_connections /tmp/contacts.json \
   --include-corners
-python3 -m tools.numerics.benchmark_curve_fillet_contacts /tmp/timings.json
+python3 -m tools.numerics.benchmark_curve_fillet_contacts /tmp/timings.json \
+  --portable-baseline /path/to/portable-response.json
 ```
 
 Build `viboceros_usd_brep_fillet_contacts_probe` with both

@@ -59,8 +59,8 @@ See [current measurements](../short-path-qualification.json).
 ```sh
 cargo test -p viboceros-geometry --lib surface_short_path
 cargo test -p viboceros-geometry --test surface_short_path_native -- --nocapture
-cargo test -p viboceros-command --features native-smlib --lib short_path
-cargo test -p viboceros-command --features native-smlib --test short_path_native -- --nocapture
-cargo test --features native-smlib short_path -- --nocapture
+cargo test -p viboceros-command --lib short_path
+cargo test -p viboceros-command --test short_path_native -- --nocapture
+cargo test short_path -- --nocapture
 python3 -m unittest tools.rhino_oracle.test_short_path
 ```

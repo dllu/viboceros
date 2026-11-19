@@ -234,7 +234,6 @@ fn crv_deviation_new_parts_restart_analysis_instead_of_only_updating_options() {
         [0., 1.]
     );
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn crv_deviation_curved_backend_is_usable_and_exposes_overlap_limit() {
     let r = CommandRegistry::with_builtins();

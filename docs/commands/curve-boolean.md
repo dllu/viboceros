@@ -67,6 +67,5 @@ cargo test --bin viboceros curve_boolean
 python3 -m unittest tools.rhino_oracle.test_curve_boolean
 ```
 
-Repeat Rust checks with `--features native-smlib` for the native adapter.
 Licensed captures use private Xvfb sessions. Reference:
 [Rhino CurveBoolean](https://docs.mcneel.com/rhino/8/help/en-us/commands/curveboolean.htm).

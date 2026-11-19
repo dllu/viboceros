@@ -19,14 +19,7 @@ fn data(family: &str) -> (Value, Value) {
 fn interpolate(source: &NurbsSurface, target: &NurbsSurface) -> NurbsSurface {
     let p = [target.degree_u(), target.degree_v()];
     let k = [target.knots_u(), target.knots_v()];
-    #[cfg(feature = "native-smlib")]
-    {
-        viboceros_smlib::interpolate_surface_in_basis(source, p, k).unwrap()
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        try_interpolate_surface_in_basis(source, p, k).unwrap()
-    }
+    viboceros_smlib::interpolate_surface_in_basis(source, p, k).unwrap()
 }
 fn bound(a: &NurbsSurface, b: &NurbsSurface) -> f64 {
     a.parameter_surface_deviation_bound(b, 1e-9)

@@ -67,9 +67,8 @@ surface/plane intersection producers supply the sections; unresolved or
 unsupported cases fail without model edits. Complete surface-image bounds
 check each extension and the restored native knot times.
 
-Build with `--features native-smlib` to continue endpoints on general NURBS
-patches. The existing usd-brep surface intersector supplies candidates after
-the portable analytic dispatcher declines. Arc-length fitting removes trace
+For endpoint continuation on general NURBS patches, usd-brep's surface
+intersector supplies candidates when the analytic dispatcher declines. Arc-length fitting removes trace
 parameter scaffolding; complete surface-image bounds and exact control-hull
 plane bands verify each retained section. Endpoint tangents follow the normal
 plane's intersection with the surface tangent plane. Incomplete traces fail
@@ -179,9 +178,9 @@ limits preclude a claim of complete Rhino compatibility.
 ```sh
 cargo test -p viboceros-command --lib surface_curve_offset
 cargo test -p viboceros-command --test surface_curve_offset_native -- --nocapture
-cargo test -p viboceros-command --features native-smlib --test surface_curve_offset_native
-cargo test -p viboceros-command --features native-smlib --lib surface_curve_offset
-cargo test -p viboceros --features native-smlib --bin viboceros surface_curve_offset
+cargo test -p viboceros-command --test surface_curve_offset_native
+cargo test -p viboceros-command --lib surface_curve_offset
+cargo test -p viboceros --bin viboceros surface_curve_offset
 cargo test -p viboceros --bin viboceros surface_curve_offset
 python3 -m unittest tools.rhino_oracle.test_surface_offset_command
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle.generate_surface_offset_command --corners

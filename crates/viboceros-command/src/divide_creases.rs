@@ -99,50 +99,40 @@ fn divide(
     options: CreaseDivisionOptions,
     tolerance: Tolerance,
 ) -> Result<Option<(Brep, usize)>, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let controls = source.faces().iter().fold(0usize, |n, f| {
-            n.saturating_add(f.surface().control_points().len())
-        });
-        if source.faces().len() > 512 || controls > 2_000_000 {
-            return Err(CommandError::Usage(
-                "Crease division supports at most 512 faces and 2,000,000 surface controls per B-rep",
-            ));
-        }
-        let origin = source
-            .vertices()
-            .first()
-            .map(|v| v.point())
-            .unwrap_or_else(|| source.bounds().min());
-        let zero = Point3::try_new(0., 0., 0.)?;
-        let local = source.transformed(
-            AffineTransform3::from_translation(origin.vector_to(zero)?),
-            tolerance,
-        )?;
-        viboceros_smlib::Shape::divide_brep_along_creases(
-            &local,
-            options.split_at_kinks,
-            options.split_at_tangents,
-            tolerance,
-        )?
-        .map(|(shape, n)| {
-            Ok((
-                shape.to_brep(tolerance)?.transformed(
-                    AffineTransform3::from_translation(zero.vector_to(origin)?),
-                    tolerance,
-                )?,
-                n,
-            ))
-        })
-        .transpose()
+    let controls = source.faces().iter().fold(0usize, |n, f| {
+        n.saturating_add(f.surface().control_points().len())
+    });
+    if source.faces().len() > 512 || controls > 2_000_000 {
+        return Err(CommandError::Usage(
+            "Crease division supports at most 512 faces and 2,000,000 surface controls per B-rep",
+        ));
     }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (source, options, tolerance);
-        Err(CommandError::Usage(
-            "DivideAlongCreases requires the native-smlib feature",
+    let origin = source
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| source.bounds().min());
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let local = source.transformed(
+        AffineTransform3::from_translation(origin.vector_to(zero)?),
+        tolerance,
+    )?;
+    viboceros_smlib::Shape::divide_brep_along_creases(
+        &local,
+        options.split_at_kinks,
+        options.split_at_tangents,
+        tolerance,
+    )?
+    .map(|(shape, n)| {
+        Ok((
+            shape.to_brep(tolerance)?.transformed(
+                AffineTransform3::from_translation(zero.vector_to(origin)?),
+                tolerance,
+            )?,
+            n,
         ))
-    }
+    })
+    .transpose()
 }
 impl Command for DivideAlongCreasesCommand {
     fn name(&self) -> &'static str {

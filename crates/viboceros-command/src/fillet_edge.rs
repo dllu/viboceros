@@ -142,62 +142,40 @@ fn blend(
     kind: EdgeBlendKind,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    #[cfg(feature = "native-smlib")]
-    {
-        let origin = brep
-            .vertices()
-            .first()
-            .map(|v| v.point())
-            .unwrap_or_else(|| brep.bounds().min());
-        let zero = Point3::try_new(0., 0., 0.)?;
-        let local = brep.transformed(
-            AffineTransform3::from_translation(origin.vector_to(zero)?),
-            tolerance,
-        )?;
-        let solid = match kind {
-            EdgeBlendKind::Fillet => {
-                viboceros_smlib::Solid::fillet_brep_edges(&local, edges, radius, tolerance)?
-            }
-            EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
-                let rail = match rail {
-                    crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
-                        viboceros_smlib::EdgeBlendRailType::DistanceBetweenRails
-                    }
-                    crate::chamfer_edge::ChamferRailType::RollingBall => {
-                        viboceros_smlib::EdgeBlendRailType::RollingBall
-                    }
-                };
-                if matches!(kind, EdgeBlendKind::Curvature(_)) {
-                    viboceros_smlib::Solid::blend_brep_edges(
-                        &local, edges, radius, rail, tolerance,
-                    )?
-                } else {
-                    viboceros_smlib::Solid::chamfer_brep_edges(
-                        &local, edges, radius, rail, tolerance,
-                    )?
+    let origin = brep
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| brep.bounds().min());
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let local = brep.transformed(
+        AffineTransform3::from_translation(origin.vector_to(zero)?),
+        tolerance,
+    )?;
+    let solid = match kind {
+        EdgeBlendKind::Fillet => {
+            viboceros_smlib::Solid::fillet_brep_edges(&local, edges, radius, tolerance)?
+        }
+        EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
+            let rail = match rail {
+                crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
+                    viboceros_smlib::EdgeBlendRailType::DistanceBetweenRails
                 }
+                crate::chamfer_edge::ChamferRailType::RollingBall => {
+                    viboceros_smlib::EdgeBlendRailType::RollingBall
+                }
+            };
+            if matches!(kind, EdgeBlendKind::Curvature(_)) {
+                viboceros_smlib::Solid::blend_brep_edges(&local, edges, radius, rail, tolerance)?
+            } else {
+                viboceros_smlib::Solid::chamfer_brep_edges(&local, edges, radius, rail, tolerance)?
             }
-        };
-        Ok(solid.to_brep(tolerance)?.transformed(
-            AffineTransform3::from_translation(zero.vector_to(origin)?),
-            tolerance,
-        )?)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = (brep, edges, radius, tolerance);
-        Err(match kind {
-            EdgeBlendKind::Fillet => CommandError::FilletEdgeRequiresNativeKernel,
-            EdgeBlendKind::Chamfer(rail) => {
-                let _ = rail;
-                CommandError::ChamferEdgeRequiresNativeKernel
-            }
-            EdgeBlendKind::Curvature(rail) => {
-                let _ = rail;
-                CommandError::BlendEdgeRequiresNativeKernel
-            }
-        })
-    }
+        }
+    };
+    Ok(solid.to_brep(tolerance)?.transformed(
+        AffineTransform3::from_translation(zero.vector_to(origin)?),
+        tolerance,
+    )?)
 }
 
 pub(super) struct FilletEdgeCommand;

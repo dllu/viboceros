@@ -146,7 +146,6 @@ fn native_ellipse_command_fit_error_is_measured_against_the_source() {
 fn smooth_planar_insets_match_native_curves_and_regions() {
     replay_smooth_planar(None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn smooth_planar_insets_with_usd_brep_match_native_curves_and_regions() {
     replay_smooth_planar(Some(viboceros_smlib::curve_offset_operations()));
@@ -290,13 +289,5 @@ fn joined_surface_commands_keep_native_geometry_metadata_selection_and_history()
 }
 
 fn native_edit_solver(enabled: bool) -> Option<viboceros_geometry::CurveEditPointSolver> {
-    #[cfg(feature = "native-smlib")]
-    {
-        enabled.then_some(viboceros_smlib::curve_edit_point_interpolation)
-    }
-    #[cfg(not(feature = "native-smlib"))]
-    {
-        let _ = enabled;
-        None
-    }
+    enabled.then_some(viboceros_smlib::curve_edit_point_interpolation)
 }

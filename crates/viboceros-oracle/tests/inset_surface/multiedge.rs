@@ -4,7 +4,6 @@ use super::*;
 fn multiedge_sdk_matches_native_continuity_and_cusp_trimming() {
     cusps::replay_family("inset_multiedge_sdk", (28, 12), None);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn multiedge_sdk_with_usd_brep_matches_native_continuity_and_cusp_trimming() {
     cusps::replay_family(

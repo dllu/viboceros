@@ -19,12 +19,9 @@ pub(super) fn run(
 ) -> Result<(Value, u64), ProbeError> {
     let source = nurbs_curve_from_definition(&fixture.curve)?;
     let normal = Vector3::try_from(fixture.normal)?.normalized_nonzero()?;
-    #[cfg(feature = "native-smlib")]
     let solver = Some(
         viboceros_smlib::curve_edit_point_interpolation as viboceros_geometry::CurveEditPointSolver,
     );
-    #[cfg(not(feature = "native-smlib"))]
-    let solver = None;
     let (curve, elapsed) = measure_probe(iterations, || {
         source.try_loose_polynomial_offset(fixture.distance, normal, tolerance, solver)
     })?;

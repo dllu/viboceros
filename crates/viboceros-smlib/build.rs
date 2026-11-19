@@ -1,10 +1,4 @@
 fn main() {
-    #[cfg(feature = "native")]
-    build_native();
-}
-
-#[cfg(feature = "native")]
-fn build_native() {
     use std::{env, path::PathBuf};
     assert_eq!(
         env::var("CARGO_CFG_TARGET_OS").unwrap(),

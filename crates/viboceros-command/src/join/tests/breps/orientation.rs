@@ -65,8 +65,6 @@ fn extreme_scale_join_and_copy_normalize_without_mass_and_keep_atomic_history() 
                         );
                         // Native orientation may encode the same outward
                         // normal with a face flip or a swapped UV chart.
-                        #[cfg(not(feature = "native-smlib"))]
-                        assert!(joined.faces().iter().all(|f| !f.is_reversed()));
                         for id in &ids {
                             assert_eq!(document.object(*id).is_some(), copy);
                             assert_eq!(document.is_selected(*id), copy);

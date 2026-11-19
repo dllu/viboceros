@@ -51,7 +51,7 @@ selection, but keeps preselection. See [object-selection controls](../object-sel
 
 ## Geometry and limits
 
-Linux `native-smlib` builds use [usd-brep's existing decomposition
+Viboceros uses [usd-brep's existing decomposition
 producer](../smlib-bezier.md), including checked native endpoint extraction.
 The following portable geometry API remains available for other builds and bounds.
 

@@ -41,7 +41,6 @@ fn surface_picks_and_options_cancel_without_edits() {
     assert!(app.fillet_surface_prompt.is_none());
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
-#[cfg(feature = "native-smlib")]
 #[test]
 fn preview_recomputes_and_accepts_as_one_undoable_edit() {
     let (mut app, ids) = pair();
@@ -107,7 +106,6 @@ fn stale_source_and_new_command_cancel_the_prompt() {
     assert_eq!(app.document.objects().len(), 2);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn failed_recompute_clears_preview_and_corrected_options_recover() {
     let (mut app, ids) = pair();
@@ -156,7 +154,6 @@ fn failed_recompute_clears_preview_and_corrected_options_recover() {
     assert_eq!(app.document.objects().len(), 1);
 }
 
-#[cfg(feature = "native-smlib")]
 #[test]
 fn original_uv_ranges_survive_preview_acceptance_undo_and_redo() {
     let (mut app, ids) = pair();

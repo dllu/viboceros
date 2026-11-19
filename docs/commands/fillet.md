@@ -64,7 +64,7 @@ nonmeeting NURBS. The defaults are `Arc` and `Line`. Already meeting line,
 arc, and NURBS terminal leaves are supported, including terminal leaves of
 polycurves. Earlier leaves remain native and unchanged.
 
-Linux `native-smlib` builds use
+Viboceros uses
 [usd-brep producers](../smlib-curve-connections.md) to prepare smooth NURBS
 connections and [extract NURBS contact intervals](../smlib-fillet-contacts.md)
 during fillet construction.

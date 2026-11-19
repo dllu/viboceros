@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use serde_json::{Value, json};
 use viboceros_geometry::{MeshFace, Point3, Tolerance, TriangleMesh};
 use viboceros_smlib::{BooleanOperation, mesh_boolean};

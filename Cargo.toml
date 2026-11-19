@@ -48,6 +48,7 @@ viboceros-drafting = { path = "crates/viboceros-drafting" }
 viboceros-geometry = { path = "crates/viboceros-geometry" }
 viboceros-io = { path = "crates/viboceros-io" }
 viboceros-opennurbs = { path = "crates/viboceros-opennurbs" }
+viboceros-smlib = { path = "crates/viboceros-smlib" }
 
 [patch.crates-io]
 monstertruck-io = { path = "third_party/monstertruck-io" }
@@ -78,8 +79,8 @@ flate2.workspace = true
 viboceros-oracle = { path = "crates/viboceros-oracle" }
 
 [features]
-default = []
-native-smlib = ["viboceros-command/native-smlib", "viboceros-oracle/native-smlib"]
+# Compatibility for existing build commands. USD BRep is always linked.
+native-smlib = []
 
 [profile.release]
 lto = "thin"

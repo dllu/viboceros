@@ -1,4 +1,3 @@
-#![cfg(feature = "native")]
 use viboceros_geometry::{
     GeometryError, NurbsCurve, NurbsSurface, Point3, SurfaceKnotDirection, WeightedPoint3,
 };

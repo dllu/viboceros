@@ -228,11 +228,6 @@ fn explicit_quarter_span_fits_gain_a_complete_curved_image_bound_in_both_charts(
                 .unwrap()
                 .is_none()
         );
-        #[cfg(not(feature = "native-smlib"))]
-        let fit = try_fit_surface_image_in_basis(&a, degree, k, map, 0.001)
-            .unwrap()
-            .unwrap();
-        #[cfg(feature = "native-smlib")]
         let fit = viboceros_smlib::fit_surface_image_in_basis(&a, degree, k, map, 0.001)
             .unwrap()
             .unwrap();

@@ -1,8 +1,8 @@
 # Silhouette
 
 `Silhouette [InternalEdges=Yes|No] [Direction=x,y,z]` creates spatial NURBS
-outline curves from selected surfaces, B-reps and manifold meshes. Build with
-`--features native-smlib`; the operation uses USD BRep's SMLib visibility engine.
+outline curves from selected surfaces, B-reps and manifold meshes. The operation
+uses USD BRep's SMLib visibility engine.
 
 Start the command, select sources, set `InternalEdges` if needed, then press
 Enter. Preselection also works. The application uses the active parallel camera
@@ -41,7 +41,7 @@ orientation and seams still need comparison. See the
 Run the local recipes after building the application with the native feature:
 
 ```sh
-python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/silhouette_parallel.json --native-smlib
+python3 -m tools.rhino_oracle viboceros tools/rhino_oracle/fixtures/silhouette_parallel.json
 ```
 
 The same request is accepted by `OracleClient.run_rhino` for future public SDK
