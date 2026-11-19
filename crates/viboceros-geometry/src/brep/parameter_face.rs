@@ -80,10 +80,46 @@ fn boundary_edge(
             return iso_edge(surface.isocurve_u(v)?, start.x(), end.x(), curve, iso);
         }
     }
-    Ok((
-        surface.try_pushup_curve_certified(curve, tolerance)?,
-        SurfaceIso::NotIso,
-    ))
+    let spatial = surface.try_pushup_curve_certified(curve, tolerance)?;
+    let spatial = if spatial.full_order_knots().next().is_some() {
+        // The lifted pieces may have independent homogeneous scales. Fuse
+        // their endpoints only if the new single curve still certifies the
+        // unchanged UV trim. Pairwise reduction avoids copying a growing net
+        // each time a span is appended.
+        let joined = continuous_edge_candidate(&spatial).ok().flatten();
+        match joined {
+            Some(edge)
+                if matches!(
+                    surface.parameter_curve_deviation_bound(curve, &edge, tolerance.absolute()),
+                    Ok(Some(_))
+                ) =>
+            {
+                edge
+            }
+            _ => spatial,
+        }
+    } else {
+        spatial
+    };
+    Ok((spatial, SurfaceIso::NotIso))
+}
+
+fn continuous_edge_candidate(spatial: &NurbsCurve) -> Result<Option<NurbsCurve>, GeometryError> {
+    let mut pieces = spatial.try_split_at_full_order_knots()?;
+    while pieces.len() > 1 {
+        let mut joined = Vec::with_capacity(pieces.len().div_ceil(2));
+        let mut pieces_iter = pieces.into_iter();
+        while let Some(left) = pieces_iter.next() {
+            joined.push(match pieces_iter.next() {
+                Some(right) => left.try_append_clamped(&right)?,
+                None => left,
+            });
+        }
+        pieces = joined;
+    }
+    Ok(pieces
+        .pop()
+        .filter(|curve| curve.full_order_knots().next().is_none()))
 }
 
 fn iso_edge(
