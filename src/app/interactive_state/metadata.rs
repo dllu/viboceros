@@ -404,7 +404,7 @@ impl InteractiveCommand {
                 axis_start: start, ..
             } => start,
             Self::ExtrudeSurface { stage, .. } => match stage {
-                extrude_surface::Stage::DirectionEnd(point) => Some(point),
+                extrude_surface::Stage::DirectionEnd { start, .. } => Some(start),
                 _ => None,
             },
             Self::RailRevolve(state) => state.axis_start,

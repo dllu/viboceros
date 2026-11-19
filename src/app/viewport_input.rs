@@ -3,10 +3,10 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
-        if self.picking_surface_apex_boundary()
+        if self.picking_surface_boundary()
             && let Some((object, face)) = output.face_click
         {
-            self.pick_surface_apex_boundary(viboceros_command::extrude_surface_apex::BoundaryRef {
+            self.pick_surface_boundary(viboceros_command::surface_reference::BoundaryRef {
                 object,
                 face: Some(face),
             });

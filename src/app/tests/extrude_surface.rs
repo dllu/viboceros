@@ -1,5 +1,6 @@
 use super::*;
 
+mod boundary;
 mod distance_preview;
 mod tangents;
 

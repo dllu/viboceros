@@ -875,11 +875,12 @@ impl InteractiveCommand {
             }
             Self::ExtrudeSurface { stage, .. } => match stage {
                 extrude_surface::Stage::Distance => {
-                    "Extrusion distance (Direction, BothSides, Solid, DeleteInput, SplitAtTangents, SetBasePoint)"
+                    "Extrusion distance (Direction, BothSides, Solid, DeleteInput, ToBoundary, SplitAtTangents, SetBasePoint)"
                 }
+                extrude_surface::Stage::Boundary => "Select a boundary surface (Direction)",
                 extrude_surface::Stage::BasePoint => "Base point for extrusion distance",
-                extrude_surface::Stage::DirectionStart => "Base point for direction",
-                extrude_surface::Stage::DirectionEnd(_) => "Second direction point",
+                extrude_surface::Stage::DirectionStart { .. } => "Base point for direction",
+                extrude_surface::Stage::DirectionEnd { .. } => "Second direction point",
             },
             Self::ExtrudeSurfaceTapered { base: None, .. } => {
                 "ExtrudeSrfTapered: enter a distance or pick two direction points (DraftAngle, Solid, Corners, DeleteInput, FlipAngle)"

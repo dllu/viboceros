@@ -1,7 +1,7 @@
 use super::super::circle_preview::{screen_point, viewport_frame};
 use super::*;
 
-fn profile(name: &str, tolerance: viboceros_geometry::Tolerance) -> Geometry {
+pub(super) fn profile(name: &str, tolerance: viboceros_geometry::Tolerance) -> Geometry {
     fixture_profile(
         include_str!("../../../../tools/rhino_oracle/fixtures/surface_apex_tangents.json"),
         &format!("apex-tangent-{name}-0000"),

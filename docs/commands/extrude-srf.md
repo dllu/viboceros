@@ -22,6 +22,13 @@ saves these four options for the next invocation, which starts with a fresh
 direction and base point. A failed placement keeps the getter and source picks
 available for retry. Esc cancels and discards pending option edits.
 
+Enter `ToBoundary` at the distance prompt and click a surface or B-rep face
+to finish the sweep at that surface. `Direction` remains available during
+boundary selection. The sweep extends toward the cutter on one side and uses
+the original face and the cutter as caps. Enclosed cutter holes leave open
+rims. `DeleteInput` and `SplitAtTangents` apply to the result. Scripts can use
+`ToBoundary=id` or `ToBoundary=id:face`.
+
 With selected objects:
 
 ```text
@@ -72,9 +79,9 @@ decline exact planes. Source geometry is copied before sweep, stitching and
 orientation. Native construction and Rust B-rep transfer both validate results.
 
 Tangential planar extrusion, zero displacement, closed sources without a
-boundary and unsupported native imports decline. `ToBoundary` remains future
-work. General self-intersection and degenerate surfaces need broader
-qualification.
+boundary and unsupported native imports decline. The picked cutter must cover
+the extrusion section. An incomplete cut leaves the picker available for retry.
+General self-intersection and degenerate surfaces need broader qualification.
 
 The Python `surface_extrusion` operation takes an owned `source`, original `face`
 index, `displacement`, `solid` and `both_sides`. Eight independent fixtures cover
@@ -87,7 +94,8 @@ wall and hole walls as individual objects.
 Separate private headless command captures cover world and CPlane origins,
 custom base points, direction picks, mouse distance in Front, Top and Bottom
 views, tangent wall topology and option and distance reuse. The initial kernel
-qualification predates these captures.
+qualification predates these captures. Boundary cases cover planar and warped
+cutters, negative and oblique sweeps, and enclosed cutter apertures.
 [Initial kernel qualification](../surface-extrusion-qualification.json)
 · [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrf.htm)
 

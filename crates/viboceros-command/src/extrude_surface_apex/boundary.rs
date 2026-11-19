@@ -1,7 +1,7 @@
 //! Truncate the conical sweep, retaining the picked support and its trim holes.
 use super::*;
+use crate::extrude_surface::sweep_surface_key as surface_key;
 use std::collections::HashMap;
-use std::hash::{DefaultHasher, Hash, Hasher};
 use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
 mod flat;
@@ -159,27 +159,6 @@ fn reaches_apex(
         .flat_map(|boundary| boundary.trims())
         .flat_map(|trim| trim.vertices())
         .any(|index| brep.vertices()[index].point().is_near(apex, tolerance))
-}
-
-fn surface_key(surface: &NurbsSurface) -> u64 {
-    // Use geometric data instead of face order for provenance. Confirm exact
-    // carrier equality after lookup to guard against hash collisions.
-    let mut key = DefaultHasher::new();
-    surface.degree_u().hash(&mut key);
-    surface.degree_v().hash(&mut key);
-    let mut real = |number: f64| {
-        (if number == 0. { 0 } else { number.to_bits() }).hash(&mut key);
-    };
-    for &knot in surface.knots_u().iter().chain(surface.knots_v()) {
-        real(knot);
-    }
-    for point in surface.control_points() {
-        for coordinate in point.point().to_array() {
-            real(coordinate);
-        }
-        real(point.weight());
-    }
-    key.finish()
 }
 
 #[cfg(test)]

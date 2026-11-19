@@ -1,9 +1,12 @@
 //! Exact surface/face extrusion through the native topology sweep.
 use super::*;
+use crate::surface_reference::{BoundaryInput, BoundaryRef};
 mod apply;
+#[cfg(feature = "native-smlib")]
+mod boundary;
 pub(super) use apply::{apply_face_extrusion_products, apply_face_extrusions};
 
-pub const USAGE: &str = "ExtrudeSrf distance | base target [BothSides=Yes|No] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Direction=x,y,z] [Face=index|Faces=All|Faces=i,j] [FaceRefs=id:index,...]";
+pub const USAGE: &str = "ExtrudeSrf distance | base target | ToBoundary=id[:face] [BothSides=Yes|No] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Direction=x,y,z] [Face=index|Faces=All|Faces=i,j] [FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<SurfaceExtrusionSettings>>,
 }
@@ -111,8 +114,17 @@ pub enum SurfaceFaces {
 pub struct SurfaceExtrusionInput {
     pub options: SurfaceExtrusionOptions,
     pub faces: SurfaceFaces,
+    pub boundary: BoundaryInput,
 }
 impl SurfaceExtrusionInput {
+    fn accepts_option(word: &str) -> bool {
+        word.contains('=')
+            || SurfaceExtrusionOptions::recognizes(word)
+            || word
+                .trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("ToBoundary")
+    }
+
     /// Parse an option-only command start, including explicit face targets.
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
         Self::parse_with_options(words, SurfaceExtrusionOptions::default())
@@ -124,19 +136,32 @@ impl SurfaceExtrusionInput {
     ) -> Result<Self, CommandError> {
         let mut result = Self {
             options,
-            faces: SurfaceFaces::Single,
+            ..Self::default()
         };
         let mut common = Vec::new();
         let mut face_seen = false;
         for word in words {
+            let token = word.trim_start_matches(['_', '-']);
+            let (key, value) = token
+                .split_once('=')
+                .map_or((token, None), |(k, v)| (k, Some(v)));
+            if key.eq_ignore_ascii_case("ToBoundary") {
+                if result.boundary != BoundaryInput::None {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                result.boundary = match value {
+                    Some(id) => BoundaryInput::Reference(
+                        BoundaryRef::parse(id).map_err(|_| CommandError::Usage(USAGE))?,
+                    ),
+                    None => BoundaryInput::Select,
+                };
+                continue;
+            }
             if SurfaceExtrusionOptions::recognizes(word) {
                 common.push(*word);
                 continue;
             }
-            let (key, value) = word
-                .trim_start_matches(['_', '-'])
-                .split_once('=')
-                .ok_or(CommandError::Usage(USAGE))?;
+            let value = value.ok_or(CommandError::Usage(USAGE))?;
             if matches!(
                 key.to_ascii_lowercase().as_str(),
                 "face" | "faces" | "facerefs"
@@ -250,7 +275,7 @@ impl Command for ExtrudeSurfaceCommand {
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         if args
             .iter()
-            .any(|s| !s.contains('=') && !SurfaceExtrusionOptions::recognizes(s))
+            .any(|s| !SurfaceExtrusionInput::accepts_option(s))
         {
             return Ok(None);
         }
@@ -279,19 +304,35 @@ impl Command for ExtrudeSurfaceCommand {
         let (positional, words): (Vec<_>, Vec<_>) = args
             .iter()
             .copied()
-            .partition(|s| !s.contains('=') && !SurfaceExtrusionOptions::recognizes(s));
-        let input = SurfaceExtrusionInput::parse_with_options(&words, self.settings.get().options)?;
-        let distance =
-            parse_face_extrusion_distance(&positional, input.options.direction.is_some(), USAGE)?;
+            .partition(|s| !SurfaceExtrusionInput::accepts_option(s));
+        let settings = self.settings.get();
+        let input = SurfaceExtrusionInput::parse_with_options(&words, settings.options)?;
+        let boundary = match input.boundary {
+            BoundaryInput::None => None,
+            BoundaryInput::Reference(reference) if positional.is_empty() => {
+                Some(reference.capture(doc)?)
+            }
+            _ => return Err(CommandError::Usage(USAGE)),
+        };
+        let (target, display_distance) = if let Some(boundary) = &boundary {
+            (SweepTarget::Boundary(boundary), settings.distance)
+        } else {
+            let distance = parse_face_extrusion_distance(
+                &positional,
+                input.options.direction.is_some(),
+                USAGE,
+            )?;
+            let display_distance = match distance {
+                Distance::Numeric(height) => height,
+                Distance::Explicit(vector) => vector.length()?,
+            };
+            (SweepTarget::Distance(distance), Some(display_distance))
+        };
         // Whole-object preselection stays on retained inputs. Explicit face
         // targeting keeps the existing component-result selection policy.
         let retained_selection = (!input.options.delete_input
             && matches!(input.faces, SurfaceFaces::Single))
         .then(|| doc.selected_object_ids().collect::<Vec<_>>());
-        let display_distance = match distance {
-            Distance::Numeric(height) => height,
-            Distance::Explicit(vector) => vector.length()?,
-        };
         let count = apply_face_extrusion_products(
             doc,
             &input.faces,
@@ -299,7 +340,7 @@ impl Command for ExtrudeSurfaceCommand {
             |brep, tolerance| {
                 produce(
                     brep,
-                    distance,
+                    target,
                     input.options,
                     context.construction_plane,
                     tolerance,
@@ -312,13 +353,41 @@ impl Command for ExtrudeSurfaceCommand {
         self.settings.set(SurfaceExtrusionSettings {
             options: SurfaceExtrusionOptions {
                 direction: None,
+                both_sides: input.options.both_sides && boundary.is_none(),
                 ..input.options
             },
-            distance: Some(display_distance),
+            distance: display_distance,
         });
         Ok(format!("Extruded {count} surface face(s)"))
     }
 }
+#[derive(Clone, Copy)]
+enum SweepTarget<'a> {
+    Distance(Distance),
+    Boundary(&'a Brep),
+}
+
+#[cfg(feature = "native-smlib")]
+pub(super) fn sweep_surface_key(surface: &NurbsSurface) -> u64 {
+    use std::hash::{DefaultHasher, Hash, Hasher};
+
+    // Compare the exact carriers after lookup to guard against collisions.
+    let mut key = DefaultHasher::new();
+    surface.degree_u().hash(&mut key);
+    surface.degree_v().hash(&mut key);
+    let mut real = |value: f64| (if value == 0. { 0 } else { value.to_bits() }).hash(&mut key);
+    for &knot in surface.knots_u().iter().chain(surface.knots_v()) {
+        real(knot);
+    }
+    for point in surface.control_points() {
+        for coordinate in point.point().to_array() {
+            real(coordinate);
+        }
+        real(point.weight());
+    }
+    key.finish()
+}
+
 #[derive(Clone, Copy)]
 pub(super) enum Distance {
     Numeric(f64),
@@ -414,7 +483,7 @@ fn local_sweep_source(brep: &Brep, tolerance: Tolerance) -> Result<(Point3, Brep
 }
 fn produce(
     brep: &Brep,
-    distance: Distance,
+    target: SweepTarget<'_>,
     options: SurfaceExtrusionOptions,
     cplane: Frame3,
     tolerance: Tolerance,
@@ -428,6 +497,22 @@ fn produce(
         }
         let source = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
         let zero = Point3::try_new(0., 0., 0.)?;
+        let distance = match target {
+            SweepTarget::Distance(distance) => distance,
+            SweepTarget::Boundary(boundary) => {
+                let boundary = boundary.transformed(
+                    AffineTransform3::from_translation(origin.vector_to(zero)?),
+                    tolerance,
+                )?;
+                let direction =
+                    face_extrusion_direction(&source, options.direction, cplane, tolerance)?;
+                let result = boundary::extrude(&local, &source, &boundary, direction, tolerance)?;
+                return Ok(vec![Geometry::Brep(result.transformed(
+                    AffineTransform3::from_translation(zero.vector_to(origin)?),
+                    tolerance,
+                )?)]);
+            }
+        };
         let vector = match distance {
             Distance::Explicit(v) => v,
             Distance::Numeric(h) => {
@@ -465,12 +550,15 @@ fn produce(
     }
     #[cfg(not(feature = "native-smlib"))]
     {
-        match distance {
-            Distance::Numeric(h) => {
+        match target {
+            SweepTarget::Distance(Distance::Numeric(h)) => {
                 let _ = h;
             }
-            Distance::Explicit(v) => {
+            SweepTarget::Distance(Distance::Explicit(v)) => {
                 let _ = v;
+            }
+            SweepTarget::Boundary(boundary) => {
+                let _ = boundary;
             }
         }
         let _ = (brep, options, cplane, tolerance);

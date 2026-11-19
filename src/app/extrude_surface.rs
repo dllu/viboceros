@@ -7,6 +7,7 @@ use crate::viewport::surface_extrusion::{
 use viboceros_command::extrude_surface::{
     SurfaceExtrusionInput, SurfaceExtrusionOptions, SurfaceFaces, surface_extrusion_targets,
 };
+use viboceros_command::surface_reference::{BoundaryInput, BoundaryRef};
 
 pub(super) struct SurfaceExtrusionSources {
     pub(super) targets: Vec<(ObjectId, usize)>,
@@ -18,9 +19,10 @@ pub(super) struct SurfaceExtrusionSources {
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum Stage {
     Distance,
+    Boundary,
     BasePoint,
-    DirectionStart,
-    DirectionEnd(Point3),
+    DirectionStart { to_boundary: bool },
+    DirectionEnd { start: Point3, to_boundary: bool },
 }
 
 struct LinearSession {
@@ -67,6 +69,18 @@ impl SurfaceExtrusionSources {
 }
 
 impl VibocerosApp {
+    pub(super) fn picking_surface_boundary(&self) -> bool {
+        self.picking_straight_surface_boundary() || self.picking_surface_apex_boundary()
+    }
+
+    pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef) {
+        if self.picking_straight_surface_boundary() {
+            self.pick_straight_surface_boundary(reference);
+        } else {
+            self.pick_surface_apex_boundary(reference);
+        }
+    }
+
     pub(super) fn prepare_surface_extrusion_sources(
         &self,
         mut faces: SurfaceFaces,

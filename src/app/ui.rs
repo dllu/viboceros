@@ -344,7 +344,7 @@ impl VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.picking_mesh_trim_target() {
             Some(FacePickMode::MeshAny)
-        } else if self.picking_surface_apex_boundary()
+        } else if self.picking_surface_boundary()
             || self.selecting_curvature_source()
             || self.picking_offset_surface_sources()
             || self
