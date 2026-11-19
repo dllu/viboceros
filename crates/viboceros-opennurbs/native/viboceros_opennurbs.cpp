@@ -298,6 +298,7 @@ class ByteReader {
 };
 
 #include "text_dot_data.h"
+#include "annotation_style.h"
 
 bool append_point(const ON_Point& point, BridgeObject& output) {
   const ON_3dPoint value = point.point;
@@ -2053,6 +2054,7 @@ struct ViboThreeDmModel {
   double angle_tolerance = ON_PI / 180.0;
   ON_MeshParameters analysis_stored, analysis_document;
   std::vector<uint8_t> analysis_stored_bytes, analysis_document_bytes;
+  std::vector<uint8_t> annotation_style;
   uint32_t unit_system = 0;
   double meters_per_unit = 1.0;
   std::string unit_name;
@@ -2094,6 +2096,10 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
     }
 
     auto decoded = std::make_unique<ViboThreeDmModel>();
+    if (!vibo_annotation::retain(source, decoded->annotation_style)) {
+      set_error(error, error_capacity, "Cannot retain the active annotation style");
+      return 0;
+    }
     const auto& tolerances = source.m_settings.m_ModelUnitsAndTolerances;
     decoded->absolute_tolerance = tolerances.m_absolute_tolerance;
     decoded->relative_tolerance = tolerances.m_relative_tolerance;
@@ -2531,11 +2537,52 @@ extern "C" int32_t vibo_3dm_analysis_parameters(const ViboThreeDmModel* model,
   return 1;
 }
 
+extern "C" const uint8_t* vibo_3dm_annotation_style(const ViboThreeDmModel* model, size_t* count) {
+  if (count == nullptr) return nullptr;
+  *count = model == nullptr ? 0 : model->annotation_style.size();
+  return *count == 0 ? nullptr : model->annotation_style.data();
+}
+
+extern "C" int32_t vibo_annotation_length_format(const uint8_t* data, size_t count,
+    ViboAnnotationLengthFormat* format) {
+  if (format == nullptr) return 0;
+  try {
+    begin_open_nurbs();
+    if (count == 0) {
+      *format = vibo_annotation::length_format(ON_DimStyle::Default);
+      return 1;
+    }
+    ON_DimStyle style;
+    if (!vibo_annotation::read(data, count, style)) return 0;
+    *format = vibo_annotation::length_format(style);
+    return 1;
+  } catch (...) {
+    return 0;
+  }
+}
+
+extern "C" int32_t vibo_annotation_format_coordinates(const ViboAnnotationLengthFormat* format,
+    double model_meters_per_unit, const double coordinates[3], char* text, size_t capacity) {
+  if (format == nullptr || coordinates == nullptr || text == nullptr || capacity == 0) return 0;
+  try {
+    ON_wString result;
+    if (!vibo_annotation::format_coordinates(*format, model_meters_per_unit, coordinates, result))
+      return 0;
+    const auto output = utf8(result);
+    if (output.size() >= capacity) return 0;
+    std::memcpy(text, output.c_str(), output.size() + 1);
+    return 1;
+  } catch (...) {
+    return 0;
+  }
+}
+
 extern "C" int32_t vibo_3dm_write(
     const char* path, uint32_t unit_system, double meters_per_unit,
     const char* unit_name, double absolute_tolerance, double relative_tolerance,
     double angle_tolerance, double analysis_nurbs_density, uint32_t analysis_subd_level, uint32_t analysis_subd_adaptive,
     uint8_t analysis_simple_planes, const uint8_t* analysis_parameters, size_t analysis_parameter_count,
+    const uint8_t* annotation_style, size_t annotation_style_count,
     const ViboWriteLayer* layers, size_t layer_count,
     int32_t current_layer_index,
     const ViboWriteGroup* groups, size_t group_count,
@@ -2562,6 +2609,11 @@ extern "C" int32_t vibo_3dm_write(
   try {
     begin_open_nurbs();
     ONX_Model model;
+    if (annotation_style_count != 0 &&
+        !vibo_annotation::install(model, annotation_style, annotation_style_count)) {
+      set_error(error, error_capacity, "Invalid retained annotation style");
+      return 0;
+    }
     if(!std::isfinite(analysis_nurbs_density) || analysis_nurbs_density<0.0 || analysis_nurbs_density>1.0) {
       set_error(error,error_capacity,"Invalid analysis NURBS density");
       return 0;

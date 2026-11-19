@@ -2582,7 +2582,7 @@ impl Viewport {
             && !input
                 .point_filter
                 .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
-            && let Some(dot) = options.preview_label(cursor.point, self.construction_plane())
+            && let Some(dot) = options.preview_label(cursor.point, self.construction_plane(), document)
         {
             self.paint_text_dot(&painter, rect, &dot, Color32::from_rgb(20, 115, 190));
         }

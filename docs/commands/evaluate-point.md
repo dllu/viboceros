@@ -21,17 +21,18 @@ World coordinates = 13,24,35
 CPlane coordinates = 4,5,3
 ```
 
-Numeric output retains binary64 round-trip precision, uses scientific notation
+The command report retains binary64 round-trip precision, uses scientific notation
 at extreme scales, and canonicalizes signed zero. Non-finite input and truly
 unrepresentable local coordinates produce errors rather than misleading values.
 
 `Label=On Style=Dot` previews a text dot at the current location and adds it to
-the model when the point is accepted. The dot uses model units and world
-coordinates by default. Choose `CoordinateSystem=CPlane` for local coordinates.
-The command report always includes both coordinate systems. Options can precede
-or follow the inline point, or be changed at the interactive prompt. Saving to
-3DM preserves the text dot. Leader labels and annotation style formatting remain
-pending. [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/evaluatept.htm)
+the model when the point is accepted. Choose `CoordinateSystem=CPlane` for local
+coordinates. Labels default to world coordinates and follow the active
+annotation style for length units, scale, rounding, and precision. The report
+always includes both coordinate systems. Options can precede or follow the
+inline point, or be changed at the interactive prompt. Saving to 3DM preserves
+the text dot and active style. Leader labels remain pending.
+[Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/evaluatept.htm)
 
 A [live Rhino 8.32.26160.13001 capture](../evaluate-point-rhino-reference.json)
 checks World XY, a rotated/translated CPlane, and a signed-axis CPlane. It also

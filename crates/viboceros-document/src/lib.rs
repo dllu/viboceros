@@ -475,6 +475,7 @@ impl Group {
 
 #[derive(Clone, Debug)]
 pub struct Document {
+    annotation_style: viboceros_geometry::AnnotationStyle,
     analysis_mesh_parameters: Option<std::sync::Arc<[u8]>>,
     analysis_simple_planes: bool,
     analysis_nurbs_density: viboceros_geometry::NurbsMeshDensity,
@@ -514,6 +515,7 @@ impl Document {
         };
         let current_layer = default_layer.id;
         Self {
+            annotation_style: Default::default(),
             analysis_subd_density: Default::default(),
             analysis_nurbs_density: Default::default(),
             analysis_simple_planes: false,

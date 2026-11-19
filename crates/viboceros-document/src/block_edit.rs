@@ -240,6 +240,7 @@ impl Document {
         accepted.analysis_subd_density = self.analysis_subd_density;
         accepted.analysis_nurbs_density = self.analysis_nurbs_density;
         accepted.analysis_simple_planes = self.analysis_simple_planes;
+        accepted.annotation_style = self.annotation_style.clone();
         accepted.analysis_mesh_parameters = self.analysis_mesh_parameters.clone();
         if !Arc::ptr_eq(&edit.baseline, &edit.cancel_checkpoint) {
             accepted.history = edit.baseline.history.clone();
@@ -524,6 +525,7 @@ impl Document {
         accepted.analysis_subd_density = self.analysis_subd_density;
         accepted.analysis_nurbs_density = self.analysis_nurbs_density;
         accepted.analysis_simple_planes = self.analysis_simple_planes;
+        accepted.annotation_style = self.annotation_style.clone();
         accepted.analysis_mesh_parameters = self.analysis_mesh_parameters.clone();
         accepted.layers = self.layers.clone();
         self.restore_block_edit_layer_flags(&mut accepted);

@@ -61,17 +61,35 @@ impl EvaluatePointOptions {
         if self.cplane { "CPlane" } else { "World" }
     }
 
-    pub fn preview_label(self, point: Point3, plane: Frame3) -> Option<TextDot> {
+    pub fn preview_label(
+        self,
+        point: Point3,
+        plane: Frame3,
+        document: &Document,
+    ) -> Option<TextDot> {
         if !self.label {
             return None;
         }
         let local = plane.coordinates_of(point).ok()?;
-        self.create_label(point, local).ok()
+        self.create_label(point, local, document).ok()
     }
 
-    fn create_label(self, point: Point3, local: [f64; 3]) -> Result<TextDot, GeometryError> {
+    fn create_label(
+        self,
+        point: Point3,
+        local: [f64; 3],
+        document: &Document,
+    ) -> Result<TextDot, GeometryError> {
         let values = if self.cplane { local } else { point.to_array() };
-        TextDot::try_new(point, format_coordinates(values))
+        let meters_per_unit = document
+            .units()
+            .meters_per_unit()
+            .map_err(|_| GeometryError::InvalidAnnotationCoordinates)?;
+        let label = document
+            .annotation_style()
+            .format_coordinates(values, meters_per_unit)
+            .ok_or(GeometryError::InvalidAnnotationCoordinates)?;
+        TextDot::try_new(point, label)
     }
 }
 
@@ -123,7 +141,8 @@ impl Command for EvaluatePointCommand {
         let options = EvaluatePointOptions::parse(&options)?;
         let local = context.construction_plane.coordinates_of(point)?;
         if options.label {
-            document.add_geometry(Geometry::TextDot(options.create_label(point, local)?))?;
+            let dot = options.create_label(point, local, document)?;
+            document.add_geometry(Geometry::TextDot(dot))?;
         }
         Ok(format!(
             "World coordinates = {}\nCPlane coordinates = {}",
@@ -217,7 +236,7 @@ mod tests {
     #[test]
     fn evaluate_point_inline_label_defaults_to_world_and_undoes_as_one_edit() {
         let registry = CommandRegistry::with_builtins();
-        let point = Point3::try_new(1., 2., 3.).unwrap();
+        let point = Point3::try_new(1.234, 2.129, -3.977).unwrap();
         let context = CommandContext {
             construction_plane: CommandContext::default()
                 .construction_plane
@@ -227,24 +246,56 @@ mod tests {
         let report = registry
             .execute_in_context(
                 &mut document,
-                "EvaluatePt Label=On 1,2,3 Style=Dot",
+                "EvaluatePt Label=On 1.234,2.129,-3.977 Style=Dot",
                 context,
             )
             .unwrap();
         assert_eq!(
             report,
-            "World coordinates = 1,2,3\nCPlane coordinates = 0,0,0"
+            "World coordinates = 1.234,2.129,-3.977\nCPlane coordinates = 0,0,0"
         );
         let Geometry::TextDot(dot) = document.objects().next().unwrap().geometry() else {
             panic!("expected a text dot");
         };
         assert_eq!(dot.point(), point);
-        assert_eq!(dot.text(), "1,2,3");
+        assert_eq!(dot.text(), "1.23,2.13,-3.98");
         assert_eq!(document.undo_label(), Some("EvaluatePt"));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().count(), 0);
         registry.execute(&mut document, "Redo").unwrap();
         assert_eq!(document.objects().count(), 1);
+    }
+
+    #[test]
+    fn evaluate_point_uses_the_active_style_after_open_and_save() {
+        // OpenNURBS fixture: millimetre model, decimal inches in the active
+        // style, length factor two, 0.005 rounding, and three decimal places.
+        let source = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../viboceros-io/tests/fixtures/evaluate-point-annotation-style.3dm");
+        let directory = tempfile::tempdir().unwrap();
+        let saved = directory.path().join("coordinates.3dm");
+        let registry = CommandRegistry::with_builtins();
+        for path in [&source, &saved] {
+            let (mut document, _, _) =
+                crate::open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
+            assert!(!document.annotation_style().archive().is_empty());
+            assert_eq!(
+                registry
+                    .execute(&mut document, "EvaluatePt 25.4,-12.7,0.23 Label=On")
+                    .unwrap(),
+                "World coordinates = 25.4,-12.7,0.23\nCPlane coordinates = 25.4,-12.7,0.23"
+            );
+            let Geometry::TextDot(dot) = document.objects().last().unwrap().geometry() else {
+                panic!("expected a text dot");
+            };
+            assert_eq!(dot.point().to_array(), [25.4, -12.7, 0.23]);
+            assert_eq!(dot.text(), "2.000,-1.000,0.020");
+            if path == &source {
+                registry
+                    .execute(&mut document, &format!("SaveAs \"{}\"", saved.display()))
+                    .unwrap();
+            }
+        }
     }
 
     #[test]

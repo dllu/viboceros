@@ -4,6 +4,14 @@ use super::{Document, Edit};
 use viboceros_geometry::Tolerance;
 
 impl Document {
+    pub fn annotation_style(&self) -> &viboceros_geometry::AnnotationStyle {
+        &self.annotation_style
+    }
+
+    pub fn set_annotation_style(&mut self, style: viboceros_geometry::AnnotationStyle) {
+        self.annotation_style = style;
+    }
+
     pub fn analysis_mesh_parameters(&self) -> Option<&std::sync::Arc<[u8]>> {
         self.analysis_mesh_parameters.as_ref()
     }

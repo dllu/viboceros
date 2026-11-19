@@ -230,6 +230,7 @@ impl ThreeDmObject {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
+    pub annotation_style: viboceros_geometry::AnnotationStyle,
     /// Retained native meshing controls; edited density and plane settings override them.
     pub analysis_mesh_parameters: Option<std::sync::Arc<[u8]>>,
     pub analysis_simple_planes: bool,
@@ -261,6 +262,7 @@ impl ThreeDmModel {
     ) -> Self {
         let current_layer_index = (!layers.is_empty()).then_some(0);
         Self {
+            annotation_style: Default::default(),
             definitions: Vec::new(),
             analysis_subd_density: Default::default(),
             analysis_nurbs_density: Default::default(),
@@ -838,6 +840,7 @@ pub fn write_3dm_file(
             .map_err(|_| ThreeDmError::InvalidModel("current layer index exceeds 3DM range".into()))
     })?;
     let mut error = [0 as c_char; ERROR_CAPACITY];
+    let annotation_style = model.annotation_style.archive();
     // SAFETY: all pointers reference immutable vectors and C strings retained
     // for the duration of this synchronous call. The bridge catches exceptions.
     let success = unsafe {
@@ -861,6 +864,8 @@ pub fn write_3dm_file(
                 .analysis_mesh_parameters
                 .as_ref()
                 .map_or(0, |p| p.len()),
+            pointer_or_null(annotation_style),
+            annotation_style.len(),
             pointer_or_null(&layers),
             layers.len(),
             current_layer_index,
@@ -1073,6 +1078,7 @@ fn decode_model(
         }
     }
     let mut model = ThreeDmModel {
+        annotation_style: decode_annotation_style(handle)?,
         analysis_nurbs_density: Default::default(),
         analysis_subd_density: Default::default(),
         analysis_simple_planes: false,
@@ -1096,6 +1102,16 @@ fn decode_model(
     };
     analysis_mesh::apply(handle, &mut model, false)?;
     blocks::decode_definitions(handle, model)
+}
+
+fn decode_annotation_style(
+    handle: &ModelHandle,
+) -> Result<viboceros_geometry::AnnotationStyle, ThreeDmError> {
+    let mut count = 0;
+    // SAFETY: the live handle owns the returned style bytes, and count is an out-parameter.
+    let bytes = unsafe { ffi::vibo_3dm_annotation_style(handle.0.as_ptr(), &mut count) };
+    viboceros_geometry::AnnotationStyle::from_archive(ffi_slice(handle, bytes, count)?)
+        .ok_or(ThreeDmError::MalformedBridge("invalid active annotation style"))
 }
 
 fn decode_named_views(handle: &ModelHandle) -> Result<Vec<ThreeDmNamedView>, ThreeDmError> {
@@ -2453,6 +2469,8 @@ mod ffi {
             analysis_simple_planes: u8,
             analysis_parameters: *const u8,
             analysis_parameter_count: usize,
+            annotation_style: *const u8,
+            annotation_style_count: usize,
             layers: *const ViboWriteLayer,
             layer_count: usize,
             current_layer_index: i32,
@@ -2483,6 +2501,10 @@ mod ffi {
             for_document: u8,
             parameters: *mut ViboAnalysisParameters,
         ) -> c_int;
+        pub fn vibo_3dm_annotation_style(
+            model: *const ViboThreeDmModel,
+            count: *mut usize,
+        ) -> *const u8;
     }
 }
 

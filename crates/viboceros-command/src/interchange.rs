@@ -368,6 +368,7 @@ pub fn open_3dm_with_views_and_cplanes(
     let cplanes = std::mem::take(&mut model.named_cplanes);
     let mut document = Document::with_units(model.tolerance, model.units.clone())
         .map_err(viboceros_document::DocumentError::from)?;
+    document.set_annotation_style(model.annotation_style.clone());
     document.set_analysis_subd_density(model.analysis_subd_density);
     document.set_analysis_nurbs_density(model.analysis_nurbs_density);
     document.set_analysis_simple_planes(model.analysis_simple_planes);
@@ -813,6 +814,7 @@ fn build_3dm_model(
     )?;
     model.current_layer_index = Some(layer_indices[&document.current_layer_id()]);
     model.units = document.units().clone();
+    model.annotation_style = document.annotation_style().clone();
     model.tolerance = document.tolerance();
     model.analysis_subd_density = document.analysis_subd_density();
     model.analysis_nurbs_density = document.analysis_nurbs_density();

@@ -440,6 +440,7 @@ pub use sweep::{
 };
 mod text_dot;
 pub use text_dot::{TextDot, TextDotStyle};
+pub use viboceros_opennurbs::AnnotationStyle;
 pub use tolerance::Tolerance;
 pub use transform::{AffineNormalTransform3, AffineTransform3};
 pub use vector::{UnitVector3, Vector3};

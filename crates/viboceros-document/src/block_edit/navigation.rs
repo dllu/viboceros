@@ -244,6 +244,7 @@ impl Document {
     }
     pub(super) fn clone_block_edit_model(&self) -> Document {
         Document {
+            annotation_style: self.annotation_style.clone(),
             analysis_subd_density: self.analysis_subd_density,
             analysis_nurbs_density: self.analysis_nurbs_density,
             analysis_simple_planes: self.analysis_simple_planes,

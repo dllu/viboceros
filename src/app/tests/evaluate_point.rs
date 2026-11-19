@@ -88,7 +88,7 @@ fn evaluate_point_changes_label_options_while_getting_a_typed_point() {
         panic!("expected a text dot");
     };
     assert_eq!(dot.point(), point(13., 24., 35.));
-    assert_eq!(dot.text(), "4,5,3");
+    assert_eq!(dot.text(), "4.00,5.00,3.00");
     assert_eq!(
         app.command_log.back().unwrap(),
         "World coordinates = 13,24,35\nCPlane coordinates = 4,5,3"
@@ -104,6 +104,12 @@ fn evaluate_point_changes_label_options_while_getting_a_typed_point() {
 #[test]
 fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
     let mut app = test_app();
+    let style_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("crates/viboceros-io/tests/fixtures/evaluate-point-annotation-style.3dm");
+    let style = viboceros_io::read_3dm_file(style_file, Tolerance::DEFAULT)
+        .unwrap()
+        .annotation_style;
+    app.document.set_annotation_style(style);
     app.viewports[0] = Viewport::new(ViewKind::Top);
     let plane = app.viewports[0]
         .construction_plane()
@@ -147,9 +153,10 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
             _ => None,
         })
         .collect();
+    let expected = "0.235,0.080,0.000";
     let preview = labels
         .iter()
-        .find(|label| label.galley.job.text == "3,1,0")
+        .find(|label| label.galley.job.text == expected)
         .unwrap_or_else(|| {
             panic!(
                 "missing drawn CPlane label among {:?}",
@@ -175,7 +182,7 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
     let placed_label = placed
         .iter()
         .find_map(|shape| match &shape.shape {
-            egui::Shape::Text(text) if text.galley.job.text == "3,1,0" => Some(text),
+            egui::Shape::Text(text) if text.galley.job.text == expected => Some(text),
             _ => None,
         })
         .expect("drawn model label");

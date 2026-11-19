@@ -275,6 +275,7 @@ int32_t vibo_3dm_write(const char* path, uint32_t unit_system,
                        uint32_t analysis_subd_adaptive,
                        uint8_t analysis_simple_planes,
                        const uint8_t* analysis_parameters, size_t analysis_parameter_count,
+                       const uint8_t* annotation_style, size_t annotation_style_count,
                        const ViboWriteLayer* layers,
                        size_t layer_count, int32_t current_layer_index,
                        const ViboWriteGroup* groups,
@@ -289,6 +290,22 @@ int32_t vibo_3dm_tolerances(const ViboThreeDmModel* model,
                           double* absolute, double* relative, double* angle);
 int32_t vibo_3dm_analysis_parameters(const ViboThreeDmModel* model, uint8_t for_document,
                                    ViboAnalysisParameters* parameters);
+const uint8_t* vibo_3dm_annotation_style(const ViboThreeDmModel* model, size_t* count);
+
+typedef struct ViboAnnotationLengthFormat {
+  double meters_per_unit;
+  double length_factor;
+  double round_off;
+  int32_t resolution;
+  uint32_t display;
+  uint32_t zero_suppress;
+  uint32_t decimal_separator;
+} ViboAnnotationLengthFormat;
+
+int32_t vibo_annotation_length_format(const uint8_t* style, size_t count,
+                                      ViboAnnotationLengthFormat* format);
+int32_t vibo_annotation_format_coordinates(const ViboAnnotationLengthFormat* format,
+    double model_meters_per_unit, const double coordinates[3], char* text, size_t capacity);
 
 #ifdef __cplusplus
 }
