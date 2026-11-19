@@ -2,22 +2,25 @@ use super::*;
 use crate::app::tests::circle_preview::viewport_click;
 use viboceros_geometry::Polyline3;
 
+fn stock_curve(app: &mut VibocerosApp) -> ObjectId {
+    app.document
+        .add_geometry(Geometry::Polyline(
+            Polyline3::try_new(
+                [[0., 0.], [6., 0.], [6., 4.], [0., 4.], [0., 0.]]
+                    .map(|[x, y]| point(x, y, 2.))
+                    .to_vec(),
+                app.document.tolerance(),
+            )
+            .unwrap(),
+        ))
+        .unwrap()
+}
+
 #[test]
 fn curve_taper_boundary_gapped_pick_commits_cut_or_fallback_and_replays() {
     for solid in [false, true] {
         let mut app = test_app();
-        let source = app
-            .document
-            .add_geometry(Geometry::Polyline(
-                Polyline3::try_new(
-                    [[0., 0.], [6., 0.], [6., 4.], [0., 4.], [0., 0.]]
-                        .map(|[x, y]| point(x, y, 2.))
-                        .to_vec(),
-                    app.document.tolerance(),
-                )
-                .unwrap(),
-            ))
-            .unwrap();
+        let source = stock_curve(&mut app);
         let cutter = rectangle(&mut app, [-9., -9., 15., 13.], 5.);
         app.document
             .select_objects_direct([source], SelectionMode::Replace)
@@ -91,4 +94,63 @@ fn curve_taper_boundary_gapped_pick_commits_cut_or_fallback_and_replays() {
         assert!(app.document.object(source).is_none());
         assert_eq!(app.document.selected_object_count(), 0);
     }
+}
+
+#[test]
+fn curve_taper_boundary_partial_viewport_pick_preserves_a_side_edge_imprint() {
+    let mut app = test_app();
+    let source = stock_curve(&mut app);
+    let cutter = rectangle(&mut app, [-1., -1., 8., 1.], 5.);
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeCrvTapered DraftAngle=-10 Solid=No DeleteInput=Yes",
+    );
+    enter(&mut app, "Direction");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,6");
+    let context = top_view(&mut app, [point(-12., -10., 0.), point(18., 15., 8.)]);
+    move_pointer(&mut app, &context, point(-9., -2., 2.));
+    enter(&mut app, "ToBoundary");
+    assert!(app.picking_tapered_boundary());
+    let pick = move_pointer(&mut app, &context, point(7.8, 0.5, 5.));
+    viewport_click(&mut app, &context, pick);
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(app.document.object(source).is_none());
+    assert!(app.document.is_selected(cutter));
+    let Geometry::Brep(piece) = app
+        .document
+        .objects()
+        .find(|o| o.id() != cutter)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected the uncut closing wall")
+    };
+    assert_eq!(
+        (
+            piece.faces().len(),
+            piece.edges().len(),
+            piece.vertices().len()
+        ),
+        (1, 5, 5)
+    );
+    assert!(piece.vertices().iter().any(|v| {
+        v.point()
+            .distance_to(point(-0.02815356979892647, 0., 5.))
+            .unwrap()
+            < 1e-6
+    }));
+    assert!(piece.vertices().iter().any(|v| v.point().z() > 70.));
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [source]
+    );
+    enter(&mut app, "Redo");
+    assert!(app.document.object(source).is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
 }

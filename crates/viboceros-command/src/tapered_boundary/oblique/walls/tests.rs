@@ -1,6 +1,8 @@
 use super::*;
 use viboceros_geometry::Polyline3;
 
+mod partial;
+
 const RECTANGLE: [[f64; 2]; 5] = [[0., 0.], [6., 0.], [6., 4.], [0., 4.], [0., 0.]];
 const REVERSED: [[f64; 2]; 5] = [[0., 0.], [0., 4.], [6., 4.], [6., 0.], [0., 0.]];
 const ROTATED: [[f64; 2]; 5] = [[6., 0.], [6., 4.], [0., 4.], [0., 0.], [6., 0.]];
@@ -27,21 +29,23 @@ fn scene(
     surface: NurbsSurface,
 ) -> (Document, CommandRegistry, ObjectId, BoundaryRef) {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
-    let curve = Polyline3::try_new(
-        xy.iter().map(|&[x, y]| point(x, y, 2.)).collect(),
-        tolerance,
+    scene_with_geometry(
+        Geometry::Polyline(polyline(xy, 2., tolerance)),
+        Geometry::NurbsSurface(surface),
     )
-    .unwrap();
-    scene_with_geometry(Geometry::Polyline(curve), surface)
+}
+
+fn polyline(xy: &[[f64; 2]], z: f64, tolerance: Tolerance) -> Polyline3 {
+    Polyline3::try_new(xy.iter().map(|&[x, y]| point(x, y, z)).collect(), tolerance).unwrap()
 }
 
 fn scene_with_geometry(
     curve: Geometry,
-    surface: NurbsSurface,
+    cutter: Geometry,
 ) -> (Document, CommandRegistry, ObjectId, BoundaryRef) {
     let mut doc = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
     let source = doc.add_geometry(curve).unwrap();
-    let boundary = doc.add_geometry(Geometry::NurbsSurface(surface)).unwrap();
+    let boundary = doc.add_geometry(cutter).unwrap();
     doc.select_objects_direct([source], SelectionMode::Replace)
         .unwrap();
     doc.clear_history().unwrap();
@@ -352,8 +356,10 @@ fn oblique_boundary_keeps_connected_regular_curved_walls() {
             knots,
         )
         .unwrap();
-        let (mut doc, registry, source, boundary) =
-            scene_with_geometry(Geometry::NurbsCurve(curve), cutter(WIDE, [5.; 4]));
+        let (mut doc, registry, source, boundary) = scene_with_geometry(
+            Geometry::NurbsCurve(curve),
+            Geometry::NurbsSurface(cutter(WIDE, [5.; 4])),
+        );
         assert_eq!(
             run(
                 &mut doc,

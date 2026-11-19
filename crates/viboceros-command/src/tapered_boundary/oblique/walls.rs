@@ -5,6 +5,8 @@ use viboceros_geometry::{
 };
 use viboceros_smlib::KernelCurve;
 
+mod planar_split;
+
 #[derive(Clone, Copy)]
 pub(in crate::tapered_boundary) struct WallInput<'a> {
     pub(in crate::tapered_boundary) curve: &'a NurbsCurve,
@@ -47,17 +49,35 @@ pub(in crate::tapered_boundary) fn trim_open(
     let stock = input.stock(displacement, false, tolerance)?;
     let components = stock.edge_connected_face_components();
     let component = components.first().ok_or(REJECTED)?;
-    let first = stock.sub_brep(component, tolerance)?;
     let surface = cutter.faces()[0].surface();
     let plane = surface.plane(tolerance)?;
+    if let Some(plane) = plane
+        && components.len() == stock.faces().len()
+        && input.curve.degree() == 1
+        && stock.faces().iter().all(|face| {
+            let wall = face.surface();
+            wall.degree_u() == 1
+                && wall.degree_v() == 1
+                && wall.control_point_count_u() == 2
+                && wall.control_point_count_v() == 2
+                && !wall.is_rational()
+        })
+    {
+        return planar_split::retain(
+            &stock,
+            cutter,
+            plane,
+            displacement,
+            input.curve.is_closed()?,
+            tolerance,
+        );
+    }
     if plane.is_none() && !regular_projected_patch(surface, displacement, tolerance)? {
         return Err(REJECTED);
     }
     let section =
         |wall: &BrepFace| wall_section(wall.surface(), cutter, plane, displacement, tolerance);
-    // A cutter that misses one end of the first wall leaves that wall intact.
-    // With a complete first split, later incomplete splits can change which
-    // piece Rhino keeps, so require complete sections across the other walls.
+    let first = stock.sub_brep(component, tolerance)?;
     let Some(leading) = section(&stock.faces()[0])? else {
         return if plane.is_some() && input.curve.degree() == 1 && component.len() == 1 {
             Ok(first)
@@ -70,16 +90,32 @@ pub(in crate::tapered_boundary) fn trim_open(
     for wall in &stock.faces()[1..] {
         sections.push(section(wall)?.ok_or(REJECTED)?);
     }
+    clip_component(
+        &first,
+        cutter,
+        displacement,
+        component.iter().flat_map(|&i| sections[i]),
+        tolerance,
+    )
+}
+
+fn clip_component(
+    source: &Brep,
+    cutter: &Brep,
+    displacement: Vector3,
+    section: impl Iterator<Item = Point3>,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
     let tool = boundary_tool(cutter, displacement.scaled(-2.)?, tolerance)?;
-    let cut = Shape::from_brep(&first, tolerance)?
+    let cut = Shape::from_brep(source, tolerance)?
         .trimmed_inside(&tool)?
         .ok_or(REJECTED)?
         .to_brep(tolerance)?;
-    if cut.faces().len() != first.faces().len()
+    if cut.faces().len() != source.faces().len()
         || cut.edge_connected_face_components().len() != 1
-        || cut.vertices().len() != first.vertices().len()
-        || cut.edges().len() != first.edges().len()
-        || !retains_section_vertices(&cut, component.iter().flat_map(|&i| sections[i]), tolerance)
+        || cut.vertices().len() != source.vertices().len()
+        || cut.edges().len() != source.edges().len()
+        || !retains_section_vertices(&cut, section, tolerance)
     {
         return Err(REJECTED);
     }
