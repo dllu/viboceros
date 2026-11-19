@@ -355,9 +355,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn update_tapered_hover(&mut self, point: Option<Point3>) -> Option<f64> {
-        let height = signed_height(self.tapered_distance_constraint()?, point?)?;
-        self.tapered_extrusion_session.as_mut()?.hover = Some(height);
-        (height.abs() > self.document.tolerance().absolute()).then_some(height)
+        let constraint = self.tapered_distance_constraint()?;
+        let session = self.tapered_extrusion_session.as_mut()?;
+        if let Some(point) = point {
+            session.hover = signed_height(constraint, point);
+        }
+        session.hover
     }
 
     fn accept_tapered_length(

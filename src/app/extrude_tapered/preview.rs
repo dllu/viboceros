@@ -13,10 +13,30 @@ use viboceros_command::{
 use viboceros_geometry::NurbsCurve;
 
 #[derive(Clone, Copy, PartialEq)]
-pub(crate) struct Request {
-    pub height: f64,
-    pub options: TaperedExtrusionOptions,
-    pub tolerance: Tolerance,
+struct Request {
+    height: f64,
+    options: TaperedExtrusionOptions,
+    tolerance: Tolerance,
+}
+
+impl Request {
+    fn new(
+        height: Option<f64>,
+        options: TaperedExtrusionOptions,
+        tolerance: Tolerance,
+    ) -> Option<Self> {
+        Some(Self {
+            height: height.filter(|height| height.abs() > tolerance.absolute())?,
+            options,
+            tolerance,
+        })
+    }
+
+    fn compatible_with(self, current: Self) -> bool {
+        self.options == current.options
+            && self.tolerance == current.tolerance
+            && self.height.is_sign_positive() == current.height.is_sign_positive()
+    }
 }
 
 struct Job {
@@ -47,8 +67,16 @@ impl Preview {
         plane: Frame3,
         context: &egui::Context,
     ) {
+        if self.result.as_ref().is_some_and(|(previous, _)| {
+            !request.is_some_and(|current| previous.compatible_with(current))
+        }) {
+            self.result = None;
+            context.request_repaint();
+        }
         if let Some(job) = &self.job {
-            if request != Some(job.request) {
+            // Publish completed solves while the cursor moves on the same side.
+            // The latest height starts as soon as the current job is drained.
+            if !request.is_some_and(|current| job.request.compatible_with(current)) {
                 job.cancel.store(true, Ordering::Relaxed);
             }
             let edges = match job.receiver.try_recv() {
@@ -135,10 +163,9 @@ impl Session {
             return None;
         };
         let (request, edges) = self.preview.result.as_ref()?;
-        (request.options == options
-            && request.tolerance == document.tolerance()
-            && self.sources.is_current(document))
-        .then_some((request.height, edges))
+        let current = Request::new(self.hover, options, document.tolerance())?;
+        (request.compatible_with(current) && self.sources.is_current(document))
+            .then_some((request.height, edges))
     }
 }
 
@@ -155,11 +182,7 @@ impl VibocerosApp {
         let Some(session) = self.tapered_extrusion_session.as_mut() else {
             return;
         };
-        let request = height.map(|height| Request {
-            height,
-            options,
-            tolerance: self.document.tolerance(),
-        });
+        let request = Request::new(height, options, self.document.tolerance());
         session
             .preview
             .update(request, &session.sources, session.plane, context);

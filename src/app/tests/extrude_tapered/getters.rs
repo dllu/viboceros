@@ -206,6 +206,67 @@ fn tapered_oblique_direction_points_preview_and_commit_the_rhino_rectangle() {
 }
 
 #[test]
+fn tapered_preview_updates_during_motion_and_clears_at_zero_height() {
+    use std::time::{Duration, Instant};
+
+    for surface in [false, true] {
+        let mut app = test_app();
+        let source = raised_profile(&mut app, surface);
+        enter(&mut app, command(surface));
+        let context = egui::Context::default();
+        let preview_height = |app: &VibocerosApp| {
+            let (height, edges) = app
+                .tapered_extrusion_session
+                .as_ref()?
+                .preview_edges(&app.document, app.active_command)?;
+            assert!(!edges.is_empty());
+            Some(height)
+        };
+
+        let deadline = Instant::now() + Duration::from_secs(5);
+        for step in 0.. {
+            let height = 1. + 0.001 * f64::from(step);
+            app.update_tapered_extrusion_preview(Some(point(3., 2., 2. + height)), &context);
+            if let Some(preview) = preview_height(&app) {
+                assert!(preview >= 1. && preview < height);
+                break;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "no preview while the cursor moved"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert_eq!(app.document.objects().count(), 1);
+        assert!(!app.document.can_undo());
+
+        app.update_tapered_extrusion_preview(Some(point(3., 2., 2.)), &context);
+        assert_eq!(preview_height(&app), None);
+
+        let target = point(3., 2., 0.75);
+        app.update_tapered_extrusion_preview(Some(target), &context);
+        assert_eq!(preview_height(&app), None);
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            // The result still arrives if the pointer leaves the viewport.
+            app.update_tapered_extrusion_preview(None, &context);
+            if let Some(preview) = preview_height(&app) {
+                assert_eq!(preview, -1.25);
+                break;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "no preview after crossing the base"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
+        assert!(!app.document.can_undo());
+        assert!(app.accept_drafting_point(target), "{:?}", app.command_log);
+        assert!((result(&app, source).bounds().min().z() - target.z()).abs() < 1e-6);
+    }
+}
+
+#[test]
 fn tapered_distance_and_reverse_direction_match_rhino_signed_draft_and_selection() {
     for surface in [false, true] {
         for reverse in [false, true] {
