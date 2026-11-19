@@ -863,6 +863,15 @@ impl VibocerosApp {
             .as_ref()
             .filter(|_| model_input_active && self.plane_prompt.is_none())
             .and_then(|sources| sources.apex_draft(&self.document));
+        let surface_extrusion = self
+            .surface_extrusion_sources
+            .as_ref()
+            .filter(|_| {
+                model_input_active
+                    && self.plane_prompt.is_none()
+                    && self.nested_measurement.is_none()
+            })
+            .and_then(|sources| sources.linear_preview(&self.document, self.active_command));
         let twist_preview = self
             .twist_session
             .as_ref()
@@ -1002,6 +1011,7 @@ impl VibocerosApp {
         let translation_constraint = model_input_active
             .then(|| {
                 self.translation_constraint()
+                    .or_else(|| surface_extrusion.map(|preview| preview.constraint))
                     .or_else(|| self.line_axis_constraint())
                     .or_else(|| pyramid_input?.point_constraint())
                     .or_else(|| {
@@ -1312,6 +1322,7 @@ impl VibocerosApp {
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
                                 .map(direction::Session::overlay),
                             surface_apex,
+                            surface_extrusion,
                             insert_edges,
                             insert_mesh,
                             offset_mesh_preview: self
@@ -1807,6 +1818,9 @@ impl VibocerosApp {
             .then_some(resolved_drafting_hover)
             .flatten();
         if self.update_surface_apex_hover(apex_hover) {
+            ui.ctx().request_repaint();
+        }
+        if self.observe_surface_extrusion_hover(apex_hover) {
             ui.ctx().request_repaint();
         }
         if self.update_distribute_preview(resolved_drafting_hover) {

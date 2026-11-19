@@ -36,7 +36,7 @@ struct BoundaryFrame {
 }
 
 #[derive(Debug)]
-struct FaceDraft {
+pub(super) struct FaceDraft {
     walls: Vec<WallDraft>,
     plane: Option<Plane>,
 }
@@ -226,7 +226,7 @@ impl FaceDraft {
             .collect()
     }
 
-    fn capture(
+    pub(super) fn capture(
         brep: &Brep,
         face: &BrepFace,
         split_at_tangents: bool,
@@ -255,6 +255,14 @@ impl FaceDraft {
             walls,
             plane: face.surface().plane(tolerance).ok().flatten(),
         })
+    }
+
+    pub(super) fn rim(&self) -> impl Iterator<Item = [Point3; 2]> + '_ {
+        self.walls.iter().flat_map(|wall| wall.rim.iter().copied())
+    }
+
+    pub(super) fn boundary_rulings(&self) -> impl Iterator<Item = Point3> + '_ {
+        Self::rulings(self.walls.iter())
     }
 
     fn visible_walls(

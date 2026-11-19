@@ -298,20 +298,68 @@ pub(super) fn face_extrusion_direction(
     tolerance: Tolerance,
 ) -> Result<Vector3, CommandError> {
     if let Some(v) = direction {
-        Ok(v)
-    } else if let Some(normal) = source.single_face_plane_normal(tolerance)? {
-        let c = normal.to_array();
-        let i = (0..3)
-            .max_by(|&a, &b| c[a].abs().total_cmp(&c[b].abs()))
-            .unwrap();
-        Ok(if c[i] < 0. {
-            normal.scaled(-1.)?
-        } else {
-            normal
-        })
-    } else {
-        Ok(cplane.z_axis().as_vector())
+        return Ok(v);
     }
+    Ok(source
+        .single_face_plane_normal(tolerance)?
+        .map(oriented_plane_normal)
+        .transpose()?
+        .unwrap_or(cplane.z_axis().as_vector()))
+}
+
+fn oriented_plane_normal(normal: Vector3) -> Result<Vector3, GeometryError> {
+    let c = normal.to_array();
+    let i = (0..3)
+        .max_by(|&a, &b| c[a].abs().total_cmp(&c[b].abs()))
+        .unwrap();
+    if c[i] < 0. {
+        normal.scaled(-1.)
+    } else {
+        Ok(normal)
+    }
+}
+
+/// Cached by the distance getter to match the committed numeric extrusion.
+/// Curved faces leave the direction to the construction plane or explicit axis.
+pub fn surface_extrusion_reference_normal(
+    brep: &Brep,
+    tolerance: Tolerance,
+) -> Result<Option<Vector3>, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    let normal = {
+        let (_, source) = local_sweep_source(brep, tolerance)?;
+        source.single_face_plane_normal(tolerance)?
+    };
+    #[cfg(not(feature = "native-smlib"))]
+    let normal = match brep.faces() {
+        [face] => face
+            .surface()
+            .plane(tolerance)?
+            .map(|plane| plane.normal().as_vector()),
+        _ => None,
+    };
+    Ok(normal.map(oriented_plane_normal).transpose()?)
+}
+
+#[cfg(feature = "native-smlib")]
+fn local_sweep_source(
+    brep: &Brep,
+    tolerance: Tolerance,
+) -> Result<(Point3, viboceros_smlib::Shape), CommandError> {
+    let origin = brep
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| brep.bounds().min());
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let local = brep.transformed(
+        AffineTransform3::from_translation(origin.vector_to(zero)?),
+        tolerance,
+    )?;
+    Ok((
+        origin,
+        viboceros_smlib::Shape::from_brep(&local, tolerance)?,
+    ))
 }
 fn produce(
     brep: &Brep,
@@ -322,18 +370,8 @@ fn produce(
 ) -> Result<Geometry, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
-        use viboceros_smlib::Shape;
-        let origin = brep
-            .vertices()
-            .first()
-            .map(|v| v.point())
-            .unwrap_or_else(|| brep.bounds().min());
+        let (origin, source) = local_sweep_source(brep, tolerance)?;
         let zero = Point3::try_new(0., 0., 0.)?;
-        let local = brep.transformed(
-            AffineTransform3::from_translation(origin.vector_to(zero)?),
-            tolerance,
-        )?;
-        let source = Shape::from_brep(&local, tolerance)?;
         let vector = match distance {
             Distance::Explicit(v) => v,
             Distance::Numeric(h) => {

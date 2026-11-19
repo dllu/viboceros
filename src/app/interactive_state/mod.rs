@@ -584,7 +584,7 @@ pub(super) enum InteractiveCommand {
         options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
     },
     ExtrudeSurface {
-        base: Option<Point3>,
+        stage: extrude_surface::Stage,
         options: viboceros_command::extrude_surface::SurfaceExtrusionOptions,
     },
     ExtrudeSurfaceTapered {

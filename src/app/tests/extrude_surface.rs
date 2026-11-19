@@ -1,9 +1,16 @@
 use super::*;
+
+mod distance_preview;
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
 fn surface(app: &mut VibocerosApp) -> ObjectId {
+    surface_at(app, 0., 1.)
+}
+
+fn surface_at(app: &mut VibocerosApp, z: f64, warp: f64) -> ObjectId {
     app.document
         .add_geometry(Geometry::NurbsSurface(
             viboceros_geometry::NurbsSurface::try_new(
@@ -12,10 +19,10 @@ fn surface(app: &mut VibocerosApp) -> ObjectId {
                 2,
                 2,
                 vec![
-                    point(0., 0., 0.),
-                    point(2., 0., 0.),
-                    point(0., 3., 0.),
-                    point(2., 3., 1.),
+                    point(0., 0., z),
+                    point(2., 0., z),
+                    point(0., 3., z),
+                    point(2., 3., z + warp),
                 ],
                 vec![0., 0., 1., 1.],
                 vec![0., 0., 1., 1.],
@@ -61,7 +68,7 @@ fn surface_extrusion_failure_and_stale_sources_keep_the_getter() {
     enter(&mut app, "ExtrudeSrf");
     let active = app.active_command;
     let before = format!("{:?}", app.document);
-    enter(&mut app, "0");
+    enter(&mut app, "w1,1.5,0.5");
     assert_eq!(app.active_command, active);
     assert_eq!(format!("{:?}", app.document), before);
     app.document
@@ -86,8 +93,12 @@ fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
         if numeric {
             enter(&mut app, "2");
         } else {
+            enter(&mut app, "Direction");
             assert!(app.accept_drafting_point(point(1., 2., 3.)));
             assert!(app.accept_drafting_point(point(1., 2., 5.)));
+            assert!(app.active_command.is_some());
+            assert_eq!(app.document.objects().count(), 1);
+            enter(&mut app, "2");
         }
         assert!(app.active_command.is_none());
         assert!(app.document.object(id).is_none());

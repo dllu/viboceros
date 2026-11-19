@@ -4,15 +4,20 @@
 usd-brep's native topology sweep. Build with `--features native-smlib`.
 Trim holes and nonplanar source surfaces remain in the solid's caps.
 
-Start the command, select surface objects and press Enter, then enter a distance
-or pick two direction points. Preselected surfaces and B-rep face components
-also work. At the distance getter, edit `BothSides`, `Solid`, `DeleteInput` or
-`Direction=x,y,z`. Enter `Direction` to restart the two-point direction getter.
-Typed distances accept document units. Two picked points specify displacement;
-the profile stays at its original location. Failed geometry preserves the getter
-and source picks for retry; Esc/Cancel releases the getter without editing geometry.
-Frozen source snapshots prevent a changed face index from silently targeting
-another face.
+Start the command, select surface objects and press Enter, then pick a distance
+point or enter a length in document units. Preselected surfaces and B-rep face
+components also work. The live preview shows the translated rims and walls,
+including cap wires when `Solid=Yes`. The hovered side sets the sign for a
+positive typed length. Type `0` or `w0` to use the active CPlane or world origin.
+In views looking down the extrusion axis, the mouse measures radial distance
+from the guide's screen location. Picks below the guide use the negative side.
+
+Enter `Direction` and pick two points to set the axis, then specify the distance.
+`Direction=x,y,z` sets the axis directly. `SetBasePoint` changes where the
+distance is measured from. Toggle `BothSides`, `Solid` and `DeleteInput` by name
+or set them to `Yes` or `No`. A failed placement keeps the getter and source picks
+available for retry. Esc cancels, and frozen snapshots keep picks tied to the
+original faces.
 
 With selected objects:
 
@@ -34,7 +39,10 @@ Choose typed face selectors when starting the command, before its distance gette
 Initial options are `BothSides=No Solid=Yes DeleteInput=No`. Each selected face
 produces an independent result. Numeric distance uses the native plane normal
 for a planar face, oriented toward its largest positive world component. Curved
-faces use the active CPlane normal. An explicit direction overrides that policy.
+faces use the CPlane normal captured when the interactive command starts. An
+explicit direction overrides that policy. A point gives the signed distance
+along the guide axis through the center of the source bounds or the custom
+base point. The two-point script form supplies the full displacement.
 `BothSides=Yes` extends from minus the displacement to plus the displacement,
 doubling the indicated distance.
 
@@ -55,25 +63,23 @@ on connected sheets. The native plane query classifies NURBS control points with
 decline exact planes. Source geometry is copied before sweep, stitching and
 orientation. Native construction and Rust B-rep transfer both validate results.
 
-Tangential planar extrusion, zero displacement, closed sources without a boundary
-and unsupported native imports decline. Native Rhino's `0`/`w0` origin shortcut,
-ToBoundary, SplitAtTangents control, live extrusion previews, saved native option
-defaults and full native getter/selection behavior remain future work. General
-self-intersection and collapsing/degenerate surface cases need broader
-qualification. No continuous error or comparative performance certificate is
-claimed.
+Tangential planar extrusion, zero displacement, closed sources without a
+boundary and unsupported native imports decline. `ToBoundary`,
+`SplitAtTangents`, remembered distances and saved option defaults remain
+future work. General self-intersection and degenerate surfaces need broader
+qualification.
 
 The Python `surface_extrusion` operation takes an owned `source`, original `face`
 index, `displacement`, `solid` and `both_sides`. Eight independent fixtures cover
-planar, curved, oblique, two-sided, holed, uncapped and box-face inputs. The pending
-Rhino side calls public
-[BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_BrepFace_CreateExtrusion.htm).
-Native SDK capture is still unavailable because of the recorded
-[Wine SSPI startup failure](../oracle-sspi.md); no fresh Rhino capture or full
-parity claim is made. Raw local observations retain volumes, bounds, solid flags
-and face counts; timings include command/document and diagnostic work.
-See [qualification](../surface-extrusion-qualification.json) and
-[Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrf.htm).
+planar, curved, oblique, two-sided, holed, uncapped and box-face inputs.
+The Rhino SDK run measures bounds, volumes, solid flags and face counts.
+[BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/RhinoCommon/html/M_Rhino_Geometry_BrepFace_CreateExtrusion.htm)
+
+Separate private headless command captures cover world and CPlane origins,
+custom base points, direction picks and mouse distance in Front, Top and
+Bottom views. The initial kernel qualification predates these captures.
+[Initial kernel qualification](../surface-extrusion-qualification.json)
+· [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrf.htm)
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_extrusion

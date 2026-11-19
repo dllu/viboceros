@@ -35,6 +35,7 @@ pub(crate) mod direction;
 mod placement;
 pub(crate) mod radius;
 pub(crate) mod surface_apex;
+pub(crate) mod surface_extrusion;
 pub(crate) use cutting::{CutDraft, CutPlan, CutResult, CuttingPreview};
 mod drafting;
 mod paraboloid;
@@ -381,6 +382,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
+    pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
@@ -563,6 +565,7 @@ impl Default for ViewportInput<'_> {
             face_packs: None,
             direction: None,
             surface_apex: None,
+            surface_extrusion: None,
             insert_edges: None,
             insert_mesh: None,
             offset_mesh_preview: None,
@@ -2864,6 +2867,21 @@ impl Viewport {
             ) {
                 painter.line_segment([a, b], Stroke::new(1., Color32::from_gray(130)));
             }
+        }
+        if let Some(preview) = input.surface_extrusion {
+            self.paint_surface_extrusion(
+                &painter,
+                rect,
+                preview,
+                drafting_cursor
+                    .filter(|_| {
+                        !input
+                            .point_filter
+                            .is_some_and(|filter| filter.awaiting_source())
+                    })
+                    .map(|cursor| cursor.point),
+                document.tolerance(),
+            );
         }
         if let Some(draft) = input.surface_apex
             && let Some(apex) = drafting_cursor

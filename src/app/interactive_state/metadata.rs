@@ -367,7 +367,6 @@ impl InteractiveCommand {
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
             | Self::ExtrudeCurveTapered { base: None, .. }
-            | Self::ExtrudeSurface { base: None, .. }
             | Self::ExtrudeSurfaceTapered { base: None, .. }
             | Self::ExtrudeSurfaceToPoint { .. }
             | Self::ExtrudeCurveToPoint { .. }
@@ -400,11 +399,14 @@ impl InteractiveCommand {
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }
             | Self::ExtrudeCurveTapered { base: start, .. }
-            | Self::ExtrudeSurface { base: start, .. }
             | Self::ExtrudeSurfaceTapered { base: start, .. }
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::ExtrudeSurface { stage, .. } => match stage {
+                extrude_surface::Stage::DirectionEnd(point) => Some(point),
+                _ => None,
+            },
             Self::RailRevolve(state) => state.axis_start,
             Self::MirrorThreePoint { points } => match points[1] {
                 Some(point) => Some(point),
