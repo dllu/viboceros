@@ -1,7 +1,10 @@
 //! Cached source boundaries for the live ruled surface-to-point preview.
 use super::{curve_sampling::ViewportCurve, *};
-use std::{cell::RefCell, collections::BTreeMap};
-use viboceros_geometry::{Brep, BrepFace, MeshProjectionIndex};
+use std::{
+    cell::RefCell,
+    collections::{BTreeMap, BTreeSet},
+};
+use viboceros_geometry::{Brep, BrepFace, MeshProjectionIndex, Plane};
 
 #[derive(Debug)]
 pub(crate) struct SurfaceApexDraft {
@@ -25,8 +28,16 @@ struct BoundaryFrame {
 
 #[derive(Debug)]
 struct FaceDraft {
+    walls: Vec<WallDraft>,
+    plane: Option<Plane>,
+}
+
+#[derive(Debug)]
+struct WallDraft {
     rim: Vec<[Point3; 2]>,
-    rulings: Vec<Point3>,
+    corners: [(usize, Point3); 2],
+    endpoints: [Point3; 2],
+    midpoint: Option<Point3>,
 }
 
 impl SurfaceApexDraft {
@@ -35,10 +46,12 @@ impl SurfaceApexDraft {
         let faces = faces
             .iter()
             .filter_map(|&(id, index)| match document.object(id)?.geometry() {
-                Geometry::Brep(brep) => FaceDraft::capture(brep, brep.faces().get(index)?),
+                Geometry::Brep(brep) => {
+                    FaceDraft::capture(brep, brep.faces().get(index)?, tolerance)
+                }
                 Geometry::NurbsSurface(surface) => {
                     let brep = Brep::try_surface_face(surface.clone(), tolerance).ok()?;
-                    FaceDraft::capture(&brep, brep.faces().first()?)
+                    FaceDraft::capture(&brep, brep.faces().first()?, tolerance)
                 }
                 _ => None,
             })
@@ -88,14 +101,14 @@ impl BoundaryDraft {
     ) -> Option<Vec<[Point3; 2]>> {
         let mut edges = Vec::new();
         for face in &source.faces {
-            for &[a, b] in &face.rim {
+            for &[a, b] in face.walls.iter().flat_map(|wall| &wall.rim) {
                 edges.push([a, b]);
                 edges.push([
                     self.project(a, apex, tolerance)?,
                     self.project(b, apex, tolerance)?,
                 ]);
             }
-            for &start in &face.rulings {
+            for start in FaceDraft::rulings(face.walls.iter()) {
                 edges.push([start, self.project(start, apex, tolerance)?]);
             }
         }
@@ -104,7 +117,7 @@ impl BoundaryDraft {
 }
 
 impl FaceDraft {
-    fn capture(brep: &Brep, face: &BrepFace) -> Option<Self> {
+    fn capture(brep: &Brep, face: &BrepFace, tolerance: Tolerance) -> Option<Self> {
         let mut uses = BTreeMap::<usize, usize>::new();
         for edge in face
             .loops()
@@ -114,31 +127,58 @@ impl FaceDraft {
         {
             *uses.entry(edge).or_default() += 1;
         }
-        let mut draft = Self {
-            rim: Vec::new(),
-            rulings: Vec::new(),
-        };
-        let mut corners = std::collections::BTreeSet::new();
         // Same-face seams and singular trims generate no lateral wall.
-        for (index, count) in uses {
-            if count != 1 {
-                continue;
-            }
-            let edge = &brep.edges()[index];
-            corners.extend(edge.vertices());
-            let curve = edge.curve();
-            curve.visit_segments(|a, b| draft.rim.push([a, b]));
-            let parameter = curve.domain();
-            if let Ok(point) = curve.evaluate(parameter.start().midpoint(*parameter.end())) {
-                draft.rulings.push(point);
-            }
-        }
-        draft.rulings.extend(
-            corners
-                .into_iter()
-                .map(|index| brep.vertices()[index].point()),
-        );
-        (!draft.rim.is_empty()).then_some(draft)
+        let walls: Vec<_> = uses
+            .into_iter()
+            .filter(|&(_, count)| count == 1)
+            .filter_map(|(index, _)| {
+                let edge = &brep.edges()[index];
+                let curve = edge.curve();
+                let domain = curve.domain();
+                let corners = edge.vertices().map(|v| (v, brep.vertices()[v].point()));
+                let endpoints = [
+                    curve.evaluate(*domain.start()).unwrap_or(corners[0].1),
+                    curve.evaluate(*domain.end()).unwrap_or(corners[1].1),
+                ];
+                let mut rim = Vec::new();
+                curve.visit_segments(|a, b| rim.push([a, b]));
+                (!rim.is_empty()).then_some(WallDraft {
+                    rim,
+                    corners,
+                    endpoints,
+                    midpoint: curve.evaluate(domain.start().midpoint(*domain.end())).ok(),
+                })
+            })
+            .collect();
+        (!walls.is_empty()).then(|| Self {
+            walls,
+            plane: face.surface().plane(tolerance).ok().flatten(),
+        })
+    }
+
+    fn visible_walls(
+        &self,
+        apex: Point3,
+        tolerance: Tolerance,
+    ) -> impl Iterator<Item = &WallDraft> + Clone {
+        let coplanar = self
+            .plane
+            .and_then(|plane| plane.signed_distance_to(apex).ok())
+            .is_some_and(|distance| distance.abs() <= tolerance.absolute());
+        self.walls.iter().filter(move |wall| {
+            !coplanar
+                || !(wall.endpoints.contains(&apex) || wall.corners.iter().any(|&(_, p)| p == apex))
+        })
+    }
+
+    fn rulings<'a>(walls: impl Iterator<Item = &'a WallDraft>) -> impl Iterator<Item = Point3> {
+        let mut corners = BTreeSet::new();
+        walls.flat_map(move |wall| {
+            let endpoints = wall
+                .corners
+                .map(|(index, point)| corners.insert(index).then_some(point));
+            endpoints.into_iter().flatten().chain(wall.midpoint)
+        })
     }
 }
 
@@ -176,14 +216,15 @@ impl Viewport {
             return;
         }
         for face in &draft.faces {
-            let rulings = face.rulings.iter().map(|&start| [start, apex]);
+            let walls = face.visible_walls(apex, tolerance);
+            let rims = walls.clone().flat_map(|wall| wall.rim.iter().copied());
+            let rulings = FaceDraft::rulings(walls).map(|start| [start, apex]);
             // The halfway section lies on each ruled wall. Averaging finite
             // endpoints this way also handles model coordinates of opposite sign.
-            let section = face
-                .rim
-                .iter()
-                .filter_map(|&[a, b]| Some([a.midpoint(apex).ok()?, b.midpoint(apex).ok()?]));
-            for [a, b] in face.rim.iter().copied().chain(rulings).chain(section) {
+            let section = rims
+                .clone()
+                .filter_map(|[a, b]| Some([a.midpoint(apex).ok()?, b.midpoint(apex).ok()?]));
+            for [a, b] in rims.chain(rulings).chain(section) {
                 if let Some(segment) = self.project_segment(a, b, rect) {
                     painter.line_segment(segment, stroke);
                 }
@@ -191,6 +232,36 @@ impl Viewport {
         }
         if !draft.faces.is_empty() {
             self.paint_draft_points(painter, rect, &[apex]);
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use viboceros_geometry::NurbsSurface;
+
+    #[test]
+    fn surface_apex_preview_omits_walls_at_an_exact_coplanar_endpoint() {
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let tolerance = Tolerance::DEFAULT;
+        let corner = point(0., 0., 0.);
+        let surface = NurbsSurface::try_bilinear([
+            corner,
+            point(2., 0., 0.),
+            point(2., 3., 0.),
+            point(0., 3., 0.),
+        ])
+        .unwrap();
+        let face = Brep::try_surface_face(surface, tolerance).unwrap();
+        let draft = FaceDraft::capture(&face, &face.faces()[0], tolerance).unwrap();
+        assert_eq!(draft.visible_walls(corner, tolerance).count(), 2);
+        for nearby in [
+            point(0., 0., 1e-8),
+            point(1e-8, 1e-8, 0.),
+            point(1., 0., 0.),
+        ] {
+            assert_eq!(draft.visible_walls(nearby, tolerance).count(), 4);
         }
     }
 }

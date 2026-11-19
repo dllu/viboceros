@@ -117,44 +117,6 @@ fn surface_apex_component_source_and_typed_point_commit_one_history_entry() {
     assert!(app.document.object(s).is_none());
 }
 
-#[cfg(feature = "native-smlib")]
-#[test]
-fn surface_apex_coplanar_failure_then_valid_clicked_target_uses_the_same_sources() {
-    let mut app = test_app();
-    let carrier = viboceros_geometry::NurbsSurface::try_new(
-        1,
-        1,
-        2,
-        2,
-        vec![
-            point(0., 0., 0.),
-            point(2., 0., 0.),
-            point(0., 3., 0.),
-            point(2., 3., 0.),
-        ],
-        vec![0., 0., 1., 1.],
-        vec![0., 0., 1., 1.],
-    )
-    .unwrap();
-    let s = app
-        .document
-        .add_geometry(Geometry::NurbsSurface(carrier))
-        .unwrap();
-    app.document
-        .select_objects_direct([s], SelectionMode::Replace)
-        .unwrap();
-    enter(&mut app, "ExtrudeSrfToPoint");
-    let before = format!("{:?}", app.document);
-    assert!(!app.accept_drafting_point(point(1., 1., 0.)));
-    assert_eq!(format!("{:?}", app.document), before);
-    assert!(app.active_command.is_some());
-    assert!(app.surface_extrusion_sources.is_some());
-    assert!(app.accept_drafting_point(point(1., 1.5, 6.)));
-    assert!(app.active_command.is_none());
-    assert!(app.document.object(s).is_some());
-    assert_eq!(app.document.selected_object_count(), 1);
-}
-
 fn planar_apex_source(app: &mut VibocerosApp, z: f64) -> ObjectId {
     let surface = viboceros_geometry::NurbsSurface::try_bilinear([
         point(0., 0., z),
@@ -176,6 +138,15 @@ fn planar_apex_source(app: &mut VibocerosApp, z: f64) -> ObjectId {
 
 #[test]
 fn surface_apex_viewport_uses_the_moving_apex_and_preserves_sources_until_acceptance() {
+    check_surface_apex_viewport(-2.);
+}
+
+#[test]
+fn surface_apex_viewport_accepts_a_coplanar_target() {
+    check_surface_apex_viewport(0.);
+}
+
+fn check_surface_apex_viewport(source_z: f64) {
     use super::circle_preview::{screen_point, viewport_click, viewport_frame};
 
     let mut app = test_app();
@@ -183,7 +154,7 @@ fn surface_apex_viewport_uses_the_moving_apex_and_preserves_sources_until_accept
     app.maximized_viewport = Some(0);
     app.osnap = false;
     app.grid_snap = false;
-    let source = planar_apex_source(&mut app, -2.);
+    let source = planar_apex_source(&mut app, source_z);
     enter(&mut app, "ExtrudeSrfToPoint Solid=Yes");
     assert!(app.active_command.is_some());
     let context = egui::Context::default();
@@ -229,6 +200,12 @@ fn surface_apex_viewport_uses_the_moving_apex_and_preserves_sources_until_accept
                 .any(|vertex| vertex.point().distance_to(_target).unwrap() < 1e-5)
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
+        if source_z == 0. {
+            assert_eq!(brep.faces().len(), 5);
+            assert_eq!(brep.signed_volume(app.document.tolerance()).unwrap(), 0.);
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().count(), 1);
     }
     #[cfg(not(feature = "native-smlib"))]
     {

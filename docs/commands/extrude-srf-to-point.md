@@ -66,11 +66,15 @@ walls. Source geometry stays unchanged. Control-net and face-count limits bound
 construction, and capped output must close as a manifold solid. Commands work
 in coordinates relative to the source before restoring its original position.
 
-Coplanar targets for planar sources, closed sources without a boundary, invalid
-face indices and unsupported imports decline. General self-intersection,
-folding and near-degenerate cases require broader qualification. Hole walls
-meet at a singular apex; this does not establish vertex-manifold or downstream
-meshing guarantees.
+Planar sources accept targets in their plane. Coincident rim and radial edges
+keep separate topology, including when the apex lies on an edge. An apex at a
+wall endpoint or closed seam omits that wall from the result and preview.
+`Solid=Yes` keeps the base. The result can be open or have zero volume.
+When every wall is omitted, `Solid=No` produces a point at the apex. Rhino
+stores that point as a vertex-only B-rep.
+`ToBoundary` requires a sweep with volume. Closed sources without a boundary,
+invalid face indices and unsupported imports decline. General self-intersection,
+folding, and downstream meshing require broader qualification.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,
@@ -84,7 +88,8 @@ preselection and source picking. Rust command and GUI replays check product
 counts, bounds, volumes, retained source identity and Undo/Redo. Selection,
 attributes and full getter equivalence are outside that comparison.
 Private headless Rhino captures also cover mouse input, both origin shortcuts,
-option toggles, and reuse of successful option changes.
+option toggles, reuse of successful option changes, and coplanar points on
+rectangles, annuli, and closed seams.
 Separate `ToBoundary` captures cover planar and warped caps, a circular
 opening, and incomplete section coverage. The command uses a native Boolean
 cut and checks that the source base and boundary cap survive.

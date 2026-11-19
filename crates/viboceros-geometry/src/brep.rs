@@ -48,6 +48,8 @@ use curve_network::build as surface_cut_graph;
 pub use curve_network::planar_curve_network_boundaries;
 pub use curve_network::{PlanarCurveArrangement, PlanarCurveRegion};
 mod edge_split;
+mod face_apex;
+pub use face_apex::CoplanarFaceExtrusion;
 mod face_split;
 mod face_subset;
 mod incidence;

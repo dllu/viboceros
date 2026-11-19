@@ -279,35 +279,29 @@ impl Command for ExtrudeSurfaceToPointCommand {
             |brep, tolerance| {
                 #[cfg(feature = "native-smlib")]
                 {
-                    let zero = Point3::try_new(0., 0., 0.)?;
-                    let origin = brep
-                        .vertices()
-                        .first()
-                        .map(|v| v.point())
-                        .unwrap_or_else(|| brep.bounds().min());
-                    let shift = origin.vector_to(zero)?;
-                    let local =
-                        brep.transformed(AffineTransform3::from_translation(shift), tolerance)?;
-                    let apex = apex.translated(shift)?;
-                    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-                        .extruded_faces_to_point_with_tangents(
+                    let coplanar = if boundary.is_none() {
+                        brep.try_extruded_face_to_coplanar_point(
                             apex,
                             capped,
                             input.options.split_at_tangents,
                             tolerance,
                         )?
-                        .to_brep(tolerance)?;
-                    let result = if let Some(boundary) = &boundary {
-                        let boundary = boundary
-                            .transformed(AffineTransform3::from_translation(shift), tolerance)?;
-                        boundary::truncate(&result, &boundary, apex, tolerance)?
                     } else {
-                        result
+                        None
                     };
-                    let result = result.transformed(
-                        AffineTransform3::from_translation(zero.vector_to(origin)?),
-                        tolerance,
-                    )?;
+                    let result = match coplanar {
+                        Some(viboceros_geometry::CoplanarFaceExtrusion::Brep(brep)) => brep,
+                        Some(viboceros_geometry::CoplanarFaceExtrusion::ApexOnly) => {
+                            return Ok(vec![Geometry::Point(apex)]);
+                        }
+                        None => native_extrusion(
+                            &brep,
+                            apex,
+                            boundary.as_ref(),
+                            input.options,
+                            tolerance,
+                        )?,
+                    };
                     if capped {
                         Ok(vec![Geometry::Brep(result)])
                     } else {
@@ -335,6 +329,43 @@ impl Command for ExtrudeSurfaceToPointCommand {
         };
         Ok(format!("Extruded {count} surface face(s) to the {target}"))
     }
+}
+
+#[cfg(feature = "native-smlib")]
+fn native_extrusion(
+    brep: &Brep,
+    apex: Point3,
+    boundary: Option<&Brep>,
+    options: SurfaceApexOptions,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let origin = brep
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| brep.bounds().min());
+    let shift = AffineTransform3::from_translation(origin.vector_to(zero)?);
+    let local = brep.transformed(shift, tolerance)?;
+    let apex = shift.transform_point(apex)?;
+    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
+        .extruded_faces_to_point_with_tangents(
+            apex,
+            options.solid || boundary.is_some(),
+            options.split_at_tangents,
+            tolerance,
+        )?
+        .to_brep(tolerance)?;
+    let result = if let Some(boundary) = boundary {
+        let boundary = boundary.transformed(shift, tolerance)?;
+        boundary::truncate(&result, &boundary, apex, tolerance)?
+    } else {
+        result
+    };
+    Ok(result.transformed(
+        AffineTransform3::from_translation(zero.vector_to(origin)?),
+        tolerance,
+    )?)
 }
 #[cfg(test)]
 mod tests;
