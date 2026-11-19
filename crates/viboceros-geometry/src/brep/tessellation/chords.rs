@@ -216,7 +216,7 @@ pub(super) fn refine_interior(
         triangles.reserve(original.len() + cuts.len() * 2);
         for triangle in original {
             let mids = triangle_edges(triangle).map(|key| cuts.get(&key).copied());
-            split(triangle, mids, triangles);
+            split(points, triangle, mids, triangles)?;
         }
     }
 }
@@ -248,7 +248,7 @@ fn keep_nondegenerate_cuts(
             children.clear();
             let selected =
                 std::array::from_fn(|i| if mask & (1 << i) != 0 { mids[i] } else { None });
-            split(triangle, selected, &mut children);
+            split(points, triangle, selected, &mut children)?;
             for &child in &children {
                 preserves_topology &= valid(points, child, tolerance)?;
             }
@@ -266,11 +266,16 @@ fn triangle_edges([a, b, c]: [u32; 3]) -> [[u32; 2]; 3] {
     [edge(a, b), edge(b, c), edge(c, a)]
 }
 
-fn split(triangle: [u32; 3], mut mids: [Option<u32>; 3], output: &mut Vec<[u32; 3]>) {
+fn split(
+    points: &[Point3],
+    triangle: [u32; 3],
+    mut mids: [Option<u32>; 3],
+    output: &mut Vec<[u32; 3]>,
+) -> Result<(), GeometryError> {
     let [a, b, c] = triangle;
     if let [Some(ab), Some(bc), Some(ca)] = mids {
         output.extend([[a, ab, ca], [ab, b, bc], [ca, bc, c], [ab, bc, ca]]);
-        return;
+        return Ok(());
     }
     let mut t = triangle;
     // Rotate to place the only split first, or the two splits consecutively.
@@ -282,10 +287,32 @@ fn split(triangle: [u32; 3], mut mids: [Option<u32>; 3], output: &mut Vec<[u32; 
     }
     let [a, b, c] = t;
     match mids {
-        [Some(ab), Some(bc), None] => output.extend([[a, ab, c], [ab, bc, c], [ab, b, bc]]),
+        [Some(ab), Some(bc), None] => {
+            let [pa, pab, pbc, pc] = [a, ab, bc, c].map(|index| points[index as usize]);
+            let alternate = [[a, ab, bc], [a, bc, c]];
+            if pa.distance_to(pbc)? < pab.distance_to(pc)?
+                && crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+                    points,
+                    alternate[0],
+                    Tolerance::MESH_VALIDATION,
+                )?
+                && crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+                    points,
+                    alternate[1],
+                    Tolerance::MESH_VALIDATION,
+                )?
+            {
+                // Select the shorter interior diagonal of the split quad.
+                output.extend(alternate);
+            } else {
+                output.extend([[a, ab, c], [ab, bc, c]]);
+            }
+            output.push([ab, b, bc]);
+        }
         [Some(ab), None, None] => output.extend([[a, ab, c], [ab, b, c]]),
         _ => output.push(triangle),
     }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -339,6 +366,15 @@ mod tests {
         let mut cuts = BTreeMap::from([([0, 1], 3)]);
         keep_nondegenerate_cuts(&points, &[[0, 1, 2], [1, 0, 4]], &mut cuts).unwrap();
         assert!(cuts.is_empty());
+    }
+
+    #[test]
+    fn two_cuts_choose_the_shorter_physical_diagonal() {
+        let points = [[0., 0.], [4., 0.], [3., 5.], [2., 0.], [3.5, 2.5]]
+            .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+        let mut children = Vec::new();
+        split(&points, [0, 1, 2], [Some(3), Some(4), None], &mut children).unwrap();
+        assert_eq!(children, [[0, 3, 4], [0, 4, 2], [3, 1, 4]]);
     }
 
     #[test]
