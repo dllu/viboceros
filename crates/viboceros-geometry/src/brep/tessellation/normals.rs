@@ -1,7 +1,38 @@
 use super::*;
-use crate::{SurfaceTessellation, tessellation::CornerSampler};
+use crate::{SurfaceTessellation, TessellationCorner, tessellation::CornerSampler};
+
+/// A shaded representation with source-face indices and oriented normals.
+pub struct BrepDisplayMesh {
+    pub mesh: TriangleMesh,
+    pub face_sources: Vec<usize>,
+    pub corner_normals: Vec<[Option<UnitVector3>; 3]>,
+}
 
 impl Brep {
+    /// Sample the source normals at the display mesh's own native UV stations.
+    /// Corners without a usable limit, and triangles crossing internal creases
+    /// in a sparse display mesh, return no normal for those corners.
+    pub fn display_mesh_with_normals(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<BrepDisplayMesh, GeometryError> {
+        let (mesh, face_sources, parameters) =
+            self.display_tessellation(samples_per_span, tolerance, true)?;
+        let corner_normals = self.sample_tessellation_corners(
+            &mesh,
+            &face_sources,
+            &parameters,
+            false,
+            |corners| corners.map_or([None; 3], |corners| corners.map(|corner| corner.normal)),
+        )?;
+        Ok(BrepDisplayMesh {
+            mesh,
+            face_sources,
+            corner_normals,
+        })
+    }
+
     pub fn tessellate_with_density(
         &self,
         density: crate::NurbsMeshDensity,
@@ -75,6 +106,21 @@ impl Brep {
         &self,
         (mesh, sources, parameters): (TriangleMesh, Vec<usize>, Vec<Point2>),
     ) -> Result<SurfaceTessellation, GeometryError> {
+        let corners =
+            self.sample_tessellation_corners(&mesh, &sources, &parameters, true, |corners| {
+                corners.expect("crease-aligned tessellation returns its corners")
+            })?;
+        Ok(SurfaceTessellation { mesh, corners })
+    }
+
+    fn sample_tessellation_corners<T>(
+        &self,
+        mesh: &TriangleMesh,
+        sources: &[usize],
+        parameters: &[Point2],
+        require_crease_alignment: bool,
+        convert: impl Fn(Option<[TessellationCorner; 3]>) -> T,
+    ) -> Result<Vec<T>, GeometryError> {
         let frames = self
             .faces
             .iter()
@@ -85,17 +131,27 @@ impl Brep {
             .map(|f| creases::parameters(&f.face.surface))
             .collect::<Vec<_>>();
         let mut corners = Vec::with_capacity(mesh.triangles().len());
-        let sources = mesh.faces().iter().zip(sources).flat_map(|(face, source)| {
-            std::iter::repeat_n(source, if face.is_quad() { 2 } else { 1 })
-        });
+        let sources = mesh
+            .faces()
+            .iter()
+            .zip(sources)
+            .flat_map(|(face, &source)| {
+                std::iter::repeat_n(source, if face.is_quad() { 2 } else { 1 })
+            });
         let mut sampler = CornerSampler::default();
         for (triangle, source) in mesh.triangles().iter().zip(sources) {
-            creases::validate(
-                &parameters,
+            if let Err(error) = creases::validate(
+                parameters,
                 std::slice::from_ref(triangle),
                 &creases[source],
                 source,
-            )?;
+            ) {
+                if require_crease_alignment {
+                    return Err(error);
+                }
+                corners.push(convert(None));
+                continue;
+            }
             let frame = &frames[source];
             let face = frame.face.as_ref();
             let mut samples = sampler.corners(
@@ -108,8 +164,8 @@ impl Brep {
             for sample in &mut samples {
                 sample.uv_origin = frame.origin;
             }
-            corners.push(samples);
+            corners.push(convert(Some(samples)));
         }
-        Ok(SurfaceTessellation { mesh, corners })
+        Ok(corners)
     }
 }

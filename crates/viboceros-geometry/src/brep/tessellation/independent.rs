@@ -75,6 +75,16 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
+        self.display_tessellation(samples_per_span, tolerance, false)
+            .map(|(mesh, sources, _)| (mesh, sources))
+    }
+
+    pub(super) fn display_tessellation(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
         let mut resolution = samples_per_span;
         let spans = self.faces.iter().fold(0usize, |total, face| {
             total.saturating_add(
@@ -111,7 +121,7 @@ impl Brep {
                     false,
                     true,
                     tolerance,
-                    false,
+                    retain_parameters,
                     true,
                 )
                 .or_else(|error| match error {
@@ -125,13 +135,12 @@ impl Brep {
                             false,
                             true,
                             tolerance,
-                            false,
+                            retain_parameters,
                             true,
                         )
                     }
                     _ => Err(error),
-                })
-                .map(|(mesh, sources, _)| (mesh, sources));
+                });
         }
         while resolution > 1
             && spans.saturating_mul(resolution.saturating_add(1).saturating_pow(2))
@@ -140,7 +149,7 @@ impl Brep {
             resolution /= 2;
         }
         loop {
-            match self.display_mesh_at_resolution(resolution, tolerance) {
+            match self.display_mesh_at_resolution(resolution, tolerance, retain_parameters) {
                 Err(GeometryError::TooManyMeshVertices | GeometryError::MeshSubdivisionLimit)
                     if resolution > 1 =>
                 {
@@ -155,8 +164,9 @@ impl Brep {
         &self,
         samples_per_span: usize,
         tolerance: Tolerance,
-    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
-        self.tessellate_impl(samples_per_span, false, false, tolerance, false)
+        retain_parameters: bool,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        self.tessellate_impl(samples_per_span, false, false, tolerance, retain_parameters)
             .or_else(|error| {
                 // Independent UV triangulation does not constrain internal
                 // positional breaks. Never bridge one to obtain a display mesh.
@@ -168,11 +178,10 @@ impl Brep {
                     false,
                     true,
                     tolerance,
-                    false,
+                    retain_parameters,
                     true,
                 )
             })
-            .map(|(mesh, sources, _)| (mesh, sources))
     }
 
     fn has_positional_break(&self) -> bool {
@@ -314,6 +323,7 @@ impl Brep {
         let mut faces = Vec::new();
         let mut face_sources = Vec::new();
         let mut vertex_parameters = Vec::new();
+        let constrain_creases = retain_parameters && !skip_empty_faces;
         for (face_index, face) in self.faces.iter().enumerate() {
             let frame = face.sampling_parameter_frame()?;
             let face = frame.face.as_ref();
@@ -365,7 +375,7 @@ impl Brep {
                         samples_per_span,
                         jagged_seams,
                         tolerance,
-                        retain_parameters,
+                        constrain_creases,
                     )
                 } else {
                     self.tessellate_nonplanar_trimmed_face(
@@ -374,7 +384,7 @@ impl Brep {
                         sampling.with_trim_resolution(samples_per_span),
                         jagged_seams,
                         tolerance,
-                        retain_parameters,
+                        constrain_creases,
                     )
                 }
             };

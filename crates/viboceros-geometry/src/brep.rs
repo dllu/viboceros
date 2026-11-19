@@ -88,6 +88,7 @@ mod surface_grid;
 mod surface_partition;
 pub use solid_orientation::BrepSolidOrientation;
 mod tessellation;
+pub use tessellation::BrepDisplayMesh;
 mod tolerance;
 use tolerance::scaled_tolerance;
 mod reparameterize;

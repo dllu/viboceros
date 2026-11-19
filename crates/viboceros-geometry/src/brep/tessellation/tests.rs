@@ -29,6 +29,16 @@ fn display_mesh_retains_source_face_indices() {
         (0..source.faces().len()).collect()
     );
     assert!(faces.windows(2).all(|pair| pair[0] <= pair[1]));
+    let shaded = source
+        .display_mesh_with_normals(3, Tolerance::DEFAULT)
+        .unwrap();
+    assert_eq!(shaded.mesh, mesh);
+    assert_eq!(shaded.face_sources, faces);
+    assert_eq!(shaded.corner_normals.len(), mesh.triangles().len());
+    for (index, normals) in shaded.corner_normals.into_iter().enumerate() {
+        let outward = mesh.face_normal(index).unwrap();
+        assert_eq!(normals, [Some(outward); 3]);
+    }
 
     let (conforming, sources) = source
         .tessellate_conforming_with_face_sources(2, Tolerance::DEFAULT)

@@ -9,6 +9,7 @@ mod creases;
 mod curvature;
 mod independent;
 mod normals;
+pub use normals::BrepDisplayMesh;
 mod sampling;
 use sampling::{
     SPARSE_MESH_VERTEX_LIMIT, SPARSE_POLYGON_VERTEX_LIMIT, Sampling,

@@ -88,6 +88,7 @@ mod curve_fit;
 mod curve_frame;
 mod curve_hull_index;
 pub use brep::planar_curve_network_boundaries;
+pub use brep::BrepDisplayMesh;
 pub use brep::{PlanarCurveArrangement, PlanarCurveRegion};
 mod curve_two_views;
 pub use curve_two_views::{

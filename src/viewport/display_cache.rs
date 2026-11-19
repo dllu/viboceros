@@ -404,22 +404,54 @@ impl DisplayGeometry {
                         normals: None,
                         face_sources: None,
                     }),
-                Geometry::Brep(brep) => brep
-                    .display_mesh_with_face_sources(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
-                    .ok()
-                    .map(|(mesh, face_sources)| GeneratedDisplayMesh {
-                        mesh,
-                        normals: None,
-                        face_sources: Some(face_sources),
-                    }),
+                Geometry::Brep(brep) => self.brep_display(brep),
                 _ => None,
             })
             .as_ref()
     }
 
+    fn brep_display(&self, brep: &viboceros_geometry::Brep) -> Option<GeneratedDisplayMesh> {
+        if let Ok(display) =
+            brep.display_mesh_with_normals(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+        {
+            let normals = display
+                .corner_normals
+                .into_iter()
+                .enumerate()
+                .map(|(index, corners)| {
+                    let fallback = if corners.iter().any(Option::is_none) {
+                        display.mesh.face_normal(index).ok()
+                    } else {
+                        None
+                    };
+                    corners.map(|normal| {
+                        normal
+                            .or(fallback)
+                            .map_or(NaVector3::z(), |n| NaVector3::new(n.x(), n.y(), n.z()))
+                    })
+                })
+                .collect();
+            return Some(GeneratedDisplayMesh {
+                mesh: display.mesh,
+                normals: Some(normals),
+                face_sources: Some(display.face_sources),
+            });
+        }
+        let (mesh, face_sources) = brep
+            .display_mesh_with_face_sources(SURFACE_SAMPLES_PER_SPAN, self.tolerance)
+            .ok()?;
+        Some(GeneratedDisplayMesh {
+            mesh,
+            normals: None,
+            face_sources: Some(face_sources),
+        })
+    }
+
     pub(super) fn normals(&self) -> &[[NaVector3<Real>; 3]] {
         if self.geometry.archive_render_mesh().is_none()
-            && let Some(normals) = self.generated_mesh().and_then(|mesh| mesh.normals.as_deref())
+            && let Some(normals) = self
+                .generated_mesh()
+                .and_then(|mesh| mesh.normals.as_deref())
         {
             return normals;
         }
