@@ -82,19 +82,35 @@ impl Brep {
             tolerance.relative(),
             tolerance.angular(),
         )?;
+        let mut edge_resolution = vec![samples_per_span; self.edges.len()];
+        if sampling.has_per_face_grids() {
+            edge_resolution.fill(1);
+            for (index, frame) in frames.iter().enumerate() {
+                let grid = sampling.grid(index);
+                for trim in frame.face.loops.iter().flat_map(|boundary| &boundary.trims) {
+                    if let Some(edge) = trim.edge
+                        && self.edges[edge].curve.degree() > 1
+                    {
+                        edge_resolution[edge] = edge_resolution[edge].max(grid[0].max(grid[1]));
+                    }
+                }
+            }
+        }
         let mut stations = self
             .edges
             .iter()
-            .map(|edge| sample_spans(edge.curve.spans(), samples_per_span))
+            .zip(&edge_resolution)
+            .map(|(edge, &resolution)| sample_spans(edge.curve.spans(), resolution))
             .collect::<Result<Vec<_>, _>>()?;
         let mut cusp_edges = vec![false; stations.len()];
         // Preserve p-curve corners even when the shared model-space edge uses
         // a different knot layout or parameterization. Extra samples next to
         // tangent cusps must also be shared by all incident faces.
-        for frame in &frames {
+        for (index, frame) in frames.iter().enumerate() {
             let face = frame.face.as_ref();
+            let [u, v] = sampling.grid(index);
             for boundary in &face.loops {
-                let extra = trim_cusp_stations(face, boundary, samples_per_span)?;
+                let extra = trim_cusp_stations(face, boundary, u.max(v))?;
                 for (i, trim) in boundary.trims.iter().enumerate() {
                     let Some(index) = trim.edge else { continue };
                     let edge = &self.edges[index];

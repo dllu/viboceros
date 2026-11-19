@@ -2,6 +2,7 @@ use super::*;
 mod cusp;
 
 pub(super) const SPARSE_MESH_VERTEX_LIMIT: usize = 2 * 1_048_576;
+pub(super) const SPARSE_POLYGON_VERTEX_LIMIT: usize = 4 * 1_048_576;
 
 #[derive(Clone, Copy)]
 pub(super) struct Sampling<'a> {
@@ -9,6 +10,7 @@ pub(super) struct Sampling<'a> {
     grids: Option<&'a [[usize; 2]]>,
     pub axis_limit: Option<usize>,
     trim_resolution: Option<usize>,
+    vertex_limit: usize,
 }
 impl<'a> Sampling<'a> {
     pub fn uniform(samples: usize) -> Self {
@@ -17,6 +19,7 @@ impl<'a> Sampling<'a> {
             grids: None,
             axis_limit: None,
             trim_resolution: None,
+            vertex_limit: u32::MAX as usize,
         }
     }
     pub fn per_face(grids: &'a [[usize; 2]]) -> Self {
@@ -25,10 +28,16 @@ impl<'a> Sampling<'a> {
             grids: Some(grids),
             axis_limit: None,
             trim_resolution: None,
+            vertex_limit: 1_048_576,
         }
     }
     pub fn with_axis_limit(mut self, limit: usize) -> Self {
         self.axis_limit = Some(limit);
+        self.vertex_limit = SPARSE_MESH_VERTEX_LIMIT;
+        self
+    }
+    pub fn with_vertex_limit(mut self, limit: usize) -> Self {
+        self.vertex_limit = limit;
         self
     }
     pub fn grid(self, face: usize) -> [usize; 2] {
@@ -49,13 +58,10 @@ impl<'a> Sampling<'a> {
         }
     }
     pub fn vertex_limit(self) -> usize {
-        if self.axis_limit.is_some() {
-            SPARSE_MESH_VERTEX_LIMIT
-        } else if self.grids.is_some() {
-            1_048_576
-        } else {
-            u32::MAX as usize
-        }
+        self.vertex_limit
+    }
+    pub fn has_per_face_grids(self) -> bool {
+        self.grids.is_some()
     }
     pub fn uses_sparse_grid(self, face: usize, surface: &NurbsSurface) -> bool {
         self.axis_limit.is_some_and(|limit| {
