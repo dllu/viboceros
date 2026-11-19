@@ -2924,9 +2924,12 @@ impl Viewport {
         }
         if let Some((height, curves)) = input.tapered_extrusion
             && let Some(constraint) = input.translation_constraint
-            && drafting_cursor
-                .and_then(|cursor| surface_extrusion::signed_height(constraint, cursor.point))
-                == Some(height)
+            && drafting_cursor.is_none_or(|cursor| {
+                surface_extrusion::signed_height(constraint, cursor.point).is_some_and(|current| {
+                    current.abs() > document.tolerance().absolute()
+                        && current.is_sign_positive() == height.is_sign_positive()
+                })
+            })
         {
             let mut projected = ProjectedPrimitives::default();
             for curve in curves {

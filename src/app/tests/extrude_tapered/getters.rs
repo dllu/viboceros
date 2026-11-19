@@ -207,13 +207,30 @@ fn tapered_oblique_direction_points_preview_and_commit_the_rhino_rectangle() {
 
 #[test]
 fn tapered_preview_updates_during_motion_and_clears_at_zero_height() {
+    use super::super::circle_preview::{screen_point, viewport_frame};
     use std::time::{Duration, Instant};
 
     for surface in [false, true] {
         let mut app = test_app();
+        app.viewports[0] = Viewport::new(ViewKind::Front);
+        app.maximized_viewport = Some(0);
+        app.osnap = false;
+        app.grid_snap = false;
+        app.smart_track = false;
         let source = raised_profile(&mut app, surface);
         enter(&mut app, command(surface));
         let context = egui::Context::default();
+        viewport_frame(&mut app, &context, vec![]);
+        viewport_frame(&mut app, &context, vec![]);
+        app.viewports[0]
+            .zoom_bounding_box(
+                viboceros_geometry::BoundingBox3::from_points([
+                    point(-3., -5., -4.),
+                    point(9., 9., 8.),
+                ])
+                .unwrap(),
+            )
+            .unwrap();
         let preview_height = |app: &VibocerosApp| {
             let (height, edges) = app
                 .tapered_extrusion_session
@@ -225,10 +242,16 @@ fn tapered_preview_updates_during_motion_and_clears_at_zero_height() {
 
         let deadline = Instant::now() + Duration::from_secs(5);
         for step in 0.. {
-            let height = 1. + 0.001 * f64::from(step);
-            app.update_tapered_extrusion_preview(Some(point(3., 2., 2. + height)), &context);
-            if let Some(preview) = preview_height(&app) {
-                assert!(preview >= 1. && preview < height);
+            let height = 1. + 0.005 * f64::from(step);
+            let pointer = screen_point(&app, point(3., 2., 2. + height));
+            let strokes =
+                viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(pointer)]);
+            if !strokes.is_empty() {
+                let preview = preview_height(&app).unwrap();
+                assert!(
+                    preview >= 0.99 && preview < height - 0.0001,
+                    "{preview} vs {height}"
+                );
                 break;
             }
             assert!(
