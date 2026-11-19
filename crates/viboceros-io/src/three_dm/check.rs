@@ -71,8 +71,15 @@ fn check(geometry: &ThreeDmGeometry, definition_uuid: Option<&CStr>) -> Geometry
                 .and_then(|m| n.checked_add(m))
         })
         .and_then(|n| n.checked_add(payload.geometry_data.len()));
-    if total.is_none_or(|n| n > 256 * 1024 * 1024) {
-        return GeometryCheck::not_checked("Native geometry check payload exceeds 256 MiB");
+    let limit_mib = if matches!(geometry, ThreeDmGeometry::Brep(_)) {
+        512
+    } else {
+        256
+    };
+    if total.is_none_or(|n| n > limit_mib * 1024 * 1024) {
+        return GeometryCheck::not_checked(format!(
+            "Native geometry check payload exceeds {limit_mib} MiB"
+        ));
     }
     let view = ffi::ViboWriteObject {
         object_type: payload.object_type,
