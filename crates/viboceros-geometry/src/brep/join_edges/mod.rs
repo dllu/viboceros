@@ -73,28 +73,45 @@ impl Brep {
         join_distance: Real,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        self.join_edge_pairs_with_budget(pairs, join_distance, tolerance, &mut Budget(MAX_WORK))
+        self.try_join_edge_pairs_with_vertex_distance(
+            pairs,
+            join_distance,
+            join_distance,
+            tolerance,
+        )
     }
 
-    fn join_edge_pairs_with_budget(
+    /// Sew using independent limits for represented curves and stored vertices.
+    /// This allows a replacement to re-use an incumbent vertex displaced by an
+    /// earlier join while enforcing the original distance on the new edge pair.
+    pub fn try_join_edge_pairs_with_vertex_distance(
         &self,
         pairs: &[(usize, usize, bool)],
         join_distance: Real,
+        vertex_distance: Real,
         tolerance: Tolerance,
-        budget: &mut Budget,
     ) -> Result<Self, GeometryError> {
-        self.join_edge_pairs_with_witnesses(pairs, join_distance, tolerance, budget, &[])
+        self.join_edge_pairs_with_witnesses(
+            pairs,
+            join_distance,
+            vertex_distance,
+            tolerance,
+            &mut Budget(MAX_WORK),
+            &[],
+        )
     }
 
     fn join_edge_pairs_with_witnesses(
         &self,
         pairs: &[(usize, usize, bool)],
         join_distance: Real,
+        vertex_distance: Real,
         tolerance: Tolerance,
         budget: &mut Budget,
         witnesses: &[&NurbsCurve],
     ) -> Result<Self, GeometryError> {
         require_nonnegative_finite(join_distance, "B-rep join distance")?;
+        require_nonnegative_finite(vertex_distance, "B-rep vertex join distance")?;
         if pairs.len() > MAX_JOIN_PAIRS {
             return Err(invalid("too many B-rep edge join pairs"));
         }
@@ -160,6 +177,6 @@ impl Brep {
                 })
             })
             .collect::<Result<Vec<_>, _>>()?;
-        topology::assemble(self, pairs, &bounds, join_distance, tolerance)
+        topology::assemble(self, pairs, &bounds, vertex_distance, tolerance)
     }
 }

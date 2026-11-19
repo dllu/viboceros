@@ -182,6 +182,7 @@ pub(super) fn sew_edges(
     document: &mut Document,
     pairs: Vec<(ComponentRef, ComponentRef, bool)>,
     anchor: Option<&str>,
+    vertex_distance: Option<f64>,
 ) -> Result<Value> {
     if pairs.is_empty() {
         return Err("supply at least one B-rep edge pair".into());
@@ -242,7 +243,12 @@ pub(super) fn sew_edges(
     let attributes = document.object(sources[0]).unwrap().attributes().clone();
     let combined = Brep::try_combine(parts, tolerance)?;
     let sewn = combined
-        .try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)
+        .try_join_edge_pairs_with_vertex_distance(
+            &edge_pairs,
+            tolerance.absolute(),
+            vertex_distance.unwrap_or(tolerance.absolute()),
+            tolerance,
+        )
         .map_err(|error| -> SessionError {
             if let GeometryError::UncertifiedBrepEdgePair { pair, .. } = error {
                 let ((a, _), (b, _), _) = picks[pair];

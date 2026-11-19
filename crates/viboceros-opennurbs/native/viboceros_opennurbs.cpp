@@ -8,6 +8,7 @@
 #include "extrusion_codec.h"
 #include "view_camera.h"
 #include "analysis_mesh.h"
+#include "brep_archive_poles.h"
 
 #include <algorithm>
 #include <array>
@@ -1292,6 +1293,9 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error,
   if (!reader.Finished()) {
     error = "B-rep payload has trailing data";
     return nullptr;
+  }
+  if (auto recharted = vibo::try_rechart_roundoff_poles(*brep)) {
+    return recharted.release();
   }
   ON_wString diagnostics;
   ON_TextLog log(diagnostics);
