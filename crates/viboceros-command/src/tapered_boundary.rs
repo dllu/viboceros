@@ -99,7 +99,7 @@ pub(super) fn apply(
     let length = bounds.min().distance_to(bounds.max())?;
     let mut products = Vec::with_capacity(sources.len());
     let mut fallback = false;
-    let mut wrong_side = false;
+    let mut empty_pick = false;
     let mut remove_faces = Vec::new();
     let mut remove_curves = Vec::new();
     for source in sources {
@@ -132,9 +132,9 @@ pub(super) fn apply(
                 }
             }
             Ok(None) => {
-                // A completed viewport pick on the wrong side can consume
-                // the input even though there is no geometry to commit.
-                wrong_side = true;
+                // Some completed picks consume the input without producing
+                // a sweep, while other selected profiles can still cut.
+                empty_pick = true;
                 if options.delete_input {
                     remove_curves.push((source.object, true));
                 }
@@ -165,10 +165,10 @@ pub(super) fn apply(
         retained
             .iter()
             .copied()
-            .filter(|&id| (!fallback && !wrong_side) || id == reference.object),
+            .filter(|&id| (!fallback && !empty_pick) || id == reference.object),
     )?;
     doc.select_command_results(retained)?;
-    Ok(if fallback || wrong_side && count == 0 {
+    Ok(if fallback || empty_pick && count == 0 {
         TaperedBoundaryOutcome::Fallback
     } else {
         TaperedBoundaryOutcome::Cut(count)
@@ -287,7 +287,7 @@ fn extrude(
         && stock.single_face_plane_normal(tolerance)?.is_some();
     // An interactive curve cut starts with the stock shown in the distance
     // getter. The surface command sizes its stock from the combined bounds.
-    let preview_length = if oblique && cutter.faces()[0].surface().plane(tolerance)?.is_some() {
+    let preview_length = if oblique {
         curve.and_then(|source| source.preview.distance)
     } else {
         None
@@ -378,18 +378,20 @@ fn extrude(
                 },
                 preview_distance: curve.and_then(|source| source.preview.distance),
             };
+            let picked = curve.is_some_and(|source| source.preview.pick_offset.is_some());
             if options.solid {
                 oblique::Output::SolidCurve {
                     preview_stock: preview_length.is_some(),
                     walls,
+                    picked,
                 }
             } else {
-                oblique::Output::CurveWalls(walls)
+                oblique::Output::CurveWalls { walls, picked }
             }
         } else {
             oblique::Output::Surface
         };
-        let mut result = oblique::trim(
+        let Some(mut result) = oblique::trim(
             &swept,
             stock,
             &original,
@@ -397,7 +399,10 @@ fn extrude(
             displacement,
             output,
             tolerance,
-        )?;
+        )?
+        else {
+            return Ok(None);
+        };
         result.brep = result.brep.transformed(to_world, tolerance)?;
         return Ok(Some(result));
     }

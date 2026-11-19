@@ -22,8 +22,8 @@ Choose `ToBoundary` at the distance getter and pick the cutter face. Closed
 planar profiles with `Solid=Yes` retain the base and cutter caps. `Solid=No`
 leaves the trimmed walls, and open planar profiles produce sheets. For an
 outward convex line-and-arc profile and a parallel rectangular cutter, the
-cutter must span the section. A planar cutter on a slanted sweep uses the
-viewport distance captured when entering `ToBoundary`. The temporary sweep
+cutter must span the section. A slanted sweep uses the viewport distance
+captured when entering `ToBoundary`. The temporary sweep
 must reach past the cutter. A headless cut uses the combined bounds.
 A viewport pick determines the pull side by its position along the extrusion
 axis from the current base point. This also applies after `SetBasePoint` picks
@@ -34,12 +34,14 @@ its pull points away.
 A slanted sweep with a continuous rim can be cut by a planar or bilinear
 cutter that spans the section. A warped bilinear
 cutter must project one-to-one along the sweep direction. Holes outside the
-cut section leave it intact. For a planar cutter, `Solid=Yes` fills each
-enclosed hole with a separate cap face and `Solid=No` leaves the cut walls.
-A hole that crosses the rim rejects the cut. With a captured viewport distance
-and `Solid=Yes`, the uncut sweep remains, and `DeleteInput=Yes` replaces the
-input curve in the same Undo/Redo step. A successful viewport cut remembers
-its captured distance.
+cut section leave it intact. With `Solid=Yes`, a planar cutter fills each
+enclosed hole with a separate cap face. A warped cutter retains the opening.
+`Solid=No` leaves the cut walls. A hole crossing the rim can leave the
+uncut preview sweep with `Solid=Yes`. With `Solid=No`, a crossing hole
+leaves no sweep. A hole covering the section or a preview that falls short
+can also leave no sweep. `DeleteInput=Yes` removes the curve in the same
+Undo/Redo step after these viewport picks. A successful viewport cut
+remembers its captured distance.
 
 For slanted polyline sweeps with gaps, `Solid=No` keeps the wall at the
 curve's start when the cutter spans the walls. An open polyline produces the
@@ -58,8 +60,7 @@ with gaps, cutter orientation can select the trimmed leading strip or the
 uncut closing strip. With `Solid=Yes`, a closed polygon
 can report a failed cut and retain the base-capped preview stock. The
 captured sweep must reach the cutter before it can leave this result.
-Holes within warped sections and collapsing curved stocks need further
-qualification.
+Collapsing curved stocks need further qualification.
 
 Headless examples, with curves selected:
 

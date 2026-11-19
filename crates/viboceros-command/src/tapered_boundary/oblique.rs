@@ -13,8 +13,12 @@ pub(super) enum Output<'a> {
     SolidCurve {
         preview_stock: bool,
         walls: WallInput<'a>,
+        picked: bool,
     },
-    CurveWalls(WallInput<'a>),
+    CurveWalls {
+        walls: WallInput<'a>,
+        picked: bool,
+    },
 }
 
 pub(super) fn crosses_circular_focal_radius(
@@ -60,29 +64,44 @@ pub(super) fn trim(
     displacement: Vector3,
     output: Output<'_>,
     tolerance: Tolerance,
-) -> Result<Product, CommandError> {
+) -> Result<Option<Product>, CommandError> {
     let source_plane = source.faces()[0]
         .surface()
         .plane(tolerance)?
         .ok_or(REJECTED)?;
+    let picked = matches!(
+        output,
+        Output::SolidCurve { picked: true, .. } | Output::CurveWalls { picked: true, .. }
+    );
+    if picked {
+        let normal = source_plane.normal().as_vector();
+        let toward = normal.scaled(displacement.dot(normal)?.signum())?;
+        let [_, far] = axial_extent(stock.bounds(), toward)?;
+        let [near, _] = axial_extent(cutter.padded_trim_bounds()?, toward)?;
+        if far < near - tolerance.absolute() {
+            return Ok(None);
+        }
+    }
     if has_wall_gap(&stock, source_plane, tolerance)? {
         return match output {
-            Output::Surface => Ok(Product {
+            Output::Surface => Ok(Some(Product {
                 brep: stock,
                 status: ProductStatus::Fallback,
-            }),
-            Output::CurveWalls(walls) => Ok(Product::from_cut(
+            })),
+            Output::CurveWalls { walls, .. } => Ok(Some(Product::from_cut(
                 trim_open(walls, cutter, displacement, tolerance)?,
                 true,
-            )),
-            Output::SolidCurve { walls, .. } if walls.preview_distance.is_some() => Ok(Product {
-                brep: walls::uncut_stock(walls, source, cutter, displacement, tolerance)?,
-                status: ProductStatus::CurvePreviewFallback,
-            }),
+            ))),
+            Output::SolidCurve { walls, .. } if walls.preview_distance.is_some() => {
+                Ok(Some(Product {
+                    brep: walls::uncut_stock(walls, source, cutter, displacement, tolerance)?,
+                    status: ProductStatus::CurvePreviewFallback,
+                }))
+            }
             Output::SolidCurve { .. } => Err(REJECTED),
         };
     }
-    let cap = !matches!(output, Output::CurveWalls(_));
+    let cap = !matches!(output, Output::CurveWalls { .. });
     let brep = if cutter.faces()[0].loops().len() > 1 {
         // Intersect the filled outline first so the actual section rim is
         // available on the cutter's chart, even for a wall-only result.
@@ -99,9 +118,9 @@ pub(super) fn trim(
         let section = closed.faces().last().ok_or(REJECTED)?;
         let planar = section.surface().plane(tolerance)?.is_some();
         let enclosed = match holes::section_holes(cutter, &closed, section, tolerance)? {
-            Some(enclosed) => enclosed,
-            None if planar
-                && matches!(
+            holes::SectionHoles::Enclosed(enclosed) => enclosed,
+            holes::SectionHoles::RimContact
+                if matches!(
                     output,
                     Output::Surface
                         | Output::SolidCurve {
@@ -110,37 +129,40 @@ pub(super) fn trim(
                         }
                 ) =>
             {
-                return Ok(Product {
+                return Ok(Some(Product {
                     brep: stock,
                     status: if matches!(output, Output::Surface) {
                         ProductStatus::Fallback
                     } else {
                         ProductStatus::CurvePreviewFallback
                     },
-                });
+                }));
             }
-            None => return Err(REJECTED),
+            holes::SectionHoles::RimContact | holes::SectionHoles::CoversSection if picked => {
+                return Ok(None);
+            }
+            _ => return Err(REJECTED),
         };
         match output {
-            Output::CurveWalls(_) if planar || enclosed.is_empty() => {
+            Output::CurveWalls { .. } => {
                 let walls = (0..closed.faces().len() - 1)
                     .filter(|&i| !on_plane(closed.faces()[i].surface(), source_plane, tolerance))
                     .collect::<Vec<_>>();
                 closed.sub_brep(&walls, tolerance)?
             }
             _ if enclosed.is_empty() => closed,
-            Output::SolidCurve { .. } if planar => {
-                holes::partition_cap(closed, cutter, &enclosed, tolerance)?
+            Output::SolidCurve { .. } => {
+                holes::trim_cap(closed, cutter, &enclosed, planar, tolerance)?
             }
             _ => return Err(REJECTED),
         }
     } else {
         clip(sweep, &stock, source, cutter, displacement, cap, tolerance)?
     };
-    Ok(Product {
+    Ok(Some(Product {
         brep,
         status: ProductStatus::Cut,
-    })
+    }))
 }
 
 fn clip(

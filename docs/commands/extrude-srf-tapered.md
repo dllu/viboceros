@@ -30,11 +30,11 @@ a separate face at the base. An oblique sweep with gaps between adjacent walls
 retains its base-capped temporary sweep and reports a failed cut. A continuous
 oblique sweep can use a planar cutter or a bilinear cutter that projects
 one-to-one along the sweep direction. The cutter must span the section.
-For an oblique sweep and a planar cutter, an enclosed cutter hole rejects
+For an oblique sweep, an enclosed hole in a planar or warped cutter rejects
 the cut and keeps the getter open for another pick. A crossing hole can leave
-the full temporary sweep and report a failed cut. Holes outside the section
-leave it intact. Holes within warped sections and partial results from
-collapse still need qualification for slanted sweeps.
+the full temporary sweep and report a failed cut while retaining the source.
+Holes outside the section leave it intact. Partial results from collapse
+still need qualification for slanted sweeps.
 
 With source objects selected:
 

@@ -5,14 +5,19 @@ use viboceros_geometry::{BrepLoop, BrepLoopType, BrepTrim, BrepTrimType};
 #[cfg(test)]
 mod tests;
 
-/// Find holes wholly inside the cut section. A contact with a section rim
-/// returns `None`. The two faces use the same cutter parameterization.
+pub(super) enum SectionHoles {
+    Enclosed(Vec<usize>),
+    RimContact,
+    CoversSection,
+}
+
+/// Compare cutter holes with the section on the shared cutter chart.
 pub(super) fn section_holes(
     cutter: &Brep,
     closed: &Brep,
     section: &BrepFace,
     tolerance: Tolerance,
-) -> Result<Option<Vec<usize>>, CommandError> {
+) -> Result<SectionHoles, CommandError> {
     let rims = section
         .loops()
         .iter()
@@ -26,7 +31,7 @@ pub(super) fn section_holes(
             let edge = cutter.edges()[trim.edge().ok_or(REJECTED)?].curve();
             for rim in &rims {
                 if !viboceros_smlib::curve_intersection_events(edge, rim, tolerance)?.is_empty() {
-                    return Ok(None);
+                    return Ok(SectionHoles::RimContact);
                 }
             }
         }
@@ -39,14 +44,14 @@ pub(super) fn section_holes(
         )?;
         for rim in section.loops() {
             if contains_loop_start(&patch, rim, tolerance)? {
-                return Err(REJECTED);
+                return Ok(SectionHoles::CoversSection);
             }
         }
         if contains_loop_start(section, hole, tolerance)? {
             enclosed.push(index);
         }
     }
-    Ok(Some(enclosed))
+    Ok(SectionHoles::Enclosed(enclosed))
 }
 
 fn contains_loop_start(
@@ -59,12 +64,13 @@ fn contains_loop_start(
     face.contains_parameters(point.x(), point.y(), tolerance)
 }
 
-/// Rhino caps a closed curve extrusion again at each enclosed cutter hole,
-/// keeping the extra cap and its shared rim in the resulting solid.
-pub(super) fn partition_cap(
+/// Add enclosed cutter holes on the shared cap chart. Planar cutters also
+/// receive a separate patch for each hole.
+pub(super) fn trim_cap(
     closed: Brep,
     cutter: &Brep,
     holes: &[usize],
+    fill: bool,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
     let mut vertices = closed.vertices().to_vec();
@@ -82,6 +88,11 @@ pub(super) fn partition_cap(
         })
     };
     let mut patches = Vec::with_capacity(holes.len());
+    let trim_type = if fill {
+        BrepTrimType::Mated
+    } else {
+        BrepTrimType::Boundary
+    };
     for &index in holes {
         let hole = &cutter.faces()[0].loops()[index];
         let mut trims = Vec::with_capacity(hole.trims().len());
@@ -102,17 +113,19 @@ pub(super) fn partition_cap(
                 Some(edge),
                 trim.is_reversed_3d(),
                 trim.curve().clone(),
-                BrepTrimType::Mated,
+                trim_type,
                 trim.iso(),
                 trim.tolerance(),
             )?);
         }
         let inner = BrepLoop::try_new(BrepLoopType::Inner, trims)?;
-        patches.push(BrepFace::try_new(
-            cap.surface().clone(),
-            cap.is_reversed(),
-            vec![reversed_inner_loop(&inner)?],
-        )?);
+        if fill {
+            patches.push(BrepFace::try_new(
+                cap.surface().clone(),
+                cap.is_reversed(),
+                vec![reversed_inner_loop(&inner)?],
+            )?);
+        }
         cap_loops.push(inner);
     }
     faces.push(BrepFace::try_new(
@@ -122,7 +135,7 @@ pub(super) fn partition_cap(
     )?);
     faces.extend(patches);
     let result = Brep::try_new(vertices, edges, faces, tolerance)?;
-    if !result.is_solid() {
+    if result.is_solid() != fill {
         return Err(REJECTED);
     }
     Ok(result)

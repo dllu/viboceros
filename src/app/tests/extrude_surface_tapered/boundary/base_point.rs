@@ -1,5 +1,5 @@
 use super::*;
-use crate::app::tests::circle_preview::viewport_click;
+use crate::app::tests::{arc_blend, circle_preview::viewport_click};
 
 #[test]
 fn curve_taper_boundary_pick_resolves_the_pull_side_from_the_base_point() {
@@ -13,18 +13,25 @@ fn curve_taper_boundary_pick_resolves_the_pull_side_from_the_base_point() {
         } else {
             rectangle(&mut app, outer, 5.)
         };
+        let snap_base = point(7., 14.25, 3.);
+        let marker = (!holed).then(|| {
+            app.document
+                .add_geometry(Geometry::Point(snap_base))
+                .unwrap()
+        });
         app.document
             .select_objects_direct([source], SelectionMode::Replace)
             .unwrap();
         app.document.clear_history().unwrap();
-        let context = top_view(&mut app, [point(-12., -10., 0.), point(18., 15., 8.)]);
-        start_boundary(&mut app, &context, holed, !holed);
+        let context = top_view(&mut app, [point(-12., -10., 0.), point(18., 17., 8.)]);
+        let snapped_base = (!holed).then_some(snap_base);
+        start_boundary(&mut app, &context, holed, snapped_base);
         let left = move_pointer(&mut app, &context, point(-8.8, -2., 5.));
         viewport_click(&mut app, &context, left);
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
         assert!(app.command_log.back().unwrap().starts_with("Error: "));
         assert!(app.document.is_selected(cutter));
-        assert_eq!(app.document.objects().len(), if holed { 1 } else { 2 });
+        assert_eq!(app.document.objects().len(), if holed { 1 } else { 3 });
         if holed {
             assert!(app.document.object(source).is_none());
             enter(&mut app, "Undo");
@@ -45,7 +52,7 @@ fn curve_taper_boundary_pick_resolves_the_pull_side_from_the_base_point() {
             .select_objects_direct([source], SelectionMode::Replace)
             .unwrap();
         app.document.clear_history().unwrap();
-        let preview_x = start_boundary(&mut app, &context, true, !holed);
+        let preview_x = start_boundary(&mut app, &context, true, snapped_base);
         let right = move_pointer(&mut app, &context, point(14.4, -2., 5.));
         viewport_click(&mut app, &context, right);
         assert!(app.active_command.is_none(), "{:?}", app.command_log);
@@ -53,7 +60,7 @@ fn curve_taper_boundary_pick_resolves_the_pull_side_from_the_base_point() {
         let Geometry::Brep(piece) = app
             .document
             .objects()
-            .find(|object| object.id() != cutter)
+            .find(|object| object.id() != cutter && Some(object.id()) != marker)
             .unwrap()
             .geometry()
         else {
@@ -90,7 +97,7 @@ fn start_boundary(
     app: &mut VibocerosApp,
     context: &egui::Context,
     delete_input: bool,
-    pick_base: bool,
+    snap_base: Option<Point3>,
 ) -> f64 {
     let delete_input = if delete_input { "Yes" } else { "No" };
     enter(
@@ -100,14 +107,20 @@ fn start_boundary(
         ),
     );
     enter(app, "SetBasePoint");
-    if pick_base {
-        let base = point(7., 1., 3.);
-        assert!(app.handle_viewport_action(ViewportOutput {
-            picked_point: Some(base),
-            ..Default::default()
-        }));
+    if let Some(base) = snap_base {
+        app.grid_snap = false;
+        app.smart_track = false;
+        enter(app, "Point");
+        assert!(app.snaps.model_override.is_some());
+        let viewport_context = egui::Context::default();
+        let (_, rect) = arc_blend::frame(app, &viewport_context, vec![]);
+        let cursor = app.viewports[0].project(base, rect).unwrap();
+        let output = arc_blend::click(app, &viewport_context, cursor);
+        assert_eq!(output.picked_snap.map(|snap| snap.point()), Some(base));
+        assert!(app.handle_viewport_action(output));
         let constraint = app.tapered_distance_constraint().unwrap();
         assert_eq!(constraint.anchor, base);
+        assert!(app.snaps.model_override.is_none());
     } else {
         enter(app, "w7,1,3");
     }
