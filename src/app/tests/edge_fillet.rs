@@ -7,6 +7,7 @@ mod edit;
 mod face_edges;
 mod from_curve;
 mod handle_selection;
+mod placement_input;
 mod previous;
 mod sizes;
 

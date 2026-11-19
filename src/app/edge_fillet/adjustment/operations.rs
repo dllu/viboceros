@@ -63,7 +63,7 @@ impl VibocerosApp {
                 size,
                 entering_size: false,
             } => format!(
-                "Pick locations on the selected edges. {}={size} sets the next size. Enter returns to handle adjustment.",
+                "Click or type a location along a selected edge. {}={size} sets the next size. Enter returns to handle adjustment.",
                 placement_size_option(prompt)
             ),
             HandleOperation::Place {
@@ -165,7 +165,7 @@ impl VibocerosApp {
     pub(in crate::app) fn edge_handle_placement_curves<'a>(
         &self,
         document: &'a Document,
-    ) -> Vec<(ComponentPick, &'a NurbsCurve)> {
+    ) -> Result<Vec<(ComponentPick, &'a NurbsCurve)>, &'static str> {
         if !matches!(
             self.edge_blend_adjustment.operation,
             Some(HandleOperation::Place {
@@ -173,11 +173,11 @@ impl VibocerosApp {
                 ..
             })
         ) {
-            return Vec::new();
+            return Ok(Vec::new());
         }
-        self.component_selection
-            .checked_picks(document)
-            .unwrap_or_default()
+        Ok(self
+            .component_selection
+            .checked_picks(document)?
             .into_iter()
             .filter_map(|pick| {
                 let Geometry::Brep(brep) = document.object(pick.object)?.geometry() else {
@@ -185,7 +185,7 @@ impl VibocerosApp {
                 };
                 Some((pick, brep.edges().get(pick.index)?.curve()))
             })
-            .collect()
+            .collect())
     }
 
     pub(in crate::app) fn edge_handle_mode<'a>(
@@ -249,7 +249,7 @@ impl VibocerosApp {
             };
         }
         let id = match gesture {
-            HandleGesture::Pick(id) | HandleGesture::Place(id) => id,
+            HandleGesture::Pick(id) | HandleGesture::Place { id, .. } => id,
             HandleGesture::Drag { .. } | HandleGesture::Select(..) => return false,
         };
         if !self
@@ -284,7 +284,7 @@ impl VibocerosApp {
                     size,
                     entering_size: false,
                 },
-                HandleGesture::Place(_),
+                HandleGesture::Place { point, .. },
                 HandleLocation::Interior(t),
             ) if 0. < t && t < 1. => {
                 if add_interior_handle(&mut sizes, t, size) {
@@ -292,7 +292,11 @@ impl VibocerosApp {
                         .sizes
                         .insert(id.pick, (source, sizes));
                 }
-                self.pick_edge_size_handle(id)
+                if !self.pick_edge_size_handle(id) {
+                    return false;
+                }
+                self.last_point = Some(point);
+                true
             }
             _ => false,
         }

@@ -10,6 +10,7 @@ use viboceros_command::component_selection::{ComponentAction, current};
 use viboceros_document::GeometrySnapshot;
 
 mod operations;
+mod placement_input;
 mod selection;
 use operations::HandleOperation;
 use selection::HandleSelection;
@@ -488,7 +489,7 @@ impl VibocerosApp {
         let (id, value, finished) = match gesture {
             HandleGesture::Pick(id) => return self.pick_edge_size_handle(id),
             HandleGesture::Select(ids, mode) => return self.select_edge_size_handles(ids, mode),
-            HandleGesture::Place(_) => return false,
+            HandleGesture::Place { .. } => return false,
             HandleGesture::Drag {
                 id,
                 value,

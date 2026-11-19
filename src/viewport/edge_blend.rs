@@ -15,6 +15,21 @@ pub(crate) struct SizeHandleId {
     pub(crate) location: HandleLocation,
 }
 
+impl SizeHandleId {
+    pub(crate) fn at_interior_parameter(
+        pick: ComponentPick,
+        curve: &NurbsCurve,
+        parameter: f64,
+    ) -> Option<Self> {
+        let domain = curve.domain();
+        let fraction = (parameter - domain.start()) / (domain.end() - domain.start());
+        (0. < fraction && fraction < 1.).then_some(Self {
+            pick,
+            location: HandleLocation::Interior(fraction),
+        })
+    }
+}
+
 #[derive(Debug)]
 pub(crate) struct SizeHandle {
     pub(crate) id: SizeHandleId,
@@ -27,7 +42,10 @@ pub(crate) struct SizeHandle {
 pub(crate) enum HandleGesture {
     Pick(SizeHandleId),
     Select(Vec<SizeHandleId>, SelectionMode),
-    Place(SizeHandleId),
+    Place {
+        id: SizeHandleId,
+        point: Point3,
+    },
     Drag {
         id: SizeHandleId,
         value: Option<f64>,
@@ -156,16 +174,14 @@ impl Viewport {
             let Some(pointer) = pointer else {
                 return (None, None);
             };
-            let mut nearest = None::<(f32, f64, SizeHandleId, Pos2)>;
+            let mut nearest = None::<(f32, f64, SizeHandleId, Point3, Pos2)>;
             for &(pick, curve) in edges {
                 let Some(t) = self.pick_edge_parameter(curve, pointer, rect, false) else {
                     continue;
                 };
-                let domain = curve.domain();
-                let fraction = (t - domain.start()) / (domain.end() - domain.start());
-                if !(0. < fraction && fraction < 1.) {
+                let Some(id) = SizeHandleId::at_interior_parameter(pick, curve, t) else {
                     continue;
-                }
+                };
                 let Ok(point) = curve.evaluate(t) else {
                     continue;
                 };
@@ -175,22 +191,14 @@ impl Viewport {
                 let distance = pointer.distance(position);
                 let depth = self.view_depth(point);
                 if distance <= PICK_CAPTURE_PIXELS
-                    && nearest.is_none_or(|(previous, farther, _, _)| {
+                    && nearest.is_none_or(|(previous, farther, ..)| {
                         distance < previous || (distance == previous && depth < farther)
                     })
                 {
-                    nearest = Some((
-                        distance,
-                        depth,
-                        SizeHandleId {
-                            pick,
-                            location: HandleLocation::Interior(fraction),
-                        },
-                        position,
-                    ));
+                    nearest = Some((distance, depth, id, point, position));
                 }
             }
-            if let Some((_, _, id, position)) = nearest {
+            if let Some((_, _, id, point, position)) = nearest {
                 painter.circle_stroke(position, 6., Stroke::new(1.5, SELECTED_COLOR));
                 painter.text(
                     position + Vec2::new(9., -6.),
@@ -199,7 +207,10 @@ impl Viewport {
                     FontId::monospace(11.),
                     SELECTED_COLOR,
                 );
-                return (clicked.then_some(HandleGesture::Place(id)), Some(id));
+                return (
+                    clicked.then_some(HandleGesture::Place { id, point }),
+                    Some(id),
+                );
             }
             return (None, None);
         }

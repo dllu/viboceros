@@ -366,7 +366,9 @@ impl VibocerosApp {
             self.begin_edge_blend_edit(edit.or_else(|| (!options.is_empty()).then_some(options)));
             return true;
         }
-        if self.continue_edge_placement_size(prompt, keyword) {
+        if self.continue_edge_placement_size(prompt, keyword)
+            || self.continue_edge_placement_point(keyword)
+        {
             return true;
         }
         let set_all = option.eq_ignore_ascii_case("SetAll") && prompt.adjusting;

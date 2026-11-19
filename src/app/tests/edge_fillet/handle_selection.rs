@@ -3,7 +3,7 @@ use crate::app::tests::circle_preview::{screen_point, viewport_frame};
 use crate::viewport::edge_blend::{HandleLocation, SizeHandle, SizeHandleId};
 use viboceros_geometry::NurbsCurve;
 
-fn begin(command: &str) -> (VibocerosApp, egui::Context, ComponentPick, ComponentPick) {
+pub(super) fn begin(command: &str) -> (VibocerosApp, egui::Context, ComponentPick, ComponentPick) {
     let mut app = test_app();
     let base = box_pick(&mut app);
     let Geometry::Brep(solid) = app.document.object(base.object).unwrap().geometry() else {
@@ -87,7 +87,7 @@ fn frame(
         .drop_without_applying_deltas();
 }
 
-fn click(
+pub(super) fn click(
     app: &mut VibocerosApp,
     context: &egui::Context,
     pos: egui::Pos2,
@@ -108,7 +108,7 @@ fn ends(pick: ComponentPick) -> [SizeHandleId; 2] {
     [HandleLocation::Start, HandleLocation::End].map(|location| SizeHandleId { pick, location })
 }
 
-fn preview_when(
+pub(super) fn preview_when(
     app: &mut VibocerosApp,
     context: &egui::Context,
     condition: impl Fn(&[NurbsCurve]) -> bool,

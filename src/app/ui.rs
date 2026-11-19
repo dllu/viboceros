@@ -1383,6 +1383,7 @@ impl VibocerosApp {
         };
         let edge_placement_curves = if edge_handle_input {
             self.edge_handle_placement_curves(edge_document)
+                .unwrap_or_default()
         } else {
             Vec::new()
         };
