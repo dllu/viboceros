@@ -1,5 +1,7 @@
 use super::*;
 
+mod slivers;
+
 fn cutter(bounds: [f64; 4], warped: bool) -> NurbsSurface {
     let [left, bottom, right, top] = bounds;
     let corner = |x, y| {
@@ -21,11 +23,19 @@ fn cutter(bounds: [f64; 4], warped: bool) -> NurbsSurface {
     .unwrap()
 }
 
-fn scene(tolerance: Tolerance, support: &NurbsSurface) -> (Document, ObjectId, BoundaryRef) {
+fn scene(
+    tolerance: Tolerance,
+    support: &NurbsSurface,
+    surface: bool,
+) -> (Document, ObjectId, BoundaryRef) {
     let mut doc = Document::new(tolerance);
-    let source = doc
-        .add_geometry(Geometry::NurbsCurve(circle(tolerance)))
-        .unwrap();
+    let curve = circle(tolerance);
+    let profile = if surface {
+        Geometry::Brep(Brep::try_planar_face(&curve, tolerance).unwrap())
+    } else {
+        Geometry::NurbsCurve(curve)
+    };
+    let source = doc.add_geometry(profile).unwrap();
     let object = doc
         .add_geometry(Geometry::NurbsSurface(support.clone()))
         .unwrap();
@@ -98,7 +108,7 @@ fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projec
         ),
     ] {
         let support = cutter(rectangle, warped);
-        let (mut doc, source, reference) = scene(tolerance, &support);
+        let (mut doc, source, reference) = scene(tolerance, &support, false);
         let commands = CommandRegistry::with_builtins();
         let solid = if volume.is_some() { "Yes" } else { "No" };
         assert_eq!(
@@ -167,7 +177,7 @@ fn oblique_boundary_keeps_preview_stock_when_the_cutter_just_crosses_the_rim() {
         (true, [-2., -2.7, 3.1366943817100488, 2.7]),
     ] {
         let support = cutter(bounds, warped);
-        let (mut doc, source, reference) = scene(tolerance, &support);
+        let (mut doc, source, reference) = scene(tolerance, &support, false);
         let commands = CommandRegistry::with_builtins();
         let outcome = pick(
             &mut doc,
@@ -222,7 +232,7 @@ fn oblique_boundary_finishes_cutter_picks_that_miss_the_rim_without_geometry() {
         (true, "Yes", 8, [3.136774381710049, -2.7, 6.5, 2.7]),
     ] {
         let support = cutter(bounds, warped);
-        let (mut doc, source, reference) = scene(tolerance, &support);
+        let (mut doc, source, reference) = scene(tolerance, &support, false);
         let commands = CommandRegistry::with_builtins();
         let outcome = pick(
             &mut doc,
@@ -254,7 +264,7 @@ fn oblique_boundary_finishes_cutter_picks_that_miss_the_rim_without_geometry() {
 fn oblique_boundary_applies_delete_input_when_a_cutter_id_misses_the_rim() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     for (warped, bounds) in [(false, [0.3, -1.2, 1.8, 1.2]), (true, [7., -6., 12., 7.])] {
-        let (mut doc, source, reference) = scene(tolerance, &cutter(bounds, warped));
+        let (mut doc, source, reference) = scene(tolerance, &cutter(bounds, warped), false);
         let commands = CommandRegistry::with_builtins();
         assert!(matches!(
             commands.execute(&mut doc, &format!(

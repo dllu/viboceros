@@ -44,13 +44,27 @@ impl Brep {
         splits: &[(usize, Vec<Real>)],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        self.try_split_edges_at_parameters_with_map(splits, tolerance)
+            .map(|(brep, _)| brep)
+    }
+
+    /// Subdivide edges and return their replacement indices in curve order.
+    /// Each map entry pairs a source edge index with its consecutive pieces.
+    pub fn try_split_edges_at_parameters_with_map(
+        &self,
+        splits: &[(usize, Vec<Real>)],
+        tolerance: Tolerance,
+    ) -> Result<(Self, Vec<(usize, Vec<usize>)>), GeometryError> {
         let ordered = self.edge_split_parameters(splits)?;
         if ordered.is_empty() {
-            return Ok(self.clone());
+            return Ok((self.clone(), Vec::new()));
         }
         let mut result = self.clone();
-        result.split_edge_plan(ordered, None, tolerance)?;
-        Self::try_new(result.vertices, result.edges, result.faces, tolerance)
+        let map = result.split_edge_plan(ordered, None, tolerance)?;
+        Ok((
+            Self::try_new(result.vertices, result.edges, result.faces, tolerance)?,
+            map,
+        ))
     }
 
     fn edge_split_parameters(

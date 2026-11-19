@@ -4,6 +4,7 @@ use crate::curve_intersections::surface_events;
 use viboceros_geometry::CurveSurfaceIntersectionEvent;
 
 mod section;
+mod slivers;
 
 pub(super) use section::{Coverage, recover};
 

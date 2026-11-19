@@ -120,58 +120,78 @@ fn surface_taper_oblique_boundary_completes_a_cut_that_misses_the_rim() {
 }
 
 #[test]
-fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_section() {
+fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_or_shallow_clip() {
     use super::super::super::circle_preview::viewport_click;
 
-    let mut app = test_app();
-    app.document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
-    let profile = circle(&app);
-    let source = app
-        .document
-        .add_geometry(Geometry::NurbsCurve(profile))
-        .unwrap();
-    let support = NurbsSurface::try_bilinear([
-        point(-2., -2.7, 4.941136363636363),
-        point(3.136774381710049, -2.7, 5.222491505907301),
-        point(3.136774381710049, 2.7, 5.493051037468842),
-        point(-2., 2.7, 5.190681818181818),
-    ])
-    .unwrap();
-    let aim = support.evaluate(0.5, 0.012).unwrap();
-    let cutter = app
-        .document
-        .add_geometry(Geometry::NurbsSurface(support))
-        .unwrap();
-    app.document
-        .select_objects_direct([source], SelectionMode::Replace)
-        .unwrap();
-    app.document.clear_history().unwrap();
-    enter(
-        &mut app,
-        "ExtrudeCrvTapered Direction=1,0,6 DraftAngle=8 Solid=Yes DeleteInput=Yes",
-    );
-    let ctx = top_view(&mut app, [point(-5., -10., 0.), point(5., 5., 6.)]);
-    move_pointer(&mut app, &ctx, point(1.832, -8.99, 0.));
-    enter(&mut app, "ToBoundary");
-    assert!(app.picking_tapered_boundary());
-    let cursor = move_pointer(&mut app, &ctx, aim);
-    viewport_click(&mut app, &ctx, cursor);
-    assert!(app.active_command.is_none(), "{:?}", app.command_log);
-    assert!(app.document.object(source).is_none());
-    let Geometry::Brep(result) = app
-        .document
-        .objects()
-        .find(|object| object.id() != cutter)
-        .unwrap()
-        .geometry()
-    else {
-        panic!("expected a cut B-rep");
-    };
-    assert!(result.is_solid());
-    assert_eq!((result.faces().len(), result.edges().len()), (6, 12));
-    enter(&mut app, "Undo");
-    assert!(app.document.is_selected(source));
-    assert_eq!(app.document.objects().len(), 2);
-    enter(&mut app, "Redo");
-    assert!(app.document.object(source).is_none());
+    let lower = -2.287620967290623;
+    for (corners, edges) in [
+        (
+            [
+                point(-2., -2.7, 4.941136363636363),
+                point(3.136774381710049, -2.7, 5.222491505907301),
+                point(3.136774381710049, 2.7, 5.493051037468842),
+                point(-2., 2.7, 5.190681818181818),
+            ],
+            12,
+        ),
+        (
+            [
+                point(-2., lower, 5.),
+                point(3.7, lower, 5.),
+                point(3.7, 2.7, 5.),
+                point(-2., 2.7, 5.),
+            ],
+            14,
+        ),
+    ] {
+        let mut app = test_app();
+        app.document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
+        let profile = circle(&app);
+        let source = app
+            .document
+            .add_geometry(Geometry::NurbsCurve(profile))
+            .unwrap();
+        let support = NurbsSurface::try_bilinear(corners).unwrap();
+        let aim = support.evaluate(0.5, 0.012).unwrap();
+        let cutter = app
+            .document
+            .add_geometry(Geometry::NurbsSurface(support))
+            .unwrap();
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        enter(
+            &mut app,
+            "ExtrudeCrvTapered Direction=1,0,6 DraftAngle=8 Solid=Yes DeleteInput=Yes",
+        );
+        let ctx = top_view(&mut app, [point(-5., -10., 0.), point(5., 5., 6.)]);
+        move_pointer(&mut app, &ctx, point(1.832, -8.99, 0.));
+        enter(&mut app, "ToBoundary");
+        assert!(app.picking_tapered_boundary());
+        let cursor = move_pointer(&mut app, &ctx, aim);
+        viewport_click(&mut app, &ctx, cursor);
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert!(app.document.object(source).is_none());
+        let Geometry::Brep(result) = app
+            .document
+            .objects()
+            .find(|object| object.id() != cutter)
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a cut B-rep");
+        };
+        assert!(result.is_solid());
+        assert_eq!((result.faces().len(), result.edges().len()), (6, edges));
+        assert_eq!(
+            result.edges().iter().any(|edge| edge.tolerance() > 1e-5),
+            edges == 14
+        );
+        enter(&mut app, "Undo");
+        assert!(app.document.is_selected(source));
+        assert_eq!(app.document.objects().len(), 2);
+        enter(&mut app, "Redo");
+        assert!(app.document.object(source).is_none());
+    }
 }
