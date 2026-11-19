@@ -25,7 +25,7 @@ impl NakedEdgeSamples {
     }
 }
 
-fn key(point: Point3) -> [u64; 3] {
+pub(super) fn key(point: Point3) -> [u64; 3] {
     point
         .to_array()
         .map(|x| if x == 0.0 { 0 } else { x.to_bits() })

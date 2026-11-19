@@ -1,4 +1,7 @@
 //! Refine long chords inside a trimmed face without changing shared edges.
+use std::collections::HashSet;
+
+use super::audit::key as vertex_location;
 use super::*;
 
 fn edge(a: u32, b: u32) -> [u32; 2] {
@@ -22,6 +25,7 @@ pub(super) fn refine_interior(
     triangles: &mut Vec<[u32; 3]>,
     chord_height: Real,
     limit: usize,
+    locations: &mut HashSet<[u64; 3]>,
 ) -> Result<(), GeometryError> {
     while parameters.len() < limit {
         let mut edges = triangles
@@ -44,6 +48,9 @@ pub(super) fn refine_interior(
                 continue;
             }
             let point = surface.evaluate(uv.x(), uv.y())?;
+            if locations.contains(&vertex_location(point)) {
+                continue;
+            }
             let error = distance_to_chord(point, points[a], points[b])?;
             if error > chord_height {
                 proposals.push((error, key, uv, point));
@@ -53,6 +60,10 @@ pub(super) fn refine_interior(
             break;
         }
         proposals.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
+        // The final topology welds exactly coincident locations. Two new
+        // splits at the same location can accidentally weld unrelated sides.
+        let mut proposed_locations = HashSet::new();
+        proposals.retain(|&(_, _, _, point)| proposed_locations.insert(vertex_location(point)));
         proposals.truncate(limit - parameters.len());
         let coarse = points.len();
         let mut cuts = BTreeMap::new();
@@ -71,6 +82,7 @@ pub(super) fn refine_interior(
             cuts.insert(key, parameters.len() as u32);
             parameters.push(uv);
             points.push(point);
+            locations.insert(vertex_location(point));
         }
         let original = std::mem::take(triangles);
         triangles.reserve(original.len() + cuts.len() * 2);
@@ -177,12 +189,39 @@ mod tests {
         let mut uv = [[start, 0.], [quarter, 0.], [quarter, 3.], [start, 3.]]
             .map(|[u, v]| Point2::try_new(u, v).unwrap())
             .to_vec();
-        let mut points = uv
+        let mut points: Vec<_> = uv
             .iter()
             .map(|p| surface.evaluate(p.x(), p.y()).unwrap())
             .collect();
         let mut triangles = vec![[0, 1, 2], [0, 2, 3]];
-        refine_interior(&surface, &mut uv, &mut points, &mut triangles, 0.1, 5).unwrap();
+        let mut locations: HashSet<_> = points.iter().copied().map(vertex_location).collect();
+        let shared_location =
+            vertex_location(surface.evaluate(start.midpoint(quarter), 1.5).unwrap());
+        locations.insert(shared_location);
+        refine_interior(
+            &surface,
+            &mut uv,
+            &mut points,
+            &mut triangles,
+            0.1,
+            5,
+            &mut locations,
+        )
+        .unwrap();
+        assert_eq!(uv.len(), 4);
+        assert_eq!(triangles, [[0, 1, 2], [0, 2, 3]]);
+
+        locations.remove(&shared_location);
+        refine_interior(
+            &surface,
+            &mut uv,
+            &mut points,
+            &mut triangles,
+            0.1,
+            5,
+            &mut locations,
+        )
+        .unwrap();
         assert_eq!(uv.len(), 5);
         assert_eq!(triangles.len(), 4);
         assert!(triangles.iter().all(|triangle| triangle.contains(&4)));

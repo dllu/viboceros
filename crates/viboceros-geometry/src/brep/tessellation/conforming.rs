@@ -1,5 +1,8 @@
 //! Conforming triangulation for independently parameterized shared boundaries.
 
+use std::collections::HashSet;
+
+use super::audit::key as vertex_location;
 use super::sampling::trim_cusp_stations;
 use super::trim_image::LiftedTrim;
 use super::*;
@@ -363,6 +366,15 @@ impl Brep {
         let vertex_limit = sampling.vertex_limit().min(u32::MAX as usize);
         let mut remaining = vertex_limit - coarse_vertices;
         let face_allowance = vertex_limit / frames.len();
+        let mut locations = sampling.chord_density.map(|_| {
+            let mut occupied = HashSet::with_capacity(coarse_vertices);
+            occupied.extend(
+                face_meshes
+                    .iter()
+                    .flat_map(|mesh| mesh.points.iter().copied().map(vertex_location)),
+            );
+            occupied
+        });
         for (index, (frame, face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
             let face = frame.face.as_ref();
             let FaceTriangulation {
@@ -371,7 +383,7 @@ impl Brep {
                 triangles: mut face_triangles,
                 chord_height,
             } = face_mesh;
-            if let Some(chord_height) = chord_height {
+            if let (Some(chord_height), Some(locations)) = (chord_height, &mut locations) {
                 // Reserve every coarse face before sharing the remaining
                 // budget among interior chords.
                 let coarse = points.len();
@@ -387,6 +399,7 @@ impl Brep {
                     &mut face_triangles,
                     chord_height,
                     limit,
+                    locations,
                 )?;
                 remaining -= points.len() - coarse;
             }
@@ -411,6 +424,7 @@ impl Brep {
                 }
             }
         }
+        drop(locations);
         let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::MESH_VALIDATION)?;
         if !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)? {
             let topology = mesh.topology();
