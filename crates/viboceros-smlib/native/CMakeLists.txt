@@ -66,6 +66,8 @@ usd_brep_patch_source("${kernel_source}/SmFilletStandardSolver.cpp"
     g2-blend-rail-parameterization "${usd_brep_patched}/SmFilletStandardSolver.cpp")
 usd_brep_patch_source("${kernel_source}/SmFilletCorner.cpp"
     closed-fillet-corner-state "${usd_brep_patched}/SmFilletCorner.cpp")
+usd_brep_patch_source("${usd_brep_patched}/SmFilletCorner.cpp"
+    required-ball-corner "${usd_brep_patched}/SmFilletCornerBall.cpp")
 include("${usd_brep_patches}/usd-brep-circular-fillet-rail-parameters.cmake")
 
 add_library(SMLib STATIC ${KERNEL_SOURCES})

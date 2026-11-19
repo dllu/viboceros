@@ -344,6 +344,7 @@ unsafe extern "C" {
         count: usize,
         radius: f64,
         accuracy: f64,
+        require_ball: c_int,
         error: *mut c_char,
         capacity: usize,
     ) -> c_int;
@@ -826,6 +827,17 @@ impl Solid {
         radius: f64,
         tolerance: Tolerance,
     ) -> Result<Self, Error> {
+        Self::fillet_brep_edges_with_corner(brep, edges, radius, tolerance, false)
+    }
+
+    /// When requested, the fillet executive requires spherical corner patches.
+    pub fn fillet_brep_edges_with_corner(
+        brep: &Brep,
+        edges: &[usize],
+        radius: f64,
+        tolerance: Tolerance,
+        require_ball: bool,
+    ) -> Result<Self, Error> {
         if edges.is_empty()
             || edges.len() > 100000
             || !radius.is_finite()
@@ -843,6 +855,7 @@ impl Solid {
                 edges.len(),
                 radius,
                 accuracy,
+                c_int::from(require_ball),
                 error,
                 capacity,
             )

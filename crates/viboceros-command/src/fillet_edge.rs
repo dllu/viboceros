@@ -3,8 +3,67 @@ use super::*;
 use viboceros_document::GeometrySnapshot;
 #[cfg(test)]
 mod tests;
-const USAGE: &str =
-    "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes";
+const USAGE: &str = "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes [Corner=Automatic|Ball]";
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum FilletCorner {
+    #[default]
+    Automatic,
+    Ball,
+}
+
+impl FilletCorner {
+    pub fn token(self) -> &'static str {
+        match self {
+            Self::Automatic => "Automatic",
+            Self::Ball => "Ball",
+        }
+    }
+
+    fn parse(value: &str) -> Result<Self, CommandError> {
+        if option_name_eq(value, "Automatic") {
+            Ok(Self::Automatic)
+        } else if option_name_eq(value, "Ball") {
+            Ok(Self::Ball)
+        } else {
+            Err(CommandError::Usage(USAGE))
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct FilletOptions {
+    pub radius: Real,
+    pub corner: FilletCorner,
+}
+
+impl Default for FilletOptions {
+    fn default() -> Self {
+        Self {
+            radius: 1.,
+            corner: FilletCorner::Automatic,
+        }
+    }
+}
+
+impl FilletOptions {
+    pub fn update(&mut self, words: &[&str]) -> Result<(), CommandError> {
+        for word in words {
+            if let Some(value) = corner_option(word) {
+                self.corner = FilletCorner::parse(value)?;
+            } else {
+                self.radius = parse_radius(word)?;
+            }
+        }
+        Ok(())
+    }
+}
+
+fn corner_option(word: &str) -> Option<&str> {
+    word.split_once('=')
+        .filter(|(name, _)| option_name_eq(name, "Corner"))
+        .map(|(_, value)| value)
+}
 
 #[derive(Clone, Debug)]
 pub struct EdgeBlendSelection {
@@ -18,21 +77,21 @@ pub struct EdgeBlendSelection {
 pub type FilletEdgeSelection = EdgeBlendSelection;
 #[derive(Clone, Copy, Debug)]
 enum EdgeBlendKind {
-    Fillet,
+    Fillet(FilletCorner),
     Chamfer(crate::chamfer_edge::ChamferRailType),
     Curvature(crate::blend_edge::BlendRailType),
 }
 impl EdgeBlendKind {
     fn usage(self) -> &'static str {
         match self {
-            Self::Fillet => USAGE,
+            Self::Fillet(_) => USAGE,
             Self::Chamfer(_) => crate::chamfer_edge::USAGE,
             Self::Curvature(_) => crate::blend_edge::USAGE,
         }
     }
     fn command(self) -> &'static str {
         match self {
-            Self::Fillet => "FilletEdge",
+            Self::Fillet(_) => "FilletEdge",
             Self::Chamfer(_) => "ChamferEdge",
             Self::Curvature(_) => "BlendEdge",
         }
@@ -44,7 +103,26 @@ impl EdgeBlendSelection {
         picks: impl IntoIterator<Item = (ObjectId, usize)>,
         radius: Real,
     ) -> Result<Self, CommandError> {
-        Self::prepare_blend(document, picks, radius, EdgeBlendKind::Fillet)
+        Self::prepare_fillet(
+            document,
+            picks,
+            FilletOptions {
+                radius,
+                ..Default::default()
+            },
+        )
+    }
+    pub fn prepare_fillet(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize)>,
+        options: FilletOptions,
+    ) -> Result<Self, CommandError> {
+        Self::prepare_blend(
+            document,
+            picks,
+            options.radius,
+            EdgeBlendKind::Fillet(options.corner),
+        )
     }
     pub fn prepare_chamfer(
         document: &Document,
@@ -153,9 +231,13 @@ fn blend(
         tolerance,
     )?;
     let solid = match kind {
-        EdgeBlendKind::Fillet => {
-            viboceros_smlib::Solid::fillet_brep_edges(&local, edges, radius, tolerance)?
-        }
+        EdgeBlendKind::Fillet(corner) => viboceros_smlib::Solid::fillet_brep_edges_with_corner(
+            &local,
+            edges,
+            radius,
+            tolerance,
+            corner == FilletCorner::Ball,
+        )?,
         EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
             let rail = match rail {
                 crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
@@ -187,29 +269,42 @@ impl Command for FilletEdgeCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
-        let radius = if arguments.is_empty() {
-            1.
-        } else if arguments.len() == 1 {
-            parse_radius(arguments[0])?
-        } else {
+        if arguments
+            .iter()
+            .filter(|w| corner_option(w).is_none())
+            .count()
+            > 1
+        {
             return Ok(None);
-        };
+        }
+        let mut options = FilletOptions::default();
+        options.update(arguments)?;
         Ok(Some(ComponentSelectionPrompt {
             command: "FilletEdge",
             kind: ComponentSelectionKind::BrepEdge,
             options: Vec::new(),
             numbers: vec![NumberSelectionOption {
                 name: "Radius",
-                value: radius,
+                value: options.radius,
                 minimum: Real::MIN_POSITIVE,
             }],
         }))
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let mut options = FilletOptions::default();
+        let mut positional = Vec::new();
+        for word in arguments {
+            if let Some(value) = corner_option(word) {
+                options.corner = FilletCorner::parse(value)?;
+            } else {
+                positional.push(*word);
+            }
+        }
+        let arguments = positional.as_slice();
         let Some(first) = arguments.first() else {
             return Err(CommandError::Usage(USAGE));
         };
-        let radius = parse_radius(first)?;
+        options.radius = parse_radius(first)?;
         let mut picks = Vec::new();
         if arguments.len() == 2 && option_name_eq(arguments[1], "All=Yes") {
             for object in document.selected_objects() {
@@ -241,7 +336,8 @@ impl Command for FilletEdgeCommand {
                 }
             }
         }
-        let count = FilletEdgeSelection::prepare(document, picks, radius)?.apply(document)?;
+        let count =
+            FilletEdgeSelection::prepare_fillet(document, picks, options)?.apply(document)?;
         Ok(format!("Filleted edges on {count} object(s)"))
     }
 }
