@@ -87,6 +87,8 @@ are known. Get each edge from `components()`. Set `reversed` to `True` for
 oppositely directed edges. Sewing preserves each face's UV support and
 replaces the input B-reps in one undo step. Use `anchor=object_id` to retain
 the orientation and attributes of a specific input body.
+For a replacement face on an existing seam, `vertex_distance=` can bound
+displacement of previously shared vertices independently from the curve match.
 
 ## Files and images
 

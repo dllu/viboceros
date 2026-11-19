@@ -48,6 +48,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 struct VbSolid {
@@ -915,7 +916,7 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
         }
     }
     vb_validate_boundary_intersections(*solid->value,10*accuracy);
-    solid->source_edges.clear();
+    const auto source_edges = std::exchange(solid->source_edges, {});
     solid->source_faces.clear();
     SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
     const auto cross_section = kind == EdgeBlend::Chamfer ? SM_FSG_LINEAR :
@@ -932,8 +933,16 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
         check(executive.DoFilleting(), "chamfer source edges");
     } else {
         const auto status = executive.DoFillet();
-        if (status != SM_SUCCESS)
-            throw std::runtime_error("Edge blend failed (" + std::to_string(status) + "): " + executive.GetFilletErrorInfo()->m_cComment);
+        if (status != SM_SUCCESS) {
+            const auto *info = executive.GetFilletErrorInfo();
+            auto message = "Edge blend failed (" + std::to_string(status) + "): " + info->m_cComment;
+            if (info->m_pFilletedEdge) {
+                const auto found = std::find(source_edges.begin(), source_edges.end(), info->m_pFilletedEdge);
+                if (found != source_edges.end())
+                    message += " (source edge " + std::to_string(found - source_edges.begin()) + ")";
+            }
+            throw std::runtime_error(message);
+        }
     }
     require(executive.GetFilletErrorInfo()->GetErrorCode() == SM_FILERR_OK,
             "Fillet executive reported an incomplete or failed operation");

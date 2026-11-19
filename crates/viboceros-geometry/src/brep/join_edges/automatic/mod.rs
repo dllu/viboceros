@@ -214,6 +214,7 @@ fn join_with_witnesses(
     let mut joined = combined.join_edge_pairs_with_witnesses(
         &pairs,
         join_distance,
+        join_distance,
         tolerance,
         &mut budget,
         witnesses,

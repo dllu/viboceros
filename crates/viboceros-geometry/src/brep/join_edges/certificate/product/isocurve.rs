@@ -1,5 +1,6 @@
 //! Exact tensor-product isocurves, without rounding their homogeneous controls.
 use super::*;
+const MAX_TENSOR_DEGREE: usize = 16;
 
 #[cfg(test)]
 mod tests;
@@ -64,7 +65,7 @@ impl SurfaceCurve {
                 knots[varying].to_vec(),
             )?)));
         }
-        if degree.iter().any(|p| *p > MAX_DEGREE) {
+        if degree.iter().any(|p| *p > MAX_TENSOR_DEGREE) {
             return Ok(None);
         }
         let span = if left && parameter > *domain.start() {

@@ -288,16 +288,19 @@ class Session:
 
     def sew_brep_edges(
         self, *pairs: tuple[Component, Component, bool], anchor: ObjectLike | None = None,
+        vertex_distance: float | None = None,
     ) -> str:
         """Sew explicit edge pairs and replace their B-reps in one undoable edit.
 
         The boolean is true when the second edge runs opposite the first.
         The result inherits the attributes and orientation of the anchor
         object, or of the first referenced object when omitted.
+        vertex_distance bounds displacement of stored vertices independently
+        from the document tolerance used to match the represented curves.
         """
         return self._request("sew_brep_edges", pairs=[
             (a._ref(), b._ref(), reversed) for a, b, reversed in pairs
-        ], anchor=None if anchor is None else object_id(anchor))
+        ], anchor=None if anchor is None else object_id(anchor), vertex_distance=vertex_distance)
 
     def surface_jets(
         self, obj: ObjectLike, *samples: SurfaceSample | UV, face: int | None = None,

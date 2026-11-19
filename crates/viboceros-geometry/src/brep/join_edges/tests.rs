@@ -24,7 +24,7 @@ fn automatic_assembly_cannot_reset_its_callers_exhausted_work_budget() {
     let snapshot = source.clone();
     let pairs = pairs(&source);
     let error = source
-        .join_edge_pairs_with_budget(&pairs, 0., Tolerance::DEFAULT, &mut Budget(0))
+        .join_edge_pairs_with_witnesses(&pairs, 0., 0., Tolerance::DEFAULT, &mut Budget(0), &[])
         .unwrap_err();
     assert_eq!(error, invalid("B-rep join work budget exceeded"));
     assert_eq!(source, snapshot);
