@@ -52,20 +52,28 @@ pub(in crate::tapered_boundary::oblique) fn recover(
     let mut covered = false;
     let mut uncovered = false;
     let mut gaps = Vec::new();
+    let mut contacts = Vec::new();
     for rim in end.loops() {
         let rim = spans(&section, rim, face, &outline, tolerance)?;
         let outside = !rim.outside.is_empty();
         if rim.inside {
             gaps.extend(rim.outside);
         }
+        contacts.extend(rim.contacts);
         covered |= rim.inside || rim.boundary && !outside;
         uncovered |= outside && !rim.inside;
     }
     let stitched = !gaps.is_empty();
     let section = if !stitched {
-        section
+        if covered && !uncovered && !contacts.is_empty() {
+            section
+                .try_split_edges_at_parameters(&contacts, tolerance)
+                .unwrap_or(section)
+        } else {
+            section
+        }
     } else if !uncovered
-        && let Ok(Some(joined)) = slivers::stitch(&section, &gaps, &outline, tolerance)
+        && let Ok(Some(joined)) = slivers::stitch(&section, &gaps, &contacts, &outline, tolerance)
     {
         joined
     } else {
@@ -108,6 +116,7 @@ struct RimCoverage {
     inside: bool,
     outside: Vec<OutsideSpan>,
     boundary: bool,
+    contacts: Vec<(usize, Vec<f64>)>,
 }
 
 fn spans(
@@ -138,25 +147,39 @@ fn spans(
         }
         limits.sort_unstable_by(f64::total_cmp);
         limits.dedup();
+        let contacts = interior_contacts(curve, &limits, tolerance)?;
+        if !contacts.is_empty() {
+            coverage.contacts.push((edge, contacts));
+        }
         // With the rim split at its contacts on the shared carrier, the
         // interior of each interval stays on one side of the cutter's trim.
         for interval in limits.windows(2) {
             let point = curve.evaluate(interval[0].midpoint(interval[1]))?;
-            if on_outline(outline, point, tolerance)? {
-                coverage.boundary = true;
+            let between_contacts = interval[0] > *domain.start() && interval[1] < *domain.end();
+            let side = if let Some(side) =
+                near_outline(face, outline, point, between_contacts, tolerance)?
+            {
+                side
             } else if contains(face, point, tolerance)? {
-                coverage.inside = true;
+                RimSide::Inside
             } else {
-                if let Some(previous) = coverage.outside.last_mut()
-                    && previous.edge == edge
-                    && previous.domain[1] == interval[0]
-                {
-                    previous.domain[1] = interval[1];
-                } else {
-                    coverage.outside.push(OutsideSpan {
-                        edge,
-                        domain: [interval[0], interval[1]],
-                    });
+                RimSide::Outside
+            };
+            match side {
+                RimSide::OnBoundary => coverage.boundary = true,
+                RimSide::Inside => coverage.inside = true,
+                RimSide::Outside => {
+                    if let Some(previous) = coverage.outside.last_mut()
+                        && previous.edge == edge
+                        && previous.domain[1] == interval[0]
+                    {
+                        previous.domain[1] = interval[1];
+                    } else {
+                        coverage.outside.push(OutsideSpan {
+                            edge,
+                            domain: [interval[0], interval[1]],
+                        });
+                    }
                 }
             }
         }
@@ -164,18 +187,69 @@ fn spans(
     Ok(coverage)
 }
 
-fn on_outline(
-    outline: &[&NurbsCurve],
-    point: Point3,
+fn interior_contacts(
+    curve: &NurbsCurve,
+    limits: &[f64],
     tolerance: Tolerance,
-) -> Result<bool, GeometryError> {
-    for edge in outline {
-        let parameter = edge.closest_parameter(point, tolerance)?;
-        if edge.evaluate(parameter)?.is_near(point, tolerance) {
-            return Ok(true);
+) -> Result<Vec<f64>, GeometryError> {
+    let [start, .., end] = limits else {
+        return Ok(Vec::new());
+    };
+    let mut prior = curve.evaluate(*start)?;
+    let end = curve.evaluate(*end)?;
+    let mut contacts = Vec::new();
+    for &parameter in &limits[1..limits.len() - 1] {
+        let point = curve.evaluate(parameter)?;
+        if !point.is_near(prior, tolerance) && !point.is_near(end, tolerance) {
+            contacts.push(parameter);
+            prior = point;
         }
     }
-    Ok(false)
+    Ok(contacts)
+}
+
+enum RimSide {
+    Inside,
+    OnBoundary,
+    Outside,
+}
+
+fn near_outline(
+    face: &BrepFace,
+    outline: &[&NurbsCurve],
+    point: Point3,
+    between_contacts: bool,
+    tolerance: Tolerance,
+) -> Result<Option<RimSide>, GeometryError> {
+    for (edge, trim) in outline.iter().zip(face.loops()[0].trims()) {
+        let parameter = edge.closest_parameter(point, tolerance)?;
+        let near = edge.evaluate(parameter)?;
+        if !near.is_near(point, tolerance) {
+            continue;
+        }
+        if between_contacts {
+            // Contact tolerance alone can hide a short interval on the
+            // exterior side. The oriented outline distinguishes that clip
+            // from tangency before the replacement edge is certified.
+            let tangent = edge
+                .derivative_at(parameter)?
+                .normalized_nonzero()?
+                .as_vector();
+            let (u, v) = face.surface().closest_parameters(near, tolerance)?;
+            let normal = face.surface().normal_at(u, v)?.as_vector();
+            let inward =
+                normal
+                    .cross(tangent)?
+                    .scaled(if trim.is_reversed_3d() { -1. } else { 1. })?;
+            let roundoff =
+                near.to_array().into_iter().map(f64::abs).fold(1., f64::max) * (64. * f64::EPSILON);
+            if near.vector_to(point)?.dot(inward)? < -roundoff {
+                return Ok(Some(RimSide::Outside));
+            }
+        }
+        return Ok(Some(RimSide::OnBoundary));
+    }
+    Ok(None)
 }
 
 fn contains(face: &BrepFace, point: Point3, tolerance: Tolerance) -> Result<bool, GeometryError> {

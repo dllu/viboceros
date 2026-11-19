@@ -124,15 +124,27 @@ fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_or_shallow_clip() {
     use super::super::super::circle_preview::viewport_click;
 
     let lower = -2.287620967290623;
-    for (corners, edges) in [
+    let tangent = -2.2876659672906228;
+    for (corners, edges, repaired) in [
         (
             [
                 point(-2., -2.7, 4.941136363636363),
-                point(3.136774381710049, -2.7, 5.222491505907301),
-                point(3.136774381710049, 2.7, 5.493051037468842),
+                point(3.136774681710049, -2.7, 5.222491522339118),
+                point(3.136774681710049, 2.7, 5.493051055127932),
                 point(-2., 2.7, 5.190681818181818),
             ],
-            12,
+            13,
+            false,
+        ),
+        (
+            [
+                point(-2., tangent, 5.),
+                point(3.7, tangent, 5.),
+                point(3.7, 2.7, 5.),
+                point(-2., 2.7, 5.),
+            ],
+            13,
+            false,
         ),
         (
             [
@@ -142,6 +154,7 @@ fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_or_shallow_clip() {
                 point(-2., 2.7, 5.),
             ],
             14,
+            true,
         ),
     ] {
         let mut app = test_app();
@@ -186,7 +199,7 @@ fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_or_shallow_clip() {
         assert_eq!((result.faces().len(), result.edges().len()), (6, edges));
         assert_eq!(
             result.edges().iter().any(|edge| edge.tolerance() > 1e-5),
-            edges == 14
+            repaired
         );
         enter(&mut app, "Undo");
         assert!(app.document.is_selected(source));

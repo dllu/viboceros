@@ -21,6 +21,7 @@ struct Replacement {
 pub(super) fn stitch(
     section: &Brep,
     gaps: &[OutsideSpan],
+    contacts: &[(usize, Vec<f64>)],
     outline: &[&NurbsCurve],
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, GeometryError> {
@@ -54,15 +55,21 @@ pub(super) fn stitch(
         replacements.entry(gap.edge).or_default().push(candidate);
     }
 
-    let splits = replacements
-        .iter()
-        .filter_map(|(&edge, replacements)| {
-            let domain = section.edges()[edge].curve().domain();
-            let mut cuts = replacements
+    let mut splits = contacts.iter().cloned().collect::<BTreeMap<_, _>>();
+    for (&edge, repairs) in &replacements {
+        let domain = section.edges()[edge].curve().domain();
+        let cuts = splits.entry(edge).or_default();
+        cuts.retain(|&t| !repairs.iter().any(|r| t > r.domain[0] && t < r.domain[1]));
+        cuts.extend(
+            repairs
                 .iter()
                 .flat_map(|r| r.domain)
-                .filter(|t| *t > *domain.start() && *t < *domain.end())
-                .collect::<Vec<_>>();
+                .filter(|t| *t > *domain.start() && *t < *domain.end()),
+        );
+    }
+    let splits = splits
+        .into_iter()
+        .filter_map(|(edge, mut cuts)| {
             cuts.sort_unstable_by(f64::total_cmp);
             cuts.dedup();
             (!cuts.is_empty()).then_some((edge, cuts))

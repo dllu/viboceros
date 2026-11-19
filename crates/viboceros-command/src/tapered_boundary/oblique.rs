@@ -212,7 +212,11 @@ fn clip(
         .and_then(|stock| stock.map(|stock| stock.to_brep(tolerance)).transpose())
     {
         Ok(Some(clipped)) => clipped,
-        Ok(None) | Err(viboceros_smlib::Error::Kernel(_)) => return Err(REJECTED),
+        Ok(None)
+        | Err(viboceros_smlib::Error::Kernel(_))
+        | Err(viboceros_smlib::Error::Geometry(GeometryError::InvalidBrepTopology { .. })) => {
+            return Err(REJECTED);
+        }
         Err(error) => return Err(error.into()),
     };
     if clipped.faces().len() != stock.faces().len()

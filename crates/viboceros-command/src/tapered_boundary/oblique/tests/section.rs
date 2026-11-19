@@ -1,5 +1,6 @@
 use super::*;
 
+mod contact_edges;
 mod slivers;
 
 fn cutter(bounds: [f64; 4], warped: bool) -> NurbsSurface {
@@ -69,41 +70,47 @@ fn pick(
 #[test]
 fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projected_base() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
-    for (warped, rectangle, expected, volume) in [
+    for (warped, rectangle, expected, volume, edges) in [
         (
             false,
             [-2., -2.7, 3.7, 2.7],
             point(3.1276394018095055, 3., 5.),
             Some(110.25562442847803),
+            Some(12),
         ),
         (
             true,
             [-2., -2.7, 3.7, 2.7],
             point(3.136774381710049, 3., 5.3996199782888965),
             Some(113.9527032624614),
+            Some(12),
         ),
         (
             false,
             [-2., -2.2876659672906228, 3.7, 2.7],
             point(3.1276394018095064, 3., 5.),
             Some(110.25562442776386),
+            Some(13),
         ),
         (
             true,
             [-2., -2.7, 3.136774381710049, 2.7],
             point(3.136774381710049, 3., 5.399619978288897),
             Some(113.9527032637002),
+            None,
         ),
         (
             false,
             [-2., -2.2876659672906228, 3.7, 2.7],
             point(3.1276394018095064, 3., 5.),
             None,
+            Some(13),
         ),
         (
             true,
             [-2., -2.7, 3.136774381710049, 2.7],
             point(3.136774381710049, 3., 5.399619978288898),
+            None,
             None,
         ),
     ] {
@@ -138,7 +145,13 @@ fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projec
             panic!("expected a cut B-rep");
         };
         assert_eq!(result.is_solid(), volume.is_some());
-        assert_eq!(result.edges().len(), 12);
+        if let Some(edges) = edges {
+            assert_eq!(
+                result.edges().len(),
+                edges,
+                "warped={warped}, solid={solid}, {rectangle:?}"
+            );
+        }
         if let Some(volume) = volume {
             assert_eq!(result.faces().len(), 6);
             let cap = result.faces().last().unwrap().surface();
