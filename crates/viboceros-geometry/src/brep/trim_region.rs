@@ -3,7 +3,7 @@ use super::*;
 mod coincident;
 pub(super) use coincident::{canonical_walk, unique_loops};
 mod crossing;
-pub(super) use crossing::triangulate;
+pub(super) use crossing::{doubled_area, triangulate};
 
 pub(super) fn interior_faces(
     triangulation: &ConstrainedDelaunayTriangulation<TrimTriangulationVertex>,
@@ -81,6 +81,14 @@ mod tests {
 
     fn p(x: Real, y: Real) -> Point2 {
         Point2::try_new(x, y).unwrap()
+    }
+
+    #[test]
+    fn triangulation_keeps_a_positive_facet_thinner_than_the_polygon_epsilon() {
+        let points = [p(0., 0.), p(1., 0.), p(1., 1.), p(0., 1.), p(0.5, 1e-15)];
+        let triangles = triangulate_trim_region(&points, &[4]).unwrap().unwrap();
+        assert_eq!(triangles.len(), 4);
+        assert!(triangles.iter().any(|triangle| triangle.contains(&4)));
     }
 
     #[test]

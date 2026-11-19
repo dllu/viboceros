@@ -57,19 +57,7 @@ impl NurbsSurface {
         self.tessellate_grid_with_resolution(counts, true, tolerance, false)
             .map(|(mesh, _)| mesh)
     }
-    pub(crate) fn polygon_mesh_samples_per_span(
-        &self,
-        density: Real,
-        simple_planes: bool,
-        tolerance: Tolerance,
-    ) -> Result<usize, GeometryError> {
-        Ok(self
-            .polygon_mesh_counts(density, simple_planes, tolerance)?
-            .into_iter()
-            .max()
-            .unwrap())
-    }
-    fn polygon_mesh_counts(
+    pub(crate) fn polygon_mesh_counts(
         &self,
         density: Real,
         simple_planes: bool,

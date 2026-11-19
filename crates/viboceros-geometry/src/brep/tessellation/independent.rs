@@ -2,6 +2,9 @@
 
 use super::*;
 
+const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
+const DENSE_GRID_AXIS_LIMIT: usize = 32;
+
 impl Brep {
     /// Tessellates full rectangular and generally trimmed faces.
     ///
@@ -46,9 +49,34 @@ impl Brep {
         tolerance: Tolerance,
     ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
         let mut resolution = samples_per_span;
+        let spans = self.faces.iter().fold(0usize, |total, face| {
+            total.saturating_add(
+                face.surface
+                    .spans_u()
+                    .count()
+                    .saturating_mul(face.surface.spans_v().count()),
+            )
+        });
+        if spans.saturating_mul(4) > DISPLAY_GRID_VERTEX_TARGET && !self.has_positional_break() {
+            let sampling =
+                Sampling::uniform(resolution.min(2)).with_axis_limit(DENSE_GRID_AXIS_LIMIT);
+            return self
+                .tessellate_sampling(sampling, false, true, tolerance, false, true)
+                .map(|(mesh, sources, _)| (mesh, sources));
+        }
+        while resolution > 1
+            && spans.saturating_mul(resolution.saturating_add(1).saturating_pow(2))
+                > DISPLAY_GRID_VERTEX_TARGET
+        {
+            resolution /= 2;
+        }
         loop {
             match self.display_mesh_at_resolution(resolution, tolerance) {
-                Err(GeometryError::TooManyMeshVertices) if resolution > 1 => resolution /= 2,
+                Err(GeometryError::TooManyMeshVertices | GeometryError::MeshSubdivisionLimit)
+                    if resolution > 1 =>
+                {
+                    resolution /= 2
+                }
                 result => return result,
             }
         }
@@ -63,27 +91,8 @@ impl Brep {
             .or_else(|error| {
                 // Independent UV triangulation does not constrain internal
                 // positional breaks. Never bridge one to obtain a display mesh.
-                for face in &self.faces {
-                    for (knots, degree, domain) in [
-                        (
-                            face.surface.knots_u(),
-                            face.surface.degree_u(),
-                            face.surface.domain_u(),
-                        ),
-                        (
-                            face.surface.knots_v(),
-                            face.surface.degree_v(),
-                            face.surface.domain_v(),
-                        ),
-                    ] {
-                        if knots.chunk_by(|a, b| a == b).any(|group| {
-                            group.len() > degree
-                                && group[0] > *domain.start()
-                                && group[0] < *domain.end()
-                        }) {
-                            return Err(error);
-                        }
-                    }
+                if self.has_positional_break() {
+                    return Err(error);
                 }
                 self.tessellate_sampling(
                     Sampling::uniform(samples_per_span),
@@ -95,6 +104,22 @@ impl Brep {
                 )
             })
             .map(|(mesh, sources, _)| (mesh, sources))
+    }
+
+    fn has_positional_break(&self) -> bool {
+        self.faces.iter().any(|face| {
+            let surface = &face.surface;
+            [
+                (surface.knots_u(), surface.degree_u(), surface.domain_u()),
+                (surface.knots_v(), surface.degree_v(), surface.domain_v()),
+            ]
+            .into_iter()
+            .any(|(knots, degree, domain)| {
+                knots
+                    .chunk_by(|a, b| a == b)
+                    .any(|g| g.len() > degree && g[0] > *domain.start() && g[0] < *domain.end())
+            })
+        })
     }
 
     /// Creates one editable triangle/quad mesh for this B-rep.
@@ -113,17 +138,46 @@ impl Brep {
         jagged_seams: bool,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        let samples_per_span = self
+        let grids = self
             .faces
             .iter()
             .map(|face| {
                 face.sampling_parameter_frame()?
                     .face
                     .surface
-                    .polygon_mesh_samples_per_span(density, simple_planes, tolerance)
+                    .polygon_mesh_counts(density, simple_planes, tolerance)
             })
-            .collect::<Result<Vec<_>, _>>()?
+            .collect::<Result<Vec<_>, _>>()?;
+        if jagged_seams {
+            let sampling = Sampling::per_face(&grids);
+            return self
+                .tessellate_sampling(sampling, true, true, tolerance, false, false)
+                .or_else(|error| {
+                    if density == 0.
+                        && !self.has_positional_break()
+                        && matches!(
+                            error,
+                            GeometryError::MeshSubdivisionLimit
+                                | GeometryError::TooManyMeshVertices
+                        )
+                    {
+                        self.tessellate_sampling(
+                            sampling.with_axis_limit(DENSE_GRID_AXIS_LIMIT),
+                            true,
+                            true,
+                            tolerance,
+                            false,
+                            false,
+                        )
+                    } else {
+                        Err(error)
+                    }
+                })
+                .map(|(mesh, _, _)| mesh);
+        }
+        let samples_per_span = grids
             .into_iter()
+            .flatten()
             .max()
             .expect("a validated B-rep has at least one face");
         // A B-rep currently needs one common resolution for seam stitching.
@@ -176,8 +230,7 @@ impl Brep {
         skip_empty_faces: bool,
     ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
         sampling.validate(&self.faces)?;
-        let samples_per_span = sampling.edge;
-        if samples_per_span == 0 {
+        if sampling.edge == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
         let mut vertices = Vec::new();
@@ -188,8 +241,10 @@ impl Brep {
             let frame = face.sampling_parameter_frame()?;
             let face = frame.face.as_ref();
             let resolution = sampling.grid(face_index);
-            let piece = (|| {
-                if face_covers_full_surface_domain(face, tolerance)? {
+            let samples_per_span = sampling.edge_resolution(face_index, jagged_seams);
+            let sparse = sampling.uses_sparse_grid(face_index, &face.surface);
+            let tessellate_face = |samples_per_span| {
+                if !sparse && face_covers_full_surface_domain(face, tolerance)? {
                     let (surface_mesh, parameters) = face.surface.tessellate_grid_with_resolution(
                         resolution,
                         preserve_quads,
@@ -214,7 +269,9 @@ impl Brep {
                         )?,
                         parameters,
                     ))
-                } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
+                } else if !sparse
+                    && let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)?
+                {
                     let surface = face
                         .surface
                         .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
@@ -237,13 +294,29 @@ impl Brep {
                     self.tessellate_nonplanar_trimmed_face(
                         face_index,
                         face,
-                        sampling,
+                        sampling.with_trim_resolution(samples_per_span),
                         jagged_seams,
                         tolerance,
                         retain_parameters,
                     )
                 }
-            })();
+            };
+            let mut piece = tessellate_face(samples_per_span);
+            // A coarse chord may cross another real trim even though the
+            // underlying curves are disjoint. Retry only the affected face
+            // when its mesh is allowed to keep independent boundary samples.
+            if jagged_seams {
+                let mut refined = samples_per_span;
+                while refined < 8
+                    && matches!(
+                        piece,
+                        Err(GeometryError::UnsupportedBrepTrimTessellation { .. })
+                    )
+                {
+                    refined = (2 * refined).min(8);
+                    piece = tessellate_face(refined);
+                }
+            }
             let (mesh, parameters) = match piece {
                 // A collapsed face can retain wire geometry. Its neighbors
                 // still contribute to the display mesh.
@@ -281,7 +354,7 @@ impl Brep {
         }
         let mesh = TriangleMesh::try_new_faces(vertices, faces, Tolerance::MESH_VALIDATION)?;
         if !jagged_seams
-            && !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)?
+            && !self.mesh_boundary_conforms(&mesh, &face_sources, sampling.edge, tolerance)?
         {
             return self.tessellate_conforming_sampling(sampling, tolerance, retain_parameters);
         }
@@ -300,7 +373,9 @@ impl Brep {
         let mut sampled_loops = face
             .loops
             .iter()
-            .map(|face_loop| sample_trim_loop(face_loop, samples_per_span))
+            .map(|face_loop| {
+                trim_chart_samples(face, face_loop, samples_per_span, jagged_seams, tolerance)
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let (parameters, boundary_vertex_count, triangles) = if sampled_loops.len() == 1 {
             let mut parameters = sampled_loops.pop().expect("one sampled trim loop exists");
@@ -360,11 +435,13 @@ impl Brep {
         tolerance: Tolerance,
         retain_parameters: bool,
     ) -> Result<(TriangleMesh, Vec<Point2>), GeometryError> {
-        let samples_per_span = sampling.edge;
+        let samples_per_span = sampling.edge_resolution(face_index, jagged_seams);
         let sampled_loops = face
             .loops
             .iter()
-            .map(|face_loop| sample_trim_loop(face_loop, samples_per_span))
+            .map(|face_loop| {
+                trim_chart_samples(face, face_loop, samples_per_span, jagged_seams, tolerance)
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
         let mut parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
@@ -374,6 +451,7 @@ impl Brep {
             &loop_lengths,
             &face.surface,
             sampling.grid(face_index),
+            sampling.axis_limit,
         )?;
         let triangles = if retain_parameters {
             creases::triangulate(&mut parameters, &loop_lengths, &face.surface, face_index)?

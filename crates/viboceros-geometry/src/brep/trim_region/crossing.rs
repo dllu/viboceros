@@ -181,7 +181,10 @@ pub(in crate::brep) fn triangulate(
 // Crossing recovery can introduce valid thin facets in a much larger connected
 // region. The polygon's global epsilon is not a minimum triangle area. Resolve
 // cancellation from the original binary64 coordinates before accepting them.
-fn doubled_area(p: [[Real; 2]; 3], epsilon: Real) -> Result<Real, GeometryError> {
+pub(in crate::brep) fn doubled_area(
+    p: [[Real; 2]; 3],
+    epsilon: Real,
+) -> Result<Real, GeometryError> {
     let fast = polygon_cross(p[0], p[1], p[2]);
     if fast > epsilon {
         return Ok(fast);

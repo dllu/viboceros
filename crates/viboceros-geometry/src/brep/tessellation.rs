@@ -10,7 +10,7 @@ mod curvature;
 mod independent;
 mod normals;
 mod sampling;
-use sampling::Sampling;
+use sampling::{Sampling, append_trimmed_surface_grid_parameters, trim_chart_samples};
 
 #[cfg(test)]
 mod tests;
