@@ -51,6 +51,7 @@ pub(super) struct Session {
     plane: Frame3,
     base: Option<Point3>,
     hover: Option<f64>,
+    boundary_preview: Option<f64>,
     preview: preview::Preview,
 }
 
@@ -117,6 +118,7 @@ impl VibocerosApp {
             plane: self.viewports[self.active_viewport].construction_plane(),
             base: None,
             hover: None,
+            boundary_preview: None,
             preview: preview::Preview::default(),
         });
         self.command_input.clear();
@@ -354,11 +356,8 @@ impl VibocerosApp {
 
     pub(super) fn update_tapered_hover(&mut self, point: Option<Point3>) -> Option<f64> {
         let height = signed_height(self.tapered_distance_constraint()?, point?)?;
-        if height.abs() <= self.document.tolerance().absolute() {
-            return None;
-        }
         self.tapered_extrusion_session.as_mut()?.hover = Some(height);
-        Some(height)
+        (height.abs() > self.document.tolerance().absolute()).then_some(height)
     }
 
     fn accept_tapered_length(
@@ -371,6 +370,7 @@ impl VibocerosApp {
             .tapered_extrusion_session
             .as_ref()
             .and_then(|session| session.hover)
+            .filter(|height| height.abs() > self.document.tolerance().absolute())
             .map_or(1., f64::signum);
         let committed = self.finish_tapered_extrusion(surface, distance * sign, options);
         if committed {

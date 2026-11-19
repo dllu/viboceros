@@ -22,15 +22,20 @@ Choose `ToBoundary` at the distance getter and pick the cutter face. Closed
 planar profiles with `Solid=Yes` retain the base and cutter caps. `Solid=No`
 leaves the trimmed walls, and open planar profiles produce sheets. For an
 outward convex line-and-arc profile and a parallel rectangular cutter, the
-cutter must span the section. Other cuts use a temporary taper whose length
-comes from the combined bounds. A slanted sweep with a continuous rim can be
-cut by a planar or bilinear cutter that spans the section. A warped bilinear
+cutter must span the section. A planar cutter on a slanted sweep uses the
+viewport distance captured when entering `ToBoundary`. The temporary sweep
+must reach past the cutter. A headless cut uses the combined bounds.
+A slanted sweep with a continuous rim can be cut by a planar or bilinear
+cutter that spans the section. A warped bilinear
 cutter must project one-to-one along the sweep direction. Holes outside the
 cut section leave it intact. For a planar cutter, `Solid=Yes` fills each
 enclosed hole with a separate cap face and `Solid=No` leaves the cut walls.
-A hole that crosses the rim rejects the cut. Rhino's cursor-dependent
-fallback for that case, holes within warped sections, and partial results
-from gapped or collapsing slanted sweeps remain open.
+A hole that crosses the rim rejects the cut. With a captured viewport distance
+and `Solid=Yes`, the uncut sweep remains, and `DeleteInput=Yes` replaces the
+input curve in the same Undo/Redo step. A successful viewport cut remembers
+its captured distance. Off-plane base-point cases, holes within warped
+sections, and partial results from gapped or collapsing slanted sweeps need
+further qualification.
 
 Headless examples, with curves selected:
 

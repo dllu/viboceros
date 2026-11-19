@@ -7,7 +7,7 @@ mod holes;
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Output {
     Surface,
-    SolidCurve,
+    SolidCurve { preview_stock: bool },
     CurveWalls,
 }
 
@@ -31,11 +31,7 @@ pub(super) fn crosses_circular_focal_radius(
     Ok(inset >= radius * cosine * cosine - tolerance.absolute())
 }
 
-fn has_wall_gap(
-    stock: &Brep,
-    base: Plane,
-    tolerance: Tolerance,
-) -> Result<bool, CommandError> {
+fn has_wall_gap(stock: &Brep, base: Plane, tolerance: Tolerance) -> Result<bool, CommandError> {
     for edge in naked_edges(stock) {
         for vertex in edge.vertices() {
             if base
@@ -67,7 +63,7 @@ pub(super) fn trim(
         return if output == Output::Surface {
             Ok(Product {
                 brep: stock,
-                reached_boundary: false,
+                status: ProductStatus::Fallback,
             })
         } else {
             Err(REJECTED)
@@ -91,10 +87,22 @@ pub(super) fn trim(
         let planar = section.surface().plane(tolerance)?.is_some();
         let enclosed = match holes::section_holes(cutter, &closed, section, tolerance)? {
             Some(enclosed) => enclosed,
-            None if planar && output == Output::Surface => {
+            None if planar
+                && matches!(
+                    output,
+                    Output::Surface
+                        | Output::SolidCurve {
+                            preview_stock: true
+                        }
+                ) =>
+            {
                 return Ok(Product {
                     brep: stock,
-                    reached_boundary: false,
+                    status: if output == Output::Surface {
+                        ProductStatus::Fallback
+                    } else {
+                        ProductStatus::CurvePreviewFallback
+                    },
                 });
             }
             None => return Err(REJECTED),
@@ -107,7 +115,7 @@ pub(super) fn trim(
                 closed.sub_brep(&walls, tolerance)?
             }
             _ if enclosed.is_empty() => closed,
-            Output::SolidCurve if planar => {
+            Output::SolidCurve { .. } if planar => {
                 holes::partition_cap(closed, cutter, &enclosed, tolerance)?
             }
             _ => return Err(REJECTED),
@@ -117,7 +125,7 @@ pub(super) fn trim(
     };
     Ok(Product {
         brep,
-        reached_boundary: true,
+        status: ProductStatus::Cut,
     })
 }
 

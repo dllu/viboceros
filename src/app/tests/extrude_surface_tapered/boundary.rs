@@ -230,7 +230,7 @@ fn surface_taper_oblique_boundary_direction_and_viewport_click_close_the_disk() 
 
 #[test]
 fn surface_taper_oblique_boundary_viewport_retries_after_an_enclosed_cutter_hole() {
-    use viboceros_geometry::{Brep, Circle3, Polyline3, UnitVector3};
+    use viboceros_geometry::{Brep, Circle3, UnitVector3};
 
     let mut app = test_app();
     let tolerance = app.document.tolerance();
@@ -249,41 +249,11 @@ fn surface_taper_oblique_boundary_viewport_retries_after_an_enclosed_cutter_hole
             Brep::try_planar_face(&circle, tolerance).unwrap(),
         ))
         .unwrap();
-    let outline = |[x, y, xx, yy]: [f64; 4], z| {
-        Polyline3::try_new(
-            vec![
-                point(x, y, z),
-                point(xx, y, z),
-                point(xx, yy, z),
-                point(x, yy, z),
-                point(x, y, z),
-            ],
-            tolerance,
-        )
-        .unwrap()
-        .to_nurbs()
-        .unwrap()
-    };
-    let mut cutters = Vec::new();
-    for (outer, hole, height) in [
+    let cutters = [
         ([-9., -9., 15., 13.], [0.8, -0.25, 1.3, 0.25], 5.),
         ([-7., -8., 16., 12.], [7., -0.25, 8., 0.25], 4.),
-    ] {
-        let face = Brep::try_planar_face_with_holes(
-            &outline(outer, height),
-            &[outline(hole, height)],
-            tolerance,
-        )
-        .unwrap()
-        .try_split_kinky_edges(&[0, 1], tolerance.angular(), tolerance)
-        .unwrap()
-        .unwrap();
-        let chart = face.faces()[0].surface().clone();
-        cutters.push((
-            app.document.add_geometry(Geometry::Brep(face)).unwrap(),
-            chart,
-        ));
-    }
+    ]
+    .map(|(outer, hole, height)| holed_rectangle(&mut app, outer, hole, height));
     app.document
         .select_objects_direct([source], SelectionMode::Replace)
         .unwrap();
@@ -329,8 +299,124 @@ fn surface_taper_oblique_boundary_viewport_retries_after_an_enclosed_cutter_hole
     assert!(app.document.object(source).is_none());
 }
 
+fn holed_rectangle(
+    app: &mut VibocerosApp,
+    outer: [f64; 4],
+    hole: [f64; 4],
+    z: f64,
+) -> (ObjectId, NurbsSurface) {
+    use viboceros_geometry::{Brep, Polyline3};
+    let tolerance = app.document.tolerance();
+    let outline = |[x, y, xx, yy]: [f64; 4]| {
+        Polyline3::try_new(
+            vec![
+                point(x, y, z),
+                point(xx, y, z),
+                point(xx, yy, z),
+                point(x, yy, z),
+                point(x, y, z),
+            ],
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let face = Brep::try_planar_face_with_holes(&outline(outer), &[outline(hole)], tolerance)
+        .unwrap()
+        .try_split_kinky_edges(&[0, 1], tolerance.angular(), tolerance)
+        .unwrap()
+        .unwrap();
+    let chart = face.faces()[0].surface().clone();
+    (
+        app.document.add_geometry(Geometry::Brep(face)).unwrap(),
+        chart,
+    )
+}
+
+#[test]
+fn curve_taper_boundary_freezes_the_preview_distance_before_viewport_pick() {
+    use super::super::circle_preview::viewport_click;
+
+    let mut app = test_app();
+    enter(&mut app, "Circle 0,0,0 3");
+    let source = app.document.objects().next().unwrap().id();
+    let (cutter, _) = holed_rectangle(&mut app, [-9., -9., 15., 13.], [4.45, -0.25, 5.1, 0.25], 5.);
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeCrvTapered Direction=1,0,6 DraftAngle=-10 Solid=Yes DeleteInput=Yes",
+    );
+    enter(&mut app, "SetBasePoint");
+    enter(&mut app, "w2,0,0");
+    let ctx = top_view(&mut app, [point(-12., -10., 0.), point(18., 15., 8.)]);
+    move_pointer(&mut app, &ctx, point(-9., -2., 0.));
+    let viewport = &app.viewports[0];
+    let preview_x = viewport
+        .pointer_ray()
+        .unwrap()
+        .on_plane(viewport.construction_plane())
+        .unwrap()
+        .unwrap()
+        .x();
+    enter(&mut app, "ToBoundary");
+    assert!(app.picking_tapered_boundary());
+    let pick = move_pointer(&mut app, &ctx, point(14.7, -2., 5.));
+    viewport_click(&mut app, &ctx, pick);
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(app.command_log.back().unwrap().starts_with("Error: "));
+    assert!(app.document.object(source).is_none());
+    assert!(app.document.is_selected(cutter));
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|object| ![source, cutter].contains(&object.id()))
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected the uncut preview stock");
+    };
+    assert!(!result.is_solid());
+    assert_eq!((result.faces().len(), result.edges().len()), (5, 12));
+    let expected_height = (preview_x - 2.).abs() * (6. + 10_f64.to_radians().tan());
+    // This circular stock has a far-rim vertex at its maximum Z.
+    let height = result
+        .vertices()
+        .iter()
+        .map(|vertex| vertex.point().z())
+        .max_by(f64::total_cmp)
+        .unwrap();
+    assert!(
+        (height - expected_height).abs() < 1e-6,
+        "{height} vs {expected_height}"
+    );
+    assert_eq!(app.commands.tapered_extrusion_settings(false).distance, 1.);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 2);
+    assert!(app.document.object(source).is_some());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [source]
+    );
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 2);
+    assert!(app.document.object(source).is_none());
+    assert_eq!(app.document.selected_object_count(), 0);
+}
+
 fn pick_boundary_in_top_view(app: &mut VibocerosApp, bounds: [Point3; 2], aim: Point3) {
-    use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    use super::super::circle_preview::viewport_click;
+
+    let ctx = top_view(app, bounds);
+    let pointer = move_pointer(app, &ctx, aim);
+    viewport_click(app, &ctx, pointer);
+}
+
+fn top_view(app: &mut VibocerosApp, bounds: [Point3; 2]) -> egui::Context {
+    use super::super::circle_preview::viewport_frame;
 
     app.viewports[0] = Viewport::new(ViewKind::Top);
     app.active_viewport = 0;
@@ -341,14 +427,19 @@ fn pick_boundary_in_top_view(app: &mut VibocerosApp, bounds: [Point3; 2], aim: P
     viewport_frame(app, &ctx, vec![]);
     let bounds = viboceros_geometry::BoundingBox3::from_points(bounds).unwrap();
     app.viewports[0].zoom_bounding_box(bounds).unwrap();
-    let pointer = (0..8)
+    ctx
+}
+
+fn move_pointer(app: &mut VibocerosApp, ctx: &egui::Context, aim: Point3) -> egui::Pos2 {
+    use super::super::circle_preview::{screen_point, viewport_frame};
+
+    (0..8)
         .find_map(|_| {
             let pointer = screen_point(app, aim);
-            viewport_frame(app, &ctx, vec![egui::Event::PointerMoved(pointer)]);
+            viewport_frame(app, ctx, vec![egui::Event::PointerMoved(pointer)]);
             (screen_point(app, aim) == pointer).then_some(pointer)
         })
-        .expect("boundary viewport layout");
-    viewport_click(app, &ctx, pointer);
+        .expect("boundary viewport layout")
 }
 
 fn check_viewport_cut(app: &mut VibocerosApp, source: ObjectId, cutter: ObjectId, command: &str) {

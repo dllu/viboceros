@@ -2,11 +2,13 @@
 use super::*;
 pub use crate::extrude_surface::Distance;
 use crate::extrude_surface::parse_face_extrusion_distance;
-use crate::surface_reference::BoundaryInput;
+use crate::surface_reference::{BoundaryInput, BoundaryRef};
+pub use crate::tapered_boundary::TaperedBoundaryOutcome;
 
 mod partitions;
 
 pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [SplitAtTangents=Yes|No]";
+const COMMAND_NAME: &str = "ExtrudeCrvTapered";
 pub(super) struct ExtrudeTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -229,7 +231,7 @@ impl TaperedExtrusionOptions {
 
 impl Command for ExtrudeTaperedCommand {
     fn name(&self) -> &'static str {
-        "ExtrudeCrvTapered"
+        COMMAND_NAME
     }
     fn commits_on_error(&self, error: &CommandError) -> bool {
         matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
@@ -274,18 +276,15 @@ impl Command for ExtrudeTaperedCommand {
                 if !positional.is_empty() {
                     return Err(CommandError::Usage(USAGE));
                 }
-                let options = settings.boundary_options(options);
-                let count = crate::tapered_boundary::apply(
+                let count = run_boundary(
                     doc,
-                    crate::tapered_boundary::Inputs::Curves,
+                    &self.settings,
                     options,
                     reference,
                     context.construction_plane,
-                )?;
-                self.settings.set(TaperedExtrusionSettings::after_success(
-                    options,
-                    settings.distance,
-                ));
+                    None,
+                )?
+                .cut_count()?;
                 return Ok(format!("Tapered {count} curve object(s) to the boundary"));
             }
         }
@@ -335,6 +334,69 @@ impl Command for ExtrudeTaperedCommand {
         Ok(format!("Tapered {count} curve object(s)"))
     }
 }
+
+impl CommandRegistry {
+    /// Accept a curve cutter pick with the distance captured on entry to the
+    /// boundary getter. Use the same editing transaction as the typed command.
+    pub fn execute_curve_tapered_boundary(
+        &self,
+        doc: &mut Document,
+        reference: BoundaryRef,
+        options: TaperedExtrusionOptions,
+        plane: Frame3,
+        preview_distance: Option<f64>,
+    ) -> Result<TaperedBoundaryOutcome, CommandError> {
+        let result = run_command_transaction_with_policy(
+            doc,
+            COMMAND_NAME,
+            |doc| {
+                run_boundary(
+                    doc,
+                    &self.curve_tapered_settings,
+                    options,
+                    reference,
+                    plane,
+                    preview_distance,
+                )
+            },
+            |error| matches!(error, CommandError::SurfaceExtrusionBoundaryRejected),
+        );
+        if !matches!(result, Ok(TaperedBoundaryOutcome::Fallback)) {
+            finish_command_selection(doc, COMMAND_NAME, &result);
+        }
+        result
+    }
+}
+
+fn run_boundary(
+    doc: &mut Document,
+    settings: &remembered::Remembered<TaperedExtrusionSettings>,
+    options: TaperedExtrusionOptions,
+    reference: BoundaryRef,
+    plane: Frame3,
+    preview_distance: Option<f64>,
+) -> Result<TaperedBoundaryOutcome, CommandError> {
+    let previous = settings.get();
+    let options = previous.boundary_options(options);
+    let preview_distance = preview_distance.map(f64::abs).filter(|d| d.is_finite());
+    let outcome = crate::tapered_boundary::apply(
+        doc,
+        crate::tapered_boundary::Inputs::Curves { preview_distance },
+        options,
+        reference,
+        plane,
+    )?;
+    if matches!(outcome, TaperedBoundaryOutcome::Cut(_)) {
+        settings.set(TaperedExtrusionSettings::after_success(
+            options,
+            preview_distance
+                .filter(|d| *d > doc.tolerance().absolute())
+                .unwrap_or(previous.distance),
+        ));
+    }
+    Ok(outcome)
+}
+
 impl Distance {
     pub(super) fn remembered(self) -> Result<f64, GeometryError> {
         match self {

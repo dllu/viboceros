@@ -90,10 +90,10 @@ pub(super) fn extrude(
         (result, true)
     };
     let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
-    Ok(Product {
-        brep: result.transformed(to_world, tolerance)?,
+    Ok(Product::from_cut(
+        result.transformed(to_world, tolerance)?,
         reached_boundary,
-    })
+    ))
 }
 
 fn rim_length(

@@ -115,7 +115,8 @@ impl Command for ExtrudeSurfaceTaperedCommand {
                     options,
                     reference,
                     context.construction_plane,
-                )?;
+                )?
+                .cut_count()?;
                 self.settings.set(TaperedExtrusionSettings::after_success(
                     options,
                     settings.distance,

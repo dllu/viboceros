@@ -20,13 +20,33 @@ const REJECTED: CommandError = CommandError::SurfaceExtrusionBoundaryRejected;
 
 pub(super) enum Inputs<'a> {
     Faces(&'a SurfaceFaces),
-    Curves,
+    Curves { preview_distance: Option<f64> },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TaperedBoundaryOutcome {
+    Cut(usize),
+    Fallback,
+}
+
+impl TaperedBoundaryOutcome {
+    pub(super) fn cut_count(self) -> Result<usize, CommandError> {
+        match self {
+            Self::Cut(count) => Ok(count),
+            Self::Fallback => Err(REJECTED),
+        }
+    }
+}
+
+struct ClosedCurve {
+    curve: NurbsCurve,
+    preview_distance: Option<f64>,
 }
 
 enum Profile {
     Closed {
         face: Brep,
-        curve: Option<NurbsCurve>,
+        curve: Option<ClosedCurve>,
     },
     OpenCurve(NurbsCurve),
 }
@@ -52,7 +72,7 @@ pub(super) fn apply(
     options: TaperedExtrusionOptions,
     reference: BoundaryRef,
     cplane: Frame3,
-) -> Result<usize, CommandError> {
+) -> Result<TaperedBoundaryOutcome, CommandError> {
     let cutter = reference.capture(doc)?;
     let tolerance = doc.tolerance();
     let selection = doc
@@ -95,11 +115,11 @@ pub(super) fn apply(
         match product {
             Ok(product) => {
                 products.push(Geometry::Brep(product.brep));
-                fallback |= !product.reached_boundary;
+                fallback |= product.status != ProductStatus::Cut;
                 if options.delete_input {
                     match source.face {
                         Some(face) => remove_faces.push((source.object, face)),
-                        None => remove_curves.push(source.object),
+                        None => remove_curves.push((source.object, product.status)),
                     }
                 }
             }
@@ -116,8 +136,10 @@ pub(super) fn apply(
         products,
         remove_faces.into_iter().filter(|_| !fallback),
     )?;
-    for curve in remove_curves.into_iter().filter(|_| !fallback) {
-        doc.delete_object(curve)?;
+    for (curve, status) in remove_curves {
+        if !fallback || status == ProductStatus::CurvePreviewFallback {
+            doc.delete_object(curve)?;
+        }
     }
     let retained = selection
         .into_iter()
@@ -130,7 +152,11 @@ pub(super) fn apply(
             .filter(|&id| !fallback || id == reference.object),
     )?;
     doc.select_command_results(retained)?;
-    if fallback { Err(REJECTED) } else { Ok(count) }
+    Ok(if fallback {
+        TaperedBoundaryOutcome::Fallback
+    } else {
+        TaperedBoundaryOutcome::Cut(count)
+    })
 }
 
 fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, CommandError> {
@@ -148,7 +174,7 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 })
             })
             .collect(),
-        Inputs::Curves => {
+        Inputs::Curves { preview_distance } => {
             let tolerance = doc.tolerance();
             let mut sources = Vec::new();
             for object in doc.selected_objects() {
@@ -161,7 +187,10 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 let profile = if curve.is_closed()? {
                     Profile::Closed {
                         face: Brep::try_planar_face(&curve, tolerance)?,
-                        curve: Some(curve),
+                        curve: Some(ClosedCurve {
+                            curve,
+                            preview_distance,
+                        }),
                     }
                 } else {
                     Profile::OpenCurve(curve)
@@ -182,12 +211,32 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
 
 struct Product {
     brep: Brep,
-    reached_boundary: bool,
+    status: ProductStatus,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ProductStatus {
+    Cut,
+    Fallback,
+    CurvePreviewFallback,
+}
+
+impl Product {
+    fn from_cut(brep: Brep, reached_boundary: bool) -> Self {
+        Self {
+            brep,
+            status: if reached_boundary {
+                ProductStatus::Cut
+            } else {
+                ProductStatus::Fallback
+            },
+        }
+    }
 }
 
 fn extrude(
     source: &Brep,
-    curve: Option<&NurbsCurve>,
+    curve: Option<&ClosedCurve>,
     cutter: &Brep,
     length: f64,
     options: TaperedExtrusionOptions,
@@ -205,9 +254,25 @@ fn extrude(
             Ok(reference)
         })?;
     let direction = toward_cutter(original.padded_trim_bounds()?, &cutter, axis, tolerance)?;
+    let oblique = draft != 0.
+        && direction.cross(reference)?.length()? > tolerance.angular()
+        && stock.single_face_plane_normal(tolerance)?.is_some();
+    // An interactive curve cut starts with the stock shown in the distance
+    // getter. The surface command sizes its stock from the combined bounds.
+    let preview_length = if oblique && cutter.faces()[0].surface().plane(tolerance)?.is_some() {
+        curve.and_then(|source| source.preview_distance)
+    } else {
+        None
+    };
+    let length = preview_length.unwrap_or(length);
+    if length <= tolerance.absolute() {
+        return Err(REJECTED);
+    }
     let displacement = direction.scaled(length)?;
     let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
-    let local_curve = curve.map(|curve| curve.transformed(to_local)).transpose()?;
+    let local_curve = curve
+        .map(|source| source.curve.transformed(to_local))
+        .transpose()?;
     let profile = local_curve
         .as_ref()
         .map(viboceros_smlib::KernelCurve::from_nurbs_for_modeling)
@@ -225,12 +290,9 @@ fn extrude(
     {
         return Ok(Product {
             brep: brep.transformed(to_world, tolerance)?,
-            reached_boundary: true,
+            status: ProductStatus::Cut,
         });
     }
-    let oblique = draft != 0.
-        && direction.cross(reference)?.length()? > tolerance.angular()
-        && stock.single_face_plane_normal(tolerance)?.is_some();
     if oblique
         && draft > 0.
         && oblique::crosses_circular_focal_radius(
@@ -282,7 +344,9 @@ fn extrude(
     if oblique && !stock.is_solid() {
         let output = match (curve.is_some(), options.solid) {
             (false, _) => oblique::Output::Surface,
-            (true, true) => oblique::Output::SolidCurve,
+            (true, true) => oblique::Output::SolidCurve {
+                preview_stock: preview_length.is_some(),
+            },
             (true, false) => oblique::Output::CurveWalls,
         };
         let mut result = oblique::trim(
@@ -351,10 +415,10 @@ fn extrude(
     } else {
         result
     };
-    Ok(Product {
-        brep: result.transformed(to_world, tolerance)?,
+    Ok(Product::from_cut(
+        result.transformed(to_world, tolerance)?,
         reached_boundary,
-    })
+    ))
 }
 
 fn toward_cutter(
