@@ -6,7 +6,7 @@ use viboceros_command::extrude_surface::{
 
 pub(super) struct SurfaceExtrusionSources {
     pub(super) targets: Vec<(ObjectId, usize)>,
-    pub(super) apex_draft: Option<crate::viewport::surface_apex::SurfaceApexDraft>,
+    pub(super) apex: Option<extrude_surface_apex::Session>,
     pub(super) snapshots: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
 }
 impl SurfaceExtrusionSources {
@@ -69,7 +69,7 @@ impl VibocerosApp {
         Ok(Some(SurfaceExtrusionSources {
             targets,
             snapshots,
-            apex_draft: None,
+            apex: None,
         }))
     }
 

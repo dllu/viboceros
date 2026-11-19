@@ -10,6 +10,7 @@ impl VibocerosApp {
         let mut input = DraftingInput {
             active: self.surface_point_grid_wants_point()
                 && !end_analysis_picking
+                && !self.picking_surface_apex_boundary()
                 && !self.picking_block_edit_sources()
                 && !self.adding_to_block()
                 && !self.replacing_block()

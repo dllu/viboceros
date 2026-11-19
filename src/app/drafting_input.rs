@@ -1805,11 +1805,7 @@ impl VibocerosApp {
                 );
             }
             InteractiveCommand::ExtrudeSurfaceToPoint { options } => {
-                return self.finish_surface_face_command(&format!(
-                    "ExtrudeSrfToPoint {} {}",
-                    format_model_point(point),
-                    options.command_options()
-                ));
+                return self.point_to_surface_apex(point, options);
             }
             InteractiveCommand::ExtrudeCurveToPoint { options } => {
                 self.active_command = None;

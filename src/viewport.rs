@@ -2875,7 +2875,7 @@ impl Viewport {
                 .map(|cursor| cursor.point)
                 .or(draft.hover)
         {
-            self.paint_surface_apex(&painter, rect, draft, apex);
+            self.paint_surface_apex(&painter, rect, draft, apex, document.tolerance());
         }
         if let Some(getter) = input.catenary_input {
             self.paint_draft_points(&painter, rect, &getter.markers());

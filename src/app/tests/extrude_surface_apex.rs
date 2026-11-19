@@ -339,3 +339,113 @@ fn surface_apex_zero_uses_the_requested_origin_and_acceptance_remembers_options(
         assert!(!saved.solid && saved.delete_input && saved.split_at_tangents);
     }
 }
+
+fn boundary_surface(app: &mut VibocerosApp, z: f64) -> ObjectId {
+    let surface = viboceros_geometry::NurbsSurface::try_bilinear([
+        point(-3., -3., z),
+        point(6., -3., z),
+        point(6., 6., z),
+        point(-3., 6., z),
+    ])
+    .unwrap();
+    app.document
+        .add_geometry(Geometry::NurbsSurface(surface))
+        .unwrap()
+}
+
+#[test]
+fn surface_apex_boundary_getter_picks_a_face_and_previews_only_to_the_boundary() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+
+    let mut app = test_app();
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    app.grid_snap = false;
+    let source = planar_apex_source(&mut app, 0.);
+    let boundary = boundary_surface(&mut app, 3.);
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "ExtrudeSrfToPoint ToBoundary");
+    assert!(app.picking_surface_apex_boundary());
+    let context = egui::Context::default();
+    viewport_frame(&mut app, &context, Vec::new());
+    viewport_frame(&mut app, &context, Vec::new());
+    let location = screen_point(&app, point(5., 2., 3.));
+    viewport_click(&mut app, &context, location);
+    assert!(
+        !app.picking_surface_apex_boundary(),
+        "{:?}",
+        app.command_log
+    );
+    assert!(app.command_hint().contains("beyond the boundary"));
+    assert_eq!(format!("{:?}", app.document), before);
+
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    let plane = app.viewports[0]
+        .construction_plane()
+        .with_origin(point(0., 1.5, 0.));
+    app.viewports[0].set_construction_plane(plane);
+    viewport_frame(&mut app, &context, Vec::new());
+    viewport_frame(&mut app, &context, Vec::new());
+    let apex = screen_point(&app, point(2., 1.5, 6.));
+    let rim = screen_point(&app, point(2., 1.5, 3.));
+    let preview = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(apex)]);
+    assert!(preview.iter().any(|p| (p[1].y - rim.y).abs() < 1e-3));
+    assert!(preview.iter().flatten().all(|p| p.y >= rim.y - 1e-3));
+    assert_eq!(format!("{:?}", app.document), before);
+    viewport_click(&mut app, &context, apex);
+    #[cfg(feature = "native-smlib")]
+    {
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        let Geometry::Brep(result) = app.document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("expected truncated extrusion");
+        };
+        assert!(result.is_solid());
+        assert_eq!(result.faces().len(), 6);
+        assert!((result.signed_volume(app.document.tolerance()).unwrap() - 21.).abs() < 1e-6);
+        let bounds = result.tight_bounds(app.document.tolerance()).unwrap();
+        assert!((bounds.max().z() - 3.).abs() < 1e-6);
+        assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
+        enter(&mut app, "Undo");
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    assert!(app.active_command.is_some());
+    assert_eq!(app.document.objects().len(), 2);
+    assert!(app.document.object(source).is_some());
+    assert!(app.document.object(boundary).is_some());
+}
+
+#[test]
+fn surface_apex_boundary_selection_and_failed_apex_keep_model_selection_private() {
+    let mut app = test_app();
+    let source = planar_apex_source(&mut app, 0.);
+    let boundary = boundary_surface(&mut app, 3.);
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "ExtrudeSrfToPoint");
+    enter(&mut app, "ToBoundary");
+    assert!(app.picking_surface_apex_boundary());
+    enter(&mut app, &format!("_SelID {boundary}"));
+    assert!(app.command_hint().contains("beyond the boundary"));
+    enter(&mut app, "w2,1.5,1");
+    assert!(app.active_command.is_some());
+    assert!(app.command_hint().contains("beyond the boundary"));
+    assert_eq!(format!("{:?}", app.document), before);
+    assert!(app.document.is_selected(source));
+    assert!(!app.document.can_undo());
+    app.cancel_current_prompt_or_selection();
+    assert!(app.active_command.is_none());
+}
+
+#[test]
+fn surface_apex_boundary_menu_enter_cancels_without_a_surface_pick() {
+    let mut app = test_app();
+    planar_apex_source(&mut app, 0.);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "ExtrudeSrfToPoint ToBoundary");
+    assert!(app.picking_surface_apex_boundary());
+    enter(&mut app, "");
+    assert!(app.active_command.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
+}

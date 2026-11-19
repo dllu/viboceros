@@ -1,7 +1,9 @@
 //! Native surface and original face extrusion to an explicit apex.
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
-pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+#[cfg(feature = "native-smlib")]
+mod boundary;
+pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [ToBoundary=id[:face]] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand {
     pub(super) preferences: std::sync::Arc<crate::remembered::Remembered<SurfaceApexOptions>>,
 }
@@ -57,8 +59,15 @@ impl SurfaceApexOptions {
     }
     pub fn command_options(self) -> String {
         format!(
-            "Solid={} DeleteInput={} SplitAtTangents={}",
+            "Solid={} {}",
             if self.solid { "Yes" } else { "No" },
+            self.boundary_options(),
+        )
+    }
+
+    pub fn boundary_options(self) -> String {
+        format!(
+            "DeleteInput={} SplitAtTangents={}",
             if self.delete_input { "Yes" } else { "No" },
             if self.split_at_tangents { "Yes" } else { "No" }
         )
@@ -93,11 +102,73 @@ impl ApexPoint {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct BoundaryRef {
+    pub object: ObjectId,
+    pub face: Option<usize>,
+}
+
+impl BoundaryRef {
+    pub fn parse(input: &str) -> Result<Self, CommandError> {
+        let (id, face) = match input.split_once(':') {
+            Some((id, face)) => (
+                id,
+                Some(face.parse().map_err(|_| CommandError::Usage(USAGE))?),
+            ),
+            None => (input, None),
+        };
+        Ok(Self {
+            object: id.parse().map_err(|_| CommandError::Usage(USAGE))?,
+            face,
+        })
+    }
+
+    pub fn capture(self, document: &Document) -> Result<Brep, CommandError> {
+        let object = document
+            .object(self.object)
+            .filter(|_| document.is_object_selectable(self.object))
+            .ok_or(CommandError::Usage("Boundary surface is unavailable"))?;
+        let tolerance = document.tolerance();
+        match object.geometry() {
+            Geometry::NurbsSurface(surface) if self.face.unwrap_or(0) == 0 => {
+                Ok(Brep::try_surface_face(surface.clone(), tolerance)?)
+            }
+            Geometry::Brep(brep) => {
+                let index = self.face.or_else(|| (brep.faces().len() == 1).then_some(0));
+                let index = index.filter(|&index| index < brep.faces().len()).ok_or(
+                    CommandError::Usage("Pick one boundary face or specify its index"),
+                )?;
+                Ok(brep.duplicate_faces(&[index], tolerance)?)
+            }
+            _ => Err(CommandError::Usage("Pick one boundary surface")),
+        }
+    }
+}
+
+impl std::fmt::Display for BoundaryRef {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.object)?;
+        if let Some(index) = self.face {
+            write!(f, ":{index}")?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum BoundaryInput {
+    #[default]
+    None,
+    Select,
+    Reference(BoundaryRef),
+}
+
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct SurfaceApexInput {
     pub options: SurfaceApexOptions,
     pub faces: SurfaceFaces,
     pub apex: Option<ApexPoint>,
+    pub boundary: BoundaryInput,
 }
 impl SurfaceApexInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
@@ -109,9 +180,16 @@ impl SurfaceApexInput {
         mut defaults: SurfaceApexOptions,
     ) -> Result<Self, CommandError> {
         let (mut faces, mut options, mut positional) = (Vec::new(), Vec::new(), Vec::new());
+        let mut boundary = BoundaryInput::None;
         for word in words {
-            if let Some((key, _)) = word.trim_start_matches('_').split_once('=') {
-                if ["Face", "Faces", "FaceRefs"]
+            let token = word.trim_start_matches(['_', '-']);
+            if let Some((key, value)) = token.split_once('=') {
+                if key.eq_ignore_ascii_case("ToBoundary") {
+                    if boundary != BoundaryInput::None {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    boundary = BoundaryInput::Reference(BoundaryRef::parse(value)?);
+                } else if ["Face", "Faces", "FaceRefs"]
                     .iter()
                     .any(|s| key.eq_ignore_ascii_case(s))
                 {
@@ -119,6 +197,11 @@ impl SurfaceApexInput {
                 } else {
                     options.push(*word);
                 }
+            } else if token.eq_ignore_ascii_case("ToBoundary") {
+                if boundary != BoundaryInput::None {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                boundary = BoundaryInput::Select;
             } else if SurfaceApexOptions::recognizes(word) {
                 options.push(*word);
             } else {
@@ -129,9 +212,9 @@ impl SurfaceApexInput {
         let mut result = Self {
             faces: SurfaceExtrusionInput::parse(&faces)?.faces,
             options: defaults,
+            boundary,
             ..Self::default()
         };
-        result.options.update(&options)?;
         if !positional.is_empty() {
             result.apex = if let [token] = positional.as_slice()
                 && let Some(origin) = ApexPoint::origin_token(token)
@@ -181,6 +264,14 @@ impl Command for ExtrudeSurfaceToPointCommand {
             .apex
             .ok_or(CommandError::Usage(USAGE))?
             .resolve(context.construction_plane);
+        let boundary = match input.boundary {
+            BoundaryInput::None => None,
+            BoundaryInput::Reference(reference) => Some(reference.capture(doc)?),
+            BoundaryInput::Select => {
+                return Err(CommandError::Usage("ToBoundary requires a surface"));
+            }
+        };
+        let capped = input.options.solid || boundary.is_some();
         let count = apply_face_extrusion_products(
             doc,
             &input.faces,
@@ -197,19 +288,27 @@ impl Command for ExtrudeSurfaceToPointCommand {
                     let shift = origin.vector_to(zero)?;
                     let local =
                         brep.transformed(AffineTransform3::from_translation(shift), tolerance)?;
+                    let apex = apex.translated(shift)?;
                     let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
                         .extruded_faces_to_point_with_tangents(
-                            apex.translated(shift)?,
-                            input.options.solid,
+                            apex,
+                            capped,
                             input.options.split_at_tangents,
                             tolerance,
                         )?
-                        .to_brep(tolerance)?
-                        .transformed(
-                            AffineTransform3::from_translation(zero.vector_to(origin)?),
-                            tolerance,
-                        )?;
-                    if input.options.solid {
+                        .to_brep(tolerance)?;
+                    let result = if let Some(boundary) = &boundary {
+                        let boundary = boundary
+                            .transformed(AffineTransform3::from_translation(shift), tolerance)?;
+                        boundary::truncate(&result, &boundary, apex, tolerance)?
+                    } else {
+                        result
+                    };
+                    let result = result.transformed(
+                        AffineTransform3::from_translation(zero.vector_to(origin)?),
+                        tolerance,
+                    )?;
+                    if capped {
                         Ok(vec![Geometry::Brep(result)])
                     } else {
                         // A singular apex does not join otherwise separate boundary
@@ -223,13 +322,18 @@ impl Command for ExtrudeSurfaceToPointCommand {
                 }
                 #[cfg(not(feature = "native-smlib"))]
                 {
-                    let _ = (brep, tolerance, apex);
+                    let _ = (brep, tolerance, apex, capped);
                     Err(CommandError::SurfaceApexExtrusionRequiresNativeKernel)
                 }
             },
         )?;
         self.preferences.set(input.options);
-        Ok(format!("Extruded {count} surface face(s) to the apex"))
+        let target = if boundary.is_some() {
+            "boundary"
+        } else {
+            "apex"
+        };
+        Ok(format!("Extruded {count} surface face(s) to the {target}"))
     }
 }
 #[cfg(test)]

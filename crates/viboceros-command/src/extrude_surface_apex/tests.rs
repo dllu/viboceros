@@ -20,6 +20,11 @@ fn patch() -> Geometry {
 fn surface_apex_options_parse_strictly_and_update_atomically() {
     let mut options = SurfaceApexOptions::default();
     assert!(!options.solid && !options.split_at_tangents);
+    assert!(SurfaceApexInput::parse(&["Solid"]).unwrap().options.solid);
+    assert_eq!(
+        SurfaceApexInput::parse(&["ToBoundary"]).unwrap().boundary,
+        BoundaryInput::Select
+    );
     options
         .update(&["Solid=No", "DeleteInput=Yes", "SplitAtTangents=Yes"])
         .unwrap();

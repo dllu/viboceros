@@ -3,6 +3,14 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.picking_surface_apex_boundary() {
+            if let Some(object) = click.object_id {
+                self.pick_surface_apex_boundary(
+                    viboceros_command::extrude_surface_apex::BoundaryRef { object, face: None },
+                );
+            }
+            return;
+        }
         if self.nested_measurement.is_some() && self.plane_prompt.is_none() {
             if self.subcurve_prompt.is_some() {
                 self.pick_subcurve_source(click.object_id);

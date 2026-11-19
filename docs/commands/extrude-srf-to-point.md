@@ -30,6 +30,13 @@ object selection. Repeated targets extrude once. Specify faces for a whole
 polysurface; single-face surfaces need no selector. Each selected face produces
 an independent result. Inline face selectors and options survive source picking.
 
+At the apex prompt, enter `ToBoundary`, pick one boundary surface or B-rep
+face, then place the apex beyond it. The preview ends at the boundary and the
+result uses the base and the picked surface as caps. Holes enclosed by the cut
+section remain open. Partial coverage and holes crossing the outer section
+leave the point prompt available for retry. Scripts can use `ToBoundary=id`
+or `ToBoundary=id:index`.
+
 Initial options are `Solid=No DeleteInput=No SplitAtTangents=No`. A successful
 extrusion saves those choices for the next invocation. Esc discards provisional
 option changes.
@@ -63,7 +70,7 @@ Coplanar targets for planar sources, closed sources without a boundary, invalid
 face indices and unsupported imports decline. General self-intersection,
 folding and near-degenerate cases require broader qualification. Hole walls
 meet at a singular apex; this does not establish vertex-manifold or downstream
-meshing guarantees. `ToBoundary` remains future work.
+meshing guarantees.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,
@@ -78,6 +85,9 @@ counts, bounds, volumes, retained source identity and Undo/Redo. Selection,
 attributes and full getter equivalence are outside that comparison.
 Private headless Rhino captures also cover mouse input, both origin shortcuts,
 option toggles, and reuse of successful option changes.
+Separate `ToBoundary` captures cover planar and warped caps, a circular
+opening, and incomplete section coverage. The command uses a native Boolean
+cut and checks that the source base and boundary cap survive.
 The SDK recipe combines disconnected walls for its geometry comparison;
 the command corpus verifies separate output objects. See
 [native qualification](../surface-apex-native-qualification.json),

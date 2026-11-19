@@ -1,12 +1,26 @@
 //! Cached source boundaries for the live ruled surface-to-point preview.
 use super::{curve_sampling::ViewportCurve, *};
-use std::collections::BTreeMap;
-use viboceros_geometry::{Brep, BrepFace};
+use std::{cell::RefCell, collections::BTreeMap};
+use viboceros_geometry::{Brep, BrepFace, MeshProjectionIndex};
 
 #[derive(Debug)]
 pub(crate) struct SurfaceApexDraft {
     faces: Vec<FaceDraft>,
     pub(crate) hover: Option<Point3>,
+    boundary: Option<BoundaryDraft>,
+}
+
+#[derive(Debug)]
+struct BoundaryDraft {
+    mesh: Option<MeshProjectionIndex<'static>>,
+    frame: RefCell<Option<BoundaryFrame>>,
+}
+
+#[derive(Debug)]
+struct BoundaryFrame {
+    apex: Point3,
+    tolerance: Tolerance,
+    edges: Vec<[Point3; 2]>,
 }
 
 #[derive(Debug)]
@@ -29,7 +43,63 @@ impl SurfaceApexDraft {
                 _ => None,
             })
             .collect();
-        Self { faces, hover: None }
+        Self {
+            faces,
+            hover: None,
+            boundary: None,
+        }
+    }
+
+    pub(crate) fn set_boundary(&mut self, boundary: Option<&Brep>, tolerance: Tolerance) {
+        self.hover = None;
+        self.boundary = boundary.map(|brep| BoundaryDraft {
+            mesh: brep
+                .display_mesh(8, tolerance)
+                .ok()
+                .and_then(|mesh| MeshProjectionIndex::new_owned(mesh).ok()),
+            frame: RefCell::new(None),
+        });
+    }
+}
+
+impl BoundaryDraft {
+    fn project(&self, start: Point3, apex: Point3, tolerance: Tolerance) -> Option<Point3> {
+        let direction = start.direction_to(apex).ok()?.as_vector();
+        let length = start.distance_to(apex).ok()?;
+        self.mesh
+            .as_ref()?
+            .project_point(start, direction, tolerance)
+            .ok()?
+            .into_iter()
+            .filter_map(|point| {
+                let distance = direction.dot(start.vector_to(point).ok()?).ok()?;
+                (distance > tolerance.absolute() && distance < length - tolerance.absolute())
+                    .then_some((distance, point))
+            })
+            .min_by(|(a, _), (b, _)| a.total_cmp(b))
+            .map(|(_, point)| point)
+    }
+
+    fn clipped_edges(
+        &self,
+        source: &SurfaceApexDraft,
+        apex: Point3,
+        tolerance: Tolerance,
+    ) -> Option<Vec<[Point3; 2]>> {
+        let mut edges = Vec::new();
+        for face in &source.faces {
+            for &[a, b] in &face.rim {
+                edges.push([a, b]);
+                edges.push([
+                    self.project(a, apex, tolerance)?,
+                    self.project(b, apex, tolerance)?,
+                ]);
+            }
+            for &start in &face.rulings {
+                edges.push([start, self.project(start, apex, tolerance)?]);
+            }
+        }
+        Some(edges)
     }
 }
 
@@ -79,8 +149,32 @@ impl Viewport {
         rect: Rect,
         draft: &SurfaceApexDraft,
         apex: Point3,
+        tolerance: Tolerance,
     ) {
         let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        if let Some(boundary) = &draft.boundary {
+            let mut cache = boundary.frame.borrow_mut();
+            if cache
+                .as_ref()
+                .is_none_or(|frame| frame.apex != apex || frame.tolerance != tolerance)
+            {
+                let edges = boundary
+                    .clipped_edges(draft, apex, tolerance)
+                    .unwrap_or_default();
+                *cache = Some(BoundaryFrame {
+                    apex,
+                    tolerance,
+                    edges,
+                });
+            }
+            for &[a, b] in &cache.as_ref().unwrap().edges {
+                if let Some(segment) = self.project_segment(a, b, rect) {
+                    painter.line_segment(segment, stroke);
+                }
+            }
+            self.paint_draft_points(painter, rect, &[apex]);
+            return;
+        }
         for face in &draft.faces {
             let rulings = face.rulings.iter().map(|&start| [start, apex]);
             // The halfway section lies on each ruled wall. Averaging finite
