@@ -10,7 +10,7 @@ pub(super) fn extrude(
     options: TaperedExtrusionOptions,
     cplane: Frame3,
     tolerance: Tolerance,
-) -> Result<Product, CommandError> {
+) -> Result<Option<Product>, CommandError> {
     let (origin, profile) = local_profile(&source.curve)?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
@@ -18,7 +18,16 @@ pub(super) fn extrude(
     let cutter = cutter.transformed(to_local, tolerance)?;
     let reference = profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector());
     let (axis, draft) = displacement_and_draft(Distance::Numeric(1.), options, || Ok(reference))?;
-    let direction = toward_cutter(curve.control_point_bounds(), &cutter, axis, tolerance)?;
+    let Some(direction) = toward_cutter(
+        curve.control_point_bounds(),
+        &cutter,
+        axis,
+        source.preview.pick_offset.map(|offset| (&curve, offset)),
+        tolerance,
+    )?
+    else {
+        return Ok(None);
+    };
     let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
     if draft != 0.
         && direction.cross(reference)?.length()? > tolerance.angular()
@@ -32,13 +41,13 @@ pub(super) fn extrude(
             } else {
                 draft
             },
-            preview_distance: source.preview_distance,
+            preview_distance: source.preview.distance,
         };
-        return Ok(Product::from_cut(
+        return Ok(Some(Product::from_cut(
             oblique::trim_open(input, &cutter, direction.scaled(length)?, tolerance)?
                 .transformed(to_world, tolerance)?,
             true,
-        ));
+        )));
     }
     let stock = match produce_curve_shape(
         &curve,
@@ -109,10 +118,10 @@ pub(super) fn extrude(
         }
         (result, true)
     };
-    Ok(Product::from_cut(
+    Ok(Some(Product::from_cut(
         result.transformed(to_world, tolerance)?,
         reached_boundary,
-    ))
+    )))
 }
 
 fn rim_length(

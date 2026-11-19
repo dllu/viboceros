@@ -45,6 +45,82 @@ const CROSSING: [f64; 4] = [4.45, -0.25, 5.1, 0.25];
 const OUTSIDE: [f64; 4] = [7., -0.25, 8., 0.25];
 
 #[test]
+fn oblique_boundary_keeps_cuts_from_other_curves_when_one_curve_pulls_away() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    for delete_input in [false, true] {
+        let mut doc = Document::new(tolerance);
+        let registry = CommandRegistry::with_builtins();
+        let profile = circle(tolerance);
+        let second = profile
+            .transformed(AffineTransform3::from_translation(
+                Vector3::try_new(0., 0., 10.).unwrap(),
+            ))
+            .unwrap();
+        let sources =
+            [profile, second].map(|curve| doc.add_geometry(Geometry::NurbsCurve(curve)).unwrap());
+        let cutter = doc
+            .add_geometry(Geometry::Brep(cutter_face(OUTSIDE, tolerance)))
+            .unwrap();
+        doc.select_objects_direct(sources, SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        let options =
+            TaperedExtrusionOptions::parse(&["Direction=1,0,6", "DraftAngle=-10", "Solid=Yes"])
+                .unwrap();
+        let result = registry
+            .execute_curve_tapered_boundary_pick(
+                &mut doc,
+                BoundaryRef {
+                    object: cutter,
+                    face: None,
+                },
+                TaperedExtrusionOptions {
+                    delete_input,
+                    ..options
+                },
+                CommandContext::default().construction_plane,
+                TaperedBoundaryPreview {
+                    distance: Some(14.941780821917813 * 37_f64.sqrt()),
+                    pick_offset: Some(Vector3::try_new(-9., -2., 5.).unwrap()),
+                },
+            )
+            .unwrap();
+        assert_eq!(result, TaperedBoundaryOutcome::Cut(1));
+        assert!(doc.is_selected(cutter));
+        assert_eq!(doc.objects().len(), if delete_input { 2 } else { 4 });
+        let Geometry::Brep(piece) = doc
+            .objects()
+            .find(|object| object.id() != cutter && !sources.contains(&object.id()))
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected the cut from the lower curve");
+        };
+        assert_eq!((piece.faces().len(), piece.edges().len()), (6, 12));
+        assert!(piece.is_solid());
+        let bounds = Shape::from_brep(piece, tolerance)
+            .unwrap()
+            .tight_bounds()
+            .unwrap();
+        assert!((bounds.min().z() - 0.).abs() < tolerance.absolute());
+        assert!((bounds.max().z() - 5.).abs() < tolerance.absolute());
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.selected_object_count(), sources.len());
+        assert!(sources.iter().all(|&id| doc.is_selected(id)));
+        registry.execute(&mut doc, "Redo").unwrap();
+        assert_eq!(
+            doc.selected_object_count(),
+            if delete_input { 0 } else { sources.len() }
+        );
+        assert!(
+            sources
+                .iter()
+                .all(|&id| doc.is_selected(id) != delete_input)
+        );
+    }
+}
+
+#[test]
 fn oblique_boundary_matches_rhinos_planar_cutter_holes() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
     let circle = circle(tolerance);

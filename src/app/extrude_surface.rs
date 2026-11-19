@@ -78,11 +78,11 @@ impl VibocerosApp {
             || self.picking_surface_path_boundary()
     }
 
-    pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef) {
+    pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef, hit: Option<Point3>) {
         if self.picking_straight_surface_boundary() {
             self.pick_straight_surface_boundary(reference);
         } else if self.picking_tapered_boundary() {
-            self.pick_tapered_boundary(reference);
+            self.pick_tapered_boundary(reference, hit);
         } else if self.picking_surface_path_boundary() {
             self.pick_surface_path_boundary(reference);
         } else {

@@ -13,10 +13,10 @@ impl VibocerosApp {
     ) {
         if self.picking_surface_boundary() {
             if let Some(object) = click.object_id {
-                self.pick_surface_boundary(viboceros_command::surface_reference::BoundaryRef {
-                    object,
-                    face: None,
-                });
+                self.pick_surface_boundary(
+                    viboceros_command::surface_reference::BoundaryRef { object, face: None },
+                    None,
+                );
             }
             return;
         }

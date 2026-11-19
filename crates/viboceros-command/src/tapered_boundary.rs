@@ -4,7 +4,9 @@ use crate::extrude_surface::{
     Distance, SurfaceFaces, apply_staged_products, capture_source_face, face_extrusion_direction,
     local_sweep_source, surface_extrusion_targets,
 };
-use crate::extrude_tapered::{TaperCorners, TaperedExtrusionOptions, produce_curve_shape};
+use crate::extrude_tapered::{
+    TaperCorners, TaperedBoundaryPreview, TaperedExtrusionOptions, produce_curve_shape,
+};
 use crate::surface_boundary_cut::{
     BoundaryDifference, axial_extent, axial_point, copied_carrier, hole_crosses_sweep, on_plane,
 };
@@ -20,12 +22,14 @@ const REJECTED: CommandError = CommandError::SurfaceExtrusionBoundaryRejected;
 
 pub(super) enum Inputs<'a> {
     Faces(&'a SurfaceFaces),
-    Curves { preview_distance: Option<f64> },
+    Curves(TaperedBoundaryPreview),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TaperedBoundaryOutcome {
     Cut(usize),
+    /// A completed pick that reported failure, with any stock or input
+    /// changes committed to history.
     Fallback,
 }
 
@@ -40,7 +44,7 @@ impl TaperedBoundaryOutcome {
 
 struct CurveSource {
     curve: NurbsCurve,
-    preview_distance: Option<f64>,
+    preview: TaperedBoundaryPreview,
 }
 
 enum Profile {
@@ -95,6 +99,7 @@ pub(super) fn apply(
     let length = bounds.min().distance_to(bounds.max())?;
     let mut products = Vec::with_capacity(sources.len());
     let mut fallback = false;
+    let mut wrong_side = false;
     let mut remove_faces = Vec::new();
     let mut remove_curves = Vec::new();
     for source in sources {
@@ -113,14 +118,25 @@ pub(super) fn apply(
             }
         };
         match product {
-            Ok(product) => {
+            Ok(Some(product)) => {
                 products.push(Geometry::Brep(product.brep));
                 fallback |= product.status != ProductStatus::Cut;
                 if options.delete_input {
                     match source.face {
                         Some(face) => remove_faces.push((source.object, face)),
-                        None => remove_curves.push((source.object, product.status)),
+                        None => remove_curves.push((
+                            source.object,
+                            product.status == ProductStatus::CurvePreviewFallback,
+                        )),
                     }
+                }
+            }
+            Ok(None) => {
+                // A completed viewport pick on the wrong side can consume
+                // the input even though there is no geometry to commit.
+                wrong_side = true;
+                if options.delete_input {
+                    remove_curves.push((source.object, true));
                 }
             }
             Err(CommandError::SurfaceExtrusionBoundaryRejected) => {
@@ -136,8 +152,8 @@ pub(super) fn apply(
         products,
         remove_faces.into_iter().filter(|_| !fallback),
     )?;
-    for (curve, status) in remove_curves {
-        if !fallback || status == ProductStatus::CurvePreviewFallback {
+    for (curve, delete_on_failure) in remove_curves {
+        if !fallback || delete_on_failure {
             doc.delete_object(curve)?;
         }
     }
@@ -149,10 +165,10 @@ pub(super) fn apply(
         retained
             .iter()
             .copied()
-            .filter(|&id| !fallback || id == reference.object),
+            .filter(|&id| (!fallback && !wrong_side) || id == reference.object),
     )?;
     doc.select_command_results(retained)?;
-    Ok(if fallback {
+    Ok(if fallback || wrong_side && count == 0 {
         TaperedBoundaryOutcome::Fallback
     } else {
         TaperedBoundaryOutcome::Cut(count)
@@ -174,7 +190,7 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 })
             })
             .collect(),
-        Inputs::Curves { preview_distance } => {
+        Inputs::Curves(preview) => {
             let tolerance = doc.tolerance();
             let mut sources = Vec::new();
             for object in doc.selected_objects() {
@@ -187,16 +203,10 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 let profile = if curve.is_closed()? {
                     Profile::Closed {
                         face: Brep::try_planar_face(&curve, tolerance)?,
-                        curve: Some(CurveSource {
-                            curve,
-                            preview_distance,
-                        }),
+                        curve: Some(CurveSource { curve, preview }),
                     }
                 } else {
-                    Profile::OpenCurve(CurveSource {
-                        curve,
-                        preview_distance,
-                    })
+                    Profile::OpenCurve(CurveSource { curve, preview })
                 };
                 sources.push(Source {
                     object: object.id(),
@@ -245,7 +255,7 @@ fn extrude(
     options: TaperedExtrusionOptions,
     cplane: Frame3,
     tolerance: Tolerance,
-) -> Result<Product, CommandError> {
+) -> Result<Option<Product>, CommandError> {
     let (origin, original) = local_sweep_source(source, tolerance)?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
@@ -256,14 +266,29 @@ fn extrude(
         crate::extrude_tapered::displacement_and_draft(Distance::Numeric(1.), options, || {
             Ok(reference)
         })?;
-    let direction = toward_cutter(original.padded_trim_bounds()?, &cutter, axis, tolerance)?;
+    let local_curve = curve
+        .map(|source| source.curve.transformed(to_local))
+        .transpose()?;
+    let pick = local_curve
+        .as_ref()
+        .zip(curve.and_then(|source| source.preview.pick_offset));
+    let Some(direction) = toward_cutter(
+        original.padded_trim_bounds()?,
+        &cutter,
+        axis,
+        pick,
+        tolerance,
+    )?
+    else {
+        return Ok(None);
+    };
     let oblique = draft != 0.
         && direction.cross(reference)?.length()? > tolerance.angular()
         && stock.single_face_plane_normal(tolerance)?.is_some();
     // An interactive curve cut starts with the stock shown in the distance
     // getter. The surface command sizes its stock from the combined bounds.
     let preview_length = if oblique && cutter.faces()[0].surface().plane(tolerance)?.is_some() {
-        curve.and_then(|source| source.preview_distance)
+        curve.and_then(|source| source.preview.distance)
     } else {
         None
     };
@@ -273,9 +298,6 @@ fn extrude(
     }
     let displacement = direction.scaled(length)?;
     let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
-    let local_curve = curve
-        .map(|source| source.curve.transformed(to_local))
-        .transpose()?;
     let profile = local_curve
         .as_ref()
         .map(viboceros_smlib::KernelCurve::from_nurbs_for_modeling)
@@ -291,10 +313,10 @@ fn extrude(
             tolerance,
         )
     {
-        return Ok(Product {
+        return Ok(Some(Product {
             brep: brep.transformed(to_world, tolerance)?,
             status: ProductStatus::Cut,
-        });
+        }));
     }
     if oblique
         && draft > 0.
@@ -354,7 +376,7 @@ fn extrude(
                 } else {
                     draft
                 },
-                preview_distance: curve.and_then(|source| source.preview_distance),
+                preview_distance: curve.and_then(|source| source.preview.distance),
             };
             if options.solid {
                 oblique::Output::SolidCurve {
@@ -377,7 +399,7 @@ fn extrude(
             tolerance,
         )?;
         result.brep = result.brep.transformed(to_world, tolerance)?;
-        return Ok(result);
+        return Ok(Some(result));
     }
     let base_face = source.faces()[0].surface();
     let end = temporary_end(&stock, direction, tolerance)?.clone();
@@ -433,24 +455,46 @@ fn extrude(
     } else {
         result
     };
-    Ok(Product::from_cut(
+    Ok(Some(Product::from_cut(
         result.transformed(to_world, tolerance)?,
         reached_boundary,
-    ))
+    )))
 }
 
 fn toward_cutter(
     source: BoundingBox3,
     cutter: &Brep,
     axis: Vector3,
+    pick: Option<(&NurbsCurve, Vector3)>,
     tolerance: Tolerance,
-) -> Result<Vector3, GeometryError> {
+) -> Result<Option<Vector3>, GeometryError> {
+    if let Some((curve, offset)) = pick {
+        let signed = offset.dot(axis.normalized_nonzero()?.as_vector())?;
+        if signed.abs() > tolerance.absolute() {
+            let direction = axis.scaled(signed.signum())?;
+            if let Some(plane) = cutter.faces()[0].surface().plane(tolerance)? {
+                let sign = direction.dot(plane.normal().as_vector())?.signum();
+                let weight_sign = curve.control_points()[0].weight().signum();
+                // Establish that the cutter is behind the entire source
+                // before consuming a pick without producing a sweep.
+                if curve.control_points().iter().all(|control| {
+                    control.weight().signum() == weight_sign
+                        && plane
+                            .signed_distance_to(control.point())
+                            .is_ok_and(|d| d * sign > tolerance.absolute())
+                }) {
+                    return Ok(None);
+                }
+            }
+            return Ok(Some(direction));
+        }
+    }
     let [base_min, base_max] = axial_extent(source, axis)?;
     let [cutter_min, cutter_max] = axial_extent(cutter.padded_trim_bounds()?, axis)?;
     if cutter_min.midpoint(cutter_max) < base_min.midpoint(base_max) - tolerance.absolute() {
-        axis.scaled(-1.)
+        Ok(Some(axis.scaled(-1.)?))
     } else {
-        Ok(axis)
+        Ok(Some(axis))
     }
 }
 

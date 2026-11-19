@@ -6,10 +6,13 @@ impl VibocerosApp {
         if self.picking_surface_boundary()
             && let Some((object, face)) = output.face_click
         {
-            self.pick_surface_boundary(viboceros_command::surface_reference::BoundaryRef {
-                object,
-                face: Some(face),
-            });
+            self.pick_surface_boundary(
+                viboceros_command::surface_reference::BoundaryRef {
+                    object,
+                    face: Some(face),
+                },
+                output.face_hit_point,
+            );
             return true;
         }
         if let Some(click) = output.curvature_click {

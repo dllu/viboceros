@@ -1,7 +1,10 @@
 //! Tapered extrusion cutter selection through the shared surface face picker.
 use super::*;
 use viboceros_command::surface_reference::BoundaryRef;
-use viboceros_command::{CommandError, extrude_tapered::TaperedBoundaryOutcome};
+use viboceros_command::{
+    CommandError,
+    extrude_tapered::{TaperedBoundaryOutcome, TaperedBoundaryPreview},
+};
 
 impl VibocerosApp {
     pub(in crate::app) fn picking_tapered_boundary(&self) -> bool {
@@ -38,7 +41,7 @@ impl VibocerosApp {
         }
         self.set_tapered_stage(surface, stage, options);
         if let BoundaryInput::Reference(reference) = input {
-            self.pick_tapered_boundary(reference);
+            self.pick_tapered_boundary(reference, None);
         }
     }
 
@@ -61,13 +64,17 @@ impl VibocerosApp {
                 })
                 .map_or(input, |(_, id)| id.trim());
             match BoundaryRef::parse(reference) {
-                Ok(reference) => self.pick_tapered_boundary(reference),
+                Ok(reference) => self.pick_tapered_boundary(reference, None),
                 Err(error) => self.push_log(format!("Error: {error}")),
             }
         }
     }
 
-    pub(in crate::app) fn pick_tapered_boundary(&mut self, reference: BoundaryRef) {
+    pub(in crate::app) fn pick_tapered_boundary(
+        &mut self,
+        reference: BoundaryRef,
+        hit: Option<Point3>,
+    ) {
         let Some(InteractiveCommand::ExtrudeTapered {
             surface,
             stage: Stage::Boundary,
@@ -77,7 +84,7 @@ impl VibocerosApp {
             return;
         };
         if !surface {
-            self.finish_curve_tapered_boundary(reference, options);
+            self.finish_curve_tapered_boundary(reference, options, hit);
             return;
         }
         let before = self.document.objects().len();
@@ -94,6 +101,7 @@ impl VibocerosApp {
         &mut self,
         reference: BoundaryRef,
         options: TaperedExtrusionOptions,
+        hit: Option<Point3>,
     ) {
         let Some(session) = self.tapered_extrusion_session.as_ref() else {
             return;
@@ -103,13 +111,17 @@ impl VibocerosApp {
             return;
         }
         let plane = session.plane;
-        let preview = session.boundary_preview;
+        let preview = TaperedBoundaryPreview {
+            distance: session.boundary_preview,
+            pick_offset: hit
+                .and_then(|point| session.constraint(options).anchor.vector_to(point).ok()),
+        };
         self.selection_menu = None;
         self.push_log(format!(
             "> ExtrudeCrvTapered ToBoundary={reference} {}",
             options.command_options(false),
         ));
-        let result = self.commands.execute_curve_tapered_boundary(
+        let result = self.commands.execute_curve_tapered_boundary_pick(
             &mut self.document,
             reference,
             options,

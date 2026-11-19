@@ -2,6 +2,7 @@ use super::*;
 use crate::app::extrude_tapered::Stage;
 use viboceros_geometry::NurbsSurface;
 
+mod base_point;
 mod gapped;
 
 fn rectangle(app: &mut VibocerosApp, [x, y, xx, yy]: [f64; 4], z: f64) -> ObjectId {

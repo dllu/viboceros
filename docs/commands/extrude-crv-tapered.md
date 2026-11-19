@@ -15,7 +15,7 @@ tangent join. The live preview updates to show the resulting seams. Sharp
 corners and discontinuities introduced by the fitted offset can create seams
 in either mode.
 Typed distances accept document units. Enter repeats the last signed distance.
-Failed geometry keeps the getter and input curves available for retry.
+A failed distance input keeps the getter and input curves available for retry.
 Esc cancels the command.
 
 Choose `ToBoundary` at the distance getter and pick the cutter face. Closed
@@ -25,6 +25,12 @@ outward convex line-and-arc profile and a parallel rectangular cutter, the
 cutter must span the section. A planar cutter on a slanted sweep uses the
 viewport distance captured when entering `ToBoundary`. The temporary sweep
 must reach past the cutter. A headless cut uses the combined bounds.
+A viewport pick determines the pull side by its position along the extrusion
+axis from the current base point. This also applies after `SetBasePoint` picks
+a point off the profile plane. When the pull points away from a planar cutter,
+that source produces no sweep. Other selected curves can still cut.
+`DeleteInput=Yes` removes the source in the same Undo/Redo step even when
+its pull points away.
 A slanted sweep with a continuous rim can be cut by a planar or bilinear
 cutter that spans the section. A warped bilinear
 cutter must project one-to-one along the sweep direction. Holes outside the
@@ -52,8 +58,8 @@ with gaps, cutter orientation can select the trimmed leading strip or the
 uncut closing strip. With `Solid=Yes`, a closed polygon
 can report a failed cut and retain the base-capped preview stock. The
 captured sweep must reach the cutter before it can leave this result.
-Off-plane base points, holes within warped sections, and collapsing curved
-stocks need further qualification.
+Holes within warped sections and collapsing curved stocks need further
+qualification.
 
 Headless examples, with curves selected:
 

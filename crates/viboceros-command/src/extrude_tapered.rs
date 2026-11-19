@@ -7,6 +7,14 @@ pub use crate::tapered_boundary::TaperedBoundaryOutcome;
 
 mod partitions;
 
+/// Geometry captured by the interactive distance and boundary getters.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct TaperedBoundaryPreview {
+    pub distance: Option<f64>,
+    /// World-space displacement from the distance base to the cutter hit.
+    pub pick_offset: Option<Vector3>,
+}
+
 pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [SplitAtTangents=Yes|No]";
 const COMMAND_NAME: &str = "ExtrudeCrvTapered";
 pub(super) struct ExtrudeTaperedCommand {
@@ -282,7 +290,7 @@ impl Command for ExtrudeTaperedCommand {
                     options,
                     reference,
                     context.construction_plane,
-                    None,
+                    TaperedBoundaryPreview::default(),
                 )?
                 .cut_count()?;
                 return Ok(format!("Tapered {count} curve object(s) to the boundary"));
@@ -346,6 +354,27 @@ impl CommandRegistry {
         plane: Frame3,
         preview_distance: Option<f64>,
     ) -> Result<TaperedBoundaryOutcome, CommandError> {
+        self.execute_curve_tapered_boundary_pick(
+            doc,
+            reference,
+            options,
+            plane,
+            TaperedBoundaryPreview {
+                distance: preview_distance,
+                pick_offset: None,
+            },
+        )
+    }
+
+    /// Use the actual cutter hit to choose the pull side of an interactive cut.
+    pub fn execute_curve_tapered_boundary_pick(
+        &self,
+        doc: &mut Document,
+        reference: BoundaryRef,
+        options: TaperedExtrusionOptions,
+        plane: Frame3,
+        preview: TaperedBoundaryPreview,
+    ) -> Result<TaperedBoundaryOutcome, CommandError> {
         let result = run_command_transaction_with_policy(
             doc,
             COMMAND_NAME,
@@ -356,7 +385,7 @@ impl CommandRegistry {
                     options,
                     reference,
                     plane,
-                    preview_distance,
+                    preview,
                 )
             },
             |error| matches!(error, CommandError::SurfaceExtrusionBoundaryRejected),
@@ -374,14 +403,14 @@ fn run_boundary(
     options: TaperedExtrusionOptions,
     reference: BoundaryRef,
     plane: Frame3,
-    preview_distance: Option<f64>,
+    mut preview: TaperedBoundaryPreview,
 ) -> Result<TaperedBoundaryOutcome, CommandError> {
     let previous = settings.get();
     let options = previous.boundary_options(options);
-    let preview_distance = preview_distance.map(f64::abs).filter(|d| d.is_finite());
+    preview.distance = preview.distance.map(f64::abs).filter(|d| d.is_finite());
     let outcome = crate::tapered_boundary::apply(
         doc,
-        crate::tapered_boundary::Inputs::Curves { preview_distance },
+        crate::tapered_boundary::Inputs::Curves(preview),
         options,
         reference,
         plane,
@@ -389,7 +418,8 @@ fn run_boundary(
     if matches!(outcome, TaperedBoundaryOutcome::Cut(_)) {
         settings.set(TaperedExtrusionSettings::after_success(
             options,
-            preview_distance
+            preview
+                .distance
                 .filter(|d| *d > doc.tolerance().absolute())
                 .unwrap_or(previous.distance),
         ));
