@@ -331,7 +331,7 @@ impl VibocerosApp {
                 display_units,
             }
         } else if normalized == "evaluatept" {
-            let Some(command) = evaluate_point::start_command(&arguments) else {
+            let Some(command) = self.start_evaluate_point(&arguments) else {
                 return false;
             };
             command

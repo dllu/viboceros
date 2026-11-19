@@ -92,7 +92,7 @@ bool format_coordinates(const ViboAnnotationLengthFormat& format, double model_m
         static_cast<wchar_t>(format.decimal_separator), component)) {
       return false;
     }
-    if (axis != 0) result += L',';
+    if (axis != 0) result += L", ";
     result += component;
   }
   return true;

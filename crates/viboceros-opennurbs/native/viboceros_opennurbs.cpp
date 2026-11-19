@@ -29,6 +29,9 @@ namespace {
 using vibo_camera::read_view_camera;
 using vibo_camera::write_view_camera;
 
+// OpenNURBS archives and dimension styles use the same mutable font tables.
+std::mutex annotation_archive_mutex;
+
 struct BridgeLayer {
   int32_t source_index = 0;
   std::string name;
@@ -2094,6 +2097,7 @@ extern "C" int32_t vibo_3dm_read_mode(const char* path, uint8_t structural,
 
   try {
     begin_open_nurbs();
+    const std::lock_guard lock(annotation_archive_mutex);
     ON_wString diagnostics;
     ON_TextLog log(diagnostics);
     ONX_Model source;
@@ -2560,6 +2564,7 @@ extern "C" int32_t vibo_annotation_length_format(const uint8_t* data, size_t cou
   if (format == nullptr) return 0;
   try {
     begin_open_nurbs();
+    const std::lock_guard lock(annotation_archive_mutex);
     if (count == 0) {
       *format = vibo_annotation::length_format(ON_DimStyle::Default);
       return 1;
@@ -2626,6 +2631,7 @@ extern "C" int32_t vibo_3dm_write(
 
   try {
     begin_open_nurbs();
+    const std::lock_guard lock(annotation_archive_mutex);
     ONX_Model model;
     if (annotation_style_count != 0 &&
         !vibo_annotation::install(model, annotation_style, annotation_style_count)) {

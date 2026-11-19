@@ -1,0 +1,289 @@
+{
+  "engine": "rhino",
+  "engine_version": "8.32.26160.13001",
+  "construction_plane": {
+    "origin": [10, 20, 30],
+    "x_axis": [0, 1, 0],
+    "y_axis": [0, 0, 1]
+  },
+  "cases": [
+    {
+      "input": "_EvaluatePt _Label=On _Style=Dot _CoordinateSystem=CPlane w13,24,35",
+      "ok": true,
+      "name": "dot",
+      "history": "Python Script ( ResetEngine ): _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Label=On\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Style=Dot\nPoint to evaluate ( Label=On  Style=Dot  CoordinateSystem=CPlane ): _CoordinateSystem=CPlane\nPoint to evaluate ( Label=On  Style=Dot  CoordinateSystem=CPlane ): w13,24,35\nPoint in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000\nCommand: _Cancel",
+      "created": [
+        {
+          "kind": "TextDot",
+          "point": [13.0, 24.0, 35.0],
+          "text": "4.00, 5.00, 3.00"
+        }
+      ]
+    },
+    {
+      "input": "_EvaluatePt _Label=On _Style=Leader _CoordinateSystem=CPlane w13,24,35 w13,30,39 _Enter",
+      "ok": false,
+      "name": "leader-second",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Label=On\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Style=Leader\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _CoordinateSystem=CPlane\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): w13,24,35\nPoint in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000\nCommand: w13,30,39\nUnknown command: w13,30,39",
+      "created": [
+        {
+          "plane": [
+            [13.0, 24.0, 35.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0]
+          ],
+          "kind": "Leader",
+          "size": 1.0,
+          "height": 1.0,
+          "points": [
+            [13.0, 24.0, 35.0],
+            [13.0, 26.0, 37.0],
+            [13.0, 27.0, 37.0]
+          ],
+          "landing": 1.0,
+          "text": "4.00, 5.00, 3.00"
+        }
+      ]
+    },
+    {
+      "input": "_EvaluatePt _Label=On _Style=Leader _CoordinateSystem=CPlane w13,24,35 _Cancel",
+      "ok": true,
+      "name": "leader-cancel",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Label=On\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _Style=Leader\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): _CoordinateSystem=CPlane\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=CPlane ): w13,24,35\nPoint in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000\nCommand: _Cancel",
+      "created": [
+        {
+          "plane": [
+            [13.0, 24.0, 35.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0]
+          ],
+          "kind": "Leader",
+          "size": 1.0,
+          "height": 1.0,
+          "points": [
+            [13.0, 24.0, 35.0],
+            [13.0, 26.0, 37.0],
+            [13.0, 27.0, 37.0]
+          ],
+          "landing": 1.0,
+          "text": "4.00, 5.00, 3.00"
+        }
+      ]
+    },
+    {
+      "input": "_EvaluatePt w13,24,35 _Cancel",
+      "ok": true,
+      "name": "recall",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=World ): w13,24,35\nPoint in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000\nCommand: _Cancel",
+      "created": [
+        {
+          "plane": [
+            [13.0, 24.0, 35.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0]
+          ],
+          "kind": "Leader",
+          "size": 1.0,
+          "height": 1.0,
+          "points": [
+            [13.0, 24.0, 35.0],
+            [13.0, 26.0, 37.0],
+            [13.0, 27.0, 37.0]
+          ],
+          "landing": 1.0,
+          "text": "13.00, 24.00, 35.00"
+        }
+      ]
+    },
+    {
+      "input": "_EvaluatePt _Label=Off w13,24,35",
+      "ok": true,
+      "name": "label-off",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=World ): _Label=Off\nPoint to evaluate ( Label=Off ): w13,24,35\nPoint in world coordinates = 13.000,24.000,35.000    CPlane coordinates = 4.000,5.000,3.000\nCommand: _Cancel",
+      "created": []
+    }
+  ],
+  "style_variants": {
+    "construction_plane": "World XY",
+    "input": "_EvaluatePt _Label=On _Style=Leader _CoordinateSystem=World w1.23456,2.34567,0",
+    "cases": [
+      {
+        "style_changes": {},
+        "leader": {
+          "scale": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Polyline",
+          "has_landing": false,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [3.23456, 4.34567, 0.0],
+            [4.23456, 4.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 1.0
+        }
+      },
+      {
+        "style_changes": {
+          "TextHeight": 3
+        },
+        "leader": {
+          "scale": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "height": 3.0,
+          "has_landing": false,
+          "landing": 1.0,
+          "arrow": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [7.23456, 8.34567, 0.0],
+            [10.23456, 8.34567, 0.0]
+          ]
+        }
+      },
+      {
+        "style_changes": {
+          "LeaderHasLanding": true
+        },
+        "leader": {
+          "scale": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Polyline",
+          "has_landing": true,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [3.23456, 4.34567, 0.0],
+            [4.23456, 4.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 1.0
+        }
+      },
+      {
+        "style_changes": {
+          "LeaderArrowLength": 7
+        },
+        "leader": {
+          "scale": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Polyline",
+          "has_landing": false,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [3.23456, 4.34567, 0.0],
+            [4.23456, 4.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 7.0
+        }
+      },
+      {
+        "style_changes": {
+          "LeaderLandingLength": 5
+        },
+        "leader": {
+          "scale": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 5.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Polyline",
+          "has_landing": false,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [3.23456, 4.34567, 0.0],
+            [4.23456, 4.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 1.0
+        }
+      },
+      {
+        "style_changes": {
+          "LeaderCurveType": "Spline"
+        },
+        "leader": {
+          "scale": 1.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Spline",
+          "has_landing": false,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [3.23456, 4.34567, 0.0],
+            [4.23456, 4.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 1.0
+        }
+      },
+      {
+        "style_changes": {
+          "DimensionScale": 4
+        },
+        "leader": {
+          "scale": 4.0,
+          "text": "1.23, 2.35, 0.00",
+          "landing": 1.0,
+          "plane": [
+            [1.23456, 2.34567, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0]
+          ],
+          "curve": "Polyline",
+          "has_landing": false,
+          "points": [
+            [1.23456, 2.34567, 0.0],
+            [9.23456, 10.34567, 0.0],
+            [13.23456, 10.34567, 0.0]
+          ],
+          "height": 1.0,
+          "arrow": 1.0
+        }
+      }
+    ]
+  },
+  "cancelled_setting_change": [
+    {
+      "input": "_EvaluatePt _Label=Off _Cancel",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=On  Style=Leader  CoordinateSystem=World ): _Label=Off\nPoint to evaluate ( Label=Off ): _Cancel\nPoint to evaluate ( Label=Off )",
+      "created": []
+    },
+    {
+      "input": "_EvaluatePt w1.23456,2.34567,0",
+      "history": "Command: _EvaluatePt\nPoint to evaluate ( Label=Off ): w1.23456,2.34567,0\nPoint in world coordinates = 1.235,2.346,0.000    CPlane coordinates = 1.235,2.346,0.000",
+      "created": []
+    }
+  ]
+}

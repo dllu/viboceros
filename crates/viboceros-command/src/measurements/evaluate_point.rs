@@ -1,6 +1,7 @@
 //! World and construction-plane coordinate reporting and annotation.
 use super::*;
 use crate::{CommandContext, parse_point};
+use std::sync::Arc;
 use viboceros_geometry::{Frame3, GeometryError, Leader, Point3, TextDot};
 
 const USAGE: &str = "EvaluatePt point [leader points] [Label=On|Off] [Style=Dot|Leader] [CoordinateSystem=World|CPlane]";
@@ -14,15 +15,18 @@ pub struct EvaluatePointOptions {
 
 impl EvaluatePointOptions {
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
-        let mut options = Self::default();
+        Self::default().parse_with_defaults(arguments)
+    }
+
+    pub fn parse_with_defaults(mut self, arguments: &[&str]) -> Result<Self, CommandError> {
         let mut seen = [false; 3];
         for argument in arguments {
-            let key = options.set(argument)?;
+            let key = self.set(argument)?;
             if std::mem::replace(&mut seen[key], true) {
                 return Err(CommandError::Usage(USAGE));
             }
         }
-        Ok(options)
+        Ok(self)
     }
 
     pub fn with_option(mut self, argument: &str) -> Result<Self, CommandError> {
@@ -65,8 +69,20 @@ impl EvaluatePointOptions {
         }
     }
 
-    pub fn coordinate_system(self) -> &'static str {
-        if self.cplane { "CPlane" } else { "World" }
+    pub fn arguments(self) -> [&'static str; 3] {
+        [
+            if self.label { "Label=On" } else { "Label=Off" },
+            if self.leader {
+                "Style=Leader"
+            } else {
+                "Style=Dot"
+            },
+            if self.cplane {
+                "CoordinateSystem=CPlane"
+            } else {
+                "CoordinateSystem=World"
+            },
+        ]
     }
 
     pub fn wants_leader(self) -> bool {
@@ -88,28 +104,32 @@ impl EvaluatePointOptions {
 
     pub fn leader_label(
         self,
-        start: Point3,
-        end: Point3,
+        point: Point3,
         plane: Frame3,
         document: &Document,
     ) -> Result<Leader, GeometryError> {
-        self.create_leader(vec![start, end], plane, document)
+        self.create_leader(vec![point], plane, document)
     }
 
     fn create_leader(
         self,
-        points: Vec<Point3>,
+        mut points: Vec<Point3>,
         plane: Frame3,
         document: &Document,
     ) -> Result<Leader, GeometryError> {
         let start = points[0];
         let label = self.format_label(start, plane, document)?;
-        Leader::try_new(
-            plane.with_origin(start),
-            points,
-            label,
-            document.annotation_style().clone(),
-        )
+        let plane = plane.with_origin(start);
+        let style = document.annotation_style();
+        if points.len() == 1 {
+            // Rhino uses the model-space text height for both legs.
+            let height = style.leader_appearance().text_height;
+            points.extend([
+                plane.point_at([2.0 * height, 2.0 * height, 0.0])?,
+                plane.point_at([3.0 * height, 2.0 * height, 0.0])?,
+            ]);
+        }
+        Leader::try_new(plane, points, label, style.clone())
     }
 
     pub fn format_label(
@@ -143,19 +163,26 @@ fn format_coordinates(values: [f64; 3]) -> String {
     values.map(format_measurement).join(",")
 }
 
-pub(crate) struct EvaluatePointCommand;
+pub(crate) struct EvaluatePointCommand(
+    pub Arc<crate::remembered::Remembered<EvaluatePointOptions>>,
+);
 
 impl Command for EvaluatePointCommand {
     fn name(&self) -> &'static str {
         "EvaluatePt"
     }
 
+    fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
+        let (options, mut points): (Vec<_>, Vec<_>) = input
+            .split_whitespace()
+            .partition(|argument| argument.contains('='));
+        // Freeze the session choices before the registry decides whether to start undo.
+        points.extend(self.0.get().parse_with_defaults(&options)?.arguments());
+        Ok(points)
+    }
+
     fn records_history_for(&self, arguments: &[&str]) -> bool {
-        arguments.iter().any(|argument| {
-            EvaluatePointOptions::default()
-                .with_option(argument)
-                .is_ok_and(|options| options.label)
-        })
+        arguments.contains(&"Label=On")
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
@@ -183,9 +210,7 @@ impl Command for EvaluatePointCommand {
         }
         let point = points.first().copied().ok_or(CommandError::Usage(USAGE))?;
         let options = EvaluatePointOptions::parse(&options)?;
-        if (options.wants_leader() && points.len() < 2)
-            || (!options.wants_leader() && points.len() != 1)
-        {
+        if !options.wants_leader() && points.len() != 1 {
             return Err(CommandError::Usage(USAGE));
         }
         let local = context.construction_plane.coordinates_of(point)?;
@@ -197,6 +222,7 @@ impl Command for EvaluatePointCommand {
             let dot = TextDot::try_new(point, text)?;
             document.add_geometry(Geometry::TextDot(dot))?;
         }
+        self.0.set(options);
         Ok(format!(
             "World coordinates = {}\nCPlane coordinates = {}",
             format_coordinates(point.to_array()),
@@ -254,7 +280,6 @@ mod tests {
             "EvaluatePt",
             "EvaluatePt NaN,0,0",
             "EvaluatePt 0,0,0 extra",
-            "EvaluatePt 0,0,0 Label=On Style=Leader",
             "EvaluatePt 0,0,0 Label=No",
             "EvaluatePt 0,0,0 Label=Off Label=Off",
         ] {
@@ -311,7 +336,7 @@ mod tests {
             panic!("expected a text dot");
         };
         assert_eq!(dot.point(), point);
-        assert_eq!(dot.text(), "1.23,2.13,-3.98");
+        assert_eq!(dot.text(), "1.23, 2.13, -3.98");
         assert_eq!(document.undo_label(), Some("EvaluatePt"));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().count(), 0);
@@ -342,7 +367,7 @@ mod tests {
                 panic!("expected a text dot");
             };
             assert_eq!(dot.point().to_array(), [25.4, -12.7, 0.23]);
-            assert_eq!(dot.text(), "2.000,-1.000,0.020");
+            assert_eq!(dot.text(), "2.000, -1.000, 0.020");
             if path == &source {
                 registry
                     .execute(&mut document, &format!("SaveAs \"{}\"", saved.display()))
@@ -393,7 +418,7 @@ mod tests {
             let Geometry::Leader(leader) = model.objects().next().unwrap().geometry() else {
                 panic!("expected native leader geometry");
             };
-            assert_eq!(leader.text(), "0.315,0.395,0.235");
+            assert_eq!(leader.text(), "0.315, 0.395, 0.235");
             assert!(!leader.style().archive().is_empty());
             assert_eq!(leader.plane(), frame.with_origin(measured));
             assert_eq!(
@@ -410,6 +435,65 @@ mod tests {
         assert_eq!(document.objects().count(), 0);
         registry.execute(&mut document, "Redo").unwrap();
         assert_eq!(document.objects().count(), 1);
+    }
+
+    #[test]
+    fn evaluate_point_automatic_leaders_match_rhino_and_remember_settings() {
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(10., 20., 30.).unwrap(),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let context = CommandContext {
+            construction_plane: frame,
+        };
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("automatic.3dm");
+        // Rhino 8.32 creates this exact path from the single measured point.
+        for input in [
+            "_EvaluatePt _Label=_On _Style=_Leader _CoordinateSystem=_CPlane 13,24,35",
+            "EvaluatePt 13,24,35",
+        ] {
+            registry
+                .execute_in_context(&mut document, input, context)
+                .unwrap();
+        }
+        registry
+            .execute(&mut document, &format!("SaveAs \"{}\"", path.display()))
+            .unwrap();
+        let (reopened, _, _) = crate::open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
+        for model in [&document, &reopened] {
+            assert_eq!(model.objects().count(), 2);
+            for object in model.objects() {
+                let Geometry::Leader(leader) = object.geometry() else {
+                    panic!("expected an automatic leader");
+                };
+                assert_eq!(
+                    leader
+                        .path()
+                        .vertices()
+                        .iter()
+                        .copied()
+                        .map(Point3::to_array)
+                        .collect::<Vec<_>>(),
+                    [[13., 24., 35.], [13., 26., 37.], [13., 27., 37.]]
+                );
+                assert_eq!(leader.text(), "4.00, 5.00, 3.00");
+            }
+        }
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 1);
+        registry
+            .execute(&mut document, "EvaluatePt Label=Off 0,0,0")
+            .unwrap();
+        registry.execute(&mut document, "EvaluatePt 0,0,0").unwrap();
+        assert_eq!(document.objects().count(), 1);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().count(), 2);
     }
 
     #[test]

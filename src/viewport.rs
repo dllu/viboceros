@@ -409,7 +409,7 @@ pub struct ViewportInput<'a> {
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
-    pub(crate) evaluate_point: Option<EvaluatePointPreview>,
+    pub(crate) evaluate_point: Option<viboceros_command::EvaluatePointOptions>,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
@@ -546,12 +546,6 @@ pub struct ViewportInput<'a> {
     pub current_end_marker: Option<usize>,
     pub end_marker_color: Option<Color32>,
     pub(crate) surface_corners: &'a [SurfaceCornerControl],
-}
-
-#[derive(Clone, Copy, Debug)]
-pub(crate) struct EvaluatePointPreview {
-    pub(crate) options: viboceros_command::EvaluatePointOptions,
-    pub(crate) leader: Option<(Point3, Frame3)>,
 }
 
 fn selection_candidate(
@@ -1538,17 +1532,7 @@ impl Viewport {
         self.analysis_objects = input.draft_angle_analysis.map(|view| view.objects.clone());
         self.curvature_objects = input.curvature_analysis.map(|v| v.objects.clone());
         self.curvature_meshes = input.curvature_analysis.map(|v| v.meshes.clone());
-        let drafting = input.evaluate_point.and_then(|preview| preview.leader).map_or(
-            input.drafting,
-            |(anchor, frame)| DraftingInput {
-                anchor: Some(anchor),
-                planar: true,
-                plane: Some(frame),
-                snap_projection: Some(frame.with_origin(anchor)),
-                ortho_snap_to_cplane_z: false,
-                ..input.drafting
-            },
-        );
+        let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
         self.annotation_fonts = Some(ui.ctx().clone());
@@ -2604,13 +2588,12 @@ impl Viewport {
                 .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
         {
             let color = Color32::from_rgb(20, 115, 190);
-            if let Some((start, plane)) = preview.leader {
-                if let Ok(leader) = preview.options.leader_label(start, cursor.point, plane, document) {
+            let plane = self.construction_plane();
+            if preview.wants_leader() {
+                if let Ok(leader) = preview.leader_label(cursor.point, plane, document) {
                     self.paint_leader_preview(&painter, rect, &leader, color);
                 }
-            } else if let Some(dot) =
-                preview.options.preview_label(cursor.point, self.construction_plane(), document)
-            {
+            } else if let Some(dot) = preview.preview_label(cursor.point, plane, document) {
                 self.paint_text_dot(&painter, rect, &dot, color);
             }
         }

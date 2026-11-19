@@ -109,7 +109,7 @@ fn evaluate_point_changes_label_options_while_getting_a_typed_point() {
         panic!("expected a text dot");
     };
     assert_eq!(dot.point(), point(13., 24., 35.));
-    assert_eq!(dot.text(), "4.00,5.00,3.00");
+    assert_eq!(dot.text(), "4.00, 5.00, 3.00");
     assert_eq!(
         app.command_log.back().unwrap(),
         "World coordinates = 13,24,35\nCPlane coordinates = 4,5,3"
@@ -120,6 +120,25 @@ fn evaluate_point_changes_label_options_while_getting_a_typed_point() {
     assert!(app.document.objects().next().is_none());
     enter(&mut app, "Redo");
     assert!(app.document.object(id).is_some());
+
+    enter(&mut app, "EvaluatePt");
+    enter(&mut app, "Style=Leader");
+    enter(&mut app, "w15,24,36");
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    let Geometry::Leader(leader) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected a leader with the remembered label and coordinate settings");
+    };
+    assert_eq!(leader.path().vertices()[0], point(15., 24., 36.));
+    assert_eq!(leader.text(), "4.00, 6.00, 5.00");
+
+    enter(&mut app, "EvaluatePt");
+    enter(&mut app, "Label=Off");
+    app.cancel_interactive_command(true);
+    let before = format!("{:?}", app.document);
+    enter(&mut app, "EvaluatePt");
+    enter(&mut app, "w0,0,0");
+    assert!(app.active_command.is_none());
+    assert_eq!(format!("{:?}", app.document), before);
 }
 
 #[test]
@@ -159,7 +178,7 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
             _ => None,
         })
         .collect();
-    let expected = "0.235,0.080,0.000";
+    let expected = "0.235, 0.080, 0.000";
     let preview = labels
         .iter()
         .find(|label| label.galley.job.text == expected)
@@ -204,7 +223,7 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
 }
 
 #[test]
-fn evaluate_point_leader_previews_the_tail_and_commits_once() {
+fn evaluate_point_leader_previews_the_annotation_and_commits_on_the_first_click() {
     let mut app = test_app();
     let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("crates/viboceros-io/tests/fixtures/leader-appearance.3dm");
@@ -219,29 +238,21 @@ fn evaluate_point_leader_previews_the_tail_and_commits_once() {
     enter(&mut app, "EvaluatePt Label=On");
     enter(&mut app, "Style");
     enter(&mut app, "Leader");
-    enter(&mut app, "w0,0,2");
-    assert!(matches!(
-        app.active_command,
-        Some(InteractiveCommand::EvaluatePoint {
-            leader: Some(_),
-            ..
-        })
-    ));
     assert!(!app.document.can_undo());
-    assert!(!app.accept_drafting_point(point(0., 0., 2.)));
     frame(&mut app, vec![]);
     frame(&mut app, vec![]);
-    let tail = point(2., 1., 2.);
-    let pixel = screen_point(&app, tail);
+    let measured = point(2., 1., 0.);
+    let pixel = screen_point(&app, measured);
     let preview = frame(&mut app, vec![egui::Event::PointerMoved(pixel)]);
+    let expected = "2.00, 1.00, 0.00";
     let preview_text = preview
         .iter()
         .find_map(|shape| match &shape.shape {
-            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00" => Some(text),
+            egui::Shape::Text(text) if text.galley.job.text == expected => Some(text),
             _ => None,
         })
         .expect("formatted leader text in hover preview");
-    assert!((preview_text.angle + 0.5_f32.atan()).abs() < 1e-5);
+    assert_eq!(preview_text.angle, 0.0);
     assert!(preview.iter().any(|shape| matches!(
         &shape.shape,
         egui::Shape::Mesh(mesh) if mesh.indices.len() == 22 * 3
@@ -254,20 +265,29 @@ fn evaluate_point_leader_previews_the_tail_and_commits_once() {
     let Geometry::Leader(leader) = object.geometry() else {
         panic!("expected a leader");
     };
-    assert_eq!(leader.path().vertices(), &[point(0., 0., 2.), tail]);
-    assert_eq!(leader.text(), "0.00,0.00,2.00");
+    assert_eq!(
+        leader.path().vertices(),
+        &[measured, point(4., 3., 0.), point(5., 3., 0.)]
+    );
+    assert_eq!(
+        leader.landing(),
+        Some([point(5., 3., 0.), point(6., 3., 0.)])
+    );
+    assert_eq!(leader.text(), expected);
     assert_eq!(app.document.undo_label(), Some("EvaluatePt"));
     frame(&mut app, vec![]);
     let placed = frame(&mut app, vec![]);
-    let label = placed
+    let (label, clip) = placed
         .iter()
         .find_map(|shape| match &shape.shape {
-            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00" => Some(text),
+            egui::Shape::Text(text) if text.galley.job.text == expected => {
+                Some((text, shape.clip_rect))
+            }
             _ => None,
         })
         .expect("drawn leader label");
-    let label_center =
-        label.pos + egui::emath::Rot2::from_angle(label.angle) * (label.galley.size() * 0.5);
-    viewport_click(&mut app, &context, label_center);
+    let visible = egui::Rect::from_min_size(label.pos, label.galley.size()).intersect(clip);
+    assert!(visible.is_positive());
+    viewport_click(&mut app, &context, visible.center());
     assert!(app.document.is_selected(id));
 }

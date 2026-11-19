@@ -1084,6 +1084,7 @@ pub struct CommandRegistry {
     ribbon_options: std::sync::Arc<remembered::Remembered<ribbon::Options>>,
     merge_surface_options: std::sync::Arc<remembered::Remembered<merge_surfaces::Options>>,
     match_surface_options: std::sync::Arc<remembered::Remembered<match_surface::Options>>,
+    evaluate_point_options: std::sync::Arc<remembered::Remembered<EvaluatePointOptions>>,
     shell_options: std::sync::Arc<remembered::Remembered<shell::ShellOptions>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
@@ -1952,7 +1953,7 @@ impl CommandRegistry {
             .register(AngleCommand)
             .expect("unique built-in command");
         registry
-            .register(EvaluatePointCommand)
+            .register(EvaluatePointCommand(registry.evaluate_point_options.clone()))
             .expect("unique built-in command");
         registry
             .register(DomainCommand)
@@ -2976,6 +2977,12 @@ impl CommandRegistry {
     }
     pub fn match_surface_options(&self) -> match_surface::Options {
         self.match_surface_options.get()
+    }
+    pub fn evaluate_point_options(&self) -> EvaluatePointOptions {
+        self.evaluate_point_options.get()
+    }
+    pub fn remember_evaluate_point_options(&self, options: EvaluatePointOptions) {
+        self.evaluate_point_options.set(options);
     }
     pub fn remember_match_surface_options(&self, value: match_surface::Options) {
         self.match_surface_options.set(value);
