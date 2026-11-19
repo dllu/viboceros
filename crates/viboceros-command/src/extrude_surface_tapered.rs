@@ -5,11 +5,14 @@ use crate::extrude_surface::{
     parse_face_extrusion_distance, surface_extrusion_targets,
 };
 use crate::extrude_tapered::{
-    TaperedExtrusionOptions, TaperedExtrusionSettings, retain_selected_inputs,
+    TaperedBoundaryOutcome, TaperedExtrusionOptions, TaperedExtrusionSettings,
+    retain_selected_inputs,
 };
-use crate::surface_reference::BoundaryInput;
+use crate::surface_reference::{BoundaryInput, BoundaryRef};
 
 pub const USAGE: &str = "ExtrudeSrfTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+const COMMAND_NAME: &str = "ExtrudeSrfTapered";
+
 pub(super) struct ExtrudeSurfaceTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -61,7 +64,7 @@ impl SurfaceTaperedInput {
 }
 impl Command for ExtrudeSurfaceTaperedCommand {
     fn name(&self) -> &'static str {
-        "ExtrudeSrfTapered"
+        COMMAND_NAME
     }
     fn commits_on_error(&self, error: &CommandError) -> bool {
         matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
@@ -108,19 +111,15 @@ impl Command for ExtrudeSurfaceTaperedCommand {
                 if !positional.is_empty() {
                     return Err(CommandError::Usage(USAGE));
                 }
-                let options = settings.boundary_options(input.options);
-                let count = crate::tapered_boundary::apply(
+                let count = run_boundary(
                     doc,
-                    crate::tapered_boundary::Inputs::Faces(&input.faces),
-                    options,
+                    &self.settings,
+                    &input.faces,
+                    input.options,
                     reference,
                     context.construction_plane,
                 )?
                 .cut_count()?;
-                self.settings.set(TaperedExtrusionSettings::after_success(
-                    options,
-                    settings.distance,
-                ));
                 return Ok(format!("Tapered {count} surface face(s) to the boundary"));
             }
         }
@@ -169,6 +168,65 @@ impl Command for ExtrudeSurfaceTaperedCommand {
         Ok(format!("Tapered {count} surface face(s)"))
     }
 }
+
+impl CommandRegistry {
+    /// Accept a cutter for the frozen source faces of an interactive taper.
+    pub fn execute_surface_tapered_boundary_pick(
+        &self,
+        doc: &mut Document,
+        faces: &SurfaceFaces,
+        options: TaperedExtrusionOptions,
+        reference: BoundaryRef,
+        plane: Frame3,
+    ) -> Result<TaperedBoundaryOutcome, CommandError> {
+        let result = run_command_transaction_with_policy(
+            doc,
+            COMMAND_NAME,
+            |doc| {
+                run_boundary(
+                    doc,
+                    &self.surface_tapered_settings,
+                    faces,
+                    options,
+                    reference,
+                    plane,
+                )
+            },
+            |error| matches!(error, CommandError::SurfaceExtrusionBoundaryRejected),
+        );
+        if !matches!(result, Ok(TaperedBoundaryOutcome::Fallback)) {
+            finish_command_selection(doc, COMMAND_NAME, &result);
+        }
+        result
+    }
+}
+
+fn run_boundary(
+    doc: &mut Document,
+    settings: &remembered::Remembered<TaperedExtrusionSettings>,
+    faces: &SurfaceFaces,
+    options: TaperedExtrusionOptions,
+    reference: BoundaryRef,
+    plane: Frame3,
+) -> Result<TaperedBoundaryOutcome, CommandError> {
+    let previous = settings.get();
+    let options = previous.boundary_options(options);
+    let outcome = crate::tapered_boundary::apply(
+        doc,
+        crate::tapered_boundary::Inputs::Faces(faces),
+        options,
+        reference,
+        plane,
+    )?;
+    if matches!(outcome, TaperedBoundaryOutcome::Cut(_)) {
+        settings.set(TaperedExtrusionSettings::after_success(
+            options,
+            previous.distance,
+        ));
+    }
+    Ok(outcome)
+}
+
 /// Construct the same one-face sweep for document edits and interactive previews.
 pub fn produce_surface(
     brep: &Brep,

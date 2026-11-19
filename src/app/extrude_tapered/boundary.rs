@@ -83,26 +83,6 @@ impl VibocerosApp {
         else {
             return;
         };
-        if !surface {
-            self.finish_curve_tapered_boundary(reference, options, hit);
-            return;
-        }
-        let before = self.document.objects().len();
-        if !self.finish_tapered_input(true, &format!("ToBoundary={reference}"), options)
-            && self.document.objects().len() > before
-        {
-            // A failed cut can commit a fallback sweep. Complete that pick
-            // while retaining the command error and its replayable result.
-            self.cancel_interactive_command(false);
-        }
-    }
-
-    fn finish_curve_tapered_boundary(
-        &mut self,
-        reference: BoundaryRef,
-        options: TaperedExtrusionOptions,
-        hit: Option<Point3>,
-    ) {
         let Some(session) = self.tapered_extrusion_session.as_ref() else {
             return;
         };
@@ -116,24 +96,45 @@ impl VibocerosApp {
             pick_offset: hit
                 .and_then(|point| session.constraint(options).anchor.vector_to(point).ok()),
         };
+        let (command, inputs) = if surface {
+            ("ExtrudeSrfTapered", "surface face(s)")
+        } else {
+            ("ExtrudeCrvTapered", "curve object(s)")
+        };
         self.selection_menu = None;
         self.push_log(format!(
-            "> ExtrudeCrvTapered ToBoundary={reference} {}",
-            options.command_options(false),
+            "> {command} ToBoundary={reference} {}",
+            options.command_options(surface),
         ));
-        let result = self.commands.execute_curve_tapered_boundary_pick(
-            &mut self.document,
-            reference,
-            options,
-            plane,
-            preview,
-        );
+        let result = if surface {
+            let Some(sources) = &self.surface_extrusion_sources else {
+                return;
+            };
+            self.commands.execute_surface_tapered_boundary_pick(
+                &mut self.document,
+                &SurfaceFaces::References(sources.targets.clone()),
+                options,
+                reference,
+                plane,
+            )
+        } else {
+            self.commands.execute_curve_tapered_boundary_pick(
+                &mut self.document,
+                reference,
+                options,
+                plane,
+                preview,
+            )
+        };
         if result.is_ok() {
             self.cancel_interactive_command(false);
         }
         let error = match result {
             Ok(TaperedBoundaryOutcome::Cut(count)) => {
-                self.push_log(format!("Tapered {count} curve object(s) to the boundary"));
+                if surface {
+                    self.component_selection.clear();
+                }
+                self.push_log(format!("Tapered {count} {inputs} to the boundary"));
                 return;
             }
             Ok(TaperedBoundaryOutcome::Fallback) => CommandError::SurfaceExtrusionBoundaryRejected,

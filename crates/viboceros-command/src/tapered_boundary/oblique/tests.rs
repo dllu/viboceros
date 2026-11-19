@@ -2,6 +2,7 @@ use super::*;
 use viboceros_geometry::{Circle3, UnitVector3};
 
 mod exterior;
+mod section;
 
 fn point(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()

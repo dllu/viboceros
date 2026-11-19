@@ -3,6 +3,10 @@ use super::*;
 use crate::curve_intersections::surface_events;
 use viboceros_geometry::CurveSurfaceIntersectionEvent;
 
+mod section;
+
+pub(super) use section::{Coverage, recover};
+
 pub(super) fn crosses_rim(
     stock: &Brep,
     base: Plane,

@@ -135,7 +135,7 @@ pub(super) fn apply(
                 // Some completed picks consume the input without producing
                 // a sweep, while other selected profiles can still cut.
                 empty_pick = true;
-                if options.delete_input {
+                if options.delete_input && source.face.is_none() {
                     remove_curves.push((source.object, true));
                 }
             }

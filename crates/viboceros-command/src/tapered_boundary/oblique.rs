@@ -4,6 +4,7 @@ use crate::surface_boundary_cut::{boundary_tool, mount_planar_cap};
 
 mod exterior;
 mod holes;
+mod support;
 mod walls;
 
 pub(super) use walls::{WallInput, trim_open};
@@ -113,10 +114,15 @@ pub(super) fn trim(
     // the requested output will contain only walls.
     let cap = has_holes || !matches!(output, Output::CurveWalls { .. });
     let closed = match clip(sweep, &stock, source, outline, displacement, cap, tolerance) {
-        Err(CommandError::SurfaceExtrusionBoundaryRejected)
-            if exterior::crosses_rim(&stock, source_plane, outline, displacement, tolerance)? =>
-        {
-            return rim_contact(stock, output, picked);
+        Err(CommandError::SurfaceExtrusionBoundaryRejected) => {
+            if exterior::crosses_rim(&stock, source_plane, outline, displacement, tolerance)? {
+                return rim_contact(stock, output, picked);
+            }
+            match exterior::recover(sweep, &stock, source, outline, displacement, cap, tolerance)? {
+                exterior::Coverage::Complete(brep) => brep,
+                exterior::Coverage::MissedRim => return Ok(None),
+                exterior::Coverage::Unresolved => return Err(REJECTED),
+            }
         }
         result => result?,
     };

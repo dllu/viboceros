@@ -69,7 +69,7 @@ impl PlaneCut<'_> {
             .collect::<Result<Vec<_>, _>>()?;
         // Intersect the entire wall with the cutter's support plane. The wall
         // below the section can extend beyond the finite cutter's footprint.
-        let support = covering_support(&stock, self.plane, self.displacement, self.tolerance)?;
+        let support = support::planar(&stock, self.plane, self.displacement, self.tolerance)?;
         let tool = boundary_tool(&support, self.displacement.scaled(-2.)?, self.tolerance)?;
         let section = rulings
             .iter()
@@ -145,40 +145,4 @@ impl PlaneCut<'_> {
         }
         Ok(coverage)
     }
-}
-
-fn covering_support(
-    stock: &Brep,
-    plane: Plane,
-    displacement: Vector3,
-    tolerance: Tolerance,
-) -> Result<Brep, CommandError> {
-    let chart = Frame3::try_from_unit_normal(plane.origin(), plane.normal())?;
-    let rise = displacement.dot(plane.normal().as_vector())?;
-    let mut min = [f64::INFINITY; 2];
-    let mut max = [f64::NEG_INFINITY; 2];
-    // Projection along the sweep is affine. The nonrational stock's control
-    // hull encloses its projection, so the tool's sides miss the entire strip.
-    for face in stock.faces() {
-        for control in face.surface().control_points() {
-            let point = control.point();
-            let fraction = -plane.signed_distance_to(point)? / rise;
-            let projected = point.translated(displacement.scaled(fraction)?)?;
-            let xy = chart.projected_coordinates_of(projected)?;
-            for axis in 0..2 {
-                min[axis] = min[axis].min(xy[axis]);
-                max[axis] = max[axis].max(xy[axis]);
-            }
-        }
-    }
-    let pad = displacement.length()?.max(tolerance.absolute() * 16.);
-    let [left, bottom] = min.map(|v| v - pad);
-    let [right, top] = max.map(|v| v + pad);
-    let surface = NurbsSurface::try_bilinear([
-        chart.point_at([left, bottom, 0.])?,
-        chart.point_at([right, bottom, 0.])?,
-        chart.point_at([right, top, 0.])?,
-        chart.point_at([left, top, 0.])?,
-    ])?;
-    Ok(Brep::try_surface_face(surface, tolerance)?)
 }
