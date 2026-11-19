@@ -31,7 +31,8 @@ impl Solid {
         radius: f64,
         tolerance: Tolerance,
     ) -> Result<Brep, Error> {
-        Self::fillet_with_merge(brep, edges, radius, tolerance, false, true)?.to_brep(tolerance)
+        Self::fillet_with_merge(brep, edges, radius, tolerance, false, true)?
+            .to_brep_with_stitched_uv_joints(tolerance)
     }
 
     fn fillet_with_merge(
