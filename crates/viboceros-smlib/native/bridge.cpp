@@ -906,7 +906,8 @@ struct BallCornerScope {
 };
 
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
-                          double radius, double accuracy, EdgeBlend kind, bool between_rails) {
+                          double radius, double accuracy, EdgeBlend kind, bool between_rails,
+                          bool local_merge = false) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
             "Invalid edge blend parameters");
     require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
@@ -930,7 +931,7 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     check(executive.SetFilletParameters(solid->value.get(), edges, cross_section,
           between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), kind == EdgeBlend::Curvature ? 2 : 1, 1.0),
           "configure precise edge fillet");
-    executive.SetDoGlobalMerge(kind == EdgeBlend::Curvature ? FALSE : TRUE);
+    executive.SetDoGlobalMerge(kind != EdgeBlend::Curvature && !local_merge ? TRUE : FALSE);
     if (kind == EdgeBlend::Chamfer) {
         check(executive.CreateFilletCorners(), "create chamfer corners");
         auto &corners = executive.GetFilletCorners();
@@ -977,16 +978,22 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
             "Fillet executive reported an incomplete or failed operation");
     check(solid->value->StitchAndOrient(), "orient fillet output");
     require(solid->value->IsManifoldSolid(), "Fillet output is not a manifold solid");
-    vb_validate_boundary_intersections(*solid->value,10*accuracy);
+    // Tangential fillet intersections can locate a point at sqrt(epsilon)
+    // accuracy relative to the radius. This applies only when associating
+    // an isolated witness with an already shared edge or vertex.
+    const double point_roundoff =
+        local_merge ? radius * std::sqrt(std::numeric_limits<double>::epsilon()) : 0.0;
+    vb_validate_boundary_intersections(*solid->value,10*accuracy,false,point_roundoff);
 }
 } // namespace
 extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
-                                              double radius, double accuracy, int require_ball,
+                                              double radius, double accuracy, int require_ball, int local_merge,
                                               char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        require(require_ball == 0 || require_ball == 1, "Invalid fillet corner type");
+        require((require_ball == 0 || require_ball == 1) && (local_merge == 0 || local_merge == 1),
+                "Invalid fillet options");
         blend_imported_edges(solid, indices, count, radius, accuracy,
-                             require_ball ? EdgeBlend::Ball : EdgeBlend::Circular, false);
+                             require_ball ? EdgeBlend::Ball : EdgeBlend::Circular, false, local_merge != 0);
     });
 }
 extern "C" int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_t count,

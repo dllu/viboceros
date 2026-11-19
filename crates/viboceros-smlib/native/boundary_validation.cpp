@@ -156,8 +156,12 @@ void interior_intersections(SmBrep &solid,SmFace &first,SmFace &second,double to
 }
 }
 
-void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets) {
+void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool allow_sheets,
+                                        double shared_point_roundoff) {
     require(std::isfinite(tolerance)&&tolerance>0,"Invalid boundary intersection tolerance");
+    require(std::isfinite(shared_point_roundoff)&&shared_point_roundoff>=0,
+            "Invalid boundary contact roundoff");
+    const double point_tolerance=std::max(tolerance,shared_point_roundoff);
     if (!solid.IsManifoldSolid()) {
         require(allow_sheets,"Boundary validation requires a manifold solid");
         SmTArray<SmEdge*> edges;solid.GetEdges(edges);
@@ -212,7 +216,7 @@ void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool al
                 const auto q=vertex->GetPoint();
                 const double vertex_tolerance=vertex->GetTolerance();
                 require(std::isfinite(vertex_tolerance)&&vertex_tolerance>=0,"Invalid shared-vertex tolerance");
-                shared|=std::hypot(point.x-q.x,point.y-q.y,point.z-q.z)<=std::max(tolerance,vertex_tolerance);
+                shared|=std::hypot(point.x-q.x,point.y-q.y,point.z-q.z)<=std::max(point_tolerance,vertex_tolerance);
             }
             for(const auto edge:shared_edges) {
                 if(shared) break;
@@ -222,7 +226,7 @@ void vb_validate_boundary_intersections(SmBrep &solid, double tolerance, bool al
                 require(std::isfinite(distance)&&distance>=0,"Invalid shared-edge contact distance");
                 const double edge_tolerance=edge->GetTolerance();
                 require(std::isfinite(edge_tolerance)&&edge_tolerance>=0,"Invalid shared-edge tolerance");
-                shared=distance<=std::max(tolerance,edge_tolerance);
+                shared=distance<=std::max(point_tolerance,edge_tolerance);
             }
             require(shared,"Boundary has non-topological face contacts");
         }
