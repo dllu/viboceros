@@ -36,6 +36,7 @@ impl VibocerosApp {
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
         self.edge_blend_adjustment.operation = Some(operation);
+        self.edge_blend_adjustment.placement_hover = None;
         prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
@@ -73,7 +74,8 @@ impl VibocerosApp {
                 "Pick the size handle to copy. Esc returns to handle adjustment.".into()
             }
             HandleOperation::Remove => {
-                "Pick an added handle to remove. Esc returns to handle adjustment.".into()
+                "Click or window-select added handles to remove. Enter returns to size adjustment."
+                    .into()
             }
         })
     }
@@ -139,6 +141,7 @@ impl VibocerosApp {
         let Some(operation) = self.edge_blend_adjustment.operation.take() else {
             return false;
         };
+        self.edge_blend_adjustment.placement_hover = None;
         if let HandleOperation::Place {
             size,
             entering_size: true,
@@ -193,8 +196,42 @@ impl VibocerosApp {
             None => HandleMode::Edit,
             Some(HandleOperation::Copy) => HandleMode::Copy,
             Some(HandleOperation::Remove) => HandleMode::Remove,
-            Some(HandleOperation::Place { .. }) => HandleMode::Place(curves),
+            Some(HandleOperation::Place { size, .. }) => HandleMode::Place(curves, size),
         }
+    }
+
+    pub(in crate::app) fn update_edge_blend_placement_hover(
+        &mut self,
+        hover: Option<SizeHandleId>,
+    ) -> bool {
+        if self.edge_blend_adjustment.placement_hover == hover {
+            return false;
+        }
+        self.edge_blend_adjustment.placement_hover = hover;
+        self.edge_fillet_prompt
+            .is_some_and(|prompt| prompt.toggles.preview)
+    }
+
+    pub(in crate::app::edge_fillet) fn edge_blend_placement_trial(&self) -> Option<ProfileEdit> {
+        let HandleOperation::Place {
+            size,
+            entering_size: false,
+        } = self.edge_blend_adjustment.operation?
+        else {
+            return None;
+        };
+        let SizeHandleId {
+            pick,
+            location: HandleLocation::Interior(parameter),
+        } = self.edge_blend_adjustment.placement_hover?
+        else {
+            return None;
+        };
+        Some(ProfileEdit::Place {
+            pick,
+            parameter,
+            size,
+        })
     }
 
     pub(super) fn use_edge_handle_operation(&mut self, gesture: HandleGesture) -> bool {
@@ -204,6 +241,13 @@ impl VibocerosApp {
         ) else {
             return false;
         };
+        if matches!(operation, HandleOperation::Remove) {
+            return match gesture {
+                HandleGesture::Pick(id) => self.remove_edge_size_handles(vec![id]),
+                HandleGesture::Select(ids, _) => self.remove_edge_size_handles(ids),
+                _ => false,
+            };
+        }
         let id = match gesture {
             HandleGesture::Pick(id) | HandleGesture::Place(id) => id,
             HandleGesture::Drag { .. } | HandleGesture::Select(..) => return false,
@@ -243,30 +287,52 @@ impl VibocerosApp {
                 HandleGesture::Place(_),
                 HandleLocation::Interior(t),
             ) if 0. < t && t < 1. => {
-                let index = sizes
-                    .interior
-                    .partition_point(|(parameter, _)| *parameter < t);
-                if sizes
-                    .interior
-                    .get(index)
-                    .is_none_or(|(parameter, _)| *parameter != t)
-                {
-                    sizes.interior.insert(index, (t, size));
+                if add_interior_handle(&mut sizes, t, size) {
                     self.edge_blend_adjustment
                         .sizes
                         .insert(id.pick, (source, sizes));
                 }
                 self.pick_edge_size_handle(id)
             }
-            (HandleOperation::Remove, HandleGesture::Pick(_), HandleLocation::Interior(t)) => {
-                sizes.interior.retain(|(parameter, _)| *parameter != t);
-                self.edge_blend_adjustment
-                    .sizes
-                    .insert(id.pick, (source, sizes));
-                self.dismiss_edge_handle_operation()
-            }
             _ => false,
         }
+    }
+    fn remove_edge_size_handles(&mut self, ids: Vec<SizeHandleId>) -> bool {
+        let document = edit::source_document(&self.edge_blend_edit, &self.document);
+        let Ok(picks) = self.component_selection.checked_picks(document) else {
+            return false;
+        };
+        let picks = picks.into_iter().collect::<BTreeSet<_>>();
+        let mut stations = BTreeMap::<_, BTreeSet<_>>::new();
+        for id in &ids {
+            if let HandleLocation::Interior(t) = id.location
+                && picks.contains(&id.pick)
+            {
+                stations.entry(id.pick).or_default().insert(t.to_bits());
+            }
+        }
+        let mut removed = 0;
+        for (pick, parameters) in stations {
+            if let Some((source, sizes)) = self.edge_blend_adjustment.sizes.get_mut(&pick)
+                && current(document, pick, source)
+            {
+                let previous = sizes.interior.len();
+                sizes
+                    .interior
+                    .retain(|(t, _)| !parameters.contains(&t.to_bits()));
+                removed += previous - sizes.interior.len();
+            }
+        }
+        if removed > 0 {
+            self.edge_blend_adjustment
+                .selection
+                .update(ids, SelectionMode::Remove);
+            self.command_input.clear();
+            self.push_log(format!(
+                "Removed {removed} size handle(s). Pick more or press Enter."
+            ));
+        }
+        true
     }
 }
 

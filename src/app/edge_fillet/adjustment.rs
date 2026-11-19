@@ -22,6 +22,7 @@ pub(in crate::app) struct Adjustment {
     pub(super) active: Option<(SizeHandleId, GeometrySnapshot)>,
     pub(super) drag_size: Option<f64>,
     operation: Option<HandleOperation>,
+    placement_hover: Option<SizeHandleId>,
     selection: HandleSelection,
 }
 
@@ -60,6 +61,11 @@ impl HandleLocation {
 #[derive(Clone, Copy)]
 pub(super) enum ProfileEdit {
     All(f64),
+    Place {
+        pick: ComponentPick,
+        parameter: f64,
+        size: f64,
+    },
     Handles {
         id: SizeHandleId,
         size: f64,
@@ -72,6 +78,7 @@ impl ProfileEdit {
     fn affects(self, pick: ComponentPick, selection: &HandleSelection) -> bool {
         match self {
             Self::All(_) | Self::Handles { ratio: Some(_), .. } => true,
+            Self::Place { pick: target, .. } => target == pick,
             Self::Handles { group: true, .. } => !selection.locations(pick).is_empty(),
             Self::Handles { id, .. } => id.pick == pick,
         }
@@ -83,6 +90,15 @@ impl ProfileEdit {
                 sizes.ends = [size; 2];
                 for (_, value) in &mut sizes.interior {
                     *value = size;
+                }
+            }
+            Self::Place {
+                pick: target,
+                parameter,
+                size,
+            } => {
+                if pick == target {
+                    add_interior_handle(sizes, parameter, size);
                 }
             }
             Self::Handles {
@@ -195,6 +211,7 @@ impl VibocerosApp {
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
         self.edge_blend_adjustment.operation = None;
+        self.edge_blend_adjustment.placement_hover = None;
         self.edge_blend_adjustment.selection.clear();
         prompt.adjusting = false;
         prompt.size_input = None;
@@ -497,4 +514,17 @@ impl VibocerosApp {
         }
         true
     }
+}
+
+fn add_interior_handle(sizes: &mut EdgeBlendSizes, parameter: f64, size: f64) -> bool {
+    let index = sizes.interior.partition_point(|(t, _)| *t < parameter);
+    if sizes
+        .interior
+        .get(index)
+        .is_some_and(|(t, _)| *t == parameter)
+    {
+        return false;
+    }
+    sizes.interior.insert(index, (parameter, size));
+    true
 }

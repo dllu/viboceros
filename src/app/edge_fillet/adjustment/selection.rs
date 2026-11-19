@@ -27,7 +27,11 @@ impl HandleSelection {
         self.locations.clear();
     }
 
-    fn update(&mut self, ids: impl IntoIterator<Item = SizeHandleId>, mode: SelectionMode) {
+    pub(super) fn update(
+        &mut self,
+        ids: impl IntoIterator<Item = SizeHandleId>,
+        mode: SelectionMode,
+    ) {
         if mode == SelectionMode::Replace {
             self.clear();
         }

@@ -17,10 +17,12 @@ window from empty viewport space to select several. Ctrl-click removes a
 handle from the selection. Edit any selected handle to change the group.
 `AddHandle` places handles at successive locations along the selected edges.
 Use `CurrentRadius` to set the size for subsequent placements. `CopyHandle`
-starts the same picker with the size of a source handle. Enter returns to
-size adjustment. `RemoveHandle` deletes a placed handle. SMLib interpolates
-the radii over the edge's curve parameter. An open edge with only endpoint
-handles varies linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the
+starts the same picker with the size of a source handle. With `Preview=Yes`,
+hover over an edge to see the proposed placement and its size. Use
+`RemoveHandle` to click or window-select added handles for removal. Press Enter
+in either picker to return to size adjustment. SMLib interpolates radii over
+the edge's curve parameter. An open edge with only endpoint handles varies
+linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the
 edited handle. `SetAll=2` sets every radius and the next radius to 2. Use
 `SelectEdges` to resume picking or
 `ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.

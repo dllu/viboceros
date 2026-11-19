@@ -41,7 +41,7 @@ pub(crate) enum HandleMode<'a> {
     Edit,
     Copy,
     Remove,
-    Place(&'a [(ComponentPick, &'a NurbsCurve)]),
+    Place(&'a [(ComponentPick, &'a NurbsCurve)], f64),
 }
 
 pub(super) enum Drag {
@@ -65,10 +65,10 @@ impl Viewport {
         handles: &[SizeHandle],
         show: bool,
         mode: HandleMode<'_>,
-    ) -> Option<HandleGesture> {
+    ) -> (Option<HandleGesture>, Option<SizeHandleId>) {
         if handles.is_empty() || response.ctx.input(|i| i.key_pressed(egui::Key::Escape)) {
             self.edge_blend_drag = None;
-            return None;
+            return (None, None);
         }
         let clicked = response.clicked_by(PointerButton::Primary);
         let pointer = if clicked {
@@ -83,7 +83,19 @@ impl Viewport {
         } else {
             selection_mode(modifiers)
         };
-        if matches!(mode, HandleMode::Edit)
+        let resize_handles = matches!(mode, HandleMode::Edit);
+        let select_handles = matches!(mode, HandleMode::Edit | HandleMode::Remove);
+        let pickable = |location| match mode {
+            HandleMode::Place(..) => false,
+            HandleMode::Remove => matches!(location, HandleLocation::Interior(_)),
+            _ => true,
+        };
+        if !select_handles
+            || (!resize_handles && matches!(self.edge_blend_drag, Some(Drag::Size(_))))
+        {
+            self.edge_blend_drag = None;
+        }
+        if select_handles
             && response.hovered()
             && response
                 .ctx
@@ -98,7 +110,7 @@ impl Viewport {
             Some(Drag::Window {
                 start,
                 mode: SelectionMode::Replace,
-            }) if response.drag_started_by(PointerButton::Primary) => Some(start),
+            }) if resize_handles && response.drag_started_by(PointerButton::Primary) => Some(start),
             _ => None,
         };
         let mut pressed_handle = None::<(f32, &SizeHandle)>;
@@ -109,13 +121,8 @@ impl Viewport {
             else {
                 continue;
             };
-            let pickable = match mode {
-                HandleMode::Place(_) => false,
-                HandleMode::Remove => matches!(handle.id.location, HandleLocation::Interior(_)),
-                _ => true,
-            };
             let hit = pointer
-                .filter(|_| pickable)
+                .filter(|_| pickable(handle.id.location))
                 .map_or(f32::INFINITY, |pointer| pointer.distance(position));
             let hovered = hit <= PICK_CAPTURE_PIXELS;
             if hovered && nearest.is_none_or(|(distance, _)| hit < distance) {
@@ -145,11 +152,10 @@ impl Viewport {
                 );
             }
         }
-        if !matches!(mode, HandleMode::Edit) {
-            self.edge_blend_drag = None;
-        }
-        if let HandleMode::Place(edges) = mode {
-            let pointer = pointer?;
+        if let HandleMode::Place(edges, size) = mode {
+            let Some(pointer) = pointer else {
+                return (None, None);
+            };
             let mut nearest = None::<(f32, f64, SizeHandleId, Pos2)>;
             for &(pick, curve) in edges {
                 let Some(t) = self.pick_edge_parameter(curve, pointer, rect, false) else {
@@ -184,9 +190,18 @@ impl Viewport {
                     ));
                 }
             }
-            let (_, _, id, position) = nearest?;
-            painter.circle_stroke(position, 6., Stroke::new(1.5, SELECTED_COLOR));
-            return clicked.then_some(HandleGesture::Place(id));
+            if let Some((_, _, id, position)) = nearest {
+                painter.circle_stroke(position, 6., Stroke::new(1.5, SELECTED_COLOR));
+                painter.text(
+                    position + Vec2::new(9., -6.),
+                    Align2::LEFT_BOTTOM,
+                    format!("{size:.4}"),
+                    FontId::monospace(11.),
+                    SELECTED_COLOR,
+                );
+                return (clicked.then_some(HandleGesture::Place(id)), Some(id));
+            }
+            return (None, None);
         }
         if let Some((press, (_, handle))) = press.zip(pressed_handle) {
             let scale = if self.kind == ViewKind::Perspective {
@@ -230,6 +245,7 @@ impl Viewport {
                         let window = Rect::from_two_pos(*start, end).intersect(rect);
                         let ids = handles
                             .iter()
+                            .filter(|handle| pickable(handle.id.location))
                             .filter(|handle| {
                                 self.project(handle.point, rect)
                                     .is_some_and(|p| window.contains(p))
@@ -244,16 +260,16 @@ impl Viewport {
             if finished {
                 self.edge_blend_drag = None;
             }
-            return gesture;
+            return (gesture, None);
         }
         if !clicked {
-            return None;
+            return (None, None);
         }
         let started_mode = match self.edge_blend_drag.take() {
             Some(Drag::Window { mode, .. }) => mode,
             _ => selection_mode,
         };
-        match nearest {
+        let gesture = match nearest {
             Some((_, id))
                 if matches!(mode, HandleMode::Edit) && started_mode != SelectionMode::Replace =>
             {
@@ -264,6 +280,7 @@ impl Viewport {
                 Some(HandleGesture::Select(Vec::new(), started_mode))
             }
             None => None,
-        }
+        };
+        (gesture, None)
     }
 }

@@ -1873,6 +1873,13 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
+        if self.update_edge_blend_placement_hover(
+            viewport_outputs
+                .iter()
+                .find_map(|output| output.edge_blend_placement_hover),
+        ) {
+            ui.ctx().request_repaint();
+        }
         self.update_surface_path_boundary_preview(
             viewport_outputs
                 .iter()

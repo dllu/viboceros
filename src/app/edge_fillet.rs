@@ -567,18 +567,19 @@ impl VibocerosApp {
 
     pub(super) fn log_edge_blend_prompt(&mut self) {
         if let Some(prompt) = self.edge_fillet_prompt {
+            let operation_hint = self.edge_handle_operation_hint(prompt);
+            let remove =
+                if operation_hint.is_none() && prompt.adjusting && self.has_added_edge_handles() {
+                    " Use RemoveHandle to delete an added handle."
+                } else {
+                    ""
+                };
             let hint = if self.picking_edge_blend_edit() {
                 "Select an object with an editable edge blend.".into()
             } else if self.picking_edge_blend_faces() {
                 FACE_EDGES_HINT.into()
             } else {
-                self.edge_handle_operation_hint(prompt)
-                    .unwrap_or_else(|| prompt.hint().into())
-            };
-            let remove = if prompt.adjusting && self.has_added_edge_handles() {
-                " Use RemoveHandle to delete an added handle."
-            } else {
-                ""
+                operation_hint.unwrap_or_else(|| prompt.hint().into())
             };
             self.push_log(format!(
                 "{} {}. {hint}{remove}",
@@ -591,7 +592,7 @@ impl VibocerosApp {
     fn capture_edge_blend(
         &self,
         prompt: Prompt,
-        trial_size: Option<f64>,
+        edit: Option<adjustment::ProfileEdit>,
     ) -> Result<EdgeBlendPlan, String> {
         if prompt.tolerance != self.document.tolerance() {
             return Err("tolerance changed; select edges again".into());
@@ -601,7 +602,6 @@ impl VibocerosApp {
             return Err("The edge blend changed. Reopen Edit to continue.".into());
         }
         let document = self.edge_blend_source_document();
-        let edit = self.edge_blend_trial(prompt, trial_size);
         let picks = self
             .component_selection
             .checked_picks(document)?

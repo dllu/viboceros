@@ -722,6 +722,7 @@ impl Default for ViewportInput<'_> {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
     pub(crate) edge_blend_handle: Option<edge_blend::HandleGesture>,
+    pub(crate) edge_blend_placement_hover: Option<edge_blend::SizeHandleId>,
     pub(crate) radius_hover: Option<(Pos2, radius::RadiusHit)>,
     pub(crate) radius_click: Option<radius::RadiusClick>,
     pub(crate) curvature_hover: Option<(Pos2, curvature::Hit)>,
@@ -2843,7 +2844,7 @@ impl Viewport {
         for curve in input.edge_blend_curves {
             self.add_projected_nurbs_curve(&mut projected, rect, curve);
         }
-        let edge_blend_handle = self.edge_blend_handle_input(
+        let (edge_blend_handle, edge_blend_placement_hover) = self.edge_blend_handle_input(
             &response,
             &painter,
             rect,
@@ -3881,6 +3882,7 @@ impl Viewport {
             .then_some(blend_parameter)
             .flatten(),
             edge_blend_handle,
+            edge_blend_placement_hover,
             arc_blend_handle: (response.clicked_by(PointerButton::Primary)
                 || response.drag_started_by(PointerButton::Primary))
             .then(|| {

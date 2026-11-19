@@ -139,13 +139,17 @@ impl VibocerosApp {
             .edge_blend_adjustment
             .drag_size
             .or_else(|| self.edge_blend_size_hover());
-        let plan = self
+        let prompt = self
             .edge_fillet_prompt
-            .filter(|prompt| prompt.toggles.preview)
-            .and_then(|prompt| self.capture_edge_blend(prompt, hover).ok());
+            .filter(|prompt| prompt.toggles.preview);
+        let trial = prompt.and_then(|prompt| {
+            self.edge_blend_trial(prompt, hover)
+                .or_else(|| self.edge_blend_placement_trial())
+        });
+        let plan = prompt.and_then(|prompt| self.capture_edge_blend(prompt, trial).ok());
         if let Some(error) = self
             .edge_blend_preview
-            .update(plan, hover.is_some(), context)
+            .update(plan, trial.is_some(), context)
         {
             self.push_log(format!("Preview unavailable. {error}"));
         }

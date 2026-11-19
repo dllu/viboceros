@@ -242,11 +242,13 @@ fn edge_fillet_places_copies_and_removes_interior_handles_in_the_viewport() {
     assert!(app.adjusting_edge_blend());
     assert!(!app.document.can_undo());
 
+    submit(&mut app, "RemoveHandle");
     for (_, _, point) in copied[1..].iter().copied() {
-        submit(&mut app, "RemoveHandle");
         click(&mut app, point);
     }
     assert_eq!(interior(&app), added);
+    submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
     submit(&mut app, "SetAll=1.5");
     assert_eq!(interior(&app)[0].1, 1.5);
     assert!(app.edge_blend_size_handles().iter().all(|h| h.size == 1.5));
