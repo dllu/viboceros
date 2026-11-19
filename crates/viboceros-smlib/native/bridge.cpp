@@ -897,8 +897,16 @@ extern "C" int vb_solid_from_brep_plan(const VbBrepView *view, double tolerance,
     });
 }
 
+double vibo_set_ball_corner_radius(double radius);
+
 namespace {
-enum class EdgeBlend { Circular, Chamfer, Curvature };
+enum class EdgeBlend { Circular, Ball, Chamfer, Curvature };
+struct BallCornerScope {
+    explicit BallCornerScope(double radius) : previous(vibo_set_ball_corner_radius(radius)) {}
+    ~BallCornerScope() { vibo_set_ball_corner_radius(previous); }
+    double previous;
+};
+
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
                           double radius, double accuracy, EdgeBlend kind, bool between_rails) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
@@ -932,6 +940,20 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
             corners[i]->SetBevel(TRUE);
         check(executive.DoFilleting(), "chamfer source edges");
     } else {
+        using IncidentEdges = std::pair<SmPoint3d, std::vector<size_t>>;
+        std::unordered_map<const SmVertex *, IncidentEdges> incident;
+        if (kind == EdgeBlend::Ball) {
+            for (size_t i = 0; i < source_edges.size(); ++i) {
+                const SmEdge *edge = source_edges[i];
+                for (const SmVertex *vertex : {edge->GetStartVertex(), edge->GetEndVertex()}) {
+                    if (vertex) {
+                        auto &note = incident.try_emplace(vertex, vertex->GetPoint(), std::vector<size_t>{}).first->second;
+                        if (note.second.empty() || note.second.back() != i) note.second.push_back(i);
+                    }
+                }
+            }
+        }
+        const BallCornerScope corner(kind == EdgeBlend::Ball ? radius : 0.);
         const auto status = executive.DoFillet();
         if (status != SM_SUCCESS) {
             const auto *info = executive.GetFilletErrorInfo();
@@ -940,6 +962,15 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
                 const auto found = std::find(source_edges.begin(), source_edges.end(), info->m_pFilletedEdge);
                 if (found != source_edges.end())
                     message += " (source edge " + std::to_string(found - source_edges.begin()) + ")";
+            }
+            if (kind == EdgeBlend::Ball) {
+                message += " (Corner=Ball)";
+                if (const auto found = incident.find(info->m_pFilletedVertex); found != incident.end()) {
+                    const auto &[point, edges] = found->second;
+                    message += " at local source vertex " + std::to_string(point[0]) + "," +
+                        std::to_string(point[1]) + "," + std::to_string(point[2]) + "; incident source edges:";
+                    for (const auto edge : edges) message += " " + std::to_string(edge);
+                }
             }
             throw std::runtime_error(message);
         }
@@ -952,9 +983,12 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
 }
 } // namespace
 extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
-                                              double radius, double accuracy, char *error, size_t capacity) {
+                                              double radius, double accuracy, int require_ball,
+                                              char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        blend_imported_edges(solid, indices, count, radius, accuracy, EdgeBlend::Circular, false);
+        require(require_ball == 0 || require_ball == 1, "Invalid fillet corner type");
+        blend_imported_edges(solid, indices, count, radius, accuracy,
+                             require_ball ? EdgeBlend::Ball : EdgeBlend::Circular, false);
     });
 }
 extern "C" int vb_imported_solid_chamfer_edges(VbSolid *solid, const size_t *indices, size_t count,

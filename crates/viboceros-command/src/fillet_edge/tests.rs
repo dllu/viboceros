@@ -51,6 +51,19 @@ mod native {
         registry.execute(&mut doc, "Redo").unwrap();
         assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
     }
+
+    #[test]
+    fn explicit_ball_corners_round_all_cube_vertices() {
+        let (registry, mut doc, id) = selected_box();
+        registry
+            .execute(&mut doc, "FilletEdge Corner=Ball Radius=1 All=Yes")
+            .unwrap();
+        let Geometry::Brep(brep) = doc.object(id).unwrap().geometry() else {
+            panic!("editable rounded B-rep expected");
+        };
+        assert!(brep.is_solid());
+        assert_eq!(brep.faces().len(), 26);
+    }
     #[test]
     fn one_original_edge_is_selected_once_by_typed_index() {
         let (registry, mut doc, id) = selected_box();

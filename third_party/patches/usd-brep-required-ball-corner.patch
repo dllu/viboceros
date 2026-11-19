@@ -1,0 +1,51 @@
+--- a/source/SMLib/src/SmFilletCorner.cpp
++++ b/source/SMLib/src/SmFilletCorner.cpp
+@@ -10,6 +10,18 @@
+ 
+ #ifndef __SMFILLETCORNER_H__
+ #include <SmFilletCorner.h>
++
++// Viboceros uses a scoped, per-thread value when a command explicitly
++// requires the constant-radius spherical corner construction.
++namespace {
++thread_local double vibo_ball_corner_radius = 0.;
++}
++
++double vibo_set_ball_corner_radius(double radius) {
++  const double previous = vibo_ball_corner_radius;
++  vibo_ball_corner_radius = radius;
++  return previous;
++}
+ #endif
+ 
+ #ifndef __SMFILLETSOLVER_H__
+@@ -1702,6 +1714,29 @@
+     { return SM_SUCCESS; }
+ 
+   // Otherwise, pass the call along to build a Corner->FilletSurface and store it in m_vSurfaces
++  if (vibo_ball_corner_radius > 0.)
++    {
++      if (lTotalEdges != 3) return SM_ERR;
++      SmTArray<SmBSplineCurve*> arcs;
++      for (ULONG i = 0; i < lTotalEdges; ++i)
++        {
++          auto* arc = SM_CAST_PTR(SmBSplineCurve, m_vEdges[i]->GetCurve());
++          if (!arc) return SM_ERR;
++          arcs.Add(arc);
++        }
++      SmAxis2Placement frame;
++      double radius, start, end;
++      if (!arcs[0]->IsArc(5, m_dThisApproxTol3d, frame, radius, start, end)
++          || smos_Fabs(radius - vibo_ball_corner_radius) > m_dThisApproxTol3d)
++        return SM_ERR;
++      SmTArray<SmCurve*> ordered;
++      SmTArray<SmOrientType> orientations;
++      SmBSplineSurface* sphere = NULL;
++      SER(SmBSplineSurface::CreateSphereFromArcs(m_crContext, arcs, m_dThisApproxTol3d,
++                                                  ordered, orientations, sphere));
++      m_vSurfaces.Add(sphere);
++      return MakeFaceBrep();
++    }
+   SER(CreateCornerPatch());
+ 
+   return SM_SUCCESS;

@@ -2,10 +2,10 @@
 use super::*;
 use viboceros_command::blend_edge::{BlendOptions, BlendRailType};
 use viboceros_command::chamfer_edge::{ChamferOptions, ChamferRailType};
-use viboceros_command::{ComponentSelectionKind, EdgeBlendSelection};
+use viboceros_command::{ComponentSelectionKind, EdgeBlendSelection, FilletCorner, FilletOptions};
 #[derive(Clone, Copy, Debug)]
 enum Kind {
-    Fillet,
+    Fillet(FilletCorner),
     Chamfer(ChamferRailType),
     Curvature(BlendRailType),
 }
@@ -19,7 +19,7 @@ pub(super) struct Prompt {
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
         match self.kind {
-            Kind::Fillet => "FilletEdge",
+            Kind::Fillet(_) => "FilletEdge",
             Kind::Chamfer(_) => "ChamferEdge",
             Kind::Curvature(_) => "BlendEdge",
         }
@@ -40,8 +40,8 @@ impl Prompt {
             }
         } else {
             match self.kind {
-                Kind::Fillet => {
-                    "Select edges; Radius=value changes the radius; Enter applies, Esc cancels"
+                Kind::Fillet(_) => {
+                    "Select edges. Set Radius=value or Corner=Automatic|Ball. Enter applies and Esc cancels."
                 }
                 Kind::Chamfer(_) => {
                     "Select edges; Distance=value / RailType=DistBetweenRails|RollingBall; Enter applies, Esc cancels"
@@ -54,7 +54,7 @@ impl Prompt {
     }
     fn options(self) -> String {
         match self.kind {
-            Kind::Fillet => format!("Radius={}", self.radius),
+            Kind::Fillet(corner) => format!("Radius={} Corner={}", self.radius, corner.token()),
             Kind::Chamfer(rail) | Kind::Curvature(rail) => format!(
                 "{}={} RailType={}",
                 self.parameter(),
@@ -113,7 +113,12 @@ impl VibocerosApp {
             }
             Kind::Curvature(o.rail)
         } else {
-            Kind::Fillet
+            let mut options = FilletOptions::default();
+            if let Err(error) = options.update(&words.collect::<Vec<_>>()) {
+                self.push_log(format!("Error: {error}"));
+                return true;
+            }
+            Kind::Fillet(options.corner)
         };
         self.cancel_interactive_command(false);
         let prompt = Prompt {
@@ -192,33 +197,37 @@ impl VibocerosApp {
             }
         }
         let words = words.iter().map(String::as_str).collect::<Vec<_>>();
-        let result = if let Kind::Chamfer(rail) = prompt.kind {
-            let mut options = ChamferOptions {
-                distance: prompt.radius,
-                rail,
-            };
-            options.update(&words).map(|()| {
-                prompt.radius = options.distance;
-                prompt.kind = Kind::Chamfer(options.rail);
-            })
-        } else if let Kind::Curvature(rail) = prompt.kind {
-            let mut options = BlendOptions {
-                radius: prompt.radius,
-                rail,
-            };
-            options.update(&words).map(|()| {
-                prompt.radius = options.radius;
-                prompt.kind = Kind::Curvature(options.rail);
-            })
-        } else {
-            self.commands
-                .component_selection_prompt(&format!("FilletEdge {}", words.join(" ")))
-                .and_then(|p| {
-                    p.ok_or(viboceros_command::CommandError::Usage(
-                        "FilletEdge Radius=value",
-                    ))
+        let result = match prompt.kind {
+            Kind::Fillet(corner) => {
+                let mut options = FilletOptions {
+                    radius: prompt.radius,
+                    corner,
+                };
+                options.update(&words).map(|()| {
+                    prompt.radius = options.radius;
+                    prompt.kind = Kind::Fillet(options.corner);
                 })
-                .map(|p| prompt.radius = p.numbers[0].value)
+            }
+            Kind::Chamfer(rail) => {
+                let mut options = ChamferOptions {
+                    distance: prompt.radius,
+                    rail,
+                };
+                options.update(&words).map(|()| {
+                    prompt.radius = options.distance;
+                    prompt.kind = Kind::Chamfer(options.rail);
+                })
+            }
+            Kind::Curvature(rail) => {
+                let mut options = BlendOptions {
+                    radius: prompt.radius,
+                    rail,
+                };
+                options.update(&words).map(|()| {
+                    prompt.radius = options.radius;
+                    prompt.kind = Kind::Curvature(options.rail);
+                })
+            }
         };
         match result {
             Ok(()) => {
@@ -272,9 +281,14 @@ impl VibocerosApp {
                         prompt.radius,
                         rail,
                     ),
-                    Kind::Fillet => {
-                        EdgeBlendSelection::prepare(&self.document, picks, prompt.radius)
-                    }
+                    Kind::Fillet(corner) => EdgeBlendSelection::prepare_fillet(
+                        &self.document,
+                        picks,
+                        FilletOptions {
+                            radius: prompt.radius,
+                            corner,
+                        },
+                    ),
                 }
                 .map_err(|e| e.to_string())
             })
