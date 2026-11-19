@@ -146,64 +146,86 @@ fn curve_taper_boundary_viewport_face_pick_builds_a_solid_and_replays_deletion()
 
 #[test]
 fn surface_taper_oblique_boundary_direction_and_viewport_click_close_the_disk() {
-    use viboceros_geometry::{Brep, Circle3, UnitVector3};
+    use viboceros_geometry::{BoundingBox3, Brep, Circle3, UnitVector3};
 
-    let mut app = test_app();
-    let tolerance = app.document.tolerance();
-    let circle = Circle3::try_new(
-        point(0., 0., 0.),
-        3.,
-        UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
-        tolerance,
-    )
-    .unwrap()
-    .to_nurbs()
-    .unwrap();
-    let source = app
-        .document
-        .add_geometry(Geometry::Brep(
-            Brep::try_planar_face(&circle, tolerance).unwrap(),
-        ))
-        .unwrap();
-    let cutter = rectangle(&mut app, [-4., -5., 6., 5.], 5.);
-    app.document
-        .select_objects_direct([source], SelectionMode::Replace)
-        .unwrap();
-    app.document.clear_history().unwrap();
-    enter(
-        &mut app,
-        "ExtrudeSrfTapered ToBoundary DraftAngle=-10 Solid=No DeleteInput=Yes",
-    );
-    enter(&mut app, "Direction");
-    enter(&mut app, "w0,0,0");
-    enter(&mut app, "w1,0,6");
-    assert!(app.picking_tapered_boundary());
-    pick_boundary_in_top_view(
-        &mut app,
-        [point(-4., -5., 0.), point(6., 5., 5.)],
-        point(-3.5, -4., 5.),
-    );
-    assert!(app.active_command.is_none(), "{:?}", app.command_log);
-    assert!(app.document.object(source).is_none());
-    let Geometry::Brep(result) = app
-        .document
-        .objects()
-        .find(|o| o.id() != cutter)
+    for corners in [
+        [
+            point(-4., -5., 5.),
+            point(6., -5., 5.),
+            point(6., 5., 5.),
+            point(-4., 5., 5.),
+        ],
+        [
+            point(-9., -9., 4.3),
+            point(15., -9., 5.5),
+            point(15., 13., 6.8),
+            point(-9., 13., 5.2),
+        ],
+    ] {
+        let mut app = test_app();
+        let tolerance = app.document.tolerance();
+        let circle = Circle3::try_new(
+            point(0., 0., 0.),
+            3.,
+            UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+            tolerance,
+        )
         .unwrap()
-        .geometry()
-    else {
-        panic!("expected a capped oblique extrusion");
-    };
-    assert!(result.is_solid());
-    assert_eq!((result.faces().len(), result.edges().len()), (6, 12));
-    assert_eq!(
-        app.document.selected_object_ids().collect::<Vec<_>>(),
-        [cutter]
-    );
-    enter(&mut app, "Undo");
-    assert!(app.document.object(source).is_some());
-    enter(&mut app, "Redo");
-    assert!(app.document.object(source).is_none());
+        .to_nurbs()
+        .unwrap();
+        let source = app
+            .document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face(&circle, tolerance).unwrap(),
+            ))
+            .unwrap();
+        let chart = NurbsSurface::try_bilinear(corners).unwrap();
+        let cutter = app
+            .document
+            .add_geometry(Geometry::NurbsSurface(chart.clone()))
+            .unwrap();
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        enter(
+            &mut app,
+            "ExtrudeSrfTapered ToBoundary DraftAngle=-10 Solid=No DeleteInput=Yes",
+        );
+        enter(&mut app, "Direction");
+        enter(&mut app, "w0,0,0");
+        enter(&mut app, "w1,0,6");
+        assert!(app.picking_tapered_boundary());
+        let bounds =
+            BoundingBox3::from_points(corners.into_iter().chain([point(0., 0., 0.)])).unwrap();
+        pick_boundary_in_top_view(
+            &mut app,
+            [bounds.min(), bounds.max()],
+            chart.evaluate(0.08, 0.16).unwrap(),
+        );
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert!(app.document.object(source).is_none());
+        let Geometry::Brep(result) = app
+            .document
+            .objects()
+            .find(|o| o.id() != cutter)
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a capped oblique extrusion");
+        };
+        assert!(result.is_solid());
+        assert_eq!((result.faces().len(), result.edges().len()), (6, 12));
+        assert!(result.faces().iter().any(|face| face.surface() == &chart));
+        assert_eq!(
+            app.document.selected_object_ids().collect::<Vec<_>>(),
+            [cutter]
+        );
+        enter(&mut app, "Undo");
+        assert!(app.document.object(source).is_some());
+        enter(&mut app, "Redo");
+        assert!(app.document.object(source).is_none());
+    }
 }
 
 fn pick_boundary_in_top_view(app: &mut VibocerosApp, bounds: [Point3; 2], aim: Point3) {

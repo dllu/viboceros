@@ -24,8 +24,9 @@ leaves the trimmed walls, and open planar profiles produce sheets. For an
 outward convex line-and-arc profile and a parallel rectangular cutter, the
 cutter must span the section. Other cuts use a temporary taper whose length
 comes from the combined bounds. A slanted sweep with a continuous rim can be
-cut and capped by a planar cutter. The cutter must cover the entire section.
-Warped cutters and partial results from gapped or collapsing slanted sweeps
+cut by a planar or bilinear cutter that spans the section. A warped bilinear
+cutter must project one-to-one along the sweep direction. Cutter holes, other
+warped surfaces and partial results from gapped or collapsing slanted sweeps
 still need qualification.
 
 Headless examples, with curves selected:

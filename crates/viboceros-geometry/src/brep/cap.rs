@@ -1,6 +1,7 @@
 //! Planar hole capping with exact source edges and projected rational trims.
 use super::*;
 mod boundary;
+mod on_surface;
 #[cfg(test)]
 mod tests;
 
@@ -14,7 +15,7 @@ impl WorkBudget {
             .0
             .checked_sub(count)
             .ok_or(GeometryError::InvalidBrepTopology {
-                context: "planar capping exceeds its boundary/control budget",
+                context: "B-rep capping exceeds its boundary/control budget",
             })?;
         Ok(())
     }
@@ -166,6 +167,14 @@ impl Brep {
         if added.is_empty() {
             return Ok(None);
         }
+        self.with_attached_caps(added, tolerance).map(Some)
+    }
+
+    fn with_attached_caps(
+        &self,
+        added: Vec<BrepFace>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let mut faces = self.faces.clone();
         let mut capped_edges = vec![false; self.edges.len()];
         for face in &added {
@@ -181,7 +190,7 @@ impl Brep {
             }
         }
         faces.extend(added);
-        Self::try_new(self.vertices.clone(), self.edges.clone(), faces, tolerance).map(Some)
+        Self::try_new(self.vertices.clone(), self.edges.clone(), faces, tolerance)
     }
 
     fn cap_loop(
@@ -235,12 +244,7 @@ impl Brep {
         }
         let reverse = (area < 0.0) == (kind == BrepLoopType::Outer);
         if reverse {
-            face_loop.trims.reverse();
-            for trim in &mut face_loop.trims {
-                trim.vertices.reverse();
-                trim.reversed_3d = !trim.reversed_3d;
-                trim.curve = trim.curve.reversed()?;
-            }
+            reverse_cap_loop(&mut face_loop)?;
         }
         Ok(Some(ProjectedLoop {
             boundary: face_loop,
@@ -250,8 +254,18 @@ impl Brep {
     }
 }
 
+fn reverse_cap_loop(boundary: &mut BrepLoop) -> Result<(), GeometryError> {
+    boundary.trims.reverse();
+    for trim in &mut boundary.trims {
+        trim.vertices.reverse();
+        trim.reversed_3d = !trim.reversed_3d;
+        trim.curve = trim.curve.reversed()?;
+    }
+    Ok(())
+}
+
 fn cap_limit<T>() -> Result<T, GeometryError> {
-    invalid("planar capping exceeds its boundary/control budget")
+    invalid("B-rep capping exceeds its boundary/control budget")
 }
 
 fn valid_region(loops: &[&BrepLoop], budget: &mut WorkBudget) -> Result<bool, GeometryError> {
