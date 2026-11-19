@@ -156,20 +156,56 @@ fn curve_taper_boundary_partial_viewport_pick_preserves_a_side_edge_imprint() {
 }
 
 #[test]
-fn curve_taper_boundary_viewport_pick_keeps_the_curved_base_outside_the_footprint() {
+fn curve_taper_boundary_viewport_pick_preserves_curved_wall_topology() {
+    let profile = [
+        [0., 0.],
+        [2., 1.],
+        [4., 0.],
+        [6., -1.],
+        [8., 0.],
+        [8., 2.],
+        [8., 4.],
+    ];
+    for (controls, knots, footprint, cursor, topology) in [
+        (
+            3,
+            vec![0., 0., 0., 1., 1., 1.],
+            [0.19, -4., 5., 3.],
+            2.9,
+            (1, 4, 0),
+        ),
+        (
+            7,
+            vec![0., 0., 0., 1., 1., 2., 2., 3., 3., 3.],
+            [2., -2., 9., 0.1],
+            4.85,
+            (3, 10, 3),
+        ),
+    ] {
+        check_curved_wall_pick(&profile[..controls], knots, footprint, cursor, topology);
+    }
+}
+
+fn check_curved_wall_pick(
+    controls: &[[f64; 2]],
+    knots: Vec<f64>,
+    footprint: [f64; 4],
+    cursor: f64,
+    topology: (usize, usize, usize),
+) {
     let mut app = test_app();
     let source = app
         .document
         .add_geometry(Geometry::NurbsCurve(
             NurbsCurve::try_new(
                 2,
-                vec![point(0., 0., 2.), point(2., 1., 2.), point(4., 0., 2.)],
-                vec![0., 0., 0., 1., 1., 1.],
+                controls.iter().map(|&[x, y]| point(x, y, 2.)).collect(),
+                knots,
             )
             .unwrap(),
         ))
         .unwrap();
-    let cutter = rectangle(&mut app, [0.19, -4., 5., 3.], 5.);
+    let cutter = rectangle(&mut app, footprint, 5.);
     app.document
         .select_objects_direct([source], SelectionMode::Replace)
         .unwrap();
@@ -182,10 +218,15 @@ fn curve_taper_boundary_viewport_pick_keeps_the_curved_base_outside_the_footprin
     enter(&mut app, "w0,0,0");
     enter(&mut app, "w1,0,6");
     let context = top_view(&mut app, [point(-12., -10., 0.), point(18., 15., 8.)]);
-    move_pointer(&mut app, &context, point(2.9, -8.9, 2.));
+    move_pointer(&mut app, &context, point(cursor, -8.9, 2.));
     enter(&mut app, "ToBoundary");
     assert!(app.picking_tapered_boundary());
-    let pick = move_pointer(&mut app, &context, point(2.6, -3.8, 5.));
+    let [left, bottom, right, _] = footprint;
+    let pick = move_pointer(
+        &mut app,
+        &context,
+        point(left.midpoint(right), bottom + 0.2, 5.),
+    );
     viewport_click(&mut app, &context, pick);
     assert!(app.active_command.is_none(), "{:?}", app.command_log);
     assert!(
@@ -202,7 +243,12 @@ fn curve_taper_boundary_viewport_pick_keeps_the_curved_base_outside_the_footprin
     else {
         panic!("expected the cut curved wall");
     };
-    assert_eq!((piece.faces().len(), piece.edges().len()), (1, 4));
+    let mated = piece
+        .edge_use_counts()
+        .into_iter()
+        .filter(|&uses| uses == 2)
+        .count();
+    assert_eq!((piece.faces().len(), piece.edges().len(), mated), topology);
     let tolerance = app.document.tolerance();
     for expected in [point(0., 0., 2.), point(4., 0., 2.)] {
         assert!(

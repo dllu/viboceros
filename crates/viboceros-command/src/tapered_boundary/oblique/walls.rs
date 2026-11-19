@@ -3,7 +3,7 @@ use super::*;
 use viboceros_geometry::{
     BrepLoop, BrepTrim, BrepTrimType, CurveBrepIntersectionEvent, LineSegment,
 };
-use viboceros_smlib::KernelCurve;
+use viboceros_smlib::{KernelCurve, Solid};
 
 mod planar_split;
 mod planar_strip;
@@ -73,37 +73,36 @@ pub(in crate::tapered_boundary) fn trim_open(
             tolerance,
         );
     }
-    if plane.is_none() && !regular_projected_patch(surface, displacement, tolerance)? {
+    if let Some(plane) = plane {
+        return planar_strip::retain(
+            &stock,
+            &components,
+            cutter,
+            plane,
+            displacement,
+            input.curve.is_closed()?,
+            tolerance,
+        );
+    }
+    if !regular_projected_patch(surface, displacement, tolerance)? {
         return Err(REJECTED);
     }
-    let section =
-        |wall: &BrepFace| wall_section(wall.surface(), cutter, plane, displacement, tolerance);
     let first = stock.sub_brep(component, tolerance)?;
-    let Some(leading) = section(&stock.faces()[0])? else {
-        return if plane.is_some() && input.curve.degree() == 1 && component.len() == 1 {
-            Ok(first)
-        } else {
-            Err(REJECTED)
-        };
-    };
     let mut sections = Vec::with_capacity(component.len());
-    sections.push(leading);
-    for &index in &component[1..] {
-        sections.push(section(&stock.faces()[index])?.ok_or(REJECTED)?);
+    for &index in component {
+        sections
+            .push(warped_wall_section(&stock.faces()[index], cutter, tolerance)?.ok_or(REJECTED)?);
     }
-    // An open sweep's leading strip can be cut even if the planar cutter
-    // misses walls already disconnected by the draft.
-    if plane.is_none() || input.curve.is_closed()? {
-        for &index in components[1..].iter().flatten() {
-            section(&stock.faces()[index])?.ok_or(REJECTED)?;
-        }
+    for &index in components[1..].iter().flatten() {
+        warped_wall_section(&stock.faces()[index], cutter, tolerance)?.ok_or(REJECTED)?;
     }
-    let section = sections.into_iter().flatten();
-    if let Some(plane) = plane {
-        planar_strip::trim(&first, cutter, plane, displacement, section, tolerance)
-    } else {
-        clip_component(&first, cutter, displacement, section, tolerance)
-    }
+    clip_component(
+        &first,
+        cutter,
+        displacement,
+        sections.into_iter().flatten(),
+        tolerance,
+    )
 }
 
 fn clip_component(
@@ -114,8 +113,17 @@ fn clip_component(
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
     let tool = boundary_tool(cutter, displacement.scaled(-2.)?, tolerance)?;
+    clip_inside(source, &tool, section, tolerance)
+}
+
+fn clip_inside(
+    source: &Brep,
+    tool: &Solid,
+    section: impl Iterator<Item = Point3>,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
     let cut = Shape::from_brep(source, tolerance)?
-        .trimmed_inside(&tool)?
+        .trimmed_inside(tool)?
         .ok_or(REJECTED)?
         .to_brep(tolerance)?;
     if cut.faces().len() != source.faces().len()
@@ -158,17 +166,14 @@ fn retains_section_vertices(
     })
 }
 
-/// Return the base ends and the corresponding hits on the finite cutter.
 /// The native ruled wall runs across the sweep in U, with the original
 /// traversal in V. Monotonic rails along the profile chord exclude a
 /// longitudinal reversal anywhere in the nonrational ruled strip.
-fn wall_section(
+fn validate_wall(
     wall: &NurbsSurface,
-    cutter: &Brep,
-    plane: Option<Plane>,
-    displacement: Vector3,
+    planar_cut: Option<(Plane, f64)>,
     tolerance: Tolerance,
-) -> Result<Option<[Point3; 4]>, CommandError> {
+) -> Result<(), CommandError> {
     if wall.degree_u() != 1 || wall.control_point_count_u() != 2 || wall.is_rational() {
         return Err(REJECTED);
     }
@@ -178,14 +183,6 @@ fn wall_section(
     let direction = start
         .direction_to(wall.evaluate(*u.start(), *v.end())?)?
         .as_vector();
-    let planar_cut = plane
-        .map(|plane| {
-            Ok::<_, GeometryError>((
-                plane,
-                displacement.dot(plane.normal().as_vector())?.signum(),
-            ))
-        })
-        .transpose()?;
     for i in 0..2 {
         let sign = if i == 0 { -1. } else { 1. };
         let mut controls =
@@ -205,38 +202,36 @@ fn wall_section(
             previous = Some(point);
         }
     }
-    let mut ends = [start; 4];
-    let mut covered = true;
+    Ok(())
+}
+
+fn warped_wall_section(
+    face: &BrepFace,
+    cutter: &Brep,
+    tolerance: Tolerance,
+) -> Result<Option<[Point3; 4]>, CommandError> {
+    let wall = face.surface();
+    validate_wall(wall, None, tolerance)?;
+    let u = wall.domain_u();
+    let v = wall.domain_v();
+    let mut ends = [wall.evaluate(*u.start(), *v.start())?; 4];
     for (i, v) in [*v.start(), *v.end()].into_iter().enumerate() {
         let start = wall.evaluate(*u.start(), v)?;
         let end = wall.evaluate(*u.end(), v)?;
-        ends[i] = start;
-        let hit = if let Some((plane, sign)) = planar_cut {
-            let a = plane.signed_distance_to(start)? * sign;
-            let b = plane.signed_distance_to(end)? * sign;
-            let point = start.translated(start.vector_to(end)?.scaled(a / (a - b))?)?;
-            let face = &cutter.faces()[0];
-            let (u, v) = face.surface().closest_parameters(point, tolerance)?;
-            (face.surface().evaluate(u, v)?.is_near(point, tolerance)
-                && face.contains_parameters(u, v, tolerance)?)
-            .then_some(point)
-        } else {
-            let ruling = LineSegment::try_new(start, end, tolerance)?.to_nurbs()?;
-            let events =
-                viboceros_smlib::curve_brep_intersection_events(&ruling, cutter, None, tolerance)?;
-            let [CurveBrepIntersectionEvent::Point(hit)] = events.as_slice() else {
-                return Ok(None);
-            };
-            let point = hit.point();
-            (!point.is_near(start, tolerance) && !point.is_near(end, tolerance)).then_some(point)
+        let ruling = LineSegment::try_new(start, end, tolerance)?.to_nurbs()?;
+        let events =
+            viboceros_smlib::curve_brep_intersection_events(&ruling, cutter, None, tolerance)?;
+        let [CurveBrepIntersectionEvent::Point(hit)] = events.as_slice() else {
+            return Ok(None);
         };
-        if let Some(hit) = hit {
-            ends[i + 2] = hit;
-        } else {
-            covered = false;
+        let point = hit.point();
+        if point.is_near(start, tolerance) || point.is_near(end, tolerance) {
+            return Ok(None);
         }
+        ends[i] = start;
+        ends[i + 2] = point;
     }
-    Ok(covered.then_some(ends))
+    Ok(Some(ends))
 }
 
 pub(super) fn uncut_stock(
@@ -321,7 +316,7 @@ fn check_stock_reaches_cutter(
     if regular_projected_patch(support, displacement, tolerance)? {
         for face in stock.faces() {
             if !on_plane(face.surface(), base, tolerance)
-                && wall_section(face.surface(), cutter, None, displacement, tolerance)?.is_some()
+                && warped_wall_section(face, cutter, tolerance)?.is_some()
             {
                 return Ok(());
             }
