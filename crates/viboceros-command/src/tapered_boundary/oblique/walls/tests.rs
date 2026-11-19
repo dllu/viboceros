@@ -1,6 +1,7 @@
 use super::*;
 use viboceros_geometry::Polyline3;
 
+mod curved;
 mod partial;
 
 const RECTANGLE: [[f64; 2]; 5] = [[0., 0.], [6., 0.], [6., 4.], [0., 4.], [0., 0.]];
@@ -322,61 +323,5 @@ fn oblique_boundary_replays_rhinos_base_capped_stock_for_gapped_solid_curves() {
         registry.execute(&mut doc, "Redo").unwrap();
         assert!(doc.object(source).is_none());
         assert_eq!(doc.selected_object_count(), 0);
-    }
-}
-
-#[test]
-fn oblique_boundary_keeps_connected_regular_curved_walls() {
-    let controls = [[0., 0.], [2., 1.], [4., 0.], [6., -1.], [8., 0.]];
-    for (count, x, center, expected) in [
-        (
-            3,
-            2.886986301369865,
-            2.,
-            [[0., -0.4847756250784715, 2.], [4.257412552744642, 0.5, 5.]],
-        ),
-        (
-            5,
-            4.845890410958901,
-            4.,
-            [[0., -1.0363056171015095, 2.], [8.749120807331991, 0.5, 5.]],
-        ),
-    ] {
-        let knots = if count == 3 {
-            vec![0., 0., 0., 1., 1., 1.]
-        } else {
-            vec![0., 0., 0., 1., 1., 2., 2., 2.]
-        };
-        let curve = NurbsCurve::try_new(
-            2,
-            controls[..count]
-                .iter()
-                .map(|&[x, y]| point(x, y, 2.))
-                .collect(),
-            knots,
-        )
-        .unwrap();
-        let (mut doc, registry, source, boundary) = scene_with_geometry(
-            Geometry::NurbsCurve(curve),
-            Geometry::NurbsSurface(cutter(WIDE, [5.; 4])),
-        );
-        assert_eq!(
-            run(
-                &mut doc,
-                &registry,
-                boundary,
-                &["Direction=1,0,6", "DraftAngle=-10"],
-                Some((x - center) * 37_f64.sqrt())
-            )
-            .unwrap(),
-            TaperedBoundaryOutcome::Cut(1),
-        );
-        let piece = result(&doc, source, boundary);
-        let faces = (count - 1) / 2;
-        assert_eq!(
-            (piece.faces().len(), piece.edges().len()),
-            (faces, 1 + 3 * faces)
-        );
-        assert_bounds(piece, expected, doc.tolerance());
     }
 }

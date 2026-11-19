@@ -1,6 +1,6 @@
 use super::*;
 use crate::app::tests::circle_preview::viewport_click;
-use viboceros_geometry::Polyline3;
+use viboceros_geometry::{NurbsCurve, Polyline3};
 
 fn stock_curve(app: &mut VibocerosApp) -> ObjectId {
     app.document
@@ -153,4 +153,63 @@ fn curve_taper_boundary_partial_viewport_pick_preserves_a_side_edge_imprint() {
     enter(&mut app, "Redo");
     assert!(app.document.object(source).is_none());
     assert_eq!(app.document.selected_object_count(), 0);
+}
+
+#[test]
+fn curve_taper_boundary_viewport_pick_keeps_the_curved_base_outside_the_footprint() {
+    let mut app = test_app();
+    let source = app
+        .document
+        .add_geometry(Geometry::NurbsCurve(
+            NurbsCurve::try_new(
+                2,
+                vec![point(0., 0., 2.), point(2., 1., 2.), point(4., 0., 2.)],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap(),
+        ))
+        .unwrap();
+    let cutter = rectangle(&mut app, [0.19, -4., 5., 3.], 5.);
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    enter(
+        &mut app,
+        "ExtrudeCrvTapered DraftAngle=-10 Solid=No DeleteInput=Yes",
+    );
+    enter(&mut app, "Direction");
+    enter(&mut app, "w0,0,0");
+    enter(&mut app, "w1,0,6");
+    let context = top_view(&mut app, [point(-12., -10., 0.), point(18., 15., 8.)]);
+    move_pointer(&mut app, &context, point(2.9, -8.9, 2.));
+    enter(&mut app, "ToBoundary");
+    assert!(app.picking_tapered_boundary());
+    let pick = move_pointer(&mut app, &context, point(2.6, -3.8, 5.));
+    viewport_click(&mut app, &context, pick);
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert!(
+        app.document.object(source).is_none(),
+        "{:?}",
+        app.command_log
+    );
+    let Geometry::Brep(piece) = app
+        .document
+        .objects()
+        .find(|o| o.id() != cutter)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected the cut curved wall");
+    };
+    assert_eq!((piece.faces().len(), piece.edges().len()), (1, 4));
+    let tolerance = app.document.tolerance();
+    for expected in [point(0., 0., 2.), point(4., 0., 2.)] {
+        assert!(
+            piece
+                .vertices()
+                .iter()
+                .any(|v| v.point().is_near(expected, tolerance))
+        );
+    }
 }

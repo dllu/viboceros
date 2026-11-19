@@ -6,6 +6,7 @@ use viboceros_geometry::{
 use viboceros_smlib::KernelCurve;
 
 mod planar_split;
+mod planar_strip;
 
 #[derive(Clone, Copy)]
 pub(in crate::tapered_boundary) struct WallInput<'a> {
@@ -85,18 +86,24 @@ pub(in crate::tapered_boundary) fn trim_open(
             Err(REJECTED)
         };
     };
-    let mut sections = Vec::with_capacity(stock.faces().len());
+    let mut sections = Vec::with_capacity(component.len());
     sections.push(leading);
-    for wall in &stock.faces()[1..] {
-        sections.push(section(wall)?.ok_or(REJECTED)?);
+    for &index in &component[1..] {
+        sections.push(section(&stock.faces()[index])?.ok_or(REJECTED)?);
     }
-    clip_component(
-        &first,
-        cutter,
-        displacement,
-        component.iter().flat_map(|&i| sections[i]),
-        tolerance,
-    )
+    // An open sweep's leading strip can be cut even if the planar cutter
+    // misses walls already disconnected by the draft.
+    if plane.is_none() || input.curve.is_closed()? {
+        for &index in components[1..].iter().flatten() {
+            section(&stock.faces()[index])?.ok_or(REJECTED)?;
+        }
+    }
+    let section = sections.into_iter().flatten();
+    if let Some(plane) = plane {
+        planar_strip::trim(&first, cutter, plane, displacement, section, tolerance)
+    } else {
+        clip_component(&first, cutter, displacement, section, tolerance)
+    }
 }
 
 fn clip_component(

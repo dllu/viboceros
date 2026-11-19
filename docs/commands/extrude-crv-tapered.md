@@ -38,8 +38,10 @@ its captured distance.
 For slanted polyline sweeps with gaps, `Solid=No` keeps the wall at the
 curve's start when the cutter spans the walls. An open polyline produces the
 same wall with either `Solid` setting. For nonrational curved open sweeps
-with monotone offset rails, the cut retains the connected walls at the
-start of the curve.
+with monotone offset rails, a planar cutter that spans the entire leading
+strip keeps its full base, even where the base extends beyond the cutter.
+The strip may have several connected faces. A planar cutter that interrupts
+the section of a single connected sweep rejects the cut.
 On independent straight walls, a partial planar cutter can leave an uncut
 wall and subdivide its edges where the trace reaches them. A hole can
 interrupt the trace and leave both side edges subdivided. Cutter orientation
@@ -47,8 +49,9 @@ can change whether a closed sweep retains the trimmed leading wall or the
 uncut closing wall. With `Solid=Yes`, a closed polygon
 can report a failed cut and retain the base-capped preview stock. The
 captured sweep must reach the cutter before it can leave this result.
-Partial cuts on curved walls, off-plane base points, holes within warped
-sections, and collapsing curved stocks need further qualification.
+Partial cuts on curved strips with gaps elsewhere in the sweep, off-plane
+base points, holes within warped sections, and collapsing curved stocks need
+further qualification.
 
 Headless examples, with curves selected:
 
