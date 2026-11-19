@@ -6,6 +6,27 @@ use monstertruck_modeling::{
     Surface as ModelingSurface,
 };
 
+fn step_knots(knots: &[f64]) -> (Vec<f64>, Vec<usize>) {
+    // A distinct knot is a separate part of the basis even when its span is tiny.
+    knots.chunk_by(|a, b| a == b).map(|run| (run[0], run.len())).unzip()
+}
+
+struct KnotValues<'a>(&'a [f64]);
+
+impl Display for KnotValues<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        f.write_str("(")?;
+        for (index, value) in self.0.iter().enumerate() {
+            if index != 0 {
+                f.write_str(", ")?;
+            }
+            // Use enough significant decimal digits to round trip even adjacent doubles.
+            write!(f, "{value:.16E}")?;
+        }
+        f.write_str(")")
+    }
+}
+
 impl StepFormat for Point2 {
     fn fmt(&self, idx: usize, f: &mut Formatter<'_>) -> Result {
         f.write_fmt(format_args!(
@@ -170,7 +191,7 @@ impl<P> StepFormat for BsplineCurve<P>
 where P: Copy + ConstStepLength + StepFormat
 {
     fn fmt(&self, idx: usize, f: &mut Formatter<'_>) -> Result {
-        let (knots, multi) = self.knot_vector().to_single_multi();
+        let (knots, multi) = step_knots(self.knot_vector());
         let control_points_instances = self
             .control_points()
             .iter()
@@ -182,7 +203,7 @@ where P: Copy + ConstStepLength + StepFormat
             degree = self.degree(),
             control_points_list = IndexSliceDisplay((idx + 1..=idx + self.control_points().len() * P::LENGTH).step_by(P::LENGTH)),
 			knot_multiplicities = SliceDisplay(&multi),
-            knots = SliceDisplay(&knots),
+            knots = KnotValues(&knots),
             control_points_instances = SliceDisplay(&control_points_instances),
 		))
     }
@@ -201,7 +222,7 @@ where
     V::Point: ConstStepLength + StepFormat,
 {
     fn fmt(&self, idx: usize, f: &mut Formatter<'_>) -> Result {
-        let (knots, multi) = self.knot_vector().to_single_multi();
+        let (knots, multi) = step_knots(self.knot_vector());
         let control_points_instances = self
             .control_points()
             .iter()
@@ -229,7 +250,7 @@ where
                     .step_by(V::Point::LENGTH)
             ),
             knot_multiplicities = SliceDisplay(&multi),
-            knots = SliceDisplay(&knots),
+            knots = KnotValues(&knots),
             weights = SliceDisplay(&weights),
             control_points_instances = SliceDisplay(&control_points_instances),
         ))
@@ -729,8 +750,8 @@ where P: Copy + StepFormat
                 IndexSliceDisplay(idx + counter - slice.len() + 1..=idx + counter)
             })
             .collect::<Vec<_>>();
-        let (uknots, umulti) = self.knot_vector_u().to_single_multi();
-        let (vknots, vmulti) = self.knot_vector_v().to_single_multi();
+        let (uknots, umulti) = step_knots(self.knot_vector_u());
+        let (vknots, vmulti) = step_knots(self.knot_vector_v());
         f.write_fmt(format_args!(
             "#{idx} = B_SPLINE_SURFACE_WITH_KNOTS('', {u_degree}, {v_degree}, {control_points_list}, .UNSPECIFIED., .U., .U., .U., \
 {u_multiplicities}, {v_multiplicities}, {u_knots}, {v_knots}, .UNSPECIFIED.);\n{control_points_instances}",
@@ -739,8 +760,8 @@ where P: Copy + StepFormat
             control_points_list = SliceDisplay(&control_points_list),
             u_multiplicities = SliceDisplay(&umulti),
             v_multiplicities = SliceDisplay(&vmulti),
-            u_knots = SliceDisplay(&uknots),
-            v_knots = SliceDisplay(&vknots),
+            u_knots = KnotValues(&uknots),
+            v_knots = KnotValues(&vknots),
             control_points_instances = SliceDisplay(&control_points_instances),
         ))
     }
@@ -783,8 +804,8 @@ where
             .iter()
             .map(|slice| SliceDisplay(slice))
             .collect::<Vec<_>>();
-        let (uknots, umulti) = self.knot_vector_u().to_single_multi();
-        let (vknots, vmulti) = self.knot_vector_v().to_single_multi();
+        let (uknots, umulti) = step_knots(self.knot_vector_u());
+        let (vknots, vmulti) = step_knots(self.knot_vector_v());
         f.write_fmt(format_args!(
             "#{idx} = (
     BOUNDED_SURFACE()
@@ -800,8 +821,8 @@ where
             control_points_list = SliceDisplay(&control_points_list),
             u_multiplicities = SliceDisplay(&umulti),
             v_multiplicities = SliceDisplay(&vmulti),
-            u_knots = SliceDisplay(&uknots),
-            v_knots = SliceDisplay(&vknots),
+            u_knots = KnotValues(&uknots),
+            v_knots = KnotValues(&vknots),
             control_points_instances = SliceDisplay(&control_points_instances),
             weights = SliceDisplay(&weights),
         ))
