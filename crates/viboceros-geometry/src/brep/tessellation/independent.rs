@@ -4,6 +4,7 @@ use super::*;
 
 const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
 const DENSE_GRID_AXIS_LIMIT: usize = 32;
+const DENSE_DISPLAY_CHORD_DENSITY: Real = 0.25;
 
 fn dense_grid_axis_limit(face_count: usize) -> usize {
     // Reserve part of the mesh budget for the actual trim curves. Allow more
@@ -118,12 +119,13 @@ impl Brep {
             let sampling = Sampling::per_face(&grids).with_axis_limit(limit);
             if retain_parameters
                 && self.is_solid()
-                && let Ok(mesh) = self.tessellate_conforming_sampling(
+                && let Ok(mesh) = self.tessellate_conforming_with_chords(
                     sampling
                         .with_vertex_limit(SPARSE_POLYGON_VERTEX_LIMIT)
                         .with_display_edge_samples(samples_per_span),
                     tolerance,
                     true,
+                    DENSE_DISPLAY_CHORD_DENSITY,
                 )
             {
                 return Ok(mesh);
@@ -285,17 +287,7 @@ impl Brep {
         if vertices.is_none_or(|n| n > 1_048_576) {
             if !self.has_positional_break() {
                 return self
-                    .tessellate_conforming_sampling(
-                        sparse_sampling().with_polygon_density(density),
-                        tolerance,
-                        false,
-                    )
-                    .or_else(|error| match error {
-                        GeometryError::MeshSubdivisionLimit if density > 0. => {
-                            self.tessellate_conforming_sampling(sparse_sampling(), tolerance, false)
-                        }
-                        _ => Err(error),
-                    })
+                    .tessellate_conforming_with_chords(sparse_sampling(), tolerance, false, density)
                     .map(|(mesh, _, _)| mesh.culled_unused_vertices().0);
             }
             return Err(GeometryError::MeshSubdivisionLimit);

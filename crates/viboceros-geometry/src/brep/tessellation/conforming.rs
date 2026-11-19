@@ -5,6 +5,13 @@ use super::trim_image::LiftedTrim;
 use super::*;
 use crate::ParameterSide;
 
+struct FaceTriangulation {
+    parameters: Vec<Point2>,
+    points: Vec<Point3>,
+    triangles: Vec<[u32; 3]>,
+    chord_height: Option<Real>,
+}
+
 impl Brep {
     /// Rebuild boundaries from one sample table per topological edge. Merely
     /// snapping independently sampled face grids cannot remove T-junctions.
@@ -40,6 +47,30 @@ impl Brep {
             retain_parameters,
         )
     }
+
+    pub(super) fn tessellate_conforming_with_chords(
+        &self,
+        sampling: Sampling<'_>,
+        tolerance: Tolerance,
+        retain_parameters: bool,
+        density: Real,
+    ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
+        self.tessellate_conforming_sampling(
+            sampling.with_chord_density(density),
+            tolerance,
+            retain_parameters,
+        )
+        .or_else(|error| match error {
+            GeometryError::MeshSubdivisionLimit
+            | GeometryError::UnstitchedBrepTessellation { .. }
+                if density > 0. =>
+            {
+                self.tessellate_conforming_sampling(sampling, tolerance, retain_parameters)
+            }
+            _ => Err(error),
+        })
+    }
+
     pub(super) fn tessellate_conforming_sampling(
         &self,
         sampling: Sampling<'_>,
@@ -197,10 +228,8 @@ impl Brep {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
 
-        let mut vertices = Vec::new();
-        let mut triangles = Vec::new();
-        let mut face_sources = Vec::new();
-        let mut vertex_parameters = Vec::new();
+        let mut face_meshes = Vec::with_capacity(frames.len());
+        let mut coarse_vertices = 0;
         for (index, frame) in frames.iter().enumerate() {
             let face = frame.face.as_ref();
             let mut parameters = Vec::new();
@@ -293,16 +322,15 @@ impl Brep {
                 sampling.grid(index),
                 sampling.axis_limit,
             )?;
-            let mut face_triangles =
-                if retain_parameters && sampling.display_edge_samples.is_none() {
-                    creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
-                } else if sampling.axis_limit.is_some() {
-                    metric::triangulate(&mut parameters, &lengths, &face.surface)?
-                } else {
-                    trim_region::triangulate(&mut parameters, &lengths, &[])?
-                }
-                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
-            let mut points = parameters
+            let triangles = if retain_parameters && sampling.display_edge_samples.is_none() {
+                creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
+            } else if sampling.axis_limit.is_some() {
+                metric::triangulate(&mut parameters, &lengths, &face.surface)?
+            } else {
+                trim_region::triangulate(&mut parameters, &lengths, &[])?
+            }
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
+            let points = parameters
                 .iter()
                 .enumerate()
                 .map(|(i, uv)| match boundary_points.get(i) {
@@ -310,36 +338,60 @@ impl Brep {
                     None => face.surface.evaluate(uv.x(), uv.y()),
                 })
                 .collect::<Result<Vec<_>, _>>()?;
-            if let Some(density) = sampling.polygon_density
-                && !(face.surface.degree_u() == 1 && face.surface.degree_v() == 1)
-            {
+            let chord_height = sampling
+                .chord_density
+                .filter(|_| face.surface.degree_u() > 1 || face.surface.degree_v() > 1)
+                .map(|density| face.surface.polygon_chord_height(density))
+                .transpose()?
+                .map(|height| height.max(tolerance.absolute()));
+            coarse_vertices += points.len();
+            if coarse_vertices > sampling.vertex_limit() {
+                return Err(GeometryError::MeshSubdivisionLimit);
+            }
+            face_meshes.push(FaceTriangulation {
+                parameters,
+                points,
+                triangles,
+                chord_height,
+            });
+        }
+
+        let mut vertices = Vec::with_capacity(coarse_vertices);
+        let mut triangles = Vec::new();
+        let mut face_sources = Vec::new();
+        let mut vertex_parameters = Vec::new();
+        let vertex_limit = sampling.vertex_limit().min(u32::MAX as usize);
+        let mut remaining = vertex_limit - coarse_vertices;
+        let face_allowance = vertex_limit / frames.len();
+        for (index, (frame, face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
+            let face = frame.face.as_ref();
+            let FaceTriangulation {
+                mut parameters,
+                mut points,
+                triangles: mut face_triangles,
+                chord_height,
+            } = face_mesh;
+            if let Some(chord_height) = chord_height {
+                // Reserve every coarse face before sharing the remaining
+                // budget among interior chords.
+                let coarse = points.len();
+                let allowance = remaining.div_ceil(frames.len() - index).min(face_allowance);
+                let limit = points
+                    .len()
+                    .saturating_add(allowance)
+                    .min(MAX_CONSTRAINED_TRIM_VERTICES);
                 chords::refine_interior(
                     &face.surface,
                     &mut parameters,
                     &mut points,
                     &mut face_triangles,
-                    face.surface
-                        .polygon_chord_height(density)?
-                        .max(tolerance.absolute()),
-                    (sampling.vertex_limit() / frames.len()).min(MAX_CONSTRAINED_TRIM_VERTICES),
+                    chord_height,
+                    limit,
                 )?;
+                remaining -= points.len() - coarse;
             }
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
-            if vertices
-                .len()
-                .checked_add(parameters.len())
-                .is_none_or(|n| n > sampling.vertex_limit())
-            {
-                return Err(GeometryError::MeshSubdivisionLimit);
-            }
-            if vertices
-                .len()
-                .checked_add(parameters.len())
-                .is_none_or(|n| n > u32::MAX as usize)
-            {
-                return Err(GeometryError::TooManyMeshVertices);
-            }
             if retain_parameters {
                 vertex_parameters.extend(parameters);
             }
