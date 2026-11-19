@@ -130,10 +130,27 @@ fn write_with_scale<'a, W: Write>(
     breps: impl IntoIterator<Item = &'a Brep>,
     scale: f64,
     tolerance: Tolerance,
-    accuracy: f64,
+    mut accuracy: f64,
 ) -> Result<(), StepError> {
     let mut items = Vec::new();
     for (index, brep) in breps.into_iter().enumerate() {
+        // STEP represents these component tolerances through its single
+        // length-uncertainty context. Preserve the larger bounds inherited
+        // by native edges and vertices after sewing.
+        let component_accuracy = brep
+            .vertices()
+            .iter()
+            .map(|vertex| vertex.tolerance())
+            .chain(brep.edges().iter().map(|edge| edge.tolerance()))
+            .fold(0.0, f64::max)
+            * scale;
+        if !component_accuracy.is_finite() {
+            return Err(StepError::UnsupportedNativeBrep {
+                brep: index,
+                reason: "scaled STEP component tolerance is not finite",
+            });
+        }
+        accuracy = accuracy.max(component_accuracy);
         let shells = brep
             .edge_connected_face_components()
             .iter()
@@ -537,7 +554,63 @@ fn nurbs_surface3(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_geometry::WeightedPoint3;
+    use crate::step::read_step_native_instances_in_units;
+    use viboceros_geometry::{BrepVertex, WeightedPoint3};
+
+    #[test]
+    fn native_step_round_trips_an_inherited_vertex_tolerance_across_units() {
+        let tolerance = Tolerance::try_new(0.0001, 1e-12, 1e-6).unwrap();
+        let surface = NurbsSurface::try_new(
+            1,
+            1,
+            2,
+            2,
+            [[0., 0., 0.], [1., 0., 0.], [0., 1., 0.], [1., 1., 0.25]]
+                .map(|point| Point3::try_from(point).unwrap())
+                .to_vec(),
+            vec![0., 0., 1., 1.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        let source = Brep::try_surface_face(surface, tolerance).unwrap();
+        let mut vertices = source.vertices().to_vec();
+        let point = vertices[0].point();
+        let displaced = Point3::try_new(point.x(), point.y(), point.z() + 0.003).unwrap();
+        vertices[0] = BrepVertex::try_new(displaced, 0.004).unwrap();
+        let sewn = Brep::try_new(
+            vertices,
+            source.edges().to_vec(),
+            source.faces().to_vec(),
+            tolerance,
+        )
+        .unwrap();
+
+        let mut archive = Vec::new();
+        write_step_nurbs_breps_in_units(
+            &mut archive,
+            [&sewn],
+            &LengthUnitSystem::Centimeters,
+            tolerance,
+        )
+        .unwrap();
+        let imported = read_step_native_instances_in_units(
+            archive.as_slice(),
+            &LengthUnitSystem::Centimeters,
+            tolerance,
+        )
+        .unwrap();
+        let [instance] = imported.instances.as_slice() else {
+            panic!("expected one imported shell");
+        };
+        assert_eq!(instance.brep.faces().len(), 1);
+        let vertex = instance
+            .brep
+            .vertices()
+            .iter()
+            .find(|vertex| vertex.point().distance_to(displaced).unwrap() < 1e-12)
+            .expect("the topological vertex survived the round trip");
+        assert!((vertex.tolerance() - 0.004).abs() < 1e-12);
+    }
 
     #[test]
     fn common_tiny_nurbs_weights_keep_small_euclidean_controls() {
