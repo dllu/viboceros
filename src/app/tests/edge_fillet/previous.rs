@@ -60,6 +60,7 @@ fn edge_fillet_previous_selection_recalls_canceled_edges_and_updates_preview() {
             std::thread::sleep(std::time::Duration::from_millis(5));
         };
         submit(&mut app, "");
+        submit(&mut app, "");
         let Geometry::Brep(rounded) = app.document.object(first.object).unwrap().geometry() else {
             panic!("expected the recalled edge blend");
         };

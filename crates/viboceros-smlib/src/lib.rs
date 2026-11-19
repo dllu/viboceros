@@ -50,4 +50,5 @@ pub use native::{
     sweep_surface, trim_blend_parent, trim_curve, trim_surface, trim_surface_direction,
     two_rail_sweep_surface,
 };
+pub use native::EdgeBlendProfile;
 use viboceros_opennurbs as _;

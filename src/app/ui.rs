@@ -737,7 +737,8 @@ impl VibocerosApp {
                     }
                 })
                 .or_else(|| {
-                    ((self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
+                    ((self.unjoin_prompt.is_some()
+                        || self.edge_fillet_prompt.is_some() && !self.adjusting_edge_blend())
                         && model_input_active
                         && self.plane_prompt.is_none()
                         && self.nested_measurement.is_none()
@@ -1355,6 +1356,17 @@ impl VibocerosApp {
             && component_pick == Some(crate::viewport::ComponentPickFilter::Edges);
         let chain_pick =
             self.chain_prompt.is_some() && !self.picking_edge_blend_chain() && model_input_active;
+        let edge_blend_handles = if model_input_active
+            && self.plane_prompt.is_none()
+            && self.nested_measurement.is_none()
+            && !self.zoom_window_pending
+            && self.zoom_target.is_none()
+        {
+            self.edge_blend_size_handles()
+        } else {
+            Vec::new()
+        };
+        let show_edge_blend_handles = self.show_edge_size_handles();
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1578,6 +1590,8 @@ impl VibocerosApp {
                             } else {
                                 &[]
                             },
+                            edge_blend_handles: &edge_blend_handles,
+                            show_edge_blend_handles,
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()
@@ -1990,8 +2004,9 @@ impl VibocerosApp {
             }
             if !handled_action && !menu_consumed {
                 let direction_click = output.direction_click.is_some();
+                let edge_size_input = output.edge_blend_handle.is_some();
                 handled_action = self.handle_viewport_action(output);
-                if handled_action && direction_click {
+                if handled_action && (direction_click || edge_size_input) {
                     ui.ctx().request_repaint();
                 }
             }

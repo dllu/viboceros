@@ -909,7 +909,7 @@ struct BallCornerScope {
 
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
                           double radius, double accuracy, EdgeBlend kind, bool between_rails,
-                          bool local_merge = false) {
+                          bool local_merge = false, const double *sizes = nullptr) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
             "Invalid edge blend parameters");
     require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
@@ -917,8 +917,14 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     require(!solid->source_edges.empty(), "Fillet requires fresh source edge identities");
     std::vector<bool> seen(solid->source_edges.size(), false);
     SmTArray<SmEdge *> edges;
+    SmTArray<double> edge_sizes;
     for (size_t i = 0; i < count; ++i) {
         require(indices[i] < seen.size(), "Fillet source edge index is out of range");
+        if (sizes) {
+            require(!seen[indices[i]] && std::isfinite(sizes[i]) && sizes[i] > 0,
+                    "Invalid or repeated sized edge");
+            edge_sizes.Add(sizes[i]);
+        }
         if (!seen[indices[i]]) {
             seen[indices[i]] = true;
             edges.Add(solid->source_edges[indices[i]]);
@@ -930,9 +936,22 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     SmFilletExecutive executive(*SmApiGetOrCreateContext(), solid->value.get());
     const auto cross_section = kind == EdgeBlend::Chamfer ? SM_FSG_LINEAR :
         kind == EdgeBlend::Curvature ? SM_FSG_BLEND_CURVE : SM_FSG_CIRCULAR;
-    check(executive.SetFilletParameters(solid->value.get(), edges, cross_section,
-          between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS, radius, nullptr, accuracy, -1.0, -1.0, std::min(accuracy,1e-10), kind == EdgeBlend::Curvature ? 2 : 1, 1.0),
-          "configure precise edge fillet");
+    const auto radius_type = between_rails ? SM_FS_CONST_DIST : SM_FS_CONST_RADIUS;
+    const auto continuity = kind == EdgeBlend::Curvature ? 2 : 1;
+    const auto cross_section_tolerance = std::min(accuracy, 1e-10);
+    if (sizes) {
+        SmTArray<SmFilletSurfaceGeneratorType> cross_sections;
+        SmTArray<SmFilletSolverType> radius_types;
+        cross_sections.Add(cross_section);
+        radius_types.Add(radius_type);
+        check(executive.SetFilletParameters(solid->value.get(), edges, cross_sections,
+              radius_types, edge_sizes, nullptr, accuracy, -1.0, -1.0,
+              cross_section_tolerance, continuity, 1.0), "configure per-edge blend sizes");
+    } else {
+        check(executive.SetFilletParameters(solid->value.get(), edges, cross_section,
+              radius_type, radius, nullptr, accuracy, -1.0, -1.0,
+              cross_section_tolerance, continuity, 1.0), "configure precise edge fillet");
+    }
     executive.SetDoGlobalMerge(kind != EdgeBlend::Curvature && !local_merge ? TRUE : FALSE);
     if (kind == EdgeBlend::Chamfer) {
         check(executive.CreateFilletCorners(), "create chamfer corners");
@@ -1025,6 +1044,21 @@ extern "C" int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indic
     return guarded(error, capacity, [&] {
         require(rail_type == 0 || rail_type == 1, "Invalid blend rail type");
         blend_imported_edges(solid, indices, count, radius, accuracy, EdgeBlend::Curvature, rail_type == 0);
+    });
+}
+
+extern "C" int vb_imported_solid_blend_edge_sizes(VbSolid *solid, const size_t *indices,
+                                                  const double *sizes, size_t count, double minimum,
+                                                  double accuracy, int profile, int rail_type,
+                                                  int local_merge, char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(sizes && profile >= 0 && profile <= 2 && (rail_type == 0 || rail_type == 1) &&
+                    (local_merge == 0 || (local_merge == 1 && profile == 0)),
+                "Invalid per-edge blend options");
+        const auto kind = profile == 0 ? EdgeBlend::Circular :
+                          profile == 1 ? EdgeBlend::Chamfer : EdgeBlend::Curvature;
+        blend_imported_edges(solid, indices, count, minimum, accuracy, kind, profile != 0 && rail_type == 0,
+                             local_merge != 0, sizes);
     });
 }
 

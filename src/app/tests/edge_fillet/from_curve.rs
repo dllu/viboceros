@@ -81,6 +81,7 @@ fn edge_fillet_from_curve_accepts_typed_points_and_rejects_zero_curvature() {
         );
         assert!(!app.document.can_undo());
         submit(&mut app, "");
+        submit(&mut app, "");
         assert_eq!(app.document.undo_label(), Some(command));
         assert_eq!(app.document.objects().count(), 3);
     }
@@ -99,6 +100,8 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
     app.document.clear_history().unwrap();
     submit(&mut app, "ChamferEdge Distance=2 Preview=Yes");
     choose_edge(&mut app, pick);
+    submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
 
     let context = egui::Context::default();
     viewport_frame(&mut app, &context, vec![]);
@@ -122,6 +125,7 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
         }
     };
     let initial = wait(&mut app, None);
+    assert!(app.pick_edge_size_handle(pick));
     submit(&mut app, "FromCurve");
     let target = move_measurement_pointer(&mut app, &context, point(24., 10., 0.));
     let radius = app.edge_blend_size_hover().unwrap();
@@ -148,14 +152,7 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
     viewport_click(&mut app, &context, target);
     assert!(!app.measuring_edge_blend_radius(), "{:?}", app.command_log);
     assert!(app.edge_fillet_prompt.is_some());
-    assert!(
-        app.command_log
-            .back()
-            .unwrap()
-            .contains(&format!("Distance={radius}")),
-        "{:?}",
-        app.command_log
-    );
+    assert_eq!(app.edge_blend_size_handles()[0].size, radius);
     assert!(!app.document.can_undo());
     submit(&mut app, "");
     let Geometry::Brep(committed) = app.document.object(pick.object).unwrap().geometry() else {

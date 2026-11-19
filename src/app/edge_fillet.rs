@@ -7,9 +7,11 @@ use viboceros_command::{
     ComponentSelectionKind, EdgeBlendKind as Kind, EdgeBlendPlan, FilletOptions,
 };
 
+mod adjustment;
 mod face_edges;
 mod preview;
 mod previous;
+pub(super) use adjustment::Adjustment;
 pub(super) use face_edges::FaceEdgeSelection;
 pub(super) use preview::Preview;
 pub(super) use previous::EdgeSelectionHistory;
@@ -25,6 +27,8 @@ pub(super) struct Prompt {
     tolerance: Tolerance,
     awaiting_value: bool,
     preview: bool,
+    adjusting: bool,
+    show_handles: bool,
 }
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
@@ -37,6 +41,13 @@ impl Prompt {
             "Radius"
         }
     }
+    fn show_option(self) -> &'static str {
+        if matches!(self.kind, Kind::Chamfer(_)) {
+            "ShowChamferDistance"
+        } else {
+            "ShowRadius"
+        }
+    }
     pub(super) fn hint(self) -> &'static str {
         if self.awaiting_value {
             if matches!(self.kind, Kind::Chamfer(_)) {
@@ -44,6 +55,8 @@ impl Prompt {
             } else {
                 "Enter edge radius with optional units"
             }
+        } else if self.adjusting {
+            "Select a size handle, use SetAll or return to SelectEdges. Enter applies. Esc cancels."
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
@@ -69,7 +82,8 @@ impl Prompt {
             ),
         };
         let preview = if self.preview { "Yes" } else { "No" };
-        format!("{model} Preview={preview}")
+        let handles = if self.show_handles { "Yes" } else { "No" };
+        format!("{model} Preview={preview} {}={handles}", self.show_option())
     }
 }
 
@@ -84,10 +98,12 @@ fn size_measurement(word: &str) -> Option<Measurement> {
     }
 }
 
-fn preview_options<'a>(
+fn display_options<'a>(
     words: impl IntoIterator<Item = &'a str>,
     mut preview: bool,
-) -> Result<(Vec<&'a str>, bool), &'static str> {
+    mut show: bool,
+    show_option: &'static str,
+) -> Result<(Vec<&'a str>, bool, bool), &'static str> {
     let mut modeling = Vec::new();
     for word in words {
         let option = word.trim_start_matches('_');
@@ -96,18 +112,22 @@ fn preview_options<'a>(
             .map_or((option, None), |(name, value)| {
                 (name, Some(value.trim_start_matches('_')))
             });
-        if !name.eq_ignore_ascii_case("Preview") {
-            modeling.push(word);
+        let target = if name.eq_ignore_ascii_case("Preview") {
+            &mut preview
+        } else if name.eq_ignore_ascii_case(show_option) {
+            &mut show
         } else {
-            preview = match value {
-                None => !preview,
-                Some(v) if v.eq_ignore_ascii_case("Yes") => true,
-                Some(v) if v.eq_ignore_ascii_case("No") => false,
-                _ => return Err("expected Preview=Yes or Preview=No"),
-            };
-        }
+            modeling.push(word);
+            continue;
+        };
+        *target = match value {
+            None => !*target,
+            Some(v) if v.eq_ignore_ascii_case("Yes") => true,
+            Some(v) if v.eq_ignore_ascii_case("No") => false,
+            _ => return Err("expected Yes or No for the display option"),
+        };
     }
-    Ok((modeling, preview))
+    Ok((modeling, preview, show))
 }
 
 impl VibocerosApp {
@@ -121,14 +141,20 @@ impl VibocerosApp {
         if !chamfer && !curvature && !name.eq_ignore_ascii_case("FilletEdge") {
             return false;
         }
-        let (mut words, preview) = match preview_options(words, false) {
-            Ok(options) => options,
-            Err(error) => {
-                self.push_log(format!("Error: {error}"));
-                self.command_input.clear();
-                return true;
-            }
+        let show_option = if chamfer {
+            "ShowChamferDistance"
+        } else {
+            "ShowRadius"
         };
+        let (mut words, preview, show_handles) =
+            match display_options(words, false, true, show_option) {
+                Ok(options) => options,
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    self.command_input.clear();
+                    return true;
+                }
+            };
         let previous = words
             .iter()
             .position(|word| previous::argument(word).is_some())
@@ -212,12 +238,14 @@ impl VibocerosApp {
             tolerance: self.document.tolerance(),
             awaiting_value: false,
             preview,
+            adjusting: false,
+            show_handles,
         };
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.document.clear_selection();
         self.push_log(format!(
-            "{}: select edges; {}; Enter applies, Esc cancels",
+            "{} {}. Select edges, then press Enter to adjust their sizes.",
             prompt.name(),
             prompt.options()
         ));
@@ -243,6 +271,21 @@ impl VibocerosApp {
         let (name, options) = keyword
             .split_once(char::is_whitespace)
             .unwrap_or((keyword, ""));
+        let (option, inline_value) = name.split_once('=').unwrap_or((name, options));
+        let set_all = option.eq_ignore_ascii_case("SetAll") && prompt.adjusting;
+        if prompt.adjusting && keyword.eq_ignore_ascii_case("SelectEdges") {
+            self.reopen_edge_blend_selection(prompt);
+            return true;
+        }
+        if prompt.adjusting
+            && (name.eq_ignore_ascii_case("ChainEdges")
+                || keyword.eq_ignore_ascii_case("FaceEdges")
+                || previous::argument(name).is_some())
+        {
+            self.push_log("Use SelectEdges to return to edge selection".into());
+            self.command_input.clear();
+            return true;
+        }
         if let Some(number) = previous::argument(name) {
             let number = number.or_else(|| (!options.trim().is_empty()).then_some(options.trim()));
             self.recall_edge_selection(prompt, number);
@@ -260,23 +303,34 @@ impl VibocerosApp {
             if self.finish_edge_blend_faces(true) {
                 return true;
             }
-            self.finish_edge_fillet(true);
+            if !self.dismiss_edge_size_input() {
+                if prompt.adjusting {
+                    self.finish_edge_fillet(true);
+                } else {
+                    self.begin_edge_blend_adjustment(prompt);
+                }
+            }
             return true;
         }
         if keyword.eq_ignore_ascii_case("Cancel") {
             if self.finish_edge_blend_faces(false) {
                 return true;
             }
-            self.finish_edge_fillet(false);
+            if !self.dismiss_edge_size_input() {
+                self.finish_edge_fillet(false);
+            }
             return true;
         }
         if let Some(kind) = size_measurement(input) {
             return self.start_edge_blend_measurement(kind);
         }
-        if input
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case(prompt.parameter())
+        if keyword.eq_ignore_ascii_case(prompt.parameter())
+            || (set_all && inline_value.trim().is_empty())
         {
+            if set_all {
+                self.edge_blend_adjustment.active = None;
+                self.edge_blend_adjustment.drag_size = None;
+            }
             prompt.awaiting_value = true;
             self.edge_fillet_prompt = Some(prompt);
             self.component_selection.clear_choices();
@@ -296,7 +350,13 @@ impl VibocerosApp {
             self.finish_edge_fillet(false);
             return false;
         }
-        let (modeling, preview) = match preview_options(input.split_whitespace(), prompt.preview) {
+        let input = if set_all { inline_value.trim() } else { input };
+        let (modeling, preview, show_handles) = match display_options(
+            input.split_whitespace(),
+            prompt.preview,
+            prompt.show_handles,
+            prompt.show_option(),
+        ) {
             Ok(options) => options,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -328,6 +388,11 @@ impl VibocerosApp {
             }
         }
         let words = words.iter().map(String::as_str).collect::<Vec<_>>();
+        let edits_size = words.iter().any(|word| {
+            word.split_once('=')
+                .is_some_and(|(name, _)| name.eq_ignore_ascii_case(prompt.parameter()))
+        });
+        let default = prompt.radius;
         let result = match prompt.kind {
             Kind::Fillet(corner) => {
                 let mut options = FilletOptions {
@@ -362,10 +427,14 @@ impl VibocerosApp {
         };
         match result {
             Ok(()) => {
+                if edits_size {
+                    self.store_edge_blend_size(&mut prompt, default, set_all);
+                }
                 if !words.is_empty() {
                     prompt.awaiting_value = false;
                 }
                 prompt.preview = preview;
+                prompt.show_handles = show_handles;
                 self.edge_fillet_prompt = Some(prompt);
                 self.log_edge_blend_prompt();
             }
@@ -390,7 +459,11 @@ impl VibocerosApp {
         }
     }
 
-    fn capture_edge_blend(&self, prompt: Prompt) -> Result<EdgeBlendPlan, String> {
+    fn capture_edge_blend(
+        &self,
+        prompt: Prompt,
+        trial_size: Option<f64>,
+    ) -> Result<EdgeBlendPlan, String> {
         if prompt.tolerance != self.document.tolerance() {
             return Err("tolerance changed; select edges again".into());
         }
@@ -399,8 +472,14 @@ impl VibocerosApp {
             .checked_picks(&self.document)?
             .into_iter()
             .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
-            .map(|p| (p.object, p.index));
-        EdgeBlendPlan::capture(&self.document, picks, prompt.radius, prompt.kind)
+            .map(|p| {
+                (
+                    p.object,
+                    p.index,
+                    self.edge_blend_size(prompt, p, trial_size),
+                )
+            });
+        EdgeBlendPlan::capture_sizes(&self.document, picks, prompt.kind)
             .map_err(|error| error.to_string())
     }
 
@@ -412,17 +491,19 @@ impl VibocerosApp {
         self.command_input.clear();
         if !apply {
             self.remember_edge_selection(prompt);
+            self.edge_blend_adjustment = Default::default();
             self.component_selection.clear();
             self.edge_blend_preview.clear();
             self.push_log(format!("Cancelled {}", prompt.name()));
             return;
         }
         let result = self
-            .capture_edge_blend(prompt)
+            .capture_edge_blend(prompt, None)
             .and_then(|plan| self.edge_blend_preview.selection(plan))
             .and_then(|s| s.commit(&mut self.document).map_err(|e| e.to_string()));
         match result {
             Ok(n) => {
+                self.edge_blend_adjustment = Default::default();
                 self.component_selection.clear();
                 self.edge_blend_preview.clear();
                 self.push_log(format!("{} applied to {n} object(s)", prompt.name()));

@@ -1,7 +1,7 @@
 # FilletEdge
 
-`FilletEdge` rounds selected edges of closed B-reps with a constant circular
-rolling-ball radius using usd-brep.
+`FilletEdge` rounds selected edges of closed B-reps with a circular rolling-ball
+radius per edge using usd-brep.
 
 ```text
 FilletEdge Radius=1
@@ -9,8 +9,12 @@ FilletEdge 1 object-id 0,3,5
 FilletEdge Radius=1 All=Yes
 ```
 
-The first form starts viewport edge picking. Select edges, enter `Radius=value`
-to change the constant radius, then press Enter to apply or Esc to cancel.
+The first form starts viewport edge picking. Select edges and press Enter to
+open size adjustment. Click an edge handle to type a radius, use `FromCurve`
+or `FromTwoPoints`, or drag the handle up or down to change its radius. Use
+`SetAll=2` to give every edge radius 2, `SelectEdges` to resume picking, or
+`ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.
+Esc leaves an active size getter or cancels the command from the handle prompt.
 Component preselection is retained for confirmation. The indexed form accepts
 multiple object/edge-list pairs; repeated edge indices are applied once.
 `All=Yes` uses edges shared by distinct faces of selected B-reps and excludes
@@ -47,8 +51,9 @@ It tightens circular cross-section generation and validates closed input and
 output, boundary face intersections and unexpected contacts before conversion.
 Pole connectors require a continuous surface-image certificate at their vertex.
 
-This checkpoint supports one constant radius, closed B-reps and Linux native
-builds. Variable-radius handles, open polysurfaces, alternative
+This checkpoint supports one constant radius per selected edge, closed B-reps
+and Linux native builds. `Corner=Ball` requires a common radius on each solid.
+Handles with varying radius along an edge, open polysurfaces, alternative
 rail types, editing old fillets and broader failure cases
 remain work. The intersection guard bounds input and output to 362 faces. Kernel
 intersection curves must lie entirely on shared trimmed topological edges, and

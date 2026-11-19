@@ -1,6 +1,7 @@
 use super::*;
 use crate::viewport::{ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
+mod adjustment;
 mod chain_edges;
 mod face_edges;
 mod from_curve;
@@ -64,6 +65,9 @@ fn picked_edge_confirmation_creates_one_undoable_fillet() {
         inverted: false,
     });
     submit(&mut app, "");
+    assert!(app.adjusting_edge_blend());
+    assert!(!app.document.can_undo());
+    submit(&mut app, "");
     assert!(app.edge_fillet_prompt.is_none());
     let Geometry::Brep(result) = app.document.object(pick.object).unwrap().geometry() else {
         panic!()
@@ -119,6 +123,8 @@ fn edge_fillet_preview_tracks_options_and_commits_the_displayed_geometry() {
             }
         };
         let first = wait(&mut app);
+        submit(&mut app, "");
+        assert!(app.adjusting_edge_blend());
         if command == "FilletEdge" {
             submit(&mut app, "Radius=100");
             let deadline = Instant::now() + Duration::from_secs(15);
@@ -229,6 +235,7 @@ fn edge_fillet_from_two_points_restores_the_picker_and_rejects_coincident_points
         );
         assert!(!app.document.can_undo());
         submit(&mut app, "");
+        submit(&mut app, "");
         assert!(app.edge_fillet_prompt.is_none(), "{:?}", app.command_log);
         assert_eq!(app.document.undo_label(), Some(command));
     }
@@ -301,6 +308,7 @@ fn edge_fillet_from_two_points_draws_the_trial_blend_and_accepts_viewport_clicks
             .unwrap(),
         [pick]
     );
+    submit(&mut app, "");
     submit(&mut app, "");
     let Geometry::Brep(committed) = app.document.object(pick.object).unwrap().geometry() else {
         panic!("expected a committed chamfer");

@@ -35,6 +35,7 @@ pub(crate) use curve_offset::OffsetDraft;
 pub(crate) mod curvature;
 mod cutting;
 pub(crate) mod direction;
+pub(crate) mod edge_blend;
 mod placement;
 pub(crate) mod radius;
 pub(crate) mod surface_apex;
@@ -432,6 +433,8 @@ pub struct ViewportInput<'a> {
     pub preview_curves: &'a [NurbsCurve],
     pub preview_polycurves: &'a [PolyCurve3],
     pub edge_blend_curves: &'a [NurbsCurve],
+    pub(crate) edge_blend_handles: &'a [edge_blend::SizeHandle],
+    pub(crate) show_edge_blend_handles: bool,
     pub isocurve_guides: &'a [NurbsCurve],
     pub preview_points: &'a [Point3],
     pub select_uv_rows: Option<(
@@ -620,6 +623,8 @@ impl Default for ViewportInput<'_> {
             preview_curves: &[],
             preview_polycurves: &[],
             edge_blend_curves: &[],
+            edge_blend_handles: &[],
+            show_edge_blend_handles: true,
             isocurve_guides: &[],
             preview_points: &[],
             control_removal: None,
@@ -714,6 +719,7 @@ impl Default for ViewportInput<'_> {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
+    pub(crate) edge_blend_handle: Option<edge_blend::HandleGesture>,
     pub(crate) radius_hover: Option<(Pos2, radius::RadiusHit)>,
     pub(crate) radius_click: Option<radius::RadiusClick>,
     pub(crate) curvature_hover: Option<(Pos2, curvature::Hit)>,
@@ -877,6 +883,7 @@ pub struct Viewport {
     selection_drag_start: Option<Pos2>,
     component_drag: Option<component_picking::ComponentDrag>,
     edge_blend_first_click: Vec<(ComponentPick, GeometrySnapshot)>,
+    edge_blend_drag: Option<edge_blend::Drag>,
     blend_curve_press: Option<(viboceros_command::blend_curve::Handle, bool, bool)>,
     lasso_drag_path: Vec<Pos2>,
     zoom_window_start: Option<Pos2>,
@@ -995,6 +1002,7 @@ impl Viewport {
             selection_drag_start: None,
             component_drag: None,
             edge_blend_first_click: Vec::new(),
+            edge_blend_drag: None,
             blend_curve_press: None,
             lasso_drag_path: Vec::new(),
             zoom_window_start: None,
@@ -2833,6 +2841,13 @@ impl Viewport {
         for curve in input.edge_blend_curves {
             self.add_projected_nurbs_curve(&mut projected, rect, curve);
         }
+        let edge_blend_handle = self.edge_blend_handle_input(
+            &response,
+            &painter,
+            rect,
+            input.edge_blend_handles,
+            input.show_edge_blend_handles,
+        );
         for segment in projected.segments {
             painter.line_segment(segment, Stroke::new(2.0, Color32::from_rgb(20, 115, 190)));
         }
@@ -3862,6 +3877,7 @@ impl Viewport {
                 || response.drag_stopped_by(PointerButton::Primary))
             .then_some(blend_parameter)
             .flatten(),
+            edge_blend_handle,
             arc_blend_handle: (response.clicked_by(PointerButton::Primary)
                 || response.drag_started_by(PointerButton::Primary))
             .then(|| {

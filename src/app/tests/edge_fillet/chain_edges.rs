@@ -43,6 +43,8 @@ fn edge_fillet_chain_edges_uses_the_parent_picker_and_commits_its_preview() {
         assert!(app.edge_fillet_prompt.is_some());
         assert!(!app.document.can_undo());
         submit(&mut app, "");
+        assert!(app.adjusting_edge_blend());
+        submit(&mut app, "");
         let Geometry::Brep(rounded) = app.document.object(edge.object).unwrap().geometry() else {
             panic!("expected rounded geometry");
         };

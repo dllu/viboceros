@@ -55,6 +55,8 @@ fn blend_failure_can_be_repaired_and_committed_as_one_history_step() {
     pick(&mut app, p, false);
     let before = format!("{:?}", app.document);
     enter(&mut app, "");
+    assert!(app.adjusting_edge_blend());
+    enter(&mut app, "");
     assert!(app.edge_fillet_prompt.is_some());
     assert_eq!(format!("{:?}", app.document), before);
     enter(&mut app, "Radius=1 RailType=RollingBall");

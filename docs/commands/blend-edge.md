@@ -2,7 +2,10 @@
 
 `BlendEdge` uses usd-brep's native selected-edge executive with a quintic curvature (G2) cross-section and unit blend scale. It retains editable B-rep surfaces, trims and topology.
 
-Start `BlendEdge`, select edges and press Enter. Edge-component preselection, click/window selection and ambiguity choices use the same picker as FilletEdge and ChamferEdge. Enter `Radius` followed by a value, or `Radius=0.5`; interactive values accept units such as `2mm`. Change `RailType=RollingBall|DistBetweenRails` while picking. Errors retain the getter and picks for retry; Esc/Cancel releases them.
+Start `BlendEdge`, select edges and press Enter to open size adjustment. Click
+or drag a handle to edit its edge, use `SetAll` to set every size, or use
+`SelectEdges` to resume picking. Press Enter again to apply. Edge preselection,
+viewport picking and [size adjustment](fillet-edge.md) work as in `FilletEdge`.
 
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, radius or rail update it.
@@ -23,7 +26,10 @@ BlendEdge 1 object-id 0 second-object-id 3,4
 BlendEdge Radius=1 RailType=DistBetweenRails All=Yes
 ```
 
-A finite positive value applies to the entire selected edge set. Defaults are `Radius=1` model unit and `RailType=RollingBall`. RollingBall locates rails using the radius of an inscribed rolling ball. DistBetweenRails measures their separation. These values locate the rails; a G2 blend does not have a constant circular radius.
+The initial size defaults to `Radius=1` model unit, and the rail type defaults
+to `RollingBall`. `RollingBall` locates rails using the radius of an inscribed
+rolling ball. `DistBetweenRails` measures their separation. The G2 blend uses
+these sizes to locate rails for its curvature-continuous cross-section.
 
 Inputs currently require closed manifold B-reps. An owned native import preserves original edge indices; repeated indices are removed. Modeling is localized before import/export. Every result stages before document edits. Identity, attributes, group membership and one Undo/Redo transaction cover the batch; a later source failure preserves prior geometry and Redo. Stale source snapshots and changed tolerances are rejected.
 
@@ -31,6 +37,6 @@ On a right-angle straight edge the rolling mode has setback `r`; the width mode 
 
 See the [qualification record](../blend-edge-qualification.json) for tested shapes, failures, sanitizer configuration and current limits. Licensed Rhino capture remains pending the recorded [Wine startup failure](../oracle-sspi.md). Shape equality, native getter parity and comparative performance remain unqualified.
 
-Variable per-edge/along-edge handles, DistFromEdge, open polysurfaces, TrimAndJoin=No, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
+Variable handles along edges, DistFromEdge, open polysurfaces, TrimAndJoin=No, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
 
 References: [Rhino BlendEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendedge.htm), [public BlendType](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BlendType.htm).

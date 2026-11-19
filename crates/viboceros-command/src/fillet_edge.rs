@@ -3,6 +3,8 @@ use super::*;
 use viboceros_document::GeometrySnapshot;
 mod face_edges;
 pub use face_edges::edge_blend_face_edges;
+mod sizes;
+use sizes::{blend_with_sizes, native_rail};
 #[cfg(test)]
 mod tests;
 const USAGE: &str = "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes [Corner=Automatic|Ball]";
@@ -104,9 +106,8 @@ impl EdgeBlendKind {
 #[derive(Clone, PartialEq)]
 pub struct EdgeBlendPlan {
     kind: EdgeBlendKind,
-    radius: Real,
     tolerance: Tolerance,
-    sources: Vec<(ObjectId, GeometrySnapshot, Vec<usize>)>,
+    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, Real)>)>,
 }
 
 impl EdgeBlendSelection {
@@ -193,7 +194,15 @@ impl EdgeBlendPlan {
     pub fn matches_except_size(&self, other: &Self) -> bool {
         self.kind == other.kind
             && self.tolerance == other.tolerance
-            && self.sources == other.sources
+            && self.sources.len() == other.sources.len()
+            && self.sources.iter().zip(&other.sources).all(|(a, b)| {
+                a.0 == b.0
+                    && a.1 == b.1
+                    && a.2
+                        .iter()
+                        .map(|edge| edge.0)
+                        .eq(b.2.iter().map(|edge| edge.0))
+            })
     }
 
     pub fn capture(
@@ -205,12 +214,35 @@ impl EdgeBlendPlan {
         if !radius.is_finite() || radius <= 0. {
             return Err(CommandError::Usage(kind.usage()));
         }
-        let mut by_object = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
-        for (count, (id, edge)) in picks.into_iter().enumerate() {
-            if count >= 100000 || !document.is_object_selectable(id) {
+        Self::capture_sizes(
+            document,
+            picks.into_iter().map(|(id, edge)| (id, edge, radius)),
+            kind,
+        )
+    }
+
+    pub fn capture_sizes(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize, Real)>,
+        kind: EdgeBlendKind,
+    ) -> Result<Self, CommandError> {
+        let mut by_object = BTreeMap::<ObjectId, BTreeMap<usize, Real>>::new();
+        for (count, (id, edge, size)) in picks.into_iter().enumerate() {
+            if count >= 100000
+                || !size.is_finite()
+                || size <= 0.
+                || !document.is_object_selectable(id)
+            {
                 return Err(CommandError::Usage(kind.usage()));
             }
-            by_object.entry(id).or_default().insert(edge);
+            if by_object
+                .entry(id)
+                .or_default()
+                .insert(edge, size)
+                .is_some_and(|prior| prior != size)
+            {
+                return Err(CommandError::Usage("An edge has conflicting blend sizes"));
+            }
         }
         if by_object.is_empty() {
             return Err(CommandError::NoObjectsSelected);
@@ -223,7 +255,7 @@ impl EdgeBlendPlan {
             let Geometry::Brep(brep) = object.geometry() else {
                 return Err(CommandError::Usage(kind.usage()));
             };
-            if !brep.is_solid() || edges.iter().any(|&edge| edge >= brep.edges().len()) {
+            if !brep.is_solid() || edges.keys().any(|&edge| edge >= brep.edges().len()) {
                 return Err(CommandError::Usage(kind.usage()));
             }
             sources.push((
@@ -234,7 +266,6 @@ impl EdgeBlendPlan {
         }
         Ok(Self {
             kind,
-            radius,
             sources,
             tolerance: document.tolerance(),
         })
@@ -247,7 +278,13 @@ impl EdgeBlendPlan {
             let Geometry::Brep(brep) = &*geometry else {
                 unreachable!("captured an edge blend on a B-rep");
             };
-            let result = blend(brep, &edges, self.radius, self.kind, self.tolerance)?;
+            let size = edges[0].1;
+            let result = if edges.iter().all(|&(_, value)| value == size) {
+                let indices = edges.iter().map(|edge| edge.0).collect::<Vec<_>>();
+                blend(brep, &indices, size, self.kind, self.tolerance)?
+            } else {
+                blend_with_sizes(brep, &edges, self.kind, self.tolerance)?
+            };
             replacements.push((id, Geometry::Brep(result)));
             sources.push((id, geometry));
         }
@@ -287,14 +324,7 @@ fn blend(
             }
         }
         EdgeBlendKind::Chamfer(rail) | EdgeBlendKind::Curvature(rail) => {
-            let rail = match rail {
-                crate::chamfer_edge::ChamferRailType::DistanceBetweenRails => {
-                    viboceros_smlib::EdgeBlendRailType::DistanceBetweenRails
-                }
-                crate::chamfer_edge::ChamferRailType::RollingBall => {
-                    viboceros_smlib::EdgeBlendRailType::RollingBall
-                }
-            };
+            let rail = native_rail(rail);
             let solid = if matches!(kind, EdgeBlendKind::Curvature(_)) {
                 viboceros_smlib::Solid::blend_brep_edges(&local, edges, radius, rail, tolerance)?
             } else {
@@ -335,6 +365,10 @@ fn checked_local_fillet(
     let candidate =
         viboceros_smlib::Solid::fillet_brep_edges_with_local_merge(brep, edges, radius, tolerance)
             .ok()?;
+    validate_local_fillet(candidate)
+}
+
+fn validate_local_fillet(candidate: Brep) -> Option<Brep> {
     let geometry = Geometry::Brep(candidate);
     let check = crate::geometry_check::check_geometry(&geometry);
     if let Geometry::Brep(candidate) = geometry

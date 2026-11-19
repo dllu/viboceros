@@ -1,6 +1,8 @@
 //! Chamfers and G2 blends share usd-brep's selected-edge fillet executive and topology import.
 use super::*;
 use viboceros_geometry::Brep;
+mod sizes;
+pub use sizes::EdgeBlendProfile;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum EdgeBlendRailType {
     DistanceBetweenRails,

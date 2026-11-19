@@ -12,6 +12,9 @@ impl VibocerosApp {
         if self.finish_edge_blend_faces(false) {
             return;
         }
+        if self.dismiss_edge_size_input() {
+            return;
+        }
         if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip() {
             return;
         }

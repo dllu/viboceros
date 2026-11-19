@@ -18,7 +18,7 @@ pub use mesh_intersections::{MeshIntersections, mesh_intersections, mesh_self_in
 mod construction;
 mod edge_blends;
 mod shell;
-pub use edge_blends::{ChamferRailType, EdgeBlendRailType};
+pub use edge_blends::{ChamferRailType, EdgeBlendProfile, EdgeBlendRailType};
 
 mod boundary_extension;
 mod curve_blend;

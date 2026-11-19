@@ -135,14 +135,14 @@ impl Preview {
 
 impl VibocerosApp {
     pub(in crate::app) fn update_edge_blend_preview(&mut self, context: &egui::Context) {
-        let hover = self.edge_blend_size_hover();
+        let hover = self
+            .edge_blend_adjustment
+            .drag_size
+            .or_else(|| self.edge_blend_size_hover());
         let plan = self
             .edge_fillet_prompt
             .filter(|prompt| prompt.preview)
-            .and_then(|mut prompt| {
-                prompt.radius = hover.unwrap_or(prompt.radius);
-                self.capture_edge_blend(prompt).ok()
-            });
+            .and_then(|prompt| self.capture_edge_blend(prompt, hover).ok());
         if let Some(error) = self
             .edge_blend_preview
             .update(plan, hover.is_some(), context)
