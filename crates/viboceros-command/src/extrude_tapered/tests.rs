@@ -17,10 +17,17 @@ fn tapered_options_are_atomic_and_round_trip() {
     );
     o.update(&["FlipAngle"]).unwrap();
     assert_eq!(o.draft_angle, -12.);
+    o.update(&["Corners=_Smooth"]).unwrap();
+    assert_eq!(o.corners, TaperCorners::Smooth);
+    assert_eq!(
+        TaperedExtrusionOptions::parse(&o.command_options().split_whitespace().collect::<Vec<_>>())
+            .unwrap(),
+        o
+    );
     let before = o;
     for words in [
         &["Solid=No", "DraftAngle=90"][..],
-        &["Corners=Smooth"][..],
+        &["Corners=Bevel"][..],
         &["Direction=0,0,0"][..],
         &["Solid=Yes", "Solid=No"][..],
     ] {

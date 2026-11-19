@@ -9,7 +9,7 @@ use crate::extrude_tapered::{
 };
 use crate::surface_reference::BoundaryInput;
 
-pub const USAGE: &str = "ExtrudeSrfTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+pub const USAGE: &str = "ExtrudeSrfTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -186,7 +186,7 @@ pub fn produce_surface(
             .tapered_face(
                 displacement,
                 draft,
-                options.round_corners,
+                options.corners.kernel(),
                 options.solid,
                 tolerance,
             )?

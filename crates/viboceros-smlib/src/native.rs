@@ -116,6 +116,7 @@ mod rail_revolve;
 pub use rail_revolve::{rail_revolved_brep, rail_revolved_surface};
 mod tapered;
 pub use shape::StitchResult;
+pub use tapered::TaperCorner;
 
 /// A native manifold sheet or solid, owned independently of a document.
 /// Sheet handles cannot be passed to the closed-solid Boolean interface.

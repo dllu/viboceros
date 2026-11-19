@@ -34,7 +34,7 @@ impl Stage {
             Self::DirectionStart { .. } => "Base point for direction",
             Self::DirectionEnd { .. } => "Second direction point",
             Self::Angle => "Draft angle",
-            Self::Corners => "Corners (Sharp Round)",
+            Self::Corners => "Corners (Sharp Round Smooth)",
         }
     }
 

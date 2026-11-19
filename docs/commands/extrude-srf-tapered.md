@@ -55,7 +55,8 @@ An explicit direction overrides this policy. Reversing the axis with
 currently requires extrusion normal to its plane. Zero draft uses the existing
 exact face translation, including oblique sweeps and curved end caps.
 
-Sharp corners use extended offset joints; Round uses native fillets. Each source
+`Corners=Sharp` extends the offset segments, `Round` joins them with circular
+arcs, and `Smooth` uses cubic tangent joins. Each source
 loop is tapered separately, with reversed draft for holes. With Solid=Yes,
 source faces copy as the base, stitching joins their boundaries to the walls,
 and the native planar-face builder caps the remaining nested top loops together.
@@ -72,8 +73,8 @@ tolerance and control/face resource checks; input geometry stays unchanged.
 
 Nonplanar offset ends cannot currently be capped for nonzero draft. Seam/vertex
 loops, unsupported imports, zero displacement and invalid angles decline.
-Angles must be finite and strictly between -90 and 90 degrees. Smooth corners
-and nonzero oblique sweeps of planar sources remain future work. Self-intersecting offsets,
+Angles must be finite and strictly between -90 and 90 degrees. Nonzero oblique
+sweeps of planar sources remain future work. Self-intersecting offsets,
 collapsing profiles, touching holes and near-degenerate cases require broader
 qualification. Native UV trims can be closed within tolerance without identical
 endpoint coordinates; the pure certified trimmed-bounds query can decline those

@@ -1,4 +1,5 @@
 //! Native topology sweep preserves the source faces as curved or trimmed caps.
+use super::tapered::TaperCorner;
 use super::*;
 unsafe extern "C" {
     fn vb_shape_tapered_face(
@@ -6,7 +7,7 @@ unsafe extern "C" {
         direction: *const f64,
         height: f64,
         angle_degrees: f64,
-        round_corners: c_int,
+        corners: c_int,
         cap_ends: c_int,
         tolerance: f64,
         out: *mut *mut NativeSolid,
@@ -60,7 +61,7 @@ impl Shape {
         &self,
         displacement: viboceros_geometry::Vector3,
         angle_degrees: f64,
-        round_corners: bool,
+        corners: impl Into<TaperCorner>,
         cap_ends: bool,
         tolerance: viboceros_geometry::Tolerance,
     ) -> Result<Self, Error> {
@@ -88,7 +89,7 @@ impl Shape {
                 direction.to_array().as_ptr(),
                 height,
                 angle_degrees,
-                c_int::from(round_corners),
+                corners.into() as c_int,
                 c_int::from(cap_ends),
                 tolerance.absolute(),
                 &mut pointer,

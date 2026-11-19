@@ -473,3 +473,57 @@ fn curve_taper_boundary_matches_rhino_caps_and_open_line() {
         );
     }
 }
+
+#[test]
+fn tapered_smooth_boundary_keeps_ruled_cubic_joins() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    for surface in [false, true] {
+        let mut doc = Document::new(tolerance);
+        let (command, source) = if surface {
+            (
+                "ExtrudeSrfTapered",
+                face(&mut doc, [0., 0., 6., 4.], [2.; 4]),
+            )
+        } else {
+            let outline = Polyline3::try_new(
+                vec![
+                    p(0., 0., 2.),
+                    p(6., 0., 2.),
+                    p(6., 4., 2.),
+                    p(0., 4., 2.),
+                    p(0., 0., 2.),
+                ],
+                tolerance,
+            )
+            .unwrap();
+            (
+                "ExtrudeCrvTapered",
+                doc.add_geometry(Geometry::Polyline(outline)).unwrap(),
+            )
+        };
+        let cutter = face(&mut doc, [-8., -8., 13., 11.], [4.; 4]);
+        doc.select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        CommandRegistry::with_builtins()
+            .execute(
+                &mut doc,
+                &format!("{command} ToBoundary={cutter} DraftAngle=-10 Corners=Smooth Solid=Yes"),
+            )
+            .unwrap();
+        let Geometry::Brep(result) = doc
+            .objects()
+            .find(|object| ![source, cutter].contains(&object.id()))
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a tapered cut");
+        };
+        assert!(result.is_solid());
+        assert_eq!(result.faces().len(), 10);
+        let volume = result.signed_volume(tolerance).unwrap().abs();
+        assert!(
+            (volume - 55.33472874851992).abs() < 1e-5,
+            "{command}: {volume}"
+        );
+    }
+}

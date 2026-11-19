@@ -38,8 +38,9 @@ plane's normal, oriented toward its largest positive world component.
 A line uses the active CPlane normal. Angles must be finite and strictly
 between -90 and 90 degrees. Zero draft uses the native linear sweep.
 
-Each selected curve produces one independent B-rep. Sharp corners use extended
-offset joints; Round uses native fillets. `Solid=Yes` caps closed planar curves
+Each selected curve produces one independent B-rep. `Corners=Sharp` extends the
+offset segments, `Round` joins them with circular arcs, and `Smooth` uses cubic
+tangent joins. `Solid=Yes` caps closed planar curves
 and requires a closed manifold result; open curves produce sheets. Native
 construction copies its profiles. All sources complete before document edits.
 Results use the current layer and form one Undo/Redo step.
@@ -47,7 +48,7 @@ Retained curves stay selected after extrusion and are released on replay.
 `DeleteInput=Yes` deletes sources in that same operation.
 
 Nonzero draft currently requires connected planar profiles and extrusion normal
-to their plane. Oblique directions, nonplanar profiles, Smooth corners and
+to their plane. Oblique directions, nonplanar profiles and
 SplitAtTangents control remain future work. Nested closed objects are
 extruded independently. Existing native curve-import degree, knot and rational
 weight limits apply. Complex self-intersecting offsets and collapsing profiles
@@ -59,6 +60,8 @@ uses 0.001 times that value for offset fitting; too-small underflowing tolerance
 and nonfinite offset distances decline. A generated-source
 [sliver-domain patch](../../third_party/patches/usd-brep-tapered-sliver-domains.patch)
 fixes missing rectangle walls by measuring each ruling curve on its own interval.
+The [smooth corner patch](../../third_party/patches/usd-brep-tapered-smooth-corners.patch)
+adds the cubic offset joint used by the native sweep.
 The pinned upstream submodule is unchanged. Tests check circular and polygonal
 frustum volumes, rounded rectangle volume, reversed extrusion, zero draft, shifted
 parameter domains, open sheets, source preservation, rollback and history.
@@ -68,8 +71,8 @@ Seven independent Python recipes are available in
 Rust command and the public
 [RhinoCommon tapered-extrusion API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Brep_CreateFromTaperedExtrude_1.htm).
 Headless Rhino 8 command captures cover distance entry, direction reversal,
-base-point input, remembered settings and source selection across Undo and
-Redo. Boundary picks in Rhino's viewport cover capped and uncapped rectangles,
+base-point input, remembered settings, smooth corners and source selection across
+Undo and Redo. Boundary picks in Rhino's viewport cover capped and uncapped rectangles,
 an oblique cutter, reversed sweeps and an open line. The SDK fixtures audit
 bounds and volumes independently of the getter.
 See the [qualification record](../tapered-extrusion-qualification.json) and

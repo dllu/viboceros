@@ -4,7 +4,7 @@ pub use crate::extrude_surface::Distance;
 use crate::extrude_surface::parse_face_extrusion_distance;
 use crate::surface_reference::BoundaryInput;
 
-pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle]";
+pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle]";
 pub(super) struct ExtrudeTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -50,11 +50,40 @@ impl TaperedExtrusionSettings {
     }
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum TaperCorners {
+    #[default]
+    Sharp,
+    Round,
+    Smooth,
+}
+
+impl TaperCorners {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Sharp => "Sharp",
+            Self::Round => "Round",
+            Self::Smooth => "Smooth",
+        }
+    }
+
+    #[cfg(feature = "native-smlib")]
+    pub(super) fn kernel(self) -> viboceros_smlib::TaperCorner {
+        use viboceros_smlib::TaperCorner;
+
+        match self {
+            Self::Sharp => TaperCorner::Sharp,
+            Self::Round => TaperCorner::Round,
+            Self::Smooth => TaperCorner::Smooth,
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TaperedExtrusionOptions {
     pub draft_angle: f64,
     pub solid: bool,
-    pub round_corners: bool,
+    pub corners: TaperCorners,
     pub delete_input: bool,
     pub direction: Option<Vector3>,
 }
@@ -63,7 +92,7 @@ impl Default for TaperedExtrusionOptions {
         Self {
             draft_angle: 5.,
             solid: false,
-            round_corners: false,
+            corners: TaperCorners::Sharp,
             delete_input: false,
             direction: None,
         }
@@ -141,13 +170,14 @@ impl TaperedExtrusionOptions {
                 "solid" => next.solid = toggle(next.solid)?,
                 "deleteinput" => next.delete_input = toggle(next.delete_input)?,
                 "corners" => {
-                    next.round_corners = match required()?
+                    next.corners = match required()?
                         .trim_start_matches('_')
                         .to_ascii_lowercase()
                         .as_str()
                     {
-                        "sharp" => false,
-                        "round" => true,
+                        "sharp" => TaperCorners::Sharp,
+                        "round" => TaperCorners::Round,
+                        "smooth" => TaperCorners::Smooth,
                         _ => return Err(CommandError::Usage(USAGE)),
                     }
                 }
@@ -173,7 +203,7 @@ impl TaperedExtrusionOptions {
             "DraftAngle={} Solid={} Corners={} DeleteInput={}",
             self.draft_angle,
             if self.solid { "Yes" } else { "No" },
-            if self.round_corners { "Round" } else { "Sharp" },
+            self.corners.name(),
             if self.delete_input { "Yes" } else { "No" }
         );
         if let Some(direction) = self.direction {
@@ -404,7 +434,7 @@ pub fn produce_curve(
             &profile,
             displacement,
             draft,
-            options.round_corners,
+            options.corners.kernel(),
             cap,
             tolerance,
         )?

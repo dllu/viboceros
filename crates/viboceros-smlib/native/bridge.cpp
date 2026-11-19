@@ -37,6 +37,7 @@
 #include <SmPoly.h>
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
+#include "taper_corner_mode.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -2133,6 +2134,17 @@ extern "C" int vb_shape_extrude_faces(const VbSolid *shape, const double displac
 #include "surface_apex_extrusion.h"
 #include "surface_path_walls.h"
 
+namespace {
+SmOffsetCornerType taper_corner_type(int corners) {
+    switch (corners) {
+    case 0: return SM_OC_LINEAR_EXTENSION;
+    case 1: return SM_OC_FILLET_CORNER;
+    case 2: return vb_smooth_taper_corner;
+    default: throw std::runtime_error("Invalid taper corner style");
+    }
+}
+}
+
 extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const VbCurve *path,
     int cap_ends, int split_at_tangents, double tolerance, VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
@@ -2194,14 +2206,15 @@ extern "C" int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const Vb
 }
 
 extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction[3],
-    double height,double angle_degrees,int round_corners,int cap_ends,double tolerance,
+    double height,double angle_degrees,int corners,int cap_ends,double tolerance,
     VbSolid **out,char *error,size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
         require(shape && shape->value && out && finite3(direction) && std::isfinite(height) && height>0
             && std::isfinite(angle_degrees) && std::abs(angle_degrees)<90 && angle_degrees!=0
-            && (round_corners==0 || round_corners==1) && (cap_ends==0 || cap_ends==1)
+            && (cap_ends==0 || cap_ends==1)
             && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered surface extrusion input");
+        const auto corner_type = taper_corner_type(corners);
         const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
         require(std::isfinite(offset) && offset!=0,"Unrepresentable surface taper offset");
         auto *context=SmApiGetOrCreateContext();SmVector3d normal(direction[0],direction[1],direction[2]);
@@ -2237,7 +2250,7 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
             SmPrimitiveCreation producer(walls->GetInfiniteRegion(),0,TRUE);
             SmVector3d loop_normal=normal;
             check(producer.CreateTaperExtrude(profiles,height,orientation==SM_OT_OPPOSITE?-angle_degrees:angle_degrees,
-                0,loop_normal,round_corners?SM_OC_FILLET_CORNER:SM_OC_LINEAR_EXTENSION),"create tapered surface boundary walls");
+                0,loop_normal,corner_type),"create tapered surface boundary walls");
             input_cleanup.Clear(); // successful producer consumes its copied profiles
             SmTArray<SmFace*> faces;walls->GetFaces(faces);total_faces+=faces.GetSize();
             require(faces.GetSize()>0 && total_faces<=100000,"Surface taper wall resource limit");
@@ -2283,15 +2296,16 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
 }
 
 extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
-    double height, double angle_degrees, int round_corners, int cap_ends, double tolerance,
+    double height, double angle_degrees, int corners, int cap_ends, double tolerance,
     VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
         require(curve && curve->value && out && finite3(direction)
             && std::isfinite(height) && height!=0
             && std::isfinite(angle_degrees) && std::abs(angle_degrees)<90 && angle_degrees!=0
-            && (round_corners==0 || round_corners==1) && (cap_ends==0 || cap_ends==1)
+            && (cap_ends==0 || cap_ends==1)
             && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered extrusion input");
+        const auto corner_type = taper_corner_type(corners);
         const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
         require(std::isfinite(offset) && offset!=0,"Unrepresentable tapered extrusion offset");
         SmVector3d normal(direction[0],direction[1],direction[2]);
@@ -2322,7 +2336,7 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         // On failure before caps the upstream producer retains these profiles.
         // Success consumes them; clear the guard before further validation.
         check(producer.CreateTaperExtrude(profiles,height,angle_degrees,cap_ends?3:0,normal,
-            round_corners?SM_OC_FILLET_CORNER:SM_OC_LINEAR_EXTENSION),"create tapered extrusion");
+            corner_type),"create tapered extrusion");
         input_cleanup.Clear();
         SmTArray<SmFace*> faces;owner->value->GetFaces(faces);
         require(faces.GetSize()>0,"Empty tapered extrusion");

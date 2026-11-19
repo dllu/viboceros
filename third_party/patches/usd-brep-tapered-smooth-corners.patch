@@ -1,0 +1,44 @@
+--- a/SmCompositeCurve.cpp
++++ b/SmCompositeCurve.cpp
+@@ -11,6 +11,8 @@
+ #include <SmCompositeCurve.h>
+ #include <SmGeomUtility.h>
+ #include <SmOffsetCurve.h>
++#include <algorithm>
++#include "taper_corner_mode.h"
+
+
+ /*******************************************************************//**
+@@ -1903,6 +1905,32 @@
+ #endif // SM_DEBUG_CODE
+
+   } // end else if SM_OC_FILLET_CORNER
++
++  else if (eOffsetCorner == vb_smooth_taper_corner)
++    {
++      SmVector3d incoming = crV1;
++      SmVector3d outgoing = crV2;
++      SER(incoming.Unitize());
++      SER(outgoing.Unitize());
++      const double cosine = std::clamp(incoming.Dot(outgoing), -1.0, 1.0);
++      // Use the same chord-scaled cubic handles as the offset ribbon join.
++      const double handle = (crP2 - crP1).Length() * ((3.0 - cosine) / 6.0);
++      SmTArray<SmPoint3d> controls;
++      controls.Add(crP1);
++      controls.Add(crP1 + handle * incoming);
++      controls.Add(crP2 - handle * outgoing);
++      controls.Add(crP2);
++      SmTArray<ULONG> multiplicities;
++      multiplicities.Add(4);
++      multiplicities.Add(4);
++      SmTArray<double> knots;
++      knots.Add(0.0);
++      knots.Add(1.0);
++      SmBSplineCurve *corner = nullptr;
++      SER(SmBSplineCurve::CreateCanonical(crContext, 3, 3, controls, SM_CF_UNSPECIFIED,
++          multiplicities, knots, SM_KT_PIECEWISE_BEZIER_KNOTS, nullptr, nullptr, corner));
++      rpCornerCurve1 = corner;
++    }
+
+   // case SM_OC_LINEAR_CHAMFER - extend offsets to their potential intersection
+   // build offset chamfer offsetDistance away from vertex and perpendicular to the line

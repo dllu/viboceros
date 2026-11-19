@@ -43,6 +43,9 @@ usd_brep_patch_source("${usd_brep_patched}/SmSurface.cpp"
 
 usd_brep_patch_source("${kernel_source}/SmPrimitiveCreation.cpp"
     tapered-sliver-domains "${usd_brep_patched}/SmPrimitiveCreation.cpp")
+configure_file(taper_corner_mode.h "${usd_brep_patched}/taper_corner_mode.h" COPYONLY)
+usd_brep_patch_source("${kernel_source}/SmCompositeCurve.cpp"
+    tapered-smooth-corners "${usd_brep_patched}/SmCompositeCurve.cpp")
 usd_brep_patch_source("${kernel_source}/NL_CrvAdv.cpp"
     extension-break-allocation "${usd_brep_patched}/NL_CrvAdv.cpp")
 

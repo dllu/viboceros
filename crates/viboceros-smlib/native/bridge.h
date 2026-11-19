@@ -59,9 +59,9 @@ int vb_shape_extrude_faces_along_curve(const VbSolid *shape, const VbCurve *path
 int vb_shape_single_face_plane_normal(const VbSolid *shape, double tolerance, int *has_plane,
     double normal[3], char *error, size_t capacity);
 int vb_shape_tapered_face(const VbSolid *shape,const double direction[3],double height,
-    double angle_degrees,int round_corners,int cap_ends,double tolerance,VbSolid **out,char *error,size_t capacity);
+    double angle_degrees,int corners,int cap_ends,double tolerance,VbSolid **out,char *error,size_t capacity);
 int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3], double height,
-    double angle_degrees, int round_corners, int cap_ends, double tolerance,
+    double angle_degrees, int corners, int cap_ends, double tolerance,
     VbSolid **out, char *error, size_t capacity);
 int vb_shape_silhouettes(const VbSolid *shape, const double toward_eye[3], double approximation,
                          double angle, int internal_edges, VbCurveList **out, char *error, size_t capacity);

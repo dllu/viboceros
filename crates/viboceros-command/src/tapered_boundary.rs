@@ -4,7 +4,7 @@ use crate::extrude_surface::{
     Distance, SurfaceFaces, apply_staged_products, capture_source_face, face_extrusion_direction,
     local_sweep_source, surface_extrusion_targets,
 };
-use crate::extrude_tapered::TaperedExtrusionOptions;
+use crate::extrude_tapered::{TaperCorners, TaperedExtrusionOptions};
 use crate::surface_boundary_cut::{
     BoundaryDifference, axial_extent, axial_point, copied_carrier, hole_crosses_sweep, on_plane,
 };
@@ -209,7 +209,7 @@ fn extrude(
     let stock = match stock.tapered_face(
         direction.scaled(length)?,
         draft,
-        options.round_corners,
+        options.corners.kernel(),
         true,
         tolerance,
     ) {
@@ -233,7 +233,9 @@ fn extrude(
     } else {
         clip_stock(stock, source, &end, &cutter, offset, tolerance)?
     };
-    let merge_walls = draft < 0. && !options.round_corners && base_face.plane(tolerance)?.is_some();
+    let merge_walls = draft < 0.
+        && options.corners == TaperCorners::Sharp
+        && base_face.plane(tolerance)?.is_some();
     let result = if merge_walls && crate::coplanar_faces::within_native_merge_budget(&result) {
         match Shape::from_brep(&result, tolerance)?.merge_coplanar_faces(tolerance)? {
             Some((merged, _)) => merged

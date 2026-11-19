@@ -7,7 +7,7 @@ unsafe extern "C" {
         direction: *const f64,
         height: f64,
         angle_degrees: f64,
-        round_corners: c_int,
+        corners: c_int,
         cap_ends: c_int,
         tolerance: f64,
         out: *mut *mut NativeSolid,
@@ -16,17 +16,33 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
+/// How the draft joins adjacent offset segments at an expanding corner.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[repr(i32)]
+pub enum TaperCorner {
+    #[default]
+    Sharp = 0,
+    Round = 1,
+    Smooth = 2,
+}
+
+impl From<bool> for TaperCorner {
+    fn from(round: bool) -> Self {
+        if round { Self::Round } else { Self::Sharp }
+    }
+}
+
 impl Shape {
     /// Extrude a connected planar profile with a signed draft angle in degrees.
     /// Positive angles shrink a closed profile; negative angles expand it.
-    /// `round_corners` requests native fillets instead of sharp offset joints.
+    /// Round uses circular fillets and Smooth uses cubic tangent joins.
     /// Nonzero draft requires a planar profile and extrusion normal to its plane.
     /// Source geometry is copied. A requested cap must produce a manifold solid.
     pub fn tapered_extrusion(
         profile: &KernelCurve,
         displacement: viboceros_geometry::Vector3,
         angle_degrees: f64,
-        round_corners: bool,
+        corners: impl Into<TaperCorner>,
         cap_ends: bool,
         tolerance: viboceros_geometry::Tolerance,
     ) -> Result<Self, Error> {
@@ -55,7 +71,7 @@ impl Shape {
                 direction.as_ptr(),
                 height,
                 angle_degrees,
-                c_int::from(round_corners),
+                corners.into() as c_int,
                 c_int::from(cap_ends),
                 tolerance.absolute(),
                 &mut pointer,

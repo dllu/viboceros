@@ -36,7 +36,10 @@ fn tapered_source_getter_preserves_inline_options_and_accepts_option_edits() {
         panic!()
     };
     assert_eq!(options.draft_angle, -12.);
-    assert!(options.round_corners);
+    assert_eq!(
+        options.corners,
+        viboceros_command::extrude_tapered::TaperCorners::Round
+    );
     enter(&mut app, "DraftAngle=90");
     assert!(matches!(
         app.active_command,

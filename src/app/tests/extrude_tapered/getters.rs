@@ -1,5 +1,6 @@
 use super::*;
 use crate::app::extrude_tapered::Stage;
+use viboceros_command::extrude_tapered::TaperCorners;
 use viboceros_geometry::{NurbsSurface, Polyline3};
 
 fn raised_profile(app: &mut VibocerosApp, surface: bool) -> ObjectId {
@@ -74,7 +75,13 @@ fn tapered_getters_edit_the_distance_base_direction_and_options_independently() 
         enter(&mut app, "_DraftAngle");
         enter(&mut app, "17");
         enter(&mut app, "_Corners");
-        enter(&mut app, "_Round");
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("Sharp Round Smooth")
+        );
+        enter(&mut app, "_Smooth");
         enter(&mut app, "_Solid _DeleteInput");
         let Some(InteractiveCommand::ExtrudeTapered {
             stage: Stage::Distance,
@@ -85,7 +92,8 @@ fn tapered_getters_edit_the_distance_base_direction_and_options_independently() 
             panic!()
         };
         assert_eq!(options.draft_angle, 17.);
-        assert!(options.round_corners && options.solid && options.delete_input);
+        assert_eq!(options.corners, TaperCorners::Smooth);
+        assert!(options.solid && options.delete_input);
         enter(&mut app, "Cancel");
         let settings = app.commands.tapered_extrusion_settings(surface);
         assert_eq!(settings, Default::default());
@@ -177,6 +185,41 @@ fn tapered_enter_uses_the_last_signed_distance_and_successful_options() {
 
 #[cfg(feature = "native-smlib")]
 #[test]
+fn tapered_smooth_rectangle_matches_rhino_solids_and_remembers_the_corner_mode() {
+    for surface in [false, true] {
+        let mut app = test_app();
+        let source = raised_profile(&mut app, surface);
+        enter(
+            &mut app,
+            &format!("{} DraftAngle=-10 Solid=Yes", command(surface)),
+        );
+        enter(&mut app, "_Corners");
+        enter(&mut app, "_Smooth");
+        enter(&mut app, "2");
+        let output = result(&app, source);
+        assert!(output.is_solid());
+        assert_eq!(output.faces().len(), 10);
+        assert_eq!(output.edges().len(), 20);
+        let volume = output
+            .signed_volume(app.document.tolerance())
+            .unwrap()
+            .abs();
+        assert!(
+            (volume - 55.33472874851992).abs() < 1e-5,
+            "surface={surface}, volume={volume}"
+        );
+        let settings = app.commands.tapered_extrusion_settings(surface);
+        assert_eq!(settings.options.corners, TaperCorners::Smooth);
+        assert_eq!(settings.distance, 2.);
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().count(), 1);
+        enter(&mut app, "Redo");
+        assert!(result(&app, source).is_solid());
+    }
+}
+
+#[cfg(feature = "native-smlib")]
+#[test]
 fn tapered_viewport_hover_previews_the_same_draft_and_height_as_click() {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
     use std::time::{Duration, Instant};
@@ -215,18 +258,19 @@ fn tapered_viewport_hover_previews_the_same_draft_and_height_as_click() {
             let deadline = Instant::now() + Duration::from_secs(5);
             loop {
                 let lines = viewport_frame(app, &ctx, vec![]);
-                if let Some((height, _)) = app
+                if let Some((height, edges)) = app
                     .tapered_extrusion_session
                     .as_ref()
                     .and_then(|session| session.preview_edges(&app.document, app.active_command))
                 {
                     let offset =
                         height * 5_f64.to_radians().tan() * if expanding { -1. } else { 1. };
-                    let expected = screen_point(app, point(offset, offset, 2. + height));
-                    if lines
-                        .iter()
-                        .flatten()
-                        .any(|pixel| pixel.distance(expected) < 0.5)
+                    let expected = screen_point(app, point(offset, 0., 2. + height));
+                    if (!expanding || edges.iter().any(|edge| edge.degree() == 3))
+                        && lines
+                            .iter()
+                            .flatten()
+                            .any(|pixel| pixel.distance(expected) < 0.5)
                     {
                         return height;
                     }
@@ -241,6 +285,7 @@ fn tapered_viewport_hover_previews_the_same_draft_and_height_as_click() {
         move_pointer(&mut app);
         assert!((wait(&mut app, false) - 3.).abs() < 0.02);
         enter(&mut app, "_FlipAngle");
+        enter(&mut app, "Corners=Smooth");
         let pointer = move_pointer(&mut app);
         let height = wait(&mut app, true);
         assert_eq!(app.document.objects().count(), 1);
@@ -252,9 +297,10 @@ fn tapered_viewport_hover_previews_the_same_draft_and_height_as_click() {
         assert!(output.vertices().iter().any(|vertex| {
             vertex
                 .point()
-                .distance_to(point(-offset, -offset, 2. + height))
+                .distance_to(point(-offset, 0., 2. + height))
                 .unwrap()
                 < 1e-5
         }));
+        assert!(output.edges().iter().any(|edge| edge.curve().degree() == 3));
     }
 }

@@ -1,6 +1,6 @@
 #![cfg(feature = "native")]
 use viboceros_geometry::{Circle3, NurbsCurve, Point3, Tolerance, UnitVector3, Vector3};
-use viboceros_smlib::{KernelCurve, Shape};
+use viboceros_smlib::{KernelCurve, Shape, TaperCorner};
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
@@ -100,6 +100,51 @@ fn native_tapered_round_polygon_matches_parallel_area_integral() {
     let expected = 72. + 48. * k + std::f64::consts::PI * k * k * 8. / 3.;
     assert!((brep.signed_volume(tol()).unwrap() - expected).abs() < 1e-3);
     assert_eq!(profile.to_nurbs().unwrap(), source);
+}
+
+#[test]
+fn native_tapered_smooth_joins_match_rhino_cubic_controls() {
+    for (turn, expected) in [
+        (30_f64, [6.064925153881442, -0.35265396141693]),
+        (120_f64, [6.356308504220992, -0.35265396141693]),
+    ] {
+        let (sin, cos) = turn.to_radians().sin_cos();
+        let source = NurbsCurve::try_new(
+            1,
+            vec![p(0., 0., 2.), p(6., 0., 2.), p(6. + 5. * cos, 5. * sin, 2.)],
+            vec![0., 0., 1., 2., 2.],
+        )
+        .unwrap();
+        let profile = KernelCurve::from_nurbs_for_modeling(&source).unwrap();
+        let output = Shape::tapered_extrusion(
+            &profile,
+            v(0., 0., 2.),
+            -10.,
+            TaperCorner::Smooth,
+            false,
+            tol(),
+        )
+        .unwrap()
+        .to_brep(tol())
+        .unwrap();
+        assert_eq!(output.faces().len(), 3);
+        assert_eq!(output.edges().len(), 9);
+        let controls = output
+            .faces()
+            .iter()
+            .find(|face| face.surface().degree_u().max(face.surface().degree_v()) == 3)
+            .unwrap()
+            .surface()
+            .control_points();
+        assert!(controls.iter().all(|control| control.weight() == 1.));
+        assert!(controls.iter().any(|control| {
+            control
+                .point()
+                .distance_to(p(expected[0], expected[1], 4.))
+                .unwrap()
+                < 1e-8
+        }));
+    }
 }
 #[test]
 fn native_tapered_declines_invalid_and_disconnected_profiles_without_reusing_sources() {

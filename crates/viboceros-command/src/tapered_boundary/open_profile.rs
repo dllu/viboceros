@@ -24,7 +24,7 @@ pub(super) fn extrude(
         &profile,
         direction.scaled(length)?,
         draft,
-        options.round_corners,
+        options.corners.kernel(),
         false,
         tolerance,
     ) {
