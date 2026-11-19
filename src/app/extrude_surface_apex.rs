@@ -128,7 +128,11 @@ impl VibocerosApp {
         }
         if let Some(sources) = &mut self.surface_extrusion_sources {
             let session = sources.apex.as_mut().unwrap();
-            let mut draft = SurfaceApexDraft::capture(&self.document, &sources.targets);
+            let mut draft = SurfaceApexDraft::capture(
+                &self.document,
+                &sources.targets,
+                parsed.options.split_at_tangents,
+            );
             draft.set_boundary(session.boundary.face(), self.document.tolerance());
             session.draft = Some(draft);
         }
@@ -279,8 +283,20 @@ impl VibocerosApp {
         {
             return false;
         }
+        let previous_split = options.split_at_tangents;
         match options.update(&words) {
             Ok(()) => {
+                if options.split_at_tangents != previous_split
+                    && let Some(sources) = &mut self.surface_extrusion_sources
+                    && sources.is_current(&self.document)
+                    && let Some(draft) = sources.apex.as_mut().and_then(|s| s.draft.as_mut())
+                {
+                    draft.set_tangent_splits(
+                        &self.document,
+                        &sources.targets,
+                        options.split_at_tangents,
+                    );
+                }
                 self.active_command = Some(InteractiveCommand::ExtrudeSurfaceToPoint { options });
                 self.log_surface_apex(options);
             }

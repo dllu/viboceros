@@ -216,6 +216,97 @@ fn check_surface_apex_viewport(source_z: f64) {
 }
 
 #[test]
+fn surface_apex_tangent_preview_updates_at_the_current_apex_and_boundary() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+
+    let request: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../tools/rhino_oracle/fixtures/surface_apex_tangents.json"
+    ))
+    .unwrap();
+    let fixture: viboceros_oracle::SurfaceApexExtrusionFixture =
+        serde_json::from_value(request["operations"][0].clone()).unwrap();
+    for to_boundary in [false, true] {
+        let mut app = test_app();
+        app.viewports[0] = Viewport::new(ViewKind::Top);
+        let plane = app.viewports[0]
+            .construction_plane()
+            .with_origin(point(0., 0., 6.));
+        app.viewports[0].set_construction_plane(plane);
+        app.maximized_viewport = Some(0);
+        app.grid_snap = false;
+        app.osnap = false;
+        let geometry = fixture.source_face(app.document.tolerance()).unwrap();
+        let source = app.document.add_geometry(geometry).unwrap();
+        let command = if to_boundary {
+            let boundary = boundary_surface(&mut app, 3.);
+            format!("ExtrudeSrfToPoint SplitAtTangents=Yes ToBoundary={boundary}")
+        } else {
+            "ExtrudeSrfToPoint SplitAtTangents=Yes".into()
+        };
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+        let before = format!("{:?}", app.document);
+        enter(&mut app, &command);
+        let context = egui::Context::default();
+        viewport_frame(&mut app, &context, Vec::new());
+        viewport_frame(&mut app, &context, Vec::new());
+        app.viewports[0]
+            .zoom_extents(&app.document, Default::default())
+            .unwrap();
+        viewport_frame(&mut app, &context, Vec::new());
+
+        let apex = screen_point(&app, point(1., 0.5, 6.));
+        let has_seam = |app: &VibocerosApp, lines: &[[egui::Pos2; 2]]| {
+            let hover = app
+                .surface_extrusion_sources
+                .as_ref()
+                .and_then(|sources| sources.apex_draft(&app.document))
+                .and_then(|draft| draft.hover)
+                .expect("the hover point remains active");
+            let start = point(2., 1., 0.);
+            let seam = screen_point(app, start);
+            let end = screen_point(
+                app,
+                if to_boundary {
+                    start.midpoint(hover).unwrap()
+                } else {
+                    hover
+                },
+            );
+            lines
+                .iter()
+                .any(|[a, b]| a.distance(seam) < 1e-3 && b.distance(end) < 1e-3)
+        };
+        let split = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(apex)]);
+        assert!(has_seam(&app, &split), "boundary={to_boundary}");
+        enter(&mut app, "SplitAtTangents");
+        let unsplit = viewport_frame(&mut app, &context, Vec::new());
+        assert!(!has_seam(&app, &unsplit), "boundary={to_boundary}");
+        assert!(!unsplit.is_empty(), "the unsplit wall remains visible");
+        enter(&mut app, "SplitAtTangents=Yes");
+        let split_again = viewport_frame(&mut app, &context, Vec::new());
+        assert!(has_seam(&app, &split_again), "boundary={to_boundary}");
+        assert_eq!(format!("{:?}", app.document), before);
+
+        if cfg!(feature = "native-smlib") && !to_boundary {
+            viewport_click(&mut app, &context, apex);
+            assert!(app.active_command.is_none(), "{:?}", app.command_log);
+            let Geometry::Brep(brep) = app.document.selected_objects().next().unwrap().geometry()
+            else {
+                panic!("expected extrusion walls");
+            };
+            assert_eq!(brep.faces().len(), 4);
+            assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
+        } else {
+            enter(&mut app, "Cancel");
+            assert_eq!(format!("{:?}", app.document), before);
+        }
+    }
+}
+
+#[test]
 fn surface_apex_bare_options_are_provisional_and_nonzero_scalars_keep_the_point_prompt() {
     let mut app = test_app();
     let source = planar_apex_source(&mut app, -2.);

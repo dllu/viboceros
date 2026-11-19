@@ -35,31 +35,33 @@ struct FaceDraft {
 #[derive(Debug)]
 struct WallDraft {
     rim: Vec<[Point3; 2]>,
-    corners: [(usize, Point3); 2],
+    corners: [Point3; 2],
     endpoints: [Point3; 2],
     midpoint: Option<Point3>,
 }
 
 impl SurfaceApexDraft {
-    pub(crate) fn capture(document: &Document, faces: &[(ObjectId, usize)]) -> Self {
-        let tolerance = document.tolerance();
-        let faces = faces
-            .iter()
-            .filter_map(|&(id, index)| match document.object(id)?.geometry() {
-                Geometry::Brep(brep) => {
-                    FaceDraft::capture(brep, brep.faces().get(index)?, tolerance)
-                }
-                Geometry::NurbsSurface(surface) => {
-                    let brep = Brep::try_surface_face(surface.clone(), tolerance).ok()?;
-                    FaceDraft::capture(&brep, brep.faces().first()?, tolerance)
-                }
-                _ => None,
-            })
-            .collect();
+    pub(crate) fn capture(
+        document: &Document,
+        targets: &[(ObjectId, usize)],
+        split_at_tangents: bool,
+    ) -> Self {
         Self {
-            faces,
+            faces: FaceDraft::capture_sources(document, targets, split_at_tangents),
             hover: None,
             boundary: None,
+        }
+    }
+
+    pub(crate) fn set_tangent_splits(
+        &mut self,
+        document: &Document,
+        targets: &[(ObjectId, usize)],
+        split_at_tangents: bool,
+    ) {
+        self.faces = FaceDraft::capture_sources(document, targets, split_at_tangents);
+        if let Some(boundary) = &mut self.boundary {
+            *boundary.frame.get_mut() = None;
         }
     }
 
@@ -117,7 +119,33 @@ impl BoundaryDraft {
 }
 
 impl FaceDraft {
-    fn capture(brep: &Brep, face: &BrepFace, tolerance: Tolerance) -> Option<Self> {
+    fn capture_sources(
+        document: &Document,
+        targets: &[(ObjectId, usize)],
+        split_at_tangents: bool,
+    ) -> Vec<Self> {
+        let tolerance = document.tolerance();
+        targets
+            .iter()
+            .filter_map(|&(id, index)| match document.object(id)?.geometry() {
+                Geometry::Brep(brep) => {
+                    Self::capture(brep, brep.faces().get(index)?, split_at_tangents, tolerance)
+                }
+                Geometry::NurbsSurface(surface) => {
+                    let brep = Brep::try_surface_face(surface.clone(), tolerance).ok()?;
+                    Self::capture(&brep, brep.faces().first()?, split_at_tangents, tolerance)
+                }
+                _ => None,
+            })
+            .collect()
+    }
+
+    fn capture(
+        brep: &Brep,
+        face: &BrepFace,
+        split_at_tangents: bool,
+        tolerance: Tolerance,
+    ) -> Option<Self> {
         let mut uses = BTreeMap::<usize, usize>::new();
         for edge in face
             .loops()
@@ -131,23 +159,10 @@ impl FaceDraft {
         let walls: Vec<_> = uses
             .into_iter()
             .filter(|&(_, count)| count == 1)
-            .filter_map(|(index, _)| {
+            .flat_map(|(index, _)| {
                 let edge = &brep.edges()[index];
-                let curve = edge.curve();
-                let domain = curve.domain();
-                let corners = edge.vertices().map(|v| (v, brep.vertices()[v].point()));
-                let endpoints = [
-                    curve.evaluate(*domain.start()).unwrap_or(corners[0].1),
-                    curve.evaluate(*domain.end()).unwrap_or(corners[1].1),
-                ];
-                let mut rim = Vec::new();
-                curve.visit_segments(|a, b| rim.push([a, b]));
-                (!rim.is_empty()).then_some(WallDraft {
-                    rim,
-                    corners,
-                    endpoints,
-                    midpoint: curve.evaluate(domain.start().midpoint(*domain.end())).ok(),
-                })
+                let corners = edge.vertices().map(|v| brep.vertices()[v].point());
+                WallDraft::capture_edge(edge.curve(), corners, split_at_tangents)
             })
             .collect();
         (!walls.is_empty()).then(|| Self {
@@ -166,19 +181,69 @@ impl FaceDraft {
             .and_then(|plane| plane.signed_distance_to(apex).ok())
             .is_some_and(|distance| distance.abs() <= tolerance.absolute());
         self.walls.iter().filter(move |wall| {
-            !coplanar
-                || !(wall.endpoints.contains(&apex) || wall.corners.iter().any(|&(_, p)| p == apex))
+            !coplanar || !(wall.endpoints.contains(&apex) || wall.corners.contains(&apex))
         })
     }
 
     fn rulings<'a>(walls: impl Iterator<Item = &'a WallDraft>) -> impl Iterator<Item = Point3> {
         let mut corners = BTreeSet::new();
         walls.flat_map(move |wall| {
-            let endpoints = wall
-                .corners
-                .map(|(index, point)| corners.insert(index).then_some(point));
+            let endpoints = wall.corners.map(|point| {
+                let key = point
+                    .to_array()
+                    .map(|x| if x == 0.0 { 0 } else { x.to_bits() });
+                corners.insert(key).then_some(point)
+            });
             endpoints.into_iter().flatten().chain(wall.midpoint)
         })
+    }
+}
+
+impl WallDraft {
+    fn capture_edge(
+        source: &NurbsCurve,
+        corners: [Point3; 2],
+        split_at_tangents: bool,
+    ) -> Vec<Self> {
+        let segments = source
+            .surface_apex_wall_segments(split_at_tangents)
+            .unwrap_or_else(|_| vec![source.clone()]);
+        let last = segments.len() - 1;
+        segments
+            .iter()
+            .enumerate()
+            .filter_map(|(index, segment)| {
+                let domain = segment.domain();
+                // Use the unsplit curve at both sides of an interior break
+                // so adjacent pieces share one preview ruling.
+                let corners = [
+                    if index == 0 {
+                        corners[0]
+                    } else {
+                        source.evaluate(*domain.start()).ok()?
+                    },
+                    if index == last {
+                        corners[1]
+                    } else {
+                        source.evaluate(*domain.end()).ok()?
+                    },
+                ];
+                let endpoints = [
+                    segment.evaluate(*domain.start()).unwrap_or(corners[0]),
+                    segment.evaluate(*domain.end()).unwrap_or(corners[1]),
+                ];
+                let mut rim = Vec::new();
+                segment.visit_segments(|a, b| rim.push([a, b]));
+                (!rim.is_empty()).then_some(Self {
+                    rim,
+                    corners,
+                    endpoints,
+                    midpoint: segment
+                        .evaluate(domain.start().midpoint(*domain.end()))
+                        .ok(),
+                })
+            })
+            .collect()
     }
 }
 
@@ -254,7 +319,7 @@ mod tests {
         ])
         .unwrap();
         let face = Brep::try_surface_face(surface, tolerance).unwrap();
-        let draft = FaceDraft::capture(&face, &face.faces()[0], tolerance).unwrap();
+        let draft = FaceDraft::capture(&face, &face.faces()[0], false, tolerance).unwrap();
         assert_eq!(draft.visible_walls(corner, tolerance).count(), 2);
         for nearby in [
             point(0., 0., 1e-8),

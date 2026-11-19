@@ -9,6 +9,41 @@ pub enum CoplanarFaceExtrusion {
     ApexOnly,
 }
 
+impl NurbsCurve {
+    /// Boundary pieces used by surface-to-point extrusion. Retains the
+    /// original seam as an endpoint and splits only at selected geometric
+    /// continuity breaks.
+    pub fn surface_apex_wall_segments(
+        &self,
+        split_at_tangents: bool,
+    ) -> Result<Vec<Self>, GeometryError> {
+        let breaks = self.surface_apex_wall_breaks(split_at_tangents)?;
+        let domain = self.domain();
+        let mut stops = Vec::with_capacity(breaks.len() + 2);
+        stops.push(*domain.start());
+        stops.extend(breaks);
+        stops.push(*domain.end());
+        let mut parts = Vec::with_capacity(stops.len() - 1);
+        super::command_apex::partition(self.clone(), &stops, &Self::try_trimmed, &mut parts)?;
+        Ok(parts)
+    }
+
+    fn surface_apex_wall_breaks(
+        &self,
+        split_at_tangents: bool,
+    ) -> Result<Vec<Real>, GeometryError> {
+        if self.spans().nth(1).is_none() {
+            return Ok(Vec::new());
+        }
+        let continuity = if split_at_tangents {
+            viboceros_opennurbs::CurveContinuity::Gsmooth
+        } else {
+            viboceros_opennurbs::CurveContinuity::G1
+        };
+        self.discontinuity_parameters(continuity, 0.1_f64.to_radians())
+    }
+}
+
 impl Brep {
     /// Build an extrusion for a planar face and a coplanar or shallow apex.
     /// Coincident radial and source edges retain their distinct topology.
@@ -32,11 +67,6 @@ impl Brep {
         if plane.signed_distance_to(apex)?.abs() > 40.0 * tolerance.absolute() {
             return Ok(None);
         }
-        let continuity = if split_at_tangents {
-            viboceros_opennurbs::CurveContinuity::Gsmooth
-        } else {
-            viboceros_opennurbs::CurveContinuity::G1
-        };
         let uses = self.edge_use_counts();
         if !uses.contains(&1) {
             return invalid("surface apex extrusion requires a boundary");
@@ -46,7 +76,7 @@ impl Brep {
             if count == 1 {
                 let cuts = self.edges[index]
                     .curve
-                    .discontinuity_parameters(continuity, 0.1_f64.to_radians())?;
+                    .surface_apex_wall_breaks(split_at_tangents)?;
                 if !cuts.is_empty() {
                     splits.push((index, cuts));
                 }

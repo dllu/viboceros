@@ -54,7 +54,8 @@ source deletion still form one Undo/Redo operation.
 `SplitAtTangents=No` keeps tangent boundary joins within a wall surface;
 `Yes` splits at native smoothness breaks. Sharp corners split either way.
 Closed-curve seams remain where the source placed them. Parameter speed changes
-alone do not split a geometrically smooth boundary.
+alone do not split a geometrically smooth boundary. Changing the option
+updates the radial seams in the live preview, including sweeps to a boundary.
 
 The native adapter queries public OpenNURBS for G1 or aesthetic smoothness
 breaks, copies boundaries over their actual edge intervals and calls
