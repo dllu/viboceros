@@ -238,6 +238,7 @@ impl Brep {
                 &lengths,
                 &face.surface,
                 sampling.grid(index),
+                None,
             )?;
             let face_triangles = if retain_parameters {
                 creases::triangulate(&mut parameters, &lengths, &face.surface, index)?

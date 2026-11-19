@@ -6834,98 +6834,6 @@ fn sample_trim_loop(
     Ok(points)
 }
 
-fn append_trimmed_surface_grid_parameters(
-    parameters: &mut Vec<Point2>,
-    loop_lengths: &[usize],
-    surface: &NurbsSurface,
-    resolution: [usize; 2],
-) -> Result<(), GeometryError> {
-    let boundary_vertex_count = loop_lengths
-        .iter()
-        .try_fold(0_usize, |total, length| total.checked_add(*length))
-        .ok_or(GeometryError::TooManyMeshVertices)?;
-    if boundary_vertex_count != parameters.len() || loop_lengths.is_empty() {
-        return invalid("trimmed surface grid requires complete sampled boundary loops");
-    }
-    if boundary_vertex_count > MAX_CONSTRAINED_TRIM_VERTICES {
-        return Err(GeometryError::TooManyMeshVertices);
-    }
-    let Some(normalization) = TrimParameterNormalization::try_from_points(parameters)? else {
-        return Ok(());
-    };
-    let normalized_boundary = parameters
-        .iter()
-        .map(|parameter| normalization.normalize(*parameter))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
-    let mut loop_start = 0;
-    for length in loop_lengths {
-        let loop_end = loop_start + *length;
-        loop_ranges.push(loop_start..loop_end);
-        loop_start = loop_end;
-    }
-    let epsilon = 64.0 * Real::EPSILON;
-    let strictly_inside = |parameter: Point2| -> Result<bool, GeometryError> {
-        let point = normalization.normalize(parameter)?;
-        if loop_ranges
-            .iter()
-            .any(|range| point_on_trim_polygon(point, &normalized_boundary[range.clone()], epsilon))
-        {
-            return Ok(false);
-        }
-        if !point_in_trim_polygon(point, &normalized_boundary[loop_ranges[0].clone()], epsilon) {
-            return Ok(false);
-        }
-        Ok(!loop_ranges[1..].iter().any(|range| {
-            point_in_trim_polygon(point, &normalized_boundary[range.clone()], epsilon)
-        }))
-    };
-
-    let sample_direction =
-        |spans: Vec<(Real, Real)>, samples_per_span: usize| -> Result<Vec<Real>, GeometryError> {
-            let capacity = spans
-                .len()
-                .checked_mul(samples_per_span)
-                .and_then(|count| count.checked_add(1))
-                .ok_or(GeometryError::TooManyMeshVertices)?;
-            if capacity > MAX_CONSTRAINED_TRIM_VERTICES {
-                return Err(GeometryError::TooManyMeshVertices);
-            }
-            let mut result = Vec::with_capacity(capacity);
-            for (span_index, span) in spans.into_iter().enumerate() {
-                let first_sample = usize::from(span_index != 0);
-                for sample in first_sample..=samples_per_span {
-                    result.push(normalized_span_parameter(
-                        [span.0, span.1],
-                        sample as Real / samples_per_span as Real,
-                    )?);
-                }
-            }
-            Ok(result)
-        };
-    let parameters_u = sample_direction(surface.spans_u().collect(), resolution[0])?;
-    let parameters_v = sample_direction(surface.spans_v().collect(), resolution[1])?;
-    if parameters_u
-        .len()
-        .checked_mul(parameters_v.len())
-        .is_none_or(|count| count > MAX_CONSTRAINED_TRIM_VERTICES)
-    {
-        return Err(GeometryError::TooManyMeshVertices);
-    }
-    for v in parameters_v {
-        for &u in &parameters_u {
-            let parameter = Point2::try_new(u, v)?;
-            if strictly_inside(parameter)? {
-                if parameters.len() == MAX_CONSTRAINED_TRIM_VERTICES {
-                    return Err(GeometryError::TooManyMeshVertices);
-                }
-                parameters.push(parameter);
-            }
-        }
-    }
-    Ok(())
-}
-
 fn triangulate_simple_trim_polygon(
     parameters: &mut Vec<Point2>,
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
@@ -7143,8 +7051,8 @@ fn triangulate_trim_region_with_constraints(
         if !interior[face.index()] {
             continue;
         }
-        let doubled_area = polygon_cross(points[0], points[1], points[2]);
-        if doubled_area <= epsilon {
+        let doubled_area = trim_region::doubled_area(points, epsilon)?;
+        if doubled_area <= 0. {
             return Ok(None);
         }
         neumaier_add(&mut actual_area, &mut actual_area_correction, doubled_area);
