@@ -8,6 +8,42 @@ mod slivers;
 
 pub(super) use section::{Coverage, recover};
 
+/// A four-sided cutter contained in the temporary stock bounds ends a
+/// surface pick before trimming. The footprint includes the source chart:
+/// rotating that chart on a circular base can change this decision.
+pub(super) fn inside_stock_bounds(
+    sweep: &Shape,
+    source: &Brep,
+    base: Plane,
+    cutter: &Brep,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let face = &cutter.faces()[0];
+    let [outline] = face.loops() else {
+        return Ok(false);
+    };
+    if outline.trims().len() != 4
+        || cutter.edges().len() != 4
+        || cutter
+            .edges()
+            .iter()
+            .any(|edge| edge.curve().control_points().len() != 2)
+        || !regular_projected_patch(face.surface(), base.normal().as_vector(), tolerance)?
+    {
+        return Ok(false);
+    }
+    let Ok(stock) = sweep.tight_bounds() else {
+        return Ok(false);
+    };
+    let stock = stock.union(source.padded_trim_bounds()?)?;
+    let footprint = BoundingBox3::from_points(cutter.vertices().iter().map(|v| v.point()))?;
+    let epsilon = tolerance.absolute();
+    Ok((0..3).all(|i| {
+        footprint.min().to_array()[i] >= stock.min().to_array()[i] - epsilon
+            && footprint.max().to_array()[i] <= stock.max().to_array()[i] + epsilon
+    }))
+}
+
 pub(super) fn crosses_rim(
     stock: &Brep,
     base: Plane,

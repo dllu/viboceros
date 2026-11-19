@@ -1,6 +1,7 @@
 use super::*;
 
 mod contact_edges;
+mod footprint;
 mod slivers;
 
 fn cutter(bounds: [f64; 4], warped: bool) -> NurbsSurface {

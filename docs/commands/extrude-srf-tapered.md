@@ -30,6 +30,9 @@ a separate face at the base. An oblique sweep with gaps between adjacent walls
 retains its base-capped temporary sweep and reports a failed cut. A continuous
 oblique sweep can use a planar cutter or a bilinear cutter that projects
 one-to-one along the sweep direction. The cutter must span the section.
+A four-sided bilinear cutter can finish without adding geometry if it fits
+inside the full temporary sweep's world bounds, including the source
+surface's padded bounds.
 For an oblique sweep, an enclosed hole in a planar or warped cutter rejects
 the cut and keeps the getter open for another pick. A crossing hole can leave
 the full temporary sweep and report a failed cut while retaining the source.

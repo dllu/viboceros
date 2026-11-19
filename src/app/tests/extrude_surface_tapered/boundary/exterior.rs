@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{Brep, Circle3, NurbsCurve, UnitVector3};
+use viboceros_geometry::{AffineTransform3, Brep, Circle3, NurbsCurve, UnitVector3};
 
 fn circle(app: &VibocerosApp) -> NurbsCurve {
     let tolerance = app.document.tolerance();
@@ -116,6 +116,115 @@ fn surface_taper_oblique_boundary_completes_a_cut_that_misses_the_rim() {
         assert!(app.document.is_selected(source));
         assert!(app.document.is_selected(cutter));
         assert!(!app.document.can_undo());
+    }
+}
+
+#[test]
+fn surface_taper_oblique_boundary_pick_respects_the_temporary_sweep_footprint() {
+    use std::f64::consts::FRAC_PI_4;
+
+    for (right, upper, angle, rotate_source, product) in [
+        (3.13, 2.99, 0., false, None),
+        (3.13, 3.01, 0., false, Some((false, 10.29674207909847))),
+        (3.24, 2.7, 0., false, None),
+        (3.29, 2.7, 0., false, Some((true, 5.399619974485205))),
+        (
+            3.13,
+            2.7,
+            FRAC_PI_4,
+            false,
+            Some((false, 11.989263509484255)),
+        ),
+        (3.13, 2.7, FRAC_PI_4, true, None),
+    ] {
+        let mut app = test_app();
+        let tolerance = app.document.tolerance();
+        let rotation = AffineTransform3::try_rotation(
+            point(0., 0., 0.),
+            UnitVector3::try_new(0., 0., 1., tolerance).unwrap(),
+            angle,
+        )
+        .unwrap();
+        let mut profile = Brep::try_planar_face(&circle(&app), tolerance).unwrap();
+        if rotate_source {
+            profile = profile.transformed(rotation, tolerance).unwrap();
+        }
+        let source = app.document.add_geometry(Geometry::Brep(profile)).unwrap();
+        let corner = |x, y| {
+            let u = (x + 9.) / 24.;
+            let v = (y + 9.) / 22.;
+            rotation
+                .transform_point(point(x, y, 4.3 + 1.2 * u + 0.9 * v + 0.4 * u * v))
+                .unwrap()
+        };
+        let chart = NurbsSurface::try_bilinear([
+            corner(-2., -2.7),
+            corner(right, -2.7),
+            corner(right, upper),
+            corner(-2., upper),
+        ])
+        .unwrap();
+        let aim = chart.evaluate(0.5, 0.015).unwrap();
+        let cutter = app
+            .document
+            .add_geometry(Geometry::NurbsSurface(chart))
+            .unwrap();
+        app.document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        app.document.clear_history().unwrap();
+
+        let (sine, cosine) = angle.sin_cos();
+        enter(
+            &mut app,
+            &format!(
+                "ExtrudeSrfTapered ToBoundary Direction={cosine},{sine},6 DraftAngle=8 Solid=No DeleteInput=Yes"
+            ),
+        );
+        assert!(app.picking_tapered_boundary());
+        pick_boundary_in_top_view(&mut app, [point(-5., -5., 0.), point(7., 6., 8.)], aim);
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        assert!(app.document.is_selected(cutter));
+        let success = product.is_some_and(|(solid, _)| solid);
+        assert_eq!(
+            app.command_log.back().unwrap().starts_with("Error: "),
+            !success
+        );
+        assert_eq!(app.document.is_selected(source), !success);
+        assert_eq!(app.document.object(source).is_some(), !success);
+
+        let result = app
+            .document
+            .objects()
+            .find(|obj| ![source, cutter].contains(&obj.id()));
+        let Some((solid, height)) = product else {
+            assert!(
+                result.is_none(),
+                "unexpected sweep for {right}, {upper}, {angle}, {rotate_source}"
+            );
+            assert!(!app.document.can_undo());
+            continue;
+        };
+        let Geometry::Brep(result) = result.unwrap().geometry() else {
+            panic!("expected a B-rep sweep");
+        };
+        assert_eq!(result.is_solid(), solid);
+        assert_eq!(result.faces().len(), if solid { 6 } else { 5 });
+        assert_eq!(result.edges().len(), 12);
+        let max_z = result
+            .faces()
+            .iter()
+            .map(|face| face.trim_boundary_bounds(tolerance).unwrap().max().z())
+            .max_by(f64::total_cmp)
+            .unwrap();
+        assert!((max_z - height).abs() < 1e-6, "{max_z} vs {height}");
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(app.document.is_selected(source));
+        enter(&mut app, "Redo");
+        assert_eq!(app.document.objects().len(), if solid { 2 } else { 3 });
+        assert_eq!(app.document.object(source).is_some(), !solid);
+        assert!(!app.document.is_selected(cutter));
     }
 }
 

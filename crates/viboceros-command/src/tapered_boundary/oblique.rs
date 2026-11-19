@@ -103,6 +103,11 @@ pub(super) fn trim(
             Output::SolidCurve { .. } => Err(REJECTED),
         };
     }
+    if matches!(output, Output::Surface)
+        && exterior::inside_stock_bounds(sweep, source, source_plane, cutter, tolerance)?
+    {
+        return Ok(None);
+    }
     let has_holes = cutter.faces()[0].loops().len() > 1;
     let outline = if has_holes {
         Some(cutter.try_remove_all_holes(tolerance)?.ok_or(REJECTED)?)
