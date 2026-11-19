@@ -115,15 +115,21 @@ impl Brep {
                     [samples; 2]
                 })
                 .collect::<Vec<_>>();
-            return self
-                .tessellate_sampling(
-                    Sampling::per_face(&grids).with_axis_limit(limit),
-                    false,
-                    true,
+            let sampling = Sampling::per_face(&grids).with_axis_limit(limit);
+            if retain_parameters
+                && self.is_solid()
+                && let Ok(mesh) = self.tessellate_conforming_sampling(
+                    sampling
+                        .with_vertex_limit(SPARSE_POLYGON_VERTEX_LIMIT)
+                        .with_display_edge_samples(samples_per_span),
                     tolerance,
-                    retain_parameters,
                     true,
                 )
+            {
+                return Ok(mesh);
+            }
+            return self
+                .tessellate_sampling(sampling, false, true, tolerance, retain_parameters, true)
                 .or_else(|error| match error {
                     GeometryError::TooManyMeshVertices
                     | GeometryError::MeshSubdivisionLimit
