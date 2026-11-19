@@ -52,8 +52,8 @@ pub(super) fn refine_interior(
     chord_height: Real,
     limit: usize,
     locations: &mut HashSet<[u64; 3]>,
-) -> Result<(), GeometryError> {
-    while parameters.len() < limit {
+) -> Result<Option<Real>, GeometryError> {
+    loop {
         let mut edges = triangles
             .iter()
             .flat_map(|&[a, b, c]| [edge(a, b), edge(b, c), edge(c, a)])
@@ -83,14 +83,21 @@ pub(super) fn refine_interior(
             }
         }
         if proposals.is_empty() {
-            break;
+            return Ok(None);
+        }
+        let available = limit.saturating_sub(parameters.len());
+        if available == 0 {
+            return Ok(proposals
+                .iter()
+                .map(|proposal| proposal.0)
+                .max_by(Real::total_cmp));
         }
         proposals.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
         // The final topology welds exactly coincident locations. Two new
         // splits at the same location can accidentally weld unrelated sides.
         let mut proposed_locations = HashSet::new();
         proposals.retain(|&(_, _, _, point)| proposed_locations.insert(vertex_location(point)));
-        proposals.truncate(limit - parameters.len());
+        proposals.truncate(available);
         let coarse = points.len();
         let mut cuts = BTreeMap::new();
         for &(_, key, _, point) in &proposals {
@@ -101,7 +108,7 @@ pub(super) fn refine_interior(
         points.truncate(coarse);
         proposals.retain(|(_, key, _, _)| cuts.contains_key(key));
         if proposals.is_empty() {
-            break;
+            return Ok(None);
         }
         cuts.clear();
         for (_, key, uv, point) in proposals {
@@ -117,7 +124,6 @@ pub(super) fn refine_interior(
             split(triangle, mids, triangles);
         }
     }
-    Ok(())
 }
 
 fn keep_nondegenerate_cuts(
