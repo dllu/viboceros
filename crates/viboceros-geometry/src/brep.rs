@@ -6981,6 +6981,15 @@ fn triangulate_trim_region_with_constraints(
     loop_lengths: &[usize],
     internal_constraints: &[[usize; 2]],
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    triangulate_trim_region_scaled(parameters, loop_lengths, internal_constraints, [1.; 2])
+}
+
+fn triangulate_trim_region_scaled(
+    parameters: &[Point2],
+    loop_lengths: &[usize],
+    internal_constraints: &[[usize; 2]],
+    aspect: [Real; 2],
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
     let Some(boundary_vertex_count) = loop_lengths
         .iter()
         .try_fold(0_usize, |total, length| total.checked_add(*length))
@@ -6999,7 +7008,11 @@ fn triangulate_trim_region_with_constraints(
     };
     let normalized = parameters
         .iter()
-        .map(|&p| normalization.normalize_for_triangulation(p))
+        .map(|&p| {
+            normalization
+                .normalize_for_triangulation(p)
+                .map(|[u, v]| [u * aspect[0], v * aspect[1]])
+        })
         .collect::<Result<Vec<_>, _>>()?;
     let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
     let mut start = 0_usize;

@@ -286,7 +286,7 @@ impl Brep {
             if !self.has_positional_break() {
                 return self
                     .tessellate_conforming_sampling(sparse_sampling(), tolerance, false)
-                    .map(|(mesh, _, _)| mesh);
+                    .map(|(mesh, _, _)| mesh.culled_unused_vertices().0);
             }
             return Err(GeometryError::MeshSubdivisionLimit);
         }
