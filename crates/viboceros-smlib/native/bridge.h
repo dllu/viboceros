@@ -61,7 +61,7 @@ int vb_shape_single_face_plane_normal(const VbSolid *shape, double tolerance, in
 int vb_shape_tapered_face(const VbSolid *shape,const double direction[3],double height,
     double angle_degrees,int corners,int cap_ends,int oblique,double tolerance,VbSolid **out,char *error,size_t capacity);
 int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3], double height,
-    double angle_degrees, int corners, int cap_ends, int oblique, double tolerance,
+    double angle_degrees, int corners, int cap_ends, int mode, double tolerance,
     const double *cuts, size_t cut_count, VbSolid **out, char *error, size_t capacity);
 int vb_shape_silhouettes(const VbSolid *shape, const double toward_eye[3], double approximation,
                          double angle, int internal_edges, VbCurveList **out, char *error, size_t capacity);

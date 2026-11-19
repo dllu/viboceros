@@ -38,7 +38,7 @@ impl TaperedBoundaryOutcome {
     }
 }
 
-struct ClosedCurve {
+struct CurveSource {
     curve: NurbsCurve,
     preview_distance: Option<f64>,
 }
@@ -46,16 +46,16 @@ struct ClosedCurve {
 enum Profile {
     Closed {
         face: Brep,
-        curve: Option<ClosedCurve>,
+        curve: Option<CurveSource>,
     },
-    OpenCurve(NurbsCurve),
+    OpenCurve(CurveSource),
 }
 
 impl Profile {
     fn bounds(&self) -> Result<BoundingBox3, GeometryError> {
         match self {
             Self::Closed { face, .. } => face.padded_trim_bounds(),
-            Self::OpenCurve(curve) => Ok(curve.control_point_bounds()),
+            Self::OpenCurve(source) => Ok(source.curve.control_point_bounds()),
         }
     }
 }
@@ -108,8 +108,8 @@ pub(super) fn apply(
                 cplane,
                 tolerance,
             ),
-            Profile::OpenCurve(curve) => {
-                open_profile::extrude(&curve, &cutter, length, options, cplane, tolerance)
+            Profile::OpenCurve(source) => {
+                open_profile::extrude(&source, &cutter, length, options, cplane, tolerance)
             }
         };
         match product {
@@ -187,13 +187,16 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 let profile = if curve.is_closed()? {
                     Profile::Closed {
                         face: Brep::try_planar_face(&curve, tolerance)?,
-                        curve: Some(ClosedCurve {
+                        curve: Some(CurveSource {
                             curve,
                             preview_distance,
                         }),
                     }
                 } else {
-                    Profile::OpenCurve(curve)
+                    Profile::OpenCurve(CurveSource {
+                        curve,
+                        preview_distance,
+                    })
                 };
                 sources.push(Source {
                     object: object.id(),
@@ -236,7 +239,7 @@ impl Product {
 
 fn extrude(
     source: &Brep,
-    curve: Option<&ClosedCurve>,
+    curve: Option<&CurveSource>,
     cutter: &Brep,
     length: f64,
     options: TaperedExtrusionOptions,
@@ -342,12 +345,27 @@ fn extrude(
     };
     let stock = swept.to_brep(tolerance)?;
     if oblique && !stock.is_solid() {
-        let output = match (curve.is_some(), options.solid) {
-            (false, _) => oblique::Output::Surface,
-            (true, true) => oblique::Output::SolidCurve {
-                preview_stock: preview_length.is_some(),
-            },
-            (true, false) => oblique::Output::CurveWalls,
+        let output = if let (Some(local), Some(kernel)) = (&local_curve, &profile) {
+            let walls = oblique::WallInput {
+                curve: local,
+                kernel,
+                draft: if direction.dot(reference)? < 0. {
+                    -draft
+                } else {
+                    draft
+                },
+                preview_distance: curve.and_then(|source| source.preview_distance),
+            };
+            if options.solid {
+                oblique::Output::SolidCurve {
+                    preview_stock: preview_length.is_some(),
+                    walls,
+                }
+            } else {
+                oblique::Output::CurveWalls(walls)
+            }
+        } else {
+            oblique::Output::Surface
         };
         let mut result = oblique::trim(
             &swept,

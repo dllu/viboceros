@@ -3,12 +3,18 @@ use super::*;
 use crate::surface_boundary_cut::{boundary_tool, mount_planar_cap};
 
 mod holes;
+mod walls;
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub(super) enum Output {
+pub(super) use walls::{WallInput, trim_open};
+
+#[derive(Clone, Copy)]
+pub(super) enum Output<'a> {
     Surface,
-    SolidCurve { preview_stock: bool },
-    CurveWalls,
+    SolidCurve {
+        preview_stock: bool,
+        walls: WallInput<'a>,
+    },
+    CurveWalls(WallInput<'a>),
 }
 
 pub(super) fn crosses_circular_focal_radius(
@@ -52,7 +58,7 @@ pub(super) fn trim(
     source: &Brep,
     cutter: &Brep,
     displacement: Vector3,
-    output: Output,
+    output: Output<'_>,
     tolerance: Tolerance,
 ) -> Result<Product, CommandError> {
     let source_plane = source.faces()[0]
@@ -60,16 +66,23 @@ pub(super) fn trim(
         .plane(tolerance)?
         .ok_or(REJECTED)?;
     if has_wall_gap(&stock, source_plane, tolerance)? {
-        return if output == Output::Surface {
-            Ok(Product {
+        return match output {
+            Output::Surface => Ok(Product {
                 brep: stock,
                 status: ProductStatus::Fallback,
-            })
-        } else {
-            Err(REJECTED)
+            }),
+            Output::CurveWalls(walls) => Ok(Product::from_cut(
+                trim_open(walls, cutter, displacement, tolerance)?,
+                true,
+            )),
+            Output::SolidCurve { walls, .. } if walls.preview_distance.is_some() => Ok(Product {
+                brep: walls::uncut_stock(walls, source, cutter, displacement, tolerance)?,
+                status: ProductStatus::CurvePreviewFallback,
+            }),
+            Output::SolidCurve { .. } => Err(REJECTED),
         };
     }
-    let cap = output != Output::CurveWalls;
+    let cap = !matches!(output, Output::CurveWalls(_));
     let brep = if cutter.faces()[0].loops().len() > 1 {
         // Intersect the filled outline first so the actual section rim is
         // available on the cutter's chart, even for a wall-only result.
@@ -92,13 +105,14 @@ pub(super) fn trim(
                     output,
                     Output::Surface
                         | Output::SolidCurve {
-                            preview_stock: true
+                            preview_stock: true,
+                            ..
                         }
                 ) =>
             {
                 return Ok(Product {
                     brep: stock,
-                    status: if output == Output::Surface {
+                    status: if matches!(output, Output::Surface) {
                         ProductStatus::Fallback
                     } else {
                         ProductStatus::CurvePreviewFallback
@@ -108,7 +122,7 @@ pub(super) fn trim(
             None => return Err(REJECTED),
         };
         match output {
-            Output::CurveWalls if planar || enclosed.is_empty() => {
+            Output::CurveWalls(_) if planar || enclosed.is_empty() => {
                 let walls = (0..closed.faces().len() - 1)
                     .filter(|&i| !on_plane(closed.faces()[i].surface(), source_plane, tolerance))
                     .collect::<Vec<_>>();

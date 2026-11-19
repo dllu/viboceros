@@ -73,6 +73,7 @@ impl Shape {
             cap_ends,
             tolerance,
             None,
+            false,
         )
     }
 
@@ -96,9 +97,32 @@ impl Shape {
             cap_ends,
             tolerance,
             Some(cuts),
+            false,
         )
     }
 
+    /// Build independent oblique draft walls using the input traversal to
+    /// choose the offset side, including when a closed input supplies a base.
+    pub fn directed_oblique_taper(
+        profile: &KernelCurve,
+        displacement: viboceros_geometry::Vector3,
+        angle_degrees: f64,
+        cap_base: bool,
+        tolerance: viboceros_geometry::Tolerance,
+    ) -> Result<Self, Error> {
+        Self::tapered_extrusion_impl(
+            profile,
+            displacement,
+            angle_degrees,
+            TaperCorner::Sharp,
+            cap_base,
+            tolerance,
+            None,
+            true,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
     fn tapered_extrusion_impl(
         profile: &KernelCurve,
         displacement: viboceros_geometry::Vector3,
@@ -107,6 +131,7 @@ impl Shape {
         cap_ends: bool,
         tolerance: viboceros_geometry::Tolerance,
         cuts: Option<&[f64]>,
+        directed: bool,
     ) -> Result<Self, Error> {
         if !angle_degrees.is_finite() || angle_degrees.abs() >= 90. {
             return Err(Error::Kernel(
@@ -118,11 +143,15 @@ impl Shape {
         }
         let height = displacement.length()?;
         let direction = displacement.normalized_nonzero()?.as_vector();
-        let oblique = oblique_axis(
-            direction,
-            KernelCurve::parallel_plane_normal(&[profile], tolerance)?,
-            tolerance,
-        )?;
+        let mode = if directed {
+            2
+        } else {
+            c_int::from(oblique_axis(
+                direction,
+                KernelCurve::parallel_plane_normal(&[profile], tolerance)?,
+                tolerance,
+            )?)
+        };
         let direction = direction.to_array();
         let (cuts, cut_count) =
             cuts.map_or((std::ptr::null(), 0), |cuts| (cuts.as_ptr(), cuts.len()));
@@ -135,7 +164,7 @@ impl Shape {
                 angle_degrees,
                 corners as c_int,
                 c_int::from(cap_ends),
-                c_int::from(oblique),
+                mode,
                 tolerance.absolute(),
                 cuts,
                 cut_count,

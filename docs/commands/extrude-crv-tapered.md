@@ -33,9 +33,19 @@ enclosed hole with a separate cap face and `Solid=No` leaves the cut walls.
 A hole that crosses the rim rejects the cut. With a captured viewport distance
 and `Solid=Yes`, the uncut sweep remains, and `DeleteInput=Yes` replaces the
 input curve in the same Undo/Redo step. A successful viewport cut remembers
-its captured distance. Off-plane base-point cases, holes within warped
-sections, and partial results from gapped or collapsing slanted sweeps need
-further qualification.
+its captured distance.
+
+For slanted polyline sweeps with gaps, `Solid=No` keeps the wall at the
+curve's start when the cutter spans the walls. An open polyline produces the
+same wall with either `Solid` setting. For nonrational curved open sweeps
+with monotone offset rails, the cut retains the connected walls at the
+start of the curve.
+A planar cutter that misses an end of the first wall can leave that wall
+uncut. With `Solid=Yes`, a closed polygon
+can report a failed cut and retain the base-capped preview stock. The
+captured sweep must reach the cutter before it can leave this result.
+Partial cuts through later walls, off-plane base points, holes within warped
+sections, and collapsing curved stocks need further qualification.
 
 Headless examples, with curves selected:
 

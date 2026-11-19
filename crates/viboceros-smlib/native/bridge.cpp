@@ -2449,7 +2449,7 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
 }
 
 extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
-    double height, double angle_degrees, int corners, int cap_ends, int oblique, double tolerance,
+    double height, double angle_degrees, int corners, int cap_ends, int mode, double tolerance,
     const double *cuts, size_t cut_count, VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
@@ -2460,6 +2460,9 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
             && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered extrusion input");
         require((cuts || cut_count == 0) && cut_count < 4096 &&
             curve->points.size() / 4 <= 16'000'000 / (cut_count + 1), "Taper profile partition limit");
+        enum { normal_taper, oblique_taper, directed_oblique_taper };
+        require(mode >= normal_taper && mode <= directed_oblique_taper, "Invalid taper mode");
+        const bool oblique = mode != normal_taper;
         const auto corner_type = taper_corner_type(corners);
         const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
         require(std::isfinite(offset) && offset!=0,"Unrepresentable tapered extrusion offset");
@@ -2507,7 +2510,8 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         if (oblique) {
             size_t controls = 0;
             add_oblique_taper_walls(*owner->value, profiles, normal, height, offset, tolerance,
-                curve->value->IsClosed(curve->value->GetNaturalInterval()), controls);
+                mode == oblique_taper && curve->value->IsClosed(curve->value->GetNaturalInterval()),
+                controls);
             if (cap_ends) {
                 SmFace *base = nullptr;
                 const auto status = owner->value->CreatePlanarFaceWith3DCurves(
