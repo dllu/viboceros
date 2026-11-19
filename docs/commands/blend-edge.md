@@ -3,9 +3,9 @@
 `BlendEdge` uses usd-brep's native selected-edge executive with a quintic curvature (G2) cross-section and unit blend scale. It retains editable B-rep surfaces, trims and topology.
 
 Start `BlendEdge` and use `NextRadius` while picking to give new edges their own
-size. Press Enter to open size adjustment. Click
-or drag a handle to edit its size, use `SetAll` to set every size, or
-use `SelectEdges` to resume picking. `LinkHandles=Yes` scales the other handles by
+size. Press Enter to open size adjustment. Click or drag a handle to edit it.
+Shift-click or window-select several handles to edit them together. Use
+`SetAll` to set every size or `SelectEdges` to resume picking. `LinkHandles=Yes` scales the other handles by
 the same ratio as the edited handle. Varying sizes along an edge require
 `RailType=RollingBall`. Press Enter
 again to apply. Edge preselection,

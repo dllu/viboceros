@@ -10,7 +10,9 @@ use viboceros_command::component_selection::{ComponentAction, current};
 use viboceros_document::GeometrySnapshot;
 
 mod operations;
+mod selection;
 use operations::HandleOperation;
+use selection::HandleSelection;
 
 pub(super) type EdgeSizes = BTreeMap<ComponentPick, (GeometrySnapshot, EdgeBlendSizes)>;
 
@@ -20,6 +22,7 @@ pub(in crate::app) struct Adjustment {
     pub(super) active: Option<(SizeHandleId, GeometrySnapshot)>,
     pub(super) drag_size: Option<f64>,
     operation: Option<HandleOperation>,
+    selection: HandleSelection,
 }
 
 impl HandleLocation {
@@ -57,19 +60,24 @@ impl HandleLocation {
 #[derive(Clone, Copy)]
 pub(super) enum ProfileEdit {
     All(f64),
-    Handle {
+    Handles {
         id: SizeHandleId,
         size: f64,
-    },
-    Linked {
-        id: SizeHandleId,
-        size: f64,
-        ratio: f64,
+        group: bool,
+        ratio: Option<f64>,
     },
 }
 
 impl ProfileEdit {
-    fn apply(self, pick: ComponentPick, sizes: &mut EdgeBlendSizes) {
+    fn affects(self, pick: ComponentPick, selection: &HandleSelection) -> bool {
+        match self {
+            Self::All(_) | Self::Handles { ratio: Some(_), .. } => true,
+            Self::Handles { group: true, .. } => !selection.locations(pick).is_empty(),
+            Self::Handles { id, .. } => id.pick == pick,
+        }
+    }
+
+    fn apply(self, pick: ComponentPick, selection: &HandleSelection, sizes: &mut EdgeBlendSizes) {
         match self {
             Self::All(size) => {
                 sizes.ends = [size; 2];
@@ -77,20 +85,26 @@ impl ProfileEdit {
                     *value = size;
                 }
             }
-            Self::Handle { id, size } => {
-                if id.pick == pick {
-                    id.location.set_size(sizes, size);
+            Self::Handles {
+                id,
+                size,
+                group,
+                ratio,
+            } => {
+                if let Some(ratio) = ratio {
+                    for value in sizes
+                        .ends
+                        .iter_mut()
+                        .chain(sizes.interior.iter_mut().map(|s| &mut s.1))
+                    {
+                        *value *= ratio;
+                    }
                 }
-            }
-            Self::Linked { id, size, ratio } => {
-                for value in sizes
-                    .ends
-                    .iter_mut()
-                    .chain(sizes.interior.iter_mut().map(|s| &mut s.1))
-                {
-                    *value *= ratio;
-                }
-                if id.pick == pick {
+                if group {
+                    for &location in selection.locations(pick) {
+                        location.set_size(sizes, size);
+                    }
+                } else if id.pick == pick {
                     id.location.set_size(sizes, size);
                 }
             }
@@ -181,6 +195,7 @@ impl VibocerosApp {
         self.edge_blend_adjustment.active = None;
         self.edge_blend_adjustment.drag_size = None;
         self.edge_blend_adjustment.operation = None;
+        self.edge_blend_adjustment.selection.clear();
         prompt.adjusting = false;
         prompt.size_input = None;
         self.edge_fillet_prompt = Some(prompt);
@@ -220,7 +235,7 @@ impl VibocerosApp {
             .map(|(_, sizes)| sizes.clone())
             .unwrap_or_else(|| [prompt.radius; 2].into());
         if let Some(edit) = edit {
-            edit.apply(pick, &mut sizes);
+            edit.apply(pick, &self.edge_blend_adjustment.selection, &mut sizes);
         }
         sizes
     }
@@ -243,17 +258,20 @@ impl VibocerosApp {
         if !current(self.edge_blend_source_document(), id.pick, source) {
             return Err(stale);
         }
-        if !prompt.toggles.link_handles {
-            return Ok(ProfileEdit::Handle { id: *id, size });
-        }
-        let old_size = id
-            .location
-            .size(&self.edge_blend_sizes(prompt, id.pick, None))
-            .ok_or(stale)?;
-        Ok(ProfileEdit::Linked {
+        let ratio = if prompt.toggles.link_handles {
+            let old_size = id
+                .location
+                .size(&self.edge_blend_sizes(prompt, id.pick, None))
+                .ok_or(stale)?;
+            Some(size / old_size)
+        } else {
+            None
+        };
+        Ok(ProfileEdit::Handles {
             id: *id,
             size,
-            ratio: size / old_size,
+            group: self.edge_blend_adjustment.selection.contains(*id),
+            ratio,
         })
     }
 
@@ -287,10 +305,7 @@ impl VibocerosApp {
             .checked_picks(self.edge_blend_source_document())?;
         let updated = picks
             .into_iter()
-            .filter(|pick| match edit {
-                ProfileEdit::Handle { id, .. } => id.pick == *pick,
-                _ => true,
-            })
+            .filter(|&pick| edit.affects(pick, &self.edge_blend_adjustment.selection))
             .map(|pick| {
                 let source = self
                     .edge_blend_source_document()
@@ -374,11 +389,12 @@ impl VibocerosApp {
                     id,
                     point,
                     size,
-                    active: self
-                        .edge_blend_adjustment
-                        .active
-                        .as_ref()
-                        .is_some_and(|(active, _)| *active == id),
+                    active: self.edge_blend_adjustment.selection.contains(id)
+                        || self
+                            .edge_blend_adjustment
+                            .active
+                            .as_ref()
+                            .is_some_and(|(active, _)| *active == id),
                 });
             }
         }
@@ -422,7 +438,11 @@ impl VibocerosApp {
         {
             return false;
         }
-        self.edge_blend_adjustment.active = Some((id, object.geometry_snapshot().clone()));
+        let source = object.geometry_snapshot().clone();
+        if !self.edge_blend_adjustment.selection.contains(id) {
+            self.edge_blend_adjustment.selection.clear();
+        }
+        self.edge_blend_adjustment.active = Some((id, source));
         self.edge_blend_adjustment.drag_size = None;
         prompt.size_input = Some(SizeInput::Edit);
         self.edge_fillet_prompt = Some(prompt);
@@ -442,6 +462,7 @@ impl VibocerosApp {
         }
         let (id, value, finished) = match gesture {
             HandleGesture::Pick(id) => return self.pick_edge_size_handle(id),
+            HandleGesture::Select(ids, mode) => return self.select_edge_size_handles(ids, mode),
             HandleGesture::Place(_) => return false,
             HandleGesture::Drag {
                 id,

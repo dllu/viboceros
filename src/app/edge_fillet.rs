@@ -71,7 +71,7 @@ impl Prompt {
                 "Enter edge radius with optional units"
             }
         } else if self.adjusting {
-            "Select a size handle or use AddHandle, CopyHandle, SetAll, LinkHandles, SelectEdges or TrimAndJoin. Enter applies. Esc cancels."
+            "Click or drag a size handle. Shift-click or window-select to edit several. Options include AddHandle, CopyHandle, SetAll, LinkHandles, SelectEdges and TrimAndJoin. Enter applies. Esc cancels."
         } else {
             match self.kind {
                 Kind::Fillet(_) => {

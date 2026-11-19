@@ -6,6 +6,7 @@ mod chain_edges;
 mod edit;
 mod face_edges;
 mod from_curve;
+mod handle_selection;
 mod previous;
 mod sizes;
 

@@ -23,9 +23,10 @@ pub(crate) struct SizeHandle {
     pub(crate) active: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub(crate) enum HandleGesture {
     Pick(SizeHandleId),
+    Select(Vec<SizeHandleId>, SelectionMode),
     Place(SizeHandleId),
     Drag {
         id: SizeHandleId,
@@ -43,7 +44,12 @@ pub(crate) enum HandleMode<'a> {
     Place(&'a [(ComponentPick, &'a NurbsCurve)]),
 }
 
-pub(super) struct Drag {
+pub(super) enum Drag {
+    Size(SizeDrag),
+    Window { start: Pos2, mode: SelectionMode },
+}
+
+pub(super) struct SizeDrag {
     id: SizeHandleId,
     start_y: f32,
     start_size: f64,
@@ -71,10 +77,30 @@ impl Viewport {
             response.hover_pos()
         };
         let mut nearest = None::<(f32, SizeHandleId)>;
-        let press = (matches!(mode, HandleMode::Edit)
-            && response.drag_started_by(PointerButton::Primary))
-        .then(|| response.ctx.input(|i| i.pointer.press_origin()))
-        .flatten();
+        let modifiers = response.ctx.input(|input| input.modifiers);
+        let selection_mode = if modifiers.ctrl && !modifiers.shift {
+            SelectionMode::Remove
+        } else {
+            selection_mode(modifiers)
+        };
+        if matches!(mode, HandleMode::Edit)
+            && response.hovered()
+            && response
+                .ctx
+                .input(|input| input.pointer.button_pressed(PointerButton::Primary))
+        {
+            self.edge_blend_drag = response.interact_pointer_pos().map(|start| Drag::Window {
+                start,
+                mode: selection_mode,
+            });
+        }
+        let press = match self.edge_blend_drag {
+            Some(Drag::Window {
+                start,
+                mode: SelectionMode::Replace,
+            }) if response.drag_started_by(PointerButton::Primary) => Some(start),
+            _ => None,
+        };
         let mut pressed_handle = None::<(f32, &SizeHandle)>;
         for handle in handles {
             let Some(position) = self
@@ -169,37 +195,75 @@ impl Viewport {
                 self.model_to_view_scale(rect)
             };
             if scale.is_finite() && scale > 0. {
-                self.edge_blend_drag = Some(Drag {
+                self.edge_blend_drag = Some(Drag::Size(SizeDrag {
                     id: handle.id,
                     start_y: press.y,
                     start_size: handle.size,
                     pixels_per_unit: scale,
-                });
+                }));
             }
         }
         let finished = response.drag_stopped_by(PointerButton::Primary);
-        if (finished || response.dragged_by(PointerButton::Primary))
-            && let Some(drag) = &self.edge_blend_drag
-        {
-            let id = drag.id;
-            let value = response
-                .interact_pointer_pos()
-                .map(|pointer| {
-                    drag.start_size
-                        + (f64::from(drag.start_y) - f64::from(pointer.y)) / drag.pixels_per_unit
-                })
-                .filter(|&size| size.is_finite() && size > 0.);
+        if finished || response.dragged_by(PointerButton::Primary) {
+            let gesture = match &self.edge_blend_drag {
+                Some(Drag::Size(drag)) => {
+                    let value = response
+                        .interact_pointer_pos()
+                        .map(|pointer| {
+                            drag.start_size
+                                + (f64::from(drag.start_y) - f64::from(pointer.y))
+                                    / drag.pixels_per_unit
+                        })
+                        .filter(|&size| size.is_finite() && size > 0.);
+                    Some(HandleGesture::Drag {
+                        id: drag.id,
+                        value,
+                        finished,
+                    })
+                }
+                Some(Drag::Window { start, mode }) => {
+                    response.interact_pointer_pos().and_then(|end| {
+                        if !finished {
+                            self.paint_selection_window(painter, *start, end, None);
+                            return None;
+                        }
+                        let window = Rect::from_two_pos(*start, end).intersect(rect);
+                        let ids = handles
+                            .iter()
+                            .filter(|handle| {
+                                self.project(handle.point, rect)
+                                    .is_some_and(|p| window.contains(p))
+                            })
+                            .map(|handle| handle.id)
+                            .collect();
+                        Some(HandleGesture::Select(ids, *mode))
+                    })
+                }
+                None => None,
+            };
             if finished {
                 self.edge_blend_drag = None;
             }
-            return Some(HandleGesture::Drag {
-                id,
-                value,
-                finished,
-            });
+            return gesture;
         }
-        nearest
-            .filter(|_| clicked)
-            .map(|(_, id)| HandleGesture::Pick(id))
+        if !clicked {
+            return None;
+        }
+        let started_mode = match self.edge_blend_drag.take() {
+            Some(Drag::Window { mode, .. }) => mode,
+            _ => selection_mode,
+        };
+        match nearest {
+            Some((_, id))
+                if matches!(mode, HandleMode::Edit) && started_mode != SelectionMode::Replace =>
+            {
+                Some(HandleGesture::Select(vec![id], started_mode))
+            }
+            Some((_, id)) => Some(HandleGesture::Pick(id)),
+            None if matches!(mode, HandleMode::Edit) => {
+                Some(HandleGesture::Select(Vec::new(), started_mode))
+            }
+            None => None,
+        }
     }
 }

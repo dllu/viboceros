@@ -3,7 +3,7 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
-        if let Some(gesture) = output.edge_blend_handle
+        if let Some(gesture) = output.edge_blend_handle.take()
             && self.edit_edge_blend_handle(gesture)
         {
             return true;

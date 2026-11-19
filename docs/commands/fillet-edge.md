@@ -12,8 +12,10 @@ FilletEdge Radius=1 All=Yes
 The first form starts viewport edge picking. `NextRadius` sets the size for
 subsequent picks, including chains and face edges. Select edges and press Enter
 to open size adjustment. Click a handle to type a radius, use `FromCurve` or
-`FromTwoPoints`, or drag the handle up or down. `AddHandle` places a radius
-along a selected edge. `CopyHandle` asks for a source handle and a new location.
+`FromTwoPoints`, or drag the handle up or down. Shift-click handles or drag a
+window from empty viewport space to select several. Ctrl-click removes a
+handle from the selection. Edit any selected handle to change the group.
+`AddHandle` places a radius along a selected edge. `CopyHandle` asks for a source handle and a new location.
 `RemoveHandle` deletes a placed handle. SMLib interpolates the radii over the
 edge's curve parameter. An open edge with only endpoint handles varies
 linearly. `LinkHandles=Yes` scales the other handles by the same ratio as the

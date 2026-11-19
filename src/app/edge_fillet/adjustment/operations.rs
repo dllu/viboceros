@@ -119,7 +119,7 @@ impl VibocerosApp {
         };
         let id = match gesture {
             HandleGesture::Pick(id) | HandleGesture::Place(id) => id,
-            HandleGesture::Drag { .. } => return false,
+            HandleGesture::Drag { .. } | HandleGesture::Select(..) => return false,
         };
         if !self
             .component_selection
