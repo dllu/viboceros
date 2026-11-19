@@ -12,6 +12,7 @@ use crate::surface_reference::BoundaryRef;
 use viboceros_smlib::Shape;
 
 mod open_profile;
+mod parallel_cut;
 mod source_holes;
 
 const REJECTED: CommandError = CommandError::SurfaceExtrusionBoundaryRejected;
@@ -203,6 +204,29 @@ fn extrude(
             Ok(reference)
         })?;
     let direction = toward_cutter(original.padded_trim_bounds()?, &cutter, axis, tolerance)?;
+    let displacement = direction.scaled(length)?;
+    let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
+    let local_curve = curve.map(|curve| curve.transformed(to_local)).transpose()?;
+    let profile = local_curve
+        .as_ref()
+        .map(viboceros_smlib::KernelCurve::from_nurbs_for_modeling)
+        .transpose()?;
+    if let (Some(local), Some(profile)) = (&local_curve, &profile)
+        && let Ok(Some(brep)) = parallel_cut::produce(
+            local,
+            profile,
+            &cutter,
+            displacement,
+            draft,
+            options,
+            tolerance,
+        )
+    {
+        return Ok(Product {
+            brep: brep.transformed(to_world, tolerance)?,
+            reached_boundary: true,
+        });
+    }
     let filled = if draft < 0. {
         source_holes::fill_collapsed(&original, length * (-draft).to_radians().tan(), tolerance)?
     } else {
@@ -213,13 +237,10 @@ fn extrude(
     } else {
         (&original, stock)
     };
-    let displacement = direction.scaled(length)?;
-    let swept = if let Some(curve) = curve {
-        let local = curve.transformed(to_local)?;
-        let profile = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&local)?;
+    let swept = if let (Some(local), Some(profile)) = (&local_curve, &profile) {
         produce_curve_shape(
-            &local,
-            &profile,
+            local,
+            profile,
             displacement,
             draft,
             options,
@@ -295,7 +316,6 @@ fn extrude(
     } else {
         result
     };
-    let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
     Ok(Product {
         brep: result.transformed(to_world, tolerance)?,
         reached_boundary,

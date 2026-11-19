@@ -132,17 +132,22 @@ fn tapered_split_at_tangents_updates_live_preview_and_replays_the_rhino_capsule(
 
 #[test]
 fn tapered_boundary_preserves_the_curve_split_option() {
-    for split in [false, true] {
+    for (width, depth, height, split, solid) in [
+        (5., 3.25, 1., false, true),
+        (5., 3.25, 1., true, true),
+        (3.145, 1.145, 1., false, true),
+        (5., 3.25, -1., false, false),
+    ] {
         let mut app = test_app();
         let source = app
             .document
             .add_geometry(Geometry::NurbsCurve(capsule()))
             .unwrap();
         let cutter = NurbsSurface::try_bilinear([
-            point(-5., -3.25, 1.),
-            point(5., -3.25, 1.),
-            point(5., 3.25, 1.),
-            point(-5., 3.25, 1.),
+            point(-width, -depth, height),
+            point(width, -depth, height),
+            point(width, depth, height),
+            point(-width, depth, height),
         ])
         .unwrap();
         let cutter = app
@@ -153,13 +158,30 @@ fn tapered_boundary_preserves_the_curve_split_option() {
             .select_objects_direct([source], SelectionMode::Replace)
             .unwrap();
         let value = if split { "Yes" } else { "No" };
+        let caps = if solid { "Yes" } else { "No" };
         enter(
             &mut app,
             &format!(
-                "ExtrudeCrvTapered ToBoundary={cutter} DraftAngle=-8 Solid=Yes SplitAtTangents={value}"
+                "ExtrudeCrvTapered ToBoundary={cutter} DraftAngle=-8 Solid={caps} SplitAtTangents={value}"
             ),
         );
-        check_capsule(&app, source, Some(cutter), split);
+        if solid {
+            check_capsule(&app, source, Some(cutter), split);
+        } else {
+            let Geometry::Brep(result) = app
+                .document
+                .objects()
+                .find(|object| ![source, cutter].contains(&object.id()))
+                .unwrap()
+                .geometry()
+            else {
+                panic!("expected a tapered sheet");
+            };
+            assert!(!result.is_solid());
+            assert_eq!((result.faces().len(), result.edges().len()), (1, 3));
+            assert!((result.bounds().min().z() - height).abs() < 1e-6);
+            assert!(result.bounds().max().z().abs() < 1e-6);
+        }
     }
 }
 

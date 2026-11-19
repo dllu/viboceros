@@ -20,8 +20,10 @@ Esc cancels the command.
 
 Choose `ToBoundary` at the distance getter and pick the cutter face. Closed
 planar profiles with `Solid=Yes` retain the base and cutter caps. `Solid=No`
-leaves the trimmed walls, and open planar profiles produce sheets. The cutter
-must span the temporary taper, whose length comes from the combined bounds.
+leaves the trimmed walls, and open planar profiles produce sheets. For an
+outward convex line-and-arc profile and a parallel rectangular cutter, the
+cutter must span the section. Other cuts use a temporary taper whose length
+comes from the combined bounds.
 
 Headless examples, with curves selected:
 
