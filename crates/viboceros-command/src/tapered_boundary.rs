@@ -4,7 +4,7 @@ use crate::extrude_surface::{
     Distance, SurfaceFaces, apply_staged_products, capture_source_face, face_extrusion_direction,
     local_sweep_source, surface_extrusion_targets,
 };
-use crate::extrude_tapered::{TaperCorners, TaperedExtrusionOptions};
+use crate::extrude_tapered::{TaperCorners, TaperedExtrusionOptions, produce_curve_shape};
 use crate::surface_boundary_cut::{
     BoundaryDifference, axial_extent, axial_point, copied_carrier, hole_crosses_sweep, on_plane,
 };
@@ -22,14 +22,17 @@ pub(super) enum Inputs<'a> {
 }
 
 enum Profile {
-    Face(Brep),
+    Closed {
+        face: Brep,
+        curve: Option<NurbsCurve>,
+    },
     OpenCurve(NurbsCurve),
 }
 
 impl Profile {
     fn bounds(&self) -> Result<BoundingBox3, GeometryError> {
         match self {
-            Self::Face(surface) => surface.padded_trim_bounds(),
+            Self::Closed { face, .. } => face.padded_trim_bounds(),
             Self::OpenCurve(curve) => Ok(curve.control_point_bounds()),
         }
     }
@@ -74,12 +77,12 @@ pub(super) fn apply(
     let mut remove_curves = Vec::new();
     for source in sources {
         let product = match source.profile {
-            Profile::Face(profile) => extrude(
-                &profile,
+            Profile::Closed { face, curve } => extrude(
+                &face,
+                curve.as_ref(),
                 &cutter,
                 length,
                 options,
-                source.face.is_some() || options.solid,
                 cplane,
                 tolerance,
             ),
@@ -136,7 +139,10 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                 Ok(Source {
                     object,
                     face: Some(face),
-                    profile: Profile::Face(capture_source_face(doc, object, face)?),
+                    profile: Profile::Closed {
+                        face: capture_source_face(doc, object, face)?,
+                        curve: None,
+                    },
                 })
             })
             .collect(),
@@ -151,7 +157,10 @@ fn capture_sources(doc: &Document, inputs: Inputs<'_>) -> Result<Vec<Source>, Co
                     return Err(REJECTED);
                 }
                 let profile = if curve.is_closed()? {
-                    Profile::Face(Brep::try_planar_face(&curve, tolerance)?)
+                    Profile::Closed {
+                        face: Brep::try_planar_face(&curve, tolerance)?,
+                        curve: Some(curve),
+                    }
                 } else {
                     Profile::OpenCurve(curve)
                 };
@@ -176,19 +185,17 @@ struct Product {
 
 fn extrude(
     source: &Brep,
+    curve: Option<&NurbsCurve>,
     cutter: &Brep,
     length: f64,
     options: TaperedExtrusionOptions,
-    capped: bool,
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Product, CommandError> {
     let (origin, original) = local_sweep_source(source, tolerance)?;
     let zero = Point3::try_new(0., 0., 0.)?;
-    let cutter = cutter.transformed(
-        AffineTransform3::from_translation(origin.vector_to(zero)?),
-        tolerance,
-    )?;
+    let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
+    let cutter = cutter.transformed(to_local, tolerance)?;
     let stock = Shape::from_brep(&original, tolerance)?;
     let reference = face_extrusion_direction(&stock, None, cplane, tolerance)?;
     let (axis, draft) =
@@ -206,13 +213,29 @@ fn extrude(
     } else {
         (&original, stock)
     };
-    let stock = match stock.tapered_face(
-        direction.scaled(length)?,
-        draft,
-        options.corners.kernel(),
-        true,
-        tolerance,
-    ) {
+    let displacement = direction.scaled(length)?;
+    let swept = if let Some(curve) = curve {
+        let local = curve.transformed(to_local)?;
+        let profile = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&local)?;
+        produce_curve_shape(
+            &local,
+            &profile,
+            displacement,
+            draft,
+            options,
+            true,
+            tolerance,
+        )
+    } else {
+        stock.tapered_face(
+            displacement,
+            draft,
+            options.corners.kernel(),
+            true,
+            tolerance,
+        )
+    };
+    let stock = match swept {
         Ok(stock) => stock.to_brep(tolerance)?,
         // A contracting stock can collapse before reaching its temporary end.
         Err(viboceros_smlib::Error::Kernel(_)) => return Err(REJECTED),
@@ -246,7 +269,7 @@ fn extrude(
     } else {
         result
     };
-    let result = if capped {
+    let result = if curve.is_none() || options.solid {
         result
     } else {
         let cap = if reached_boundary && !coincident {

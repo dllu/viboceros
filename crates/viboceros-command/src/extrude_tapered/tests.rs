@@ -11,17 +11,27 @@ fn tapered_options_are_atomic_and_round_trip() {
     ])
     .unwrap();
     assert_eq!(
-        TaperedExtrusionOptions::parse(&o.command_options().split_whitespace().collect::<Vec<_>>())
-            .unwrap(),
+        TaperedExtrusionOptions::parse(
+            &o.command_options(false)
+                .split_whitespace()
+                .collect::<Vec<_>>()
+        )
+        .unwrap(),
         o
     );
     o.update(&["FlipAngle"]).unwrap();
     assert_eq!(o.draft_angle, -12.);
     o.update(&["Corners=_Smooth"]).unwrap();
+    o.update(&["_SplitAtTangents"]).unwrap();
     assert_eq!(o.corners, TaperCorners::Smooth);
+    assert!(o.split_at_tangents);
     assert_eq!(
-        TaperedExtrusionOptions::parse(&o.command_options().split_whitespace().collect::<Vec<_>>())
-            .unwrap(),
+        TaperedExtrusionOptions::parse(
+            &o.command_options(false)
+                .split_whitespace()
+                .collect::<Vec<_>>()
+        )
+        .unwrap(),
         o
     );
     let before = o;
@@ -30,6 +40,8 @@ fn tapered_options_are_atomic_and_round_trip() {
         &["Corners=Bevel"][..],
         &["Direction=0,0,0"][..],
         &["Solid=Yes", "Solid=No"][..],
+        &["SplitAtTangents=Maybe"][..],
+        &["SplitAtTangents", "SplitAtTangents=No"][..],
     ] {
         assert!(o.update(words).is_err());
         assert_eq!(o, before);

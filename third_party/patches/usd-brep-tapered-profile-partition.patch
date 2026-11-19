@@ -1,0 +1,24 @@
+--- a/source/SMLib/src/SmPrimitiveCreation.cpp
++++ b/source/SMLib/src/SmPrimitiveCreation.cpp
+@@ -26,6 +26,7 @@
+ #include <SmLine.h>
+ #include <SmAssertArray.h>
+ #include <SmMerge.h>
++#include "taper_profile_partition.h"
+
+ #ifdef SM_DEBUG_CODE
+ #include <SmCrvOnSurf.h>
+@@ -3792,9 +3793,10 @@
+
+       SmBSplineCurve *pBSC =(SmBSplineCurve *)r3DCurves[ii];
+       SmTArray < SmBSplineCurve *> sG1Curves;
+-      pBSC->SubdivideAtDiscontinuity(*pContext,  // in : context for new object construction
+-                                     SM_CT_G1,   // in : curve is split at internal continuities <= to this value
+-                                     sG1Curves); // out: newly copied curves - may be 1 curve copy when no internal discontinuities
++      if (vb_taper_use_supplied_partitions)
++        sG1Curves.Add(new (*pContext) SmBSplineCurve(*pBSC));
++      else
++        pBSC->SubdivideAtDiscontinuity(*pContext, SM_CT_G1, sG1Curves);
+
+       // load results into working arrays
+       sCurves.Append(sG1Curves);          // list of all split at G1 copied curves

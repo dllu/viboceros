@@ -122,3 +122,4 @@ fn tapered_direction_points_use_displacement_and_keep_the_base_after_failed_targ
 }
 
 mod getters;
+mod splitting;

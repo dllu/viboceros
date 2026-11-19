@@ -4,7 +4,9 @@ pub use crate::extrude_surface::Distance;
 use crate::extrude_surface::parse_face_extrusion_distance;
 use crate::surface_reference::BoundaryInput;
 
-pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle]";
+mod partitions;
+
+pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round|Smooth] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [SplitAtTangents=Yes|No]";
 pub(super) struct ExtrudeTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -84,6 +86,7 @@ pub struct TaperedExtrusionOptions {
     pub corners: TaperCorners,
     pub delete_input: bool,
     pub direction: Option<Vector3>,
+    pub split_at_tangents: bool,
 }
 impl Default for TaperedExtrusionOptions {
     fn default() -> Self {
@@ -93,6 +96,7 @@ impl Default for TaperedExtrusionOptions {
             corners: TaperCorners::Sharp,
             delete_input: false,
             direction: None,
+            split_at_tangents: false,
         }
     }
 }
@@ -107,9 +111,15 @@ impl TaperedExtrusionOptions {
 
     pub fn recognizes(word: &str) -> bool {
         word.contains('=')
-            || ["Solid", "DeleteInput", "FlipAngle", "ToBoundary"]
-                .iter()
-                .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
+            || [
+                "Solid",
+                "DeleteInput",
+                "FlipAngle",
+                "ToBoundary",
+                "SplitAtTangents",
+            ]
+            .iter()
+            .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
     }
 
     /// Parse the options accepted before a distance or a cutter pick.
@@ -167,6 +177,7 @@ impl TaperedExtrusionOptions {
                 }
                 "solid" => next.solid = toggle(next.solid)?,
                 "deleteinput" => next.delete_input = toggle(next.delete_input)?,
+                "splitattangents" => next.split_at_tangents = toggle(next.split_at_tangents)?,
                 "corners" => {
                     next.corners = match required()?
                         .trim_start_matches('_')
@@ -196,7 +207,7 @@ impl TaperedExtrusionOptions {
         *self = next;
         Ok(())
     }
-    pub fn command_options(self) -> String {
+    pub fn command_options(self, surface: bool) -> String {
         let mut result = format!(
             "DraftAngle={} Solid={} Corners={} DeleteInput={}",
             self.draft_angle,
@@ -207,6 +218,10 @@ impl TaperedExtrusionOptions {
         if let Some(direction) = self.direction {
             let [x, y, z] = direction.to_array();
             result.push_str(&format!(" Direction={x},{y},{z}"));
+        }
+        if !surface {
+            let value = if self.split_at_tangents { "Yes" } else { "No" };
+            result.push_str(&format!(" SplitAtTangents={value}"));
         }
         result
     }
@@ -401,17 +416,17 @@ pub fn produce_curve(
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    use viboceros_smlib::Shape;
     let (origin, profile) = local_profile(curve)?;
     let (displacement, draft) = displacement_and_draft(distance, options, || {
         Ok(profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector()))
     })?;
     let cap = options.solid && curve.is_closed()?;
-    let brep = Shape::tapered_extrusion(
+    let brep = produce_curve_shape(
+        curve,
         &profile,
         displacement,
         draft,
-        options.corners.kernel(),
+        options,
         cap,
         tolerance,
     )?
@@ -426,6 +441,38 @@ pub fn produce_curve(
         ));
     }
     Ok(brep)
+}
+
+pub(super) fn produce_curve_shape(
+    source: &NurbsCurve,
+    profile: &viboceros_smlib::KernelCurve,
+    displacement: Vector3,
+    draft: f64,
+    options: TaperedExtrusionOptions,
+    capped: bool,
+    tolerance: Tolerance,
+) -> Result<viboceros_smlib::Shape, viboceros_smlib::Error> {
+    use viboceros_smlib::Shape;
+
+    if draft == 0. {
+        return Shape::linear_sweep(&[profile], displacement, capped, tolerance);
+    }
+    let cuts = partitions::for_sweep(
+        source,
+        displacement,
+        draft,
+        options.split_at_tangents,
+        tolerance,
+    )?;
+    Shape::tapered_extrusion_partitioned(
+        profile,
+        displacement,
+        draft,
+        options.corners.kernel(),
+        capped,
+        tolerance,
+        &cuts,
+    )
 }
 #[cfg(test)]
 mod tests;

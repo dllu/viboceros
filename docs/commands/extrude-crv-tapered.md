@@ -10,6 +10,10 @@ The viewport previews the tapered walls as the cursor moves. Choose
 `SetBasePoint` changes the reference for point-based distance input. Type
 `DraftAngle` or `Corners` to open its getter, or enter values inline.
 `FlipAngle` reverses the draft. `Solid` and `DeleteInput` toggle by name.
+`SplitAtTangents` toggles separate faces where curvature changes across a
+tangent join. The live preview updates to show the resulting seams. Sharp
+corners and discontinuities introduced by the fitted offset can create seams
+in either mode.
 Typed distances accept document units. Enter repeats the last signed distance.
 Failed geometry keeps the getter and input curves available for retry.
 Esc cancels the command.
@@ -27,10 +31,11 @@ ExtrudeCrvTapered -2 DraftAngle=-10 Corners=Round DeleteInput=Yes
 ExtrudeCrvTapered 0,0,0 0,0,2 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered 2 Direction=0,0,1 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered ToBoundary=cutter-id:face-index DraftAngle=-10 Solid=Yes
+ExtrudeCrvTapered 1 DraftAngle=-8 Solid=Yes SplitAtTangents=Yes
 ```
 
 The initial options are `DraftAngle=5 Solid=No Corners=Sharp DeleteInput=No`
-and the initial distance is 1. A successful command remembers these options
+and `SplitAtTangents=No`. The initial distance is 1. A successful command remembers these options
 and its signed distance. Positive draft contracts closed profiles along the
 default axis, including sweeps at a negative distance. Reversing the axis
 with `Direction` reverses the draft. Numeric distance uses the profile
@@ -48,8 +53,8 @@ Retained curves stay selected after extrusion and are released on replay.
 `DeleteInput=Yes` deletes sources in that same operation.
 
 Nonzero draft currently requires connected planar profiles and extrusion normal
-to their plane. Oblique directions, nonplanar profiles and
-SplitAtTangents control remain future work. Nested closed objects are
+to their plane. Oblique directions, nonplanar profiles and some automatic seams
+on fitted rational offsets still need qualification. Nested closed objects are
 extruded independently. Existing native curve-import degree, knot and rational
 weight limits apply. Complex self-intersecting offsets and collapsing profiles
 require broader qualification. No continuous error or performance certificate is
@@ -62,6 +67,8 @@ and nonfinite offset distances decline. A generated-source
 fixes missing rectangle walls by measuring each ruling curve on its own interval.
 The [smooth corner patch](../../third_party/patches/usd-brep-tapered-smooth-corners.patch)
 adds the cubic offset joint used by the native sweep.
+The [profile partition patch](../../third_party/patches/usd-brep-tapered-profile-partition.patch)
+lets the curve command supply the seams for its draft sweep.
 The pinned upstream submodule is unchanged. Tests check circular and polygonal
 frustum volumes, rounded rectangle volume, reversed extrusion, zero draft, shifted
 parameter domains, open sheets, source preservation, rollback and history.

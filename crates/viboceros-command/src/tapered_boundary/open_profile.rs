@@ -20,11 +20,12 @@ pub(super) fn extrude(
         Ok(profile_normal(&profile, tolerance)?.unwrap_or(cplane.z_axis().as_vector()))
     })?;
     let direction = toward_cutter(curve.control_point_bounds(), &cutter, axis, tolerance)?;
-    let stock = match Shape::tapered_extrusion(
+    let stock = match produce_curve_shape(
+        &curve,
         &profile,
         direction.scaled(length)?,
         draft,
-        options.corners.kernel(),
+        options,
         false,
         tolerance,
     ) {

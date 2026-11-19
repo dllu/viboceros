@@ -38,6 +38,7 @@
 #include <SmPrimitiveCreation.h>
 #include <SmPointSet.h>
 #include "taper_corner_mode.h"
+#include "taper_profile_partition.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -2297,7 +2298,7 @@ extern "C" int vb_shape_tapered_face(const VbSolid *shape,const double direction
 
 extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double direction[3],
     double height, double angle_degrees, int corners, int cap_ends, double tolerance,
-    VbSolid **out, char *error, size_t capacity) {
+    const double *cuts, size_t cut_count, VbSolid **out, char *error, size_t capacity) {
     if(out)*out=nullptr;
     return guarded(error,capacity,[&] {
         require(curve && curve->value && out && finite3(direction)
@@ -2305,6 +2306,8 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
             && std::isfinite(angle_degrees) && std::abs(angle_degrees)<90 && angle_degrees!=0
             && (cap_ends==0 || cap_ends==1)
             && std::isfinite(tolerance) && tolerance*0.001>0,"Invalid tapered extrusion input");
+        require((cuts || cut_count == 0) && cut_count < 4096 &&
+            curve->points.size() / 4 <= 16'000'000 / (cut_count + 1), "Taper profile partition limit");
         const auto corner_type = taper_corner_type(corners);
         const double offset=height*std::tan(angle_degrees*SM_PI/180.0);
         require(std::isfinite(offset) && offset!=0,"Unrepresentable tapered extrusion offset");
@@ -2316,11 +2319,26 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         require(!cap_ends || curve->value->IsClosed(curve->value->GetNaturalInterval()),
                 "Capped tapered extrusion requires a closed profile");
         require(!curve->value->IsDegenerate(tolerance),"Degenerate tapered extrusion profile");
-        auto copy=copy_curve(*curve);
         auto *context=SmApiGetOrCreateContext();
         SmTArray<SmBSplineCurve*> segments;
         SmObjsDelete<SmBSplineCurve*> segment_cleanup(&segments);
-        check(copy->SubdivideAtDiscontinuity(*context,SM_CT_G1,segments),"split taper profile");
+        if (cuts) {
+            const auto domain = curve->value->GetNaturalInterval();
+            double start = domain.GetMin();
+            for (size_t i = 0; i <= cut_count; ++i) {
+                const double end = i == cut_count ? domain.GetMax() : cuts[i];
+                require(end > start && (i == cut_count || end < domain.GetMax()),
+                        "Taper partition parameters must be ordered and inside the profile domain");
+                auto segment = copy_curve(*curve);
+                SmExtent1d interval(start, end);
+                if (cut_count != 0) check(segment->Trim(interval, FALSE), "trim taper profile segment");
+                segments.Add(segment.release());
+                start = end;
+            }
+        } else {
+            auto copy = copy_curve(*curve);
+            check(copy->SubdivideAtDiscontinuity(*context,SM_CT_G1,segments),"split taper profile");
+        }
         require(segments.GetSize()>0 && segments.GetSize()<=100000,"Taper profile segment limit");
         SmTArray<SmCurve*> profiles;
         for(ULONG i=0;i<segments.GetSize();++i)profiles.Add(segments[i]);
@@ -2335,6 +2353,7 @@ extern "C" int vb_shape_tapered_extrusion(const VbCurve *curve, const double dir
         SmPrimitiveCreation producer(owner->value->GetInfiniteRegion(),0,TRUE);
         // On failure before caps the upstream producer retains these profiles.
         // Success consumes them; clear the guard before further validation.
+        SmTemporaryChangeValue<bool> partitions(vb_taper_use_supplied_partitions, cuts != nullptr);
         check(producer.CreateTaperExtrude(profiles,height,angle_degrees,cap_ends?3:0,normal,
             corner_type),"create tapered extrusion");
         input_cleanup.Clear();

@@ -30,14 +30,17 @@ impl SurfaceTaperedInput {
     ) -> Result<Self, CommandError> {
         let (mut face_words, mut common) = (Vec::new(), Vec::new());
         for word in words {
-            if word
+            let key = word
                 .trim_start_matches('_')
-                .split_once('=')
-                .is_some_and(|(key, _)| {
-                    ["Face", "Faces", "FaceRefs"]
-                        .iter()
-                        .any(|s| key.eq_ignore_ascii_case(s))
-                })
+                .split('=')
+                .next()
+                .unwrap_or_default();
+            if key.eq_ignore_ascii_case("SplitAtTangents") {
+                return Err(CommandError::Usage(USAGE));
+            }
+            if ["Face", "Faces", "FaceRefs"]
+                .iter()
+                .any(|s| key.eq_ignore_ascii_case(s))
             {
                 face_words.push(*word);
             } else {

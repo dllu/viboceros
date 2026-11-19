@@ -135,7 +135,7 @@ impl VibocerosApp {
             let distance = self.commands.tapered_extrusion_settings(surface).distance;
             self.push_log(format!(
                 "Extrusion distance <{distance}> (Direction {} FlipAngle ToBoundary SetBasePoint)",
-                options.command_options(),
+                options.command_options(surface),
             ));
         } else if stage == Stage::Boundary && surface {
             self.push_log("Select a boundary surface (Direction)".into());
@@ -409,7 +409,7 @@ impl VibocerosApp {
         } else {
             "ExtrudeCrvTapered"
         };
-        let command = format!("{command} {target} {}", options.command_options());
+        let command = format!("{command} {target} {}", options.command_options(surface));
         if surface {
             let success = self.finish_surface_face_command_with_plane(&command, Some(plane));
             if !success {

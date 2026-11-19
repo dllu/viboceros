@@ -34,6 +34,7 @@ fn surface_taper_options_and_face_selectors_are_strict() {
     assert!(!input.options.solid);
     assert_eq!(input.faces, SurfaceFaces::Indices(vec![0]));
     assert!(SurfaceTaperedInput::parse(&["DraftAngle=90"]).is_err());
+    assert!(SurfaceTaperedInput::parse(&["_SplitAtTangents=_No"]).is_err());
     assert!(SurfaceTaperedInput::parse(&["Face=0", "Faces=All"]).is_err());
     assert!(!SurfaceTaperedInput::default().options.solid);
 }
