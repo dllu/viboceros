@@ -85,10 +85,29 @@ pub fn length(text: &str, units: &LengthUnitSystem) -> Result<Real, CommandError
 
 pub fn parse(
     args: &[&str],
-    mut options: Options,
+    options: Options,
     units: &LengthUnitSystem,
     context: CommandContext,
 ) -> Result<Input, CommandError> {
+    parse_with_defaults(
+        args,
+        Input {
+            options,
+            side: None,
+            through_point: false,
+        },
+        units,
+        context,
+    )
+}
+
+pub fn parse_with_defaults(
+    args: &[&str],
+    defaults: Input,
+    units: &LengthUnitSystem,
+    context: CommandContext,
+) -> Result<Input, CommandError> {
+    let mut options = defaults.options;
     let mut seen = [false; 8];
     let mut side = None;
     let mut through_point = false;
@@ -122,7 +141,12 @@ pub fn parse(
         let mut consumed = 1;
         let (name, value) = if let Some(value) = value {
             (name, value)
-        } else if option_name_eq(word, "BothSides") {
+        } else if option_name_eq(word, "BothSides")
+            && args
+                .get(i + 1)
+                .and_then(|value| parse_yes_no(value))
+                .is_none()
+        {
             ("BothSides", "Yes")
         } else if length(word, units).is_ok() {
             ("Distance", word)
@@ -192,7 +216,7 @@ pub fn parse(
     }
     Ok(Input {
         options: options.validate()?,
-        side,
-        through_point,
+        side: side.or(defaults.side),
+        through_point: through_point || (defaults.through_point && !seen[0]),
     })
 }

@@ -3,7 +3,7 @@ use super::*;
 mod geometry;
 mod options;
 pub use geometry::Source;
-pub use options::{Input, Options, USAGE, length, parse};
+pub use options::{Input, Options, USAGE, length, parse, parse_with_defaults};
 #[cfg(test)]
 mod tests;
 use viboceros_geometry::CurveRef;
@@ -112,8 +112,8 @@ impl RibbonCommand {
 }
 
 impl CommandRegistry {
-    pub fn remember_ribbon_trim(&self, trim: bool) {
-        self.ribbon_options.update(|options| options.trim = trim);
+    pub fn remember_ribbon_options(&self, options: Options) {
+        self.ribbon_options.set(options.remembered());
     }
 
     /// Accept a temporary Ribbon source from the shared SubCrv picker.

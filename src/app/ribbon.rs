@@ -7,6 +7,7 @@ use viboceros_geometry::{Curve3, NurbsCurve};
 mod input;
 mod portion;
 mod preview;
+pub(super) use input::Getter;
 
 struct Portion {
     reference: CapturedCurve,
@@ -24,21 +25,14 @@ pub(super) struct Session {
     layer: viboceros_document::LayerId,
     units: viboceros_geometry::LengthUnitSystem,
     options: Options,
-    menu: Option<&'static str>,
-    distance_start: Option<Point3>,
+    menu: Option<Getter>,
     through_point: bool,
     preview: preview::Preview,
 }
 impl Session {
     pub(super) fn hint(&self) -> &'static str {
         match self.menu {
-            Some("Distance") if self.distance_start.is_some() => "Second point for ribbon distance",
-            Some("Distance") => {
-                "Positive distance or first distance point; Enter accepts the default"
-            }
-            Some("Tolerance") => "Positive tolerance, or Default / 0 for document tolerance",
-            Some("Corner") => "Sharp, Round, Smooth, Chamfer or None",
-            Some("OutputLayer") => "Current or Input",
+            Some(getter) => getter.hint(),
             _ if self.through_point => "Through point; pick or type the offset location",
             _ if self.options.loose => {
                 "Side to ribbon; Distance, ThroughPoint, Loose, BothSides, InCPlane, OutputLayer"
@@ -75,28 +69,18 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        if words[1..].iter().any(|word| is_subcurve_option(word)) {
-            let input = words
-                .iter()
-                .copied()
-                .filter(|word| !is_subcurve_option(word))
-                .collect::<Vec<_>>()
-                .join(" ");
-            if self.document.selected_object_count() == 0 {
-                if self.try_start_object_prompt(&input) {
-                    self.start_ribbon_portion();
-                }
-                return true;
-            }
-            self.push_log("SubCrv is available while selecting the Ribbon source".into());
-            return self.start_ribbon(&input, postselected);
-        }
+        let use_portion = words[1..].iter().any(|word| is_subcurve_option(word));
+        let args = words[1..]
+            .iter()
+            .copied()
+            .filter(|word| !is_subcurve_option(word))
+            .collect::<Vec<_>>();
         let plane = self.viewports[self.active_viewport].construction_plane();
         let context = viboceros_command::CommandContext {
             construction_plane: plane,
         };
         let parsed = match solver::parse(
-            &words[1..],
+            &args,
             self.commands.ribbon_options(),
             self.document.units(),
             context,
@@ -107,13 +91,22 @@ impl VibocerosApp {
                 return true;
             }
         };
-        if parsed.side.is_some() {
-            return false;
-        }
-        if !parsed.options.loose {
-            self.commands.remember_ribbon_trim(parsed.options.trim);
+        if parsed.side.is_none() || (use_portion && self.document.selected_object_count() == 0) {
+            self.commands.remember_ribbon_options(parsed.options);
         }
         if self.document.selected_object_count() == 0 {
+            if use_portion {
+                if self.try_start_object_prompt(&ribbon_command_line(parsed)) {
+                    self.start_ribbon_portion();
+                }
+                return true;
+            }
+            return false;
+        }
+        if use_portion {
+            self.push_log("SubCrv is available while selecting the Ribbon source".into());
+        }
+        if parsed.side.is_some() && !use_portion {
             return false;
         }
         let sources = self
@@ -127,6 +120,9 @@ impl VibocerosApp {
             return true;
         }
         self.begin_ribbon_side(sources[0].clone(), None, parsed, plane, postselected);
+        if let Some(side) = parsed.side {
+            self.accept_ribbon_point(side);
+        }
         true
     }
 
@@ -150,7 +146,6 @@ impl VibocerosApp {
             units: self.document.units().clone(),
             options: parsed.options,
             menu: None,
-            distance_start: None,
             through_point: parsed.through_point,
             preview: preview::Preview::default(),
         });
@@ -177,38 +172,15 @@ impl VibocerosApp {
         false
     }
     pub(super) fn accept_ribbon_point(&mut self, point: Point3) -> Option<bool> {
+        if let Some(getter) = self.ribbon_source_getter() {
+            return Some(self.accept_ribbon_distance(getter, point));
+        }
         self.ribbon_session.as_ref()?;
         if !self.validate_ribbon() {
             return Some(false);
         }
-        let s = self.ribbon_session.as_mut().unwrap();
-        if s.menu == Some("Distance") {
-            if let Some(start) = s.distance_start {
-                match start.distance_to(point) {
-                    Ok(d) if d > 0. => {
-                        s.options.distance = d;
-                        s.through_point = false;
-                        s.menu = None;
-                        s.distance_start = None;
-                        self.active_command = Some(InteractiveCommand::Ribbon { anchor: None });
-                    }
-                    _ => {
-                        self.push_log("Ribbon distance must be positive".into());
-                        return Some(false);
-                    }
-                }
-            } else {
-                s.distance_start = Some(point);
-                self.active_command = Some(InteractiveCommand::Ribbon {
-                    anchor: Some(point),
-                });
-            }
-            self.command_input.clear();
-            self.ribbon_prompt();
-            return Some(true);
-        }
-        if s.menu.is_some() {
-            return Some(false);
+        if let Some(getter) = self.ribbon_session.as_ref().unwrap().menu {
+            return Some(self.accept_ribbon_distance(getter, point));
         }
         let s = self.ribbon_session.take().unwrap();
         let context = viboceros_command::CommandContext {

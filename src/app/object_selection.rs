@@ -47,7 +47,7 @@ mod triangulate_tests;
 #[cfg(test)]
 mod unify_normals_tests;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum ObjectPromptPhase {
     Selecting,
     Options,
@@ -58,6 +58,7 @@ pub(super) enum ObjectPromptPhase {
     SmoothSteps,
     RebuildValue(&'static str),
     MergeSurfaceValue(&'static str),
+    RibbonValue(super::ribbon::Getter),
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -145,6 +146,7 @@ impl PendingObjectCommand {
             ObjectPromptPhase::RebuildValue(name) | ObjectPromptPhase::MergeSurfaceValue(name) => {
                 name
             }
+            ObjectPromptPhase::RibbonValue(getter) => getter.name(),
             _ => self.description.command,
         }
     }
@@ -190,7 +192,7 @@ impl PendingObjectCommand {
             return "Select curves to fillet; Enter sets the radius, Esc cancels";
         }
         if self.description.command == "Ribbon" && self.phase == ObjectPromptPhase::Selecting {
-            return "Select a curve to ribbon. SubCrv chooses a portion. Trim controls overlaps.";
+            return "Select a curve to ribbon, choose SubCrv, or edit Ribbon options";
         }
         if self.description.command == "CrvDeviation" {
             return "Select exactly two curves; SubCrv picks a portion; Enter measures, Esc cancels";
@@ -348,6 +350,7 @@ impl PendingObjectCommand {
             return "Select objects or type options; Enter finishes, Esc cancels";
         }
         match self.phase {
+            ObjectPromptPhase::RibbonValue(getter) => getter.hint(),
             ObjectPromptPhase::RebuildValue(_) | ObjectPromptPhase::MergeSurfaceValue(_) => {
                 "Enter an option value; Enter keeps it, Esc cancels"
             }
@@ -1258,10 +1261,15 @@ impl VibocerosApp {
         {
             return false;
         }
-        if self.continue_merge_surface_options(input) || self.continue_ribbon_source_trim(input) {
+        if let Some(handled) = self.continue_ribbon_source_options(input) {
+            return handled;
+        }
+        if self.continue_merge_surface_options(input) {
             return true;
         }
-        if input.trim_start_matches(['_', '-']).eq_ignore_ascii_case("SubCrv")
+        if input
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("SubCrv")
             && self.start_ribbon_portion()
         {
             return true;
@@ -2158,6 +2166,13 @@ impl VibocerosApp {
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
+            if matches!(pending.phase, ObjectPromptPhase::RibbonValue(getter) if getter.takes_point())
+            {
+                self.active_command = None;
+                self.drafting_plane = None;
+                self.point_constraint = None;
+                self.point_filter = None;
+            }
             if matches!(
                 pending.description.command,
                 "QuadrangulateMesh" | "TriangulateNonPlanarQuads"

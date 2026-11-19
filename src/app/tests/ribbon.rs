@@ -67,6 +67,117 @@ fn command_first_curve_pick_finishes_without_enter_and_releases_selection_on_rep
     enter(&mut app, "Redo");
     assert_eq!(app.document.selected_object_count(), 0);
 }
+
+#[test]
+fn ribbon_source_options_carry_through_the_pick_and_escape() {
+    use viboceros_geometry::RibbonCornerStyle;
+
+    let (mut app, id) = fixture();
+    enter(&mut app, "Ribbon");
+    for option in [
+        "Distance 2",
+        "Corner",
+        "Round",
+        "InCPlane=Yes",
+        "OutputLayer",
+        "Input",
+        "_Tolerance",
+        "0.01",
+        "_Trim=_No",
+        "_Loose",
+    ] {
+        enter(&mut app, option);
+        assert!(
+            app.object_prompt.is_some(),
+            "{option}: {:?}",
+            app.command_log
+        );
+    }
+    enter(&mut app, "Corner=Chamfer");
+    app.cancel_current_prompt_or_selection();
+    let options = app.commands.ribbon_options();
+    assert_eq!(options.distance, 2.);
+    assert_eq!(options.corner, RibbonCornerStyle::Round);
+    assert_eq!(options.tolerance, 0.01);
+    assert!(options.loose && options.in_cplane && options.input_layer && !options.trim);
+    assert!(app.command_line_idle());
+    assert!(!app.document.can_undo());
+
+    enter(&mut app, "Ribbon");
+    for option in ["Loose=No", "BothSides", "ThroughPoint", "Tolerance 0.02"] {
+        enter(&mut app, option);
+    }
+    pick(&mut app, id);
+    assert!(
+        app.command_hint().contains("Through point"),
+        "{:?}",
+        app.command_log
+    );
+    enter(&mut app, "w3,4,0");
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|obj| obj.id() != id)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a ruled ribbon");
+    };
+    assert_eq!(result.faces().len(), 2);
+    assert_eq!(result.bounds().min(), point(0., -4., 0.));
+    assert_eq!(result.bounds().max(), point(5., 4., 0.));
+    assert_eq!(app.commands.ribbon_options().distance, 4.);
+    assert!(!app.commands.ribbon_options().both_sides);
+    assert!(app.command_line_idle());
+
+    enter(&mut app, "Ribbon");
+    pick(&mut app, id);
+    enter(&mut app, "Distance=2.5");
+    app.cancel_current_prompt_or_selection();
+    assert_eq!(app.commands.ribbon_options().distance, 2.5);
+    assert_eq!(app.document.objects().len(), 2);
+}
+
+#[test]
+fn ribbon_source_distance_accepts_a_viewport_pick_and_a_constrained_point() {
+    let (mut app, id) = fixture();
+    let context = egui::Context::default();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    enter(&mut app, "Ribbon");
+    enter(&mut app, "Distance");
+    viewport_frame(&mut app, &context, vec![]);
+    let start = screen_point(&app, point(0., 0., 0.));
+    viewport_click(&mut app, &context, start);
+    assert!(
+        app.command_hint().contains("second distance point"),
+        "{:?}",
+        app.command_log
+    );
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, "3");
+    assert!(app.command_hint().contains("second distance point"));
+    enter(&mut app, "w3,4,0");
+    assert!(
+        app.command_hint().contains("Select a curve"),
+        "{:?}",
+        app.command_log
+    );
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    pick(&mut app, id);
+    enter(&mut app, "w3,4,0");
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|obj| obj.id() != id)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a ruled ribbon");
+    };
+    assert!((result.bounds().max().y() - 3.).abs() < 1e-9);
+}
 #[test]
 fn canceled_and_stale_ribbon_drafts_do_not_create_outputs_or_history() {
     let (mut app, id) = fixture();
