@@ -1041,7 +1041,7 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
     ) -> Result<Brep, Error> {
-        self.export_brep(tolerance, approximation, false)
+        self.export_brep(tolerance, approximation, JointClosure::Preserve)
     }
 
     /// Request exact UV closure before a caller rescales a private output.
@@ -1051,14 +1051,21 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
     ) -> Result<Brep, Error> {
-        self.export_brep(tolerance, approximation, true)
+        self.export_brep(tolerance, approximation, JointClosure::Roundoff)
+    }
+
+    pub(super) fn to_brep_with_stitched_uv_joints(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Brep, Error> {
+        self.export_brep(tolerance, None, JointClosure::Stitch)
     }
 
     fn export_brep(
         &self,
         tolerance: Tolerance,
         approximation: Option<f64>,
-        close_uv_joints: bool,
+        joint_closure: JointClosure,
     ) -> Result<Brep, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
@@ -1172,12 +1179,17 @@ impl Solid {
                         [0.; 2],
                     )?);
                 }
-                let trims = if close_uv_joints {
+                let trims = if matches!(joint_closure, JointClosure::Roundoff) {
                     joints::close_numerical_joints(&surface, &edges, trims, tolerance)?
                 } else {
                     trims
                 };
                 let trims = close_pole_gaps(&surface, &vertices, trims, tolerance)?;
+                let trims = if matches!(joint_closure, JointClosure::Stitch) {
+                    joints::close_stitched_joints(&surface, &edges, trims, tolerance)?
+                } else {
+                    trims
+                };
                 loops.push(BrepLoop::try_new(
                     if loop_data.inner != 0 {
                         BrepLoopType::Inner
@@ -1192,4 +1204,10 @@ impl Solid {
         }
         Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
     }
+}
+
+enum JointClosure {
+    Preserve,
+    Roundoff,
+    Stitch,
 }

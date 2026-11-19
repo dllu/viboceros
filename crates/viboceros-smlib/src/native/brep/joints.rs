@@ -1,4 +1,4 @@
-//! Weld roundoff-sized UV joints only after proving the spatial trim image.
+//! Close adjacent UV trims only after proving the spatial trim image.
 use super::*;
 
 pub(super) fn close_numerical_joints(
@@ -28,46 +28,105 @@ pub(super) fn close_numerical_joints(
         let Some(edge) = current.edge().and_then(|e| edges.get(e)) else {
             continue;
         };
-        let source = current.curve();
-        let degree = source.degree();
-        let knots = source.knots();
-        let last = *knots.last().ok_or(Error::InvalidOutput)?;
-        if knots[knots.len() - degree - 1..].iter().any(|k| *k != last) {
+        if let Some(updated) =
+            closed_endpoint(surface, edge, current, target, true, tolerance, true)?
+        {
+            trims[i] = updated;
+        }
+    }
+    Ok(trims)
+}
+
+/// Stitch can place two adjacent trims at different UVs on the same native
+/// vertex. Try both incident curves, keeping the original support and edge.
+/// Leave periodic branches and unresolved gaps to the caller's validity check.
+pub(super) fn close_stitched_joints(
+    surface: &NurbsSurface,
+    edges: &[BrepEdge],
+    mut trims: Vec<BrepTrim>,
+    tolerance: Tolerance,
+) -> Result<Vec<BrepTrim>, Error> {
+    let local = [surface.domain_u(), surface.domain_v()].map(|d| (d.end() - d.start()) / 128.);
+    for i in 0..trims.len() {
+        let j = (i + 1) % trims.len();
+        let (a, b) = (&trims[i], &trims[j]);
+        let (Some(a_edge), Some(b_edge)) = (a.edge(), b.edge()) else {
+            continue;
+        };
+        if a.vertices()[1] != b.vertices()[0] {
             continue;
         }
-        let mut points = source.control_points().to_vec();
-        let control = points.last_mut().ok_or(Error::InvalidOutput)?;
-        *control = WeightedPoint2::try_new(target, control.weight())?;
-        let candidate = NurbsCurve2::try_new_rational(degree, points, knots.to_vec())?;
-        let witness = if current.is_reversed_3d() {
-            candidate.reversed()?
-        } else {
-            candidate.clone()
-        };
-        if surface
-            .parameter_curve_deviation_bound(
-                &witness,
-                edge.curve(),
-                tolerance.absolute().max(edge.tolerance()),
-            )?
-            .is_none()
+        let (end, start) = (a.curve().end_point()?, b.curve().start_point()?);
+        if end == start
+            || (end.x() - start.x()).abs() > local[0]
+            || (end.y() - start.y()).abs() > local[1]
         {
+            continue;
+        }
+        if let Some(updated) =
+            closed_endpoint(surface, &edges[a_edge], a, start, true, tolerance, false)?
+        {
+            trims[i] = updated;
+        } else if let Some(updated) =
+            closed_endpoint(surface, &edges[b_edge], b, end, false, tolerance, false)?
+        {
+            trims[j] = updated;
+        }
+    }
+    Ok(trims)
+}
+
+fn closed_endpoint(
+    surface: &NurbsSurface,
+    edge: &BrepEdge,
+    trim: &BrepTrim,
+    target: Point2,
+    end: bool,
+    tolerance: Tolerance,
+    require_certification: bool,
+) -> Result<Option<BrepTrim>, Error> {
+    let source = trim.curve();
+    let degree = source.degree();
+    let knots = source.knots();
+    let end_knots = if end {
+        &knots[knots.len() - degree - 1..]
+    } else {
+        &knots[..=degree]
+    };
+    if end_knots.iter().any(|k| *k != end_knots[0]) {
+        return Ok(None);
+    }
+    let mut points = source.control_points().to_vec();
+    let i = if end { points.len() - 1 } else { 0 };
+    points[i] = WeightedPoint2::try_new(target, points[i].weight())?;
+    let candidate = NurbsCurve2::try_new_rational(degree, points, knots.to_vec())?;
+    let witness = if trim.is_reversed_3d() {
+        candidate.reversed()?
+    } else {
+        candidate.clone()
+    };
+    let limit = tolerance.absolute().max(edge.tolerance());
+    if surface
+        .parameter_curve_deviation_bound(&witness, edge.curve(), limit)?
+        .is_none()
+    {
+        if require_certification {
             return Err(Error::Kernel(
                 "Numerical native UV joint cannot be continuously certified".into(),
             ));
         }
-        let iso = classify_iso(surface, &candidate);
-        trims[i] = BrepTrim::try_new(
-            current.vertices(),
-            current.edge(),
-            current.is_reversed_3d(),
-            candidate,
-            current.trim_type(),
-            iso,
-            current.tolerance(),
-        )?;
+        return Ok(None);
     }
-    Ok(trims)
+    let iso = classify_iso(surface, &candidate);
+    Ok(Some(BrepTrim::try_new(
+        trim.vertices(),
+        trim.edge(),
+        trim.is_reversed_3d(),
+        candidate,
+        trim.trim_type(),
+        iso,
+        trim.tolerance(),
+    )?))
 }
 
 #[cfg(test)]
@@ -148,6 +207,18 @@ mod tests {
             close_numerical_joints(&s, &e, t, Tolerance::try_new(1e-10, 1e-14, 1e-10).unwrap())
                 .is_err()
         );
+    }
+    #[test]
+    fn stitch_recovers_a_local_joint_beyond_coordinate_roundoff() {
+        let (surface, edges, trims) = fixture(1., 5e-6);
+        let tolerance = Tolerance::try_new(1e-3, 1e-12, 1e-6).unwrap();
+        let output = close_stitched_joints(&surface, &edges, trims, tolerance).unwrap();
+        assert_eq!(
+            output[0].curve().end_point().unwrap(),
+            output[1].curve().start_point().unwrap()
+        );
+        assert_eq!(output[0].edge(), Some(0));
+        assert_eq!(output[1].edge(), Some(1));
     }
     #[test]
     fn separate_parameter_branches_are_not_joined() {

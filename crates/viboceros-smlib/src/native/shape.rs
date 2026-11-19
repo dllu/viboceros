@@ -68,7 +68,10 @@ impl StitchResult {
         source: &Brep,
         tolerance: Tolerance,
     ) -> Result<Brep, Error> {
-        let mut output = self.shape.to_brep(tolerance)?;
+        let mut output = self
+            .shape
+            .model
+            .to_brep_with_stitched_uv_joints(tolerance)?;
         if output.faces().len() != self.face_origins.len()
             || source.faces().len() != self.face_origins.len()
         {
