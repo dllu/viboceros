@@ -17,24 +17,13 @@ pub struct SurfaceExtrusionSettings {
     pub distance: Option<f64>,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SurfaceExtrusionOptions {
     pub both_sides: bool,
     pub solid: bool,
     pub delete_input: bool,
     pub split_at_tangents: bool,
     pub direction: Option<Vector3>,
-}
-impl Default for SurfaceExtrusionOptions {
-    fn default() -> Self {
-        Self {
-            both_sides: false,
-            solid: true,
-            delete_input: false,
-            split_at_tangents: false,
-            direction: None,
-        }
-    }
 }
 impl SurfaceExtrusionOptions {
     pub fn recognizes(word: &str) -> bool {

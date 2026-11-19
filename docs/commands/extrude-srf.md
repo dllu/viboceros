@@ -15,8 +15,10 @@ In views looking down the extrusion axis, the mouse measures radial distance
 from the guide's screen location. Picks below the guide use the negative side.
 
 Enter `Direction` and pick two points to set the axis, then specify the distance.
-`Direction=x,y,z` sets the axis directly. `SetBasePoint` changes where the
-distance is measured from. Toggle `BothSides`, `Solid`, `DeleteInput` and
+`Direction=x,y,z` sets the axis directly. Press Enter in either direction prompt
+to return to the previous picker with the current axis. `SetBasePoint` changes
+where the distance is measured from. Press Enter there to restore the source
+bounds center. Toggle `BothSides`, `Solid`, `DeleteInput` and
 `SplitAtTangents` by name or set them to `Yes` or `No`. A successful extrusion
 saves these four options for the next invocation, which starts with a fresh
 direction and base point. A failed distance placement keeps the getter and source picks
@@ -41,7 +43,7 @@ With selected objects:
 
 ```text
 ExtrudeSrf 2
-ExtrudeSrf -2 BothSides=Yes DeleteInput=Yes
+ExtrudeSrf -2 Solid=Yes BothSides=Yes DeleteInput=Yes
 ExtrudeSrf 0,0,0 1,0,2 Solid=No
 ExtrudeSrf 2 Face=3
 ExtrudeSrf 2 Faces=0,2 DeleteInput=Yes
@@ -54,7 +56,7 @@ original B-rep. Specify faces for a whole polysurface; a single-face object need
 no selector. Source selection preserves inline face selectors and options.
 Choose typed face selectors when starting the command, before its distance getter.
 
-Initial options are `BothSides=No Solid=Yes DeleteInput=No SplitAtTangents=No`.
+Initial options are `BothSides=No Solid=No DeleteInput=No SplitAtTangents=No`.
 Each selected face is swept independently. Numeric distance uses the native
 plane normal for a planar face, oriented toward its largest positive world
 component. Curved faces use the CPlane normal captured when the interactive

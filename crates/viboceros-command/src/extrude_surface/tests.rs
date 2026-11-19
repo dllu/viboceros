@@ -94,7 +94,10 @@ fn surface_extrusion_curved_caps_both_sides_delete_and_history() {
         .unwrap();
     let source = doc.object(id).unwrap().clone();
     registry
-        .execute(&mut doc, "ExtrudeSrf 2 BothSides=Yes DeleteInput=Yes")
+        .execute(
+            &mut doc,
+            "ExtrudeSrf 2 Solid=Yes BothSides=Yes DeleteInput=Yes",
+        )
         .unwrap();
     assert!(doc.object(id).is_none());
     let result = doc.selected_objects().next().unwrap();
@@ -226,7 +229,7 @@ fn surface_extrusion_numeric_distance_uses_native_plane_normal_independently_of_
     registry
         .execute_in_context(
             &mut doc,
-            "ExtrudeSrf 2",
+            "ExtrudeSrf 2 Solid=Yes",
             CommandContext {
                 construction_plane: plane,
             },

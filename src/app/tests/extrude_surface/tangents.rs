@@ -65,7 +65,7 @@ fn surface_extrusion_tangent_splits_match_rhino_topology() {
             viboceros_command::CommandRegistry::with_builtins()
                 .execute(
                     &mut doc,
-                    &format!("ExtrudeSrf 4 FaceRefs={id}:0 SplitAtTangents={split}"),
+                    &format!("ExtrudeSrf 4 Solid=Yes FaceRefs={id}:0 SplitAtTangents={split}"),
                 )
                 .unwrap_or_else(|error| panic!("{name} with SplitAtTangents={split}: {error}"));
             let mut results = doc.selected_objects();

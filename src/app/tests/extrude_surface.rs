@@ -2,6 +2,7 @@ use super::*;
 
 mod boundary;
 mod distance_preview;
+mod point_getters;
 mod tangents;
 
 fn enter(app: &mut VibocerosApp, input: &str) {
@@ -38,7 +39,7 @@ fn surface_extrusion_source_picker_options_and_cancel_preserve_model_geometry() 
     let mut app = test_app();
     let id = surface(&mut app);
     let before = app.document.object(id).unwrap().clone();
-    enter(&mut app, "ExtrudeSrf BothSides=Yes Solid=No");
+    enter(&mut app, "ExtrudeSrf BothSides=Yes");
     assert!(app.object_prompt.is_some());
     app.apply_selection_click(SelectionClick {
         object_id: Some(id),
@@ -91,7 +92,10 @@ fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
         app.document
             .select_objects_direct([id], SelectionMode::Replace)
             .unwrap();
-        enter(&mut app, "ExtrudeSrf BothSides=Yes DeleteInput=Yes");
+        enter(
+            &mut app,
+            "ExtrudeSrf Solid=Yes BothSides=Yes DeleteInput=Yes",
+        );
         if numeric {
             enter(&mut app, "2");
         } else {

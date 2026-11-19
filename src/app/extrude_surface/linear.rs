@@ -112,12 +112,26 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        if input.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
+            match stage {
+                Stage::Distance => {
+                    if let Some(distance) = self.commands.surface_extrusion_settings().distance {
+                        self.accept_surface_extrusion_length(distance, options);
+                    } else {
+                        self.log_surface_extrusion_prompt(stage, options);
+                    }
+                }
+                Stage::Boundary => self.cancel_interactive_command(true),
+                Stage::BasePoint => self.set_surface_extrusion_base(None, options),
+                Stage::DirectionStart { to_boundary } | Stage::DirectionEnd { to_boundary, .. } => {
+                    self.set_surface_extrusion_stage(Stage::after_direction(to_boundary), options);
+                }
+            }
+            self.command_input.clear();
+            return true;
+        }
         if stage == Stage::Boundary {
-            if input.is_empty()
-                || keyword.eq_ignore_ascii_case("Enter")
-                || keyword.eq_ignore_ascii_case("Cancel")
-                || input == "!"
-            {
+            if keyword.eq_ignore_ascii_case("Cancel") || input == "!" {
                 self.cancel_interactive_command(true);
             } else {
                 let reference = keyword
@@ -128,15 +142,6 @@ impl VibocerosApp {
                     })
                     .map_or(keyword, |(_, id)| id.trim());
                 self.enter_straight_surface_boundary(reference);
-            }
-            self.command_input.clear();
-            return true;
-        }
-        if stage == Stage::Distance && (input.is_empty() || keyword.eq_ignore_ascii_case("Enter")) {
-            if let Some(distance) = self.commands.surface_extrusion_settings().distance {
-                self.accept_surface_extrusion_length(distance, options);
-            } else {
-                self.log_surface_extrusion_prompt(stage, options);
             }
             self.command_input.clear();
             return true;
@@ -228,6 +233,21 @@ impl VibocerosApp {
         self.log_surface_extrusion_prompt(stage, options);
     }
 
+    fn set_surface_extrusion_base(
+        &mut self,
+        base: Option<Point3>,
+        options: SurfaceExtrusionOptions,
+    ) {
+        if let Some(session) = self
+            .surface_extrusion_sources
+            .as_mut()
+            .and_then(|sources| sources.linear.as_mut())
+        {
+            session.base = base;
+        }
+        self.set_surface_extrusion_stage(Stage::Distance, options);
+    }
+
     fn log_surface_extrusion_prompt(&mut self, stage: Stage, options: SurfaceExtrusionOptions) {
         if stage == Stage::Distance {
             let distance = self
@@ -239,13 +259,31 @@ impl VibocerosApp {
                 "Extrusion distance <{distance}> (Direction SetBasePoint ToBoundary {})",
                 options.command_options(),
             ));
-        } else {
-            self.push_log(
-                InteractiveCommand::ExtrudeSurface { stage, options }
-                    .prompt()
-                    .into(),
-            );
+            return;
         }
+        let prompt = InteractiveCommand::ExtrudeSurface { stage, options }.prompt();
+        if matches!(
+            stage,
+            Stage::DirectionStart { .. } | Stage::DirectionEnd { .. }
+        ) {
+            let axis = options.direction.or_else(|| {
+                let session = self.surface_extrusion_sources.as_ref()?.linear.as_ref()?;
+                Some(
+                    session
+                        .draft
+                        .as_ref()?
+                        .constraint(None, options, session.plane)
+                        .direction?
+                        .as_vector(),
+                )
+            });
+            if let Some(axis) = axis {
+                let [x, y, z] = axis.to_array();
+                self.push_log(format!("{prompt} <{x:.3},{y:.3},{z:.3}>"));
+                return;
+            }
+        }
+        self.push_log(prompt.into());
     }
 
     pub(in crate::app) fn accept_surface_extrusion_point(
@@ -269,13 +307,7 @@ impl VibocerosApp {
                 return self.finish_surface_extrusion(height, height.abs(), options);
             }
             Stage::BasePoint => {
-                if let Some(session) = self
-                    .surface_extrusion_sources
-                    .as_mut()
-                    .and_then(|sources| sources.linear.as_mut())
-                {
-                    session.base = Some(point);
-                }
+                self.set_surface_extrusion_base(Some(point), options);
             }
             Stage::DirectionStart { to_boundary } => {
                 self.set_surface_extrusion_stage(
@@ -285,7 +317,6 @@ impl VibocerosApp {
                     },
                     options,
                 );
-                return true;
             }
             Stage::DirectionEnd { start, to_boundary } => {
                 if start.is_near(point, self.document.tolerance()) {
@@ -296,18 +327,9 @@ impl VibocerosApp {
                     return false;
                 };
                 options.direction = Some(direction.as_vector());
-                self.set_surface_extrusion_stage(
-                    if to_boundary {
-                        Stage::Boundary
-                    } else {
-                        Stage::Distance
-                    },
-                    options,
-                );
-                return true;
+                self.set_surface_extrusion_stage(Stage::after_direction(to_boundary), options);
             }
         }
-        self.set_surface_extrusion_stage(Stage::Distance, options);
         true
     }
 
@@ -346,5 +368,15 @@ impl VibocerosApp {
         }
         session.hover = Some(height);
         true
+    }
+}
+
+impl Stage {
+    fn after_direction(to_boundary: bool) -> Self {
+        if to_boundary {
+            Self::Boundary
+        } else {
+            Self::Distance
+        }
     }
 }

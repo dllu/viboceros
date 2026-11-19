@@ -15,7 +15,7 @@ fn surface_extrusion_distance_preview_uses_the_hovered_axis_and_options() {
         .unwrap();
     app.document.clear_history().unwrap();
     let before = format!("{:?}", app.document);
-    enter(&mut app, "ExtrudeSrf DeleteInput=Yes");
+    enter(&mut app, "ExtrudeSrf Solid=Yes DeleteInput=Yes");
     let ctx = egui::Context::default();
     let hover = |app: &mut VibocerosApp| {
         let target = point(1., 1.5, 6.);
@@ -114,6 +114,8 @@ fn surface_extrusion_end_on_mouse_distance_matches_the_preview() {
             else {
                 panic!("expected a surface extrusion");
             };
+            assert!(!cut.is_solid());
+            assert_eq!(cut.faces().len(), 4);
             let shifted = 2. + expected;
             assert!((cut.bounds().min().z() - shifted.min(2.)).abs() < 1e-5);
             assert!((cut.bounds().max().z() - shifted.max(2.)).abs() < 1e-5);
