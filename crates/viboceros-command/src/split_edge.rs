@@ -1,7 +1,7 @@
 //! Staged component subdivision: accepted points survive finishing with Escape.
 use super::*;
 
-const USAGE: &str = "SplitEdge object-id edge-index parameter [parameter ...]";
+const USAGE: &str = "SplitEdge object-id edge-index parameter [parameter ...] | SplitEdge object-id Batch edge-index:parameter[,parameter...] ...";
 
 #[derive(Clone, Debug)]
 struct DistanceConstraint {
@@ -186,17 +186,27 @@ impl SplitEdgeSelection {
         } else {
             vec![(self.edge, parameters)]
         };
-        let result = self
-            .brep
-            .try_split_edges_at_parameters(&splits, self.tolerance)?;
-        let count = result.edges().len() - self.brep.edges().len();
-        document.clear_selection();
-        document.replace_object_geometries_with_history(
-            [(self.object, Geometry::Brep(result))],
-            viboceros_document::ReplacementHistory::EveryReplacement,
-        )?;
+        let count =
+            replace_split_edges(document, self.object, &self.brep, &splits, self.tolerance)?;
         Ok(format!("Split edge at {count} point(s)"))
     }
+}
+
+fn replace_split_edges(
+    document: &mut Document,
+    object: ObjectId,
+    brep: &Brep,
+    splits: &[(usize, Vec<Real>)],
+    tolerance: Tolerance,
+) -> Result<usize, CommandError> {
+    let result = brep.try_split_edges_at_parameters(splits, tolerance)?;
+    let count = result.edges().len() - brep.edges().len();
+    document.clear_selection();
+    document.replace_object_geometries_with_history(
+        [(object, Geometry::Brep(result))],
+        viboceros_document::ReplacementHistory::EveryReplacement,
+    )?;
+    Ok(count)
 }
 
 fn distance_parameters(
@@ -254,6 +264,33 @@ impl Command for SplitEdgeCommand {
         let object = arguments[0]
             .parse()
             .map_err(|_| CommandError::Usage(USAGE))?;
+        if option_name_eq(arguments[1], "Batch") {
+            let splits = arguments[2..]
+                .iter()
+                .map(|part| {
+                    let (edge, parameters) =
+                        part.split_once(':').ok_or(CommandError::Usage(USAGE))?;
+                    let index = edge.parse().map_err(|_| CommandError::Usage(USAGE))?;
+                    let values = parameters
+                        .split(',')
+                        .map(parse_finite_real)
+                        .collect::<Result<Vec<_>, _>>()?;
+                    Ok::<_, CommandError>((index, values))
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let selection = SplitEdgeSelection::prepare(document, object, splits[0].0)?;
+            let count = replace_split_edges(
+                document,
+                object,
+                &selection.brep,
+                &splits,
+                selection.tolerance,
+            )?;
+            return Ok(format!(
+                "Split {} edge(s) at {count} point(s)",
+                splits.len()
+            ));
+        }
         let edge = arguments[1]
             .parse()
             .map_err(|_| CommandError::Usage(USAGE))?;

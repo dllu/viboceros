@@ -89,6 +89,9 @@ replaces the input B-reps in one undo step. Use `anchor=object_id` to retain
 the orientation and attributes of a specific input body.
 For a replacement face on an existing seam, `vertex_distance=` can bound
 displacement of previously shared vertices independently from the curve match.
+To split several edges of one B-rep in a single operation, use
+`model.run(f"SplitEdge {object_id} Batch 0:2,6 1:3")` with each edge's
+original index and its curve parameters.
 
 ## Files and images
 
