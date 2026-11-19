@@ -1,4 +1,4 @@
-//! One size per original edge in a single native blend solve.
+//! Size pairs on original edges in a single native blend solve.
 use super::*;
 
 #[derive(Clone, Copy)]
@@ -13,6 +13,7 @@ unsafe extern "C" {
         solid: *mut NativeSolid,
         indices: *const usize,
         sizes: *const f64,
+        end_sizes: *const f64,
         count: usize,
         minimum: f64,
         accuracy: f64,
@@ -27,21 +28,29 @@ unsafe extern "C" {
 impl Solid {
     pub fn blend_brep_edge_sizes(
         brep: &Brep,
-        edges: &[(usize, f64)],
+        edges: &[(usize, [f64; 2])],
         profile: EdgeBlendProfile,
         tolerance: Tolerance,
         local_merge: bool,
     ) -> Result<Brep, Error> {
         if edges.is_empty()
             || edges.len() > 100000
-            || edges.iter().any(|&(index, size)| {
-                index >= brep.edges().len() || !size.is_finite() || size <= 0.
+            || edges.iter().any(|&(index, sizes)| {
+                index >= brep.edges().len()
+                    || sizes
+                        .into_iter()
+                        .any(|size| !size.is_finite() || size <= 0.)
             })
         {
             return Err(Error::Kernel("Invalid per-edge blend parameters".into()));
         }
-        let (indices, sizes): (Vec<_>, Vec<_>) = edges.iter().copied().unzip();
-        let minimum = sizes.iter().copied().fold(f64::INFINITY, f64::min);
+        let indices = edges.iter().map(|(edge, _)| *edge).collect::<Vec<_>>();
+        let (sizes, end_sizes): (Vec<_>, Vec<_>) = edges.iter().map(|&(_, [a, b])| (a, b)).unzip();
+        let minimum = sizes
+            .iter()
+            .chain(&end_sizes)
+            .copied()
+            .fold(f64::INFINITY, f64::min);
         let (profile_code, rail) = match profile {
             EdgeBlendProfile::Fillet => (0, EdgeBlendRailType::RollingBall),
             EdgeBlendProfile::Chamfer(rail) => (1, rail),
@@ -63,6 +72,7 @@ impl Solid {
                 solid.handle.as_ptr(),
                 indices.as_ptr(),
                 sizes.as_ptr(),
+                end_sizes.as_ptr(),
                 indices.len(),
                 minimum,
                 accuracy,

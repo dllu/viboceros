@@ -1,6 +1,7 @@
 use super::*;
 use crate::app::tests::circle_preview::{viewport_click, viewport_frame};
 use crate::app::tests::radius::move_measurement_pointer;
+use crate::viewport::edge_blend::{HandleEnd, SizeHandleId};
 use std::time::{Duration, Instant};
 
 fn add_reference_ellipse(app: &mut VibocerosApp) -> ObjectId {
@@ -98,7 +99,10 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
     let reference = add_reference_ellipse(&mut app);
     let original = app.document.object(reference).unwrap().geometry().clone();
     app.document.clear_history().unwrap();
-    submit(&mut app, "ChamferEdge Distance=2 Preview=Yes");
+    submit(
+        &mut app,
+        "ChamferEdge Distance=2 Preview=Yes LinkHandles=Yes",
+    );
     choose_edge(&mut app, pick);
     submit(&mut app, "");
     assert!(app.adjusting_edge_blend());
@@ -125,7 +129,10 @@ fn edge_fillet_from_curve_hover_preview_matches_the_committed_chamfer() {
         }
     };
     let initial = wait(&mut app, None);
-    assert!(app.pick_edge_size_handle(pick));
+    assert!(app.pick_edge_size_handle(SizeHandleId {
+        pick,
+        end: HandleEnd::Start
+    }));
     submit(&mut app, "FromCurve");
     let target = move_measurement_pointer(&mut app, &context, point(24., 10., 0.));
     let radius = app.edge_blend_size_hover().unwrap();

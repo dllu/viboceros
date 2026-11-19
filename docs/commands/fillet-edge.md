@@ -1,7 +1,7 @@
 # FilletEdge
 
-`FilletEdge` rounds selected edges of closed B-reps with a circular rolling-ball
-radius per edge using usd-brep.
+`FilletEdge` rounds selected edges of closed B-reps with circular rolling-ball
+fillets using usd-brep.
 
 ```text
 FilletEdge Radius=1
@@ -10,9 +10,11 @@ FilletEdge Radius=1 All=Yes
 ```
 
 The first form starts viewport edge picking. Select edges and press Enter to
-open size adjustment. Click an edge handle to type a radius, use `FromCurve`
-or `FromTwoPoints`, or drag the handle up or down to change its radius. Use
-`SetAll=2` to give every edge radius 2, `SelectEdges` to resume picking, or
+open size adjustment. Click a start or end handle to type a radius, use
+`FromCurve` or `FromTwoPoints`, or drag the handle up or down. Open edges blend
+linearly between the two sizes over their curve parameter. A closed edge has
+one handle for its common radius. `LinkHandles=Yes` makes any size edit apply to
+every handle. Use `SetAll=2` to set all radii to 2, `SelectEdges` to resume picking, or
 `ShowRadius=No` to hide labels until hovered. Press Enter to apply the blend.
 Esc leaves an active size getter or cancels the command from the handle prompt.
 Component preselection is retained for confirmation. The indexed form accepts
@@ -28,7 +30,7 @@ Use `FromTwoPoints` to set the radius with two viewport picks or typed
 coordinates. With preview enabled, the second point updates the wireframe.
 `FromCurve` takes the local curvature radius at a picked or typed curve
 location. Hovering with preview enabled shows the resulting blend. Esc returns
-to edge selection, and a straight location leaves the curve picker active.
+to the previous prompt, and a straight location leaves the curve picker active.
 Use `FaceEdges` to add the sharp boundary edges of one or more faces. Enter
 keeps those picks and returns to edge selection. Esc restores the prior edge
 set. Tangent edges and same-face seams are excluded.
@@ -51,9 +53,9 @@ It tightens circular cross-section generation and validates closed input and
 output, boundary face intersections and unexpected contacts before conversion.
 Pole connectors require a continuous surface-image certificate at their vertex.
 
-This checkpoint supports one constant radius per selected edge, closed B-reps
-and Linux native builds. `Corner=Ball` requires a common radius on each solid.
-Handles with varying radius along an edge, open polysurfaces, alternative
+This checkpoint supports endpoint variation on closed B-reps in Linux native
+builds. `Corner=Ball` requires a common radius on each solid.
+Interior handles, open polysurfaces, alternative
 rail types, editing old fillets and broader failure cases
 remain work. The intersection guard bounds input and output to 362 faces. Kernel
 intersection curves must lie entirely on shared trimmed topological edges, and

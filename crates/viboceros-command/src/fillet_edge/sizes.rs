@@ -12,7 +12,7 @@ pub(super) fn native_rail(rail: ChamferRailType) -> EdgeBlendRailType {
 
 pub(super) fn blend_with_sizes(
     brep: &Brep,
-    edges: &[(usize, Real)],
+    edges: &[(usize, [Real; 2])],
     kind: EdgeBlendKind,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
@@ -90,5 +90,74 @@ mod tests {
                 "{kind:?}: {volume}"
             );
         }
+    }
+
+    #[test]
+    fn edge_blend_end_sizes_are_applied_at_the_original_curve_endpoints() {
+        let mut doc = Document::default();
+        let tol = doc.tolerance();
+        let frame = CommandContext::default().construction_plane;
+        let source = Brep::try_box(frame, [[0., 10.]; 3], tol).unwrap();
+        let index = source
+            .edges()
+            .iter()
+            .position(|edge| {
+                edge.vertices().iter().all(|&i| {
+                    let point = source.vertices()[i].point();
+                    point.y() == 0. && point.z() == 0.
+                })
+            })
+            .unwrap();
+        let curve = source.edges()[index].curve();
+        let x = [*curve.domain().start(), *curve.domain().end()]
+            .map(|t| curve.evaluate(t).unwrap().x());
+        let id = doc.add_geometry(Geometry::Brep(source)).unwrap();
+        let rail = ChamferRailType::RollingBall;
+        for kind in [
+            EdgeBlendKind::Fillet(FilletCorner::Automatic),
+            EdgeBlendKind::Chamfer(rail),
+            EdgeBlendKind::Curvature(rail),
+        ] {
+            let solved = EdgeBlendPlan::capture_end_sizes(&doc, [(id, index, [1., 2.])], kind)
+                .unwrap()
+                .solve()
+                .unwrap_or_else(|error| panic!("{kind:?}: {error}"));
+            let Geometry::Brep(result) = &solved.replacements()[0].1 else {
+                panic!("expected a solid")
+            };
+            assert!(result.is_solid());
+            for (x, size) in x.into_iter().zip([1., 2.]) {
+                for [y, z] in [[size, 0.], [0., size]] {
+                    let expected = Point3::try_new(x, y, z).unwrap();
+                    assert!(
+                        result.vertices().iter().any(|vertex| vertex
+                            .point()
+                            .distance_to(expected)
+                            .unwrap()
+                            < 1e-6),
+                        "{kind:?}: missing {expected:?}"
+                    );
+                }
+            }
+            for [y, z] in [[1.5, 0.], [0., 1.5]] {
+                let expected = Point3::try_new(x[0].midpoint(x[1]), y, z).unwrap();
+                assert!(
+                    result.edges().iter().any(|edge| {
+                        let curve = edge.curve();
+                        curve
+                            .closest_parameter(expected, tol)
+                            .and_then(|parameter| curve.evaluate(parameter))
+                            .and_then(|point| point.distance_to(expected))
+                            .is_ok_and(|gap| gap < 1e-6)
+                    }),
+                    "{kind:?}: missing midpoint setback {expected:?}"
+                );
+            }
+        }
+        let width = EdgeBlendKind::Chamfer(ChamferRailType::DistanceBetweenRails);
+        let result = EdgeBlendPlan::capture_end_sizes(&doc, [(id, index, [1., 2.])], width)
+            .unwrap()
+            .solve();
+        assert!(result.unwrap_err().to_string().contains("RollingBall"));
     }
 }

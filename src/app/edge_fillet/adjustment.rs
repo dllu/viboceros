@@ -2,7 +2,7 @@
 use super::*;
 use crate::viewport::{
     ComponentPick,
-    edge_blend::{HandleGesture, SizeHandle},
+    edge_blend::{HandleEnd, HandleGesture, SizeHandle, SizeHandleId},
 };
 use std::collections::{BTreeMap, BTreeSet};
 use viboceros_command::component_selection::current;
@@ -10,8 +10,8 @@ use viboceros_document::GeometrySnapshot;
 
 #[derive(Default)]
 pub(in crate::app) struct Adjustment {
-    sizes: BTreeMap<ComponentPick, (GeometrySnapshot, f64)>,
-    pub(super) active: Option<(ComponentPick, GeometrySnapshot)>,
+    sizes: BTreeMap<ComponentPick, (GeometrySnapshot, [f64; 2])>,
+    pub(super) active: Option<(SizeHandleId, GeometrySnapshot)>,
     pub(super) drag_size: Option<f64>,
 }
 
@@ -72,28 +72,33 @@ impl VibocerosApp {
         true
     }
 
-    pub(super) fn edge_blend_size(
+    pub(super) fn edge_blend_sizes(
         &self,
         prompt: Prompt,
         pick: ComponentPick,
         trial: Option<f64>,
-    ) -> f64 {
-        if let Some(trial) = trial
-            && self
-                .edge_blend_adjustment
-                .active
-                .as_ref()
-                .is_none_or(|(active, source)| {
-                    *active == pick && current(&self.document, pick, source)
-                })
-        {
-            return trial;
-        }
-        self.edge_blend_adjustment
+    ) -> [f64; 2] {
+        let mut sizes = self
+            .edge_blend_adjustment
             .sizes
             .get(&pick)
             .filter(|(snapshot, _)| current(&self.document, pick, snapshot))
-            .map_or(prompt.radius, |(_, size)| *size)
+            .map_or([prompt.radius; 2], |(_, sizes)| *sizes);
+        if let Some(trial) = trial {
+            match &self.edge_blend_adjustment.active {
+                None => return [trial; 2],
+                Some((id, source))
+                    if prompt.link_handles && current(&self.document, id.pick, source) =>
+                {
+                    return [trial; 2];
+                }
+                Some((id, source)) if id.pick == pick && current(&self.document, pick, source) => {
+                    id.end.set_size(&mut sizes, trial);
+                }
+                Some(_) => {}
+            }
+        }
+        sizes
     }
 
     pub(super) fn store_edge_blend_size(
@@ -106,108 +111,142 @@ impl VibocerosApp {
             return;
         }
         self.edge_blend_adjustment.drag_size = None;
-        if let Some((pick, source)) = self
+        if let Some((id, source)) = self
             .edge_blend_adjustment
             .active
             .take()
             .filter(|_| !set_all)
         {
-            let size = std::mem::replace(&mut prompt.radius, default);
-            if current(&self.document, pick, &source) {
+            if !current(&self.document, id.pick, &source) {
+                prompt.radius = default;
+                self.push_log("The edge source changed. Use SelectEdges to pick it again.".into());
+                return;
+            }
+            if !prompt.link_handles {
+                let size = std::mem::replace(&mut prompt.radius, default);
+                let mut sizes = self.edge_blend_sizes(*prompt, id.pick, None);
+                id.end.set_size(&mut sizes, size);
                 self.edge_blend_adjustment
                     .sizes
-                    .insert(pick, (source, size));
+                    .insert(id.pick, (source, sizes));
                 self.push_log(format!(
-                    "Edge {} {} = {size}",
-                    pick.index,
+                    "Edge {} {} {} = {size}",
+                    id.pick.index,
+                    id.end.label(),
                     prompt.parameter()
                 ));
-            } else {
-                self.push_log("The edge source changed. Use SelectEdges to pick it again.".into());
+                return;
             }
-        } else {
-            self.edge_blend_adjustment.sizes.clear();
         }
+        self.edge_blend_adjustment.sizes.clear();
     }
 
     pub(in crate::app) fn edge_blend_size_handles(&self) -> Vec<SizeHandle> {
         let Some(prompt) = self.edge_fillet_prompt.filter(|prompt| prompt.adjusting) else {
             return Vec::new();
         };
-        self.component_selection
+        let picks = self
+            .component_selection
             .checked_picks(&self.document)
-            .unwrap_or_default()
-            .into_iter()
-            .filter_map(|pick| {
-                let Geometry::Brep(brep) = self.document.object(pick.object)?.geometry() else {
-                    return None;
+            .unwrap_or_default();
+        let mut handles = Vec::new();
+        for pick in picks {
+            let Some(Geometry::Brep(brep)) =
+                self.document.object(pick.object).map(|o| o.geometry())
+            else {
+                continue;
+            };
+            let Some(edge) = brep.edges().get(pick.index) else {
+                continue;
+            };
+            let [a, b] = edge.vertices();
+            let ends: &[(HandleEnd, f64)] = if a == b {
+                &[(HandleEnd::Seam, 0.)]
+            } else {
+                &[(HandleEnd::Start, 0.08), (HandleEnd::End, 0.92)]
+            };
+            let curve = edge.curve();
+            let domain = curve.domain();
+            let sizes = self.edge_blend_sizes(prompt, pick, self.edge_blend_adjustment.drag_size);
+            for &(end, fraction) in ends {
+                let parameter = (domain.end() - domain.start()).mul_add(fraction, *domain.start());
+                let Ok(point) = curve.evaluate(parameter) else {
+                    continue;
                 };
-                let curve = brep.edges().get(pick.index)?.curve();
-                let domain = curve.domain();
-                let point = curve
-                    .evaluate(domain.start().midpoint(*domain.end()))
-                    .ok()?;
-                Some(SizeHandle {
-                    pick,
+                let id = SizeHandleId { pick, end };
+                handles.push(SizeHandle {
+                    id,
                     point,
-                    size: self.edge_blend_size(prompt, pick, self.edge_blend_adjustment.drag_size),
+                    size: end.size(sizes),
                     active: self
                         .edge_blend_adjustment
                         .active
                         .as_ref()
-                        .is_some_and(|(active, _)| *active == pick),
-                })
-            })
-            .collect()
+                        .is_some_and(|(active, _)| *active == id),
+                });
+            }
+        }
+        handles
     }
 
     pub(in crate::app) fn show_edge_size_handles(&self) -> bool {
         self.edge_fillet_prompt.is_some_and(|p| p.show_handles)
     }
 
-    pub(in crate::app) fn pick_edge_size_handle(&mut self, pick: ComponentPick) -> bool {
+    pub(in crate::app) fn pick_edge_size_handle(&mut self, id: SizeHandleId) -> bool {
         let Some(mut prompt) = self.edge_fillet_prompt.filter(|p| p.adjusting) else {
             return false;
         };
         if !self
             .component_selection
             .checked_picks(&self.document)
-            .is_ok_and(|picks| picks.contains(&pick))
+            .is_ok_and(|picks| picks.contains(&id.pick))
         {
             return false;
         }
-        let size = self.edge_blend_size(prompt, pick, None);
-        let Some(object) = self.document.object(pick.object) else {
+        let size = id.end.size(self.edge_blend_sizes(prompt, id.pick, None));
+        let Some(object) = self.document.object(id.pick.object) else {
             return false;
         };
-        self.edge_blend_adjustment.active = Some((pick, object.geometry_snapshot().clone()));
+        let Geometry::Brep(brep) = object.geometry() else {
+            return false;
+        };
+        let Some(edge) = brep.edges().get(id.pick.index) else {
+            return false;
+        };
+        let [a, b] = edge.vertices();
+        if (a == b) != (id.end == HandleEnd::Seam) {
+            return false;
+        }
+        self.edge_blend_adjustment.active = Some((id, object.geometry_snapshot().clone()));
         self.edge_blend_adjustment.drag_size = None;
         prompt.awaiting_value = true;
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
         self.push_log(format!(
-            "Edge {} {} = {size}. Enter a size or use FromCurve or FromTwoPoints.",
-            pick.index,
+            "Edge {} {} {} = {size}. Enter a size or use FromCurve or FromTwoPoints.",
+            id.pick.index,
+            id.end.label(),
             prompt.parameter()
         ));
         true
     }
 
     pub(in crate::app) fn edit_edge_blend_handle(&mut self, gesture: HandleGesture) -> bool {
-        let (pick, value, finished) = match gesture {
-            HandleGesture::Pick(pick) => return self.pick_edge_size_handle(pick),
+        let (id, value, finished) = match gesture {
+            HandleGesture::Pick(id) => return self.pick_edge_size_handle(id),
             HandleGesture::Drag {
-                pick,
+                id,
                 value,
                 finished,
-            } => (pick, value, finished),
+            } => (id, value, finished),
         };
         let active = self
             .edge_blend_adjustment
             .active
             .as_ref()
-            .is_some_and(|(active, _)| *active == pick);
-        if !active && !self.pick_edge_size_handle(pick) {
+            .is_some_and(|(active, _)| *active == id);
+        if !active && !self.pick_edge_size_handle(id) {
             return false;
         }
         if finished {

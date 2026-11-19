@@ -1,9 +1,44 @@
 //! Size handles for the selected original B-rep edges.
 use super::*;
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum HandleEnd {
+    Start,
+    End,
+    Seam,
+}
+
+impl HandleEnd {
+    pub(crate) fn label(self) -> &'static str {
+        match self {
+            Self::Start => "start",
+            Self::End => "end",
+            Self::Seam => "seam",
+        }
+    }
+
+    pub(crate) fn size(self, sizes: [f64; 2]) -> f64 {
+        sizes[usize::from(self == Self::End)]
+    }
+
+    pub(crate) fn set_size(self, sizes: &mut [f64; 2], size: f64) {
+        match self {
+            Self::Start => sizes[0] = size,
+            Self::End => sizes[1] = size,
+            Self::Seam => *sizes = [size; 2],
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct SizeHandleId {
+    pub(crate) pick: ComponentPick,
+    pub(crate) end: HandleEnd,
+}
+
 #[derive(Debug)]
 pub(crate) struct SizeHandle {
-    pub(crate) pick: ComponentPick,
+    pub(crate) id: SizeHandleId,
     pub(crate) point: Point3,
     pub(crate) size: f64,
     pub(crate) active: bool,
@@ -11,16 +46,16 @@ pub(crate) struct SizeHandle {
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(crate) enum HandleGesture {
-    Pick(ComponentPick),
+    Pick(SizeHandleId),
     Drag {
-        pick: ComponentPick,
+        id: SizeHandleId,
         value: Option<f64>,
         finished: bool,
     },
 }
 
 pub(super) struct Drag {
-    pick: ComponentPick,
+    id: SizeHandleId,
     start_y: f32,
     start_size: f64,
     pixels_per_unit: f64,
@@ -45,7 +80,7 @@ impl Viewport {
         } else {
             response.hover_pos()
         };
-        let mut nearest = None::<(f32, ComponentPick)>;
+        let mut nearest = None::<(f32, SizeHandleId)>;
         let press = response
             .drag_started_by(PointerButton::Primary)
             .then(|| response.ctx.input(|i| i.pointer.press_origin()))
@@ -61,7 +96,7 @@ impl Viewport {
             let hit = pointer.map_or(f32::INFINITY, |pointer| pointer.distance(position));
             let hovered = hit <= PICK_CAPTURE_PIXELS;
             if hovered && nearest.is_none_or(|(distance, _)| hit < distance) {
-                nearest = Some((hit, handle.pick));
+                nearest = Some((hit, handle.id));
             }
             if let Some(press) = press {
                 let distance = press.distance(position);
@@ -95,7 +130,7 @@ impl Viewport {
             };
             if scale.is_finite() && scale > 0. {
                 self.edge_blend_drag = Some(Drag {
-                    pick: handle.pick,
+                    id: handle.id,
                     start_y: press.y,
                     start_size: handle.size,
                     pixels_per_unit: scale,
@@ -106,7 +141,7 @@ impl Viewport {
         if (finished || response.dragged_by(PointerButton::Primary))
             && let Some(drag) = &self.edge_blend_drag
         {
-            let pick = drag.pick;
+            let id = drag.id;
             let value = response
                 .interact_pointer_pos()
                 .map(|pointer| {
@@ -118,13 +153,13 @@ impl Viewport {
                 self.edge_blend_drag = None;
             }
             return Some(HandleGesture::Drag {
-                pick,
+                id,
                 value,
                 finished,
             });
         }
         nearest
             .filter(|_| clicked)
-            .map(|(_, pick)| HandleGesture::Pick(pick))
+            .map(|(_, id)| HandleGesture::Pick(id))
     }
 }

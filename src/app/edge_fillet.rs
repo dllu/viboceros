@@ -29,6 +29,7 @@ pub(super) struct Prompt {
     preview: bool,
     adjusting: bool,
     show_handles: bool,
+    link_handles: bool,
 }
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
@@ -56,7 +57,7 @@ impl Prompt {
                 "Enter edge radius with optional units"
             }
         } else if self.adjusting {
-            "Select a size handle, use SetAll or return to SelectEdges. Enter applies. Esc cancels."
+            "Select a size handle, use SetAll or LinkHandles, or return to SelectEdges. Enter applies. Esc cancels."
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
@@ -83,7 +84,11 @@ impl Prompt {
         };
         let preview = if self.preview { "Yes" } else { "No" };
         let handles = if self.show_handles { "Yes" } else { "No" };
-        format!("{model} Preview={preview} {}={handles}", self.show_option())
+        let link = if self.link_handles { "Yes" } else { "No" };
+        format!(
+            "{model} Preview={preview} {}={handles} LinkHandles={link}",
+            self.show_option()
+        )
     }
 }
 
@@ -102,8 +107,9 @@ fn display_options<'a>(
     words: impl IntoIterator<Item = &'a str>,
     mut preview: bool,
     mut show: bool,
+    mut link: bool,
     show_option: &'static str,
-) -> Result<(Vec<&'a str>, bool, bool), &'static str> {
+) -> Result<(Vec<&'a str>, bool, bool, bool), &'static str> {
     let mut modeling = Vec::new();
     for word in words {
         let option = word.trim_start_matches('_');
@@ -116,6 +122,8 @@ fn display_options<'a>(
             &mut preview
         } else if name.eq_ignore_ascii_case(show_option) {
             &mut show
+        } else if name.eq_ignore_ascii_case("LinkHandles") {
+            &mut link
         } else {
             modeling.push(word);
             continue;
@@ -127,7 +135,7 @@ fn display_options<'a>(
             _ => return Err("expected Yes or No for the display option"),
         };
     }
-    Ok((modeling, preview, show))
+    Ok((modeling, preview, show, link))
 }
 
 impl VibocerosApp {
@@ -146,8 +154,8 @@ impl VibocerosApp {
         } else {
             "ShowRadius"
         };
-        let (mut words, preview, show_handles) =
-            match display_options(words, false, true, show_option) {
+        let (mut words, preview, show_handles, link_handles) =
+            match display_options(words, false, true, false, show_option) {
                 Ok(options) => options,
                 Err(error) => {
                     self.push_log(format!("Error: {error}"));
@@ -240,6 +248,7 @@ impl VibocerosApp {
             preview,
             adjusting: false,
             show_handles,
+            link_handles,
         };
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
@@ -351,10 +360,11 @@ impl VibocerosApp {
             return false;
         }
         let input = if set_all { inline_value.trim() } else { input };
-        let (modeling, preview, show_handles) = match display_options(
+        let (modeling, preview, show_handles, link_handles) = match display_options(
             input.split_whitespace(),
             prompt.preview,
             prompt.show_handles,
+            prompt.link_handles,
             prompt.show_option(),
         ) {
             Ok(options) => options,
@@ -427,6 +437,7 @@ impl VibocerosApp {
         };
         match result {
             Ok(()) => {
+                prompt.link_handles = link_handles;
                 if edits_size {
                     self.store_edge_blend_size(&mut prompt, default, set_all);
                 }
@@ -476,10 +487,10 @@ impl VibocerosApp {
                 (
                     p.object,
                     p.index,
-                    self.edge_blend_size(prompt, p, trial_size),
+                    self.edge_blend_sizes(prompt, p, trial_size),
                 )
             });
-        EdgeBlendPlan::capture_sizes(&self.document, picks, prompt.kind)
+        EdgeBlendPlan::capture_end_sizes(&self.document, picks, prompt.kind)
             .map_err(|error| error.to_string())
     }
 

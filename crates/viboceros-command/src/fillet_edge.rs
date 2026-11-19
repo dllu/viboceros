@@ -107,7 +107,7 @@ impl EdgeBlendKind {
 pub struct EdgeBlendPlan {
     kind: EdgeBlendKind,
     tolerance: Tolerance,
-    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, Real)>)>,
+    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, [Real; 2])>)>,
 }
 
 impl EdgeBlendSelection {
@@ -226,11 +226,27 @@ impl EdgeBlendPlan {
         picks: impl IntoIterator<Item = (ObjectId, usize, Real)>,
         kind: EdgeBlendKind,
     ) -> Result<Self, CommandError> {
-        let mut by_object = BTreeMap::<ObjectId, BTreeMap<usize, Real>>::new();
-        for (count, (id, edge, size)) in picks.into_iter().enumerate() {
+        Self::capture_end_sizes(
+            document,
+            picks
+                .into_iter()
+                .map(|(id, index, size)| (id, index, [size; 2])),
+            kind,
+        )
+    }
+
+    /// Sizes at the start and end of each original edge's curve domain.
+    pub fn capture_end_sizes(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize, [Real; 2])>,
+        kind: EdgeBlendKind,
+    ) -> Result<Self, CommandError> {
+        let mut by_object = BTreeMap::<ObjectId, BTreeMap<usize, [Real; 2]>>::new();
+        for (count, (id, edge, sizes)) in picks.into_iter().enumerate() {
             if count >= 100000
-                || !size.is_finite()
-                || size <= 0.
+                || sizes
+                    .into_iter()
+                    .any(|size| !size.is_finite() || size <= 0.)
                 || !document.is_object_selectable(id)
             {
                 return Err(CommandError::Usage(kind.usage()));
@@ -238,8 +254,8 @@ impl EdgeBlendPlan {
             if by_object
                 .entry(id)
                 .or_default()
-                .insert(edge, size)
-                .is_some_and(|prior| prior != size)
+                .insert(edge, sizes)
+                .is_some_and(|prior| prior != sizes)
             {
                 return Err(CommandError::Usage("An edge has conflicting blend sizes"));
             }
@@ -257,6 +273,14 @@ impl EdgeBlendPlan {
             };
             if !brep.is_solid() || edges.keys().any(|&edge| edge >= brep.edges().len()) {
                 return Err(CommandError::Usage(kind.usage()));
+            }
+            if edges.iter().any(|(&edge, &[start, end])| {
+                let [a, b] = brep.edges()[edge].vertices();
+                a == b && start != end
+            }) {
+                return Err(CommandError::Usage(
+                    "A closed edge has one size at its seam",
+                ));
             }
             sources.push((
                 id,
@@ -278,8 +302,8 @@ impl EdgeBlendPlan {
             let Geometry::Brep(brep) = &*geometry else {
                 unreachable!("captured an edge blend on a B-rep");
             };
-            let size = edges[0].1;
-            let result = if edges.iter().all(|&(_, value)| value == size) {
+            let size = edges[0].1[0];
+            let result = if edges.iter().all(|&(_, values)| values == [size; 2]) {
                 let indices = edges.iter().map(|edge| edge.0).collect::<Vec<_>>();
                 blend(brep, &indices, size, self.kind, self.tolerance)?
             } else {
