@@ -4,12 +4,48 @@ use std::collections::HashMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
+mod flat;
 mod sections;
+mod shallow;
 
 pub(super) const NO_SECTION: &str =
     "The boundary must span the complete extrusion between the source and the apex";
 
-pub(super) fn truncate(
+pub(super) fn extrude(
+    source: &Brep,
+    boundary: &Brep,
+    apex: Point3,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    if let Some(cut) =
+        source.try_shallow_apex_to_planar_boundary(apex, boundary, split_at_tangents, tolerance)?
+    {
+        return Ok(cut);
+    }
+    if let Some(cut) = flat::truncate(source, boundary, apex, split_at_tangents, tolerance)? {
+        return Ok(cut);
+    }
+    let result = cone(source, apex, split_at_tangents, tolerance)
+        .and_then(|sweep| truncate(&sweep, boundary, apex, tolerance));
+    if result.is_ok() {
+        return result;
+    }
+    shallow::retry(source, boundary, apex, split_at_tangents, tolerance)?.map_or(result, Ok)
+}
+
+fn cone(
+    source: &Brep,
+    apex: Point3,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    Ok(Shape::from_brep(source, tolerance)?
+        .extruded_faces_to_point_with_tangents(apex, true, split_at_tangents, tolerance)?
+        .to_brep(tolerance)?)
+}
+
+fn truncate(
     cone: &Brep,
     boundary: &Brep,
     apex: Point3,

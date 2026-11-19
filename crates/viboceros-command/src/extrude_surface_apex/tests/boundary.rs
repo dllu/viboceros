@@ -1,5 +1,7 @@
 use super::*;
 
+mod shallow;
+
 fn double_section_cutter(left: f64, right: f64, center_y: f64, reverse: bool) -> NurbsSurface {
     let width = right - left;
     let points = [-1., 4.]

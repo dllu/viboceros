@@ -3,8 +3,6 @@ use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
 #[cfg(feature = "native-smlib")]
 mod boundary;
-#[cfg(feature = "native-smlib")]
-mod flat_boundary;
 pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [ToBoundary=id[:face]] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceToPointCommand {
     pub(super) preferences: std::sync::Arc<crate::remembered::Remembered<SurfaceApexOptions>>,
@@ -353,37 +351,17 @@ fn native_extrusion(
     let boundary = boundary
         .map(|face| face.transformed(shift, tolerance))
         .transpose()?;
-    let shallow_cut = if let Some(boundary) = &boundary {
-        let planar = local.try_shallow_apex_to_planar_boundary(
-            apex,
-            boundary,
-            options.split_at_tangents,
-            tolerance,
-        )?;
-        if planar.is_some() {
-            planar
-        } else {
-            flat_boundary::truncate(&local, boundary, apex, options.split_at_tangents, tolerance)?
-        }
+    let result = if let Some(boundary) = &boundary {
+        boundary::extrude(&local, boundary, apex, options.split_at_tangents, tolerance)?
     } else {
-        None
-    };
-    let result = if let Some(cut) = shallow_cut {
-        cut
-    } else {
-        let sweep = viboceros_smlib::Shape::from_brep(&local, tolerance)?
+        viboceros_smlib::Shape::from_brep(&local, tolerance)?
             .extruded_faces_to_point_with_tangents(
                 apex,
-                options.solid || boundary.is_some(),
+                options.solid,
                 options.split_at_tangents,
                 tolerance,
             )?
-            .to_brep(tolerance)?;
-        if let Some(boundary) = &boundary {
-            boundary::truncate(&sweep, boundary, apex, tolerance)?
-        } else {
-            sweep
-        }
+            .to_brep(tolerance)?
     };
     Ok(result.transformed(
         AffineTransform3::from_translation(zero.vector_to(origin)?),

@@ -86,16 +86,21 @@ requires one connected section spanning the sweep. The cut retains the
 source and wall topology and uses a collapsed cap bounded by the rim. One
 tilted Rhino capture retained the full cutter face.
 
+Very shallow noncoplanar sweeps to a warped cutter can use a tighter working
+tolerance and an affine stretch along the source normal. The trim is restored
+to the original coordinates on the warped cutter. Licensed captures cover
+placements above and below the source plane and a tilted, translated source.
+
 For a noncoplanar apex, a warped cutter can intersect the sweep in several
 disconnected sections. The command keeps the nearest complete section and
 leaves the apex getter open if a closer partial section interferes. The
-viewport uses the first hit along each ruling and hides the flat preview
-if a sampled ruling has more than one hit.
+viewport uses the first hit along each sampled ruling. Within one model
+tolerance of the source plane, competing hits on a ruling hide the preview.
 
 Closed sources without a boundary, invalid face indices and unsupported
-imports decline. Very shallow nonflat cuts to warped surfaces, holes wholly
-enclosed by shallow cuts, and general self-intersection and folding require
-broader qualification.
+imports decline. Holes wholly enclosed by shallow cuts, extremely small
+nonzero heights, and general self-intersection and folding require broader
+qualification.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,

@@ -82,7 +82,7 @@ impl BoundaryDraft {
         &self,
         start: Point3,
         apex: Point3,
-        flat: bool,
+        reject_competing: bool,
         tolerance: Tolerance,
     ) -> Option<Point3> {
         let direction = start.direction_to(apex).ok()?.as_vector();
@@ -99,7 +99,7 @@ impl BoundaryDraft {
                 .then_some(point)
         });
         let first = hits.next()?;
-        if flat && hits.any(|other| !other.is_near(first, tolerance)) {
+        if reject_competing && hits.any(|other| !other.is_near(first, tolerance)) {
             return None;
         }
         Some(first)
@@ -113,22 +113,20 @@ impl BoundaryDraft {
     ) -> Option<Vec<[Point3; 2]>> {
         let mut edges = Vec::new();
         for face in &source.faces {
-            let flat = face.plane.is_some_and(|plane| {
-                let extent = plane.origin().distance_to(apex).unwrap_or_default();
-                let rounding = (64. * f64::EPSILON * extent).min(tolerance.absolute());
+            let near_plane = face.plane.is_some_and(|plane| {
                 plane
                     .signed_distance_to(apex)
-                    .is_ok_and(|distance| distance.abs() <= rounding)
+                    .is_ok_and(|distance| distance.abs() <= tolerance.absolute())
             });
             for &[a, b] in face.walls.iter().flat_map(|wall| &wall.rim) {
                 edges.push([a, b]);
                 edges.push([
-                    self.project(a, apex, flat, tolerance)?,
-                    self.project(b, apex, flat, tolerance)?,
+                    self.project(a, apex, near_plane, tolerance)?,
+                    self.project(b, apex, near_plane, tolerance)?,
                 ]);
             }
             for start in FaceDraft::rulings(face.walls.iter()) {
-                edges.push([start, self.project(start, apex, flat, tolerance)?]);
+                edges.push([start, self.project(start, apex, near_plane, tolerance)?]);
             }
         }
         Some(edges)

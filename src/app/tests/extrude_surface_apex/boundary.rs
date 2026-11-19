@@ -136,11 +136,28 @@ fn surface_apex_boundary_previews_and_accepts_a_coplanar_mouse_target() {
 
 #[test]
 fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
+    check_warped_boundary_mouse_sweep(0., point(3.82412509014911, 0.9560312725372776, 0.));
+}
+
+#[test]
+fn surface_apex_warped_boundary_previews_and_accepts_a_very_shallow_sweep() {
+    check_warped_boundary_mouse_sweep(
+        1e-8,
+        point(3.8241250903721764, 0.9560312725930439, 6.373541422784327e-9),
+    );
+}
+
+fn check_warped_boundary_mouse_sweep(height: f64, expected: Point3) {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
     use viboceros_geometry::NurbsSurface;
 
     let mut app = test_app();
+    app.document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
     app.viewports[0] = Viewport::new(ViewKind::Top);
+    let plane = app.viewports[0]
+        .construction_plane()
+        .with_origin(point(0., 0., height));
+    app.viewports[0].set_construction_plane(plane);
     app.maximized_viewport = Some(0);
     app.osnap = false;
     app.grid_snap = false;
@@ -190,9 +207,8 @@ fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
     );
     viewport_frame(&mut app, &context, Vec::new());
     viewport_frame(&mut app, &context, Vec::new());
-    let target = point(6., 1.5, 0.);
+    let target = point(6., 1.5, height);
     let (apex, preview) = boundary_hover(&mut app, &context, target);
-    let expected = point(3.82412509014911, 0.9560312725372776, 0.);
     let start = screen_point(&app, point(0., 0., 0.));
     let cut = screen_point(&app, expected);
     assert!(
@@ -220,7 +236,8 @@ fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
         assert!(
             brep.vertices()
                 .iter()
-                .any(|v| v.point().distance_to(expected).unwrap() < 1e-5)
+                .any(|v| v.point().distance_to(expected).unwrap() < 1e-5
+                    && (v.point().z() - expected.z()).abs() < 1e-10)
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeSrfToPoint"));
         enter(&mut app, "Undo");
@@ -232,7 +249,7 @@ fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
 }
 
 #[test]
-fn surface_apex_previews_the_nearest_raised_cut_after_an_ambiguous_flat_pick() {
+fn surface_apex_previews_the_nearest_raised_cut_after_ambiguous_shallow_picks() {
     use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
     use viboceros_geometry::{BoundingBox3, NurbsSurface};
 
@@ -291,16 +308,24 @@ fn surface_apex_previews_the_nearest_raised_cut_after_an_ambiguous_flat_pick() {
     app.viewports[0].zoom_bounding_box(bounds).unwrap();
     viewport_frame(&mut app, &context, Vec::new());
 
-    let (apex, preview) = boundary_hover(&mut app, &context, point(6., 1.5, 0.));
-    assert!(preview.is_empty(), "two cuts cross the flat sweep");
-    viewport_click(&mut app, &context, apex);
-    assert!(app.active_command.is_some());
-    assert!(
-        app.command_log
-            .iter()
-            .any(|line| line.starts_with("Error:"))
-    );
-    assert_eq!(format!("{:?}", app.document), before);
+    for height in [0., 1e-7] {
+        let plane = app.viewports[0]
+            .construction_plane()
+            .with_origin(point(0., 0., height));
+        app.viewports[0].set_construction_plane(plane);
+        viewport_frame(&mut app, &context, Vec::new());
+        let (apex, preview) = boundary_hover(&mut app, &context, point(6., 1.5, height));
+        assert!(
+            preview.is_empty(),
+            "two cuts cross the sweep at height {height}"
+        );
+        let previous_log = app.command_log.len();
+        viewport_click(&mut app, &context, apex);
+        assert!(app.active_command.is_some());
+        assert!(app.command_log.len() > previous_log);
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        assert_eq!(format!("{:?}", app.document), before);
+    }
 
     let plane = app.viewports[0]
         .construction_plane()

@@ -5,7 +5,6 @@ use viboceros_geometry::{
     SurfaceIntersectionOutput, curve_brep_intersection_events,
     surface_brep_intersection_events_with_operation,
 };
-use viboceros_smlib::Shape;
 
 pub(super) fn truncate(
     source: &Brep,
@@ -60,7 +59,7 @@ pub(super) fn truncate(
         let Some(CoplanarFaceExtrusion::Brep(flat_sweep)) =
             source.try_extruded_face_to_coplanar_point(apex, true, split_at_tangents, tolerance)?
         else {
-            return Err(CommandError::Usage(boundary::NO_SECTION));
+            return Err(CommandError::Usage(NO_SECTION));
         };
         let mut relevant = Vec::new();
         for section in sections {
@@ -71,7 +70,7 @@ pub(super) fn truncate(
         sections = relevant;
     }
     let [section] = sections.as_slice() else {
-        return Err(CommandError::Usage(boundary::NO_SECTION));
+        return Err(CommandError::Usage(NO_SECTION));
     };
 
     // Extend the true plane section in the normal direction. Raising the
@@ -81,10 +80,8 @@ pub(super) fn truncate(
     let curtain = NurbsSurface::try_extruded_curve(section, lift.scaled(-1.)?, lift.scaled(2.)?)?;
     let curtain = Brep::try_surface_face(curtain, tolerance)?;
     let lifted_apex = apex.translated(lift)?;
-    let sweep = Shape::from_brep(source, tolerance)?
-        .extruded_faces_to_point_with_tangents(lifted_apex, true, split_at_tangents, tolerance)?
-        .to_brep(tolerance)?;
-    let cut = boundary::truncate(&sweep, &curtain, lifted_apex, tolerance)?;
+    let sweep = cone(source, lifted_apex, split_at_tangents, tolerance)?;
+    let cut = super::truncate(&sweep, &curtain, lifted_apex, tolerance)?;
     Ok(Some(cut.try_projected_onto_plane(plane, tolerance)?))
 }
 
