@@ -72,6 +72,31 @@ fn endpoint_replacement_has_history_but_empty_and_invalid_batches_do_not() {
 }
 
 #[test]
+fn typed_batch_splits_multiple_original_edges_in_one_undo_step() {
+    let mut doc = Document::default();
+    let id = source(&mut doc);
+    let registry = CommandRegistry::with_builtins();
+    let before = doc.object(id).unwrap().clone();
+    assert!(
+        registry
+            .execute(&mut doc, &format!("SplitEdge {id} Batch 0:2,6 99:3"))
+            .is_err()
+    );
+    assert_eq!(doc.object(id).unwrap(), &before);
+    registry
+        .execute(&mut doc, &format!("SplitEdge {id} Batch 0:2,6 1:3"))
+        .unwrap();
+    let Geometry::Brep(brep) = doc.object(id).unwrap().geometry() else {
+        panic!("split box must stay a B-rep");
+    };
+    assert!(brep.is_solid());
+    assert_eq!(brep.edges().len(), 15);
+    assert_eq!(doc.undo_label(), Some("SplitEdge"));
+    doc.undo().unwrap();
+    assert_eq!(doc.object(id).unwrap(), &before);
+}
+
+#[test]
 fn edits_tolerance_and_access_changes_invalidate_collected_points() {
     for change in ["edit", "hide", "lock", "tolerance"] {
         let mut doc = Document::default();
