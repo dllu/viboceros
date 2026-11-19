@@ -30,8 +30,7 @@ pub(super) fn counts(surface: &NurbsSurface, density: Real) -> Result<[usize; 2]
     if density == 0. {
         return Ok(counts);
     }
-    let bounds = surface.control_point_bounds();
-    let height = chord_height(density, bounds.min().distance_to(bounds.max())?);
+    let height = surface.polygon_chord_height(density)?;
     if height <= 0. || !height.is_finite() {
         return Err(GeometryError::MeshSubdivisionLimit);
     }

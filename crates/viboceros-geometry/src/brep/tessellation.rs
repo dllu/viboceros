@@ -4,6 +4,7 @@ mod planar_mesh;
 use super::*;
 
 mod audit;
+mod chords;
 mod conforming;
 mod creases;
 mod curvature;

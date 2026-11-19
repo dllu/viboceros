@@ -73,4 +73,12 @@ impl NurbsSurface {
         }
         quality::counts(self, density)
     }
+
+    pub(crate) fn polygon_chord_height(&self, density: Real) -> Result<Real, GeometryError> {
+        let bounds = self.control_point_bounds();
+        Ok(quality::chord_height(
+            density,
+            bounds.min().distance_to(bounds.max())?,
+        ))
+    }
 }

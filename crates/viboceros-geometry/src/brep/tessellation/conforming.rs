@@ -293,14 +293,37 @@ impl Brep {
                 sampling.grid(index),
                 sampling.axis_limit,
             )?;
-            let face_triangles = if retain_parameters && sampling.display_edge_samples.is_none() {
-                creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
-            } else if sampling.axis_limit.is_some() {
-                metric::triangulate(&mut parameters, &lengths, &face.surface)?
-            } else {
-                trim_region::triangulate(&mut parameters, &lengths, &[])?
+            let mut face_triangles =
+                if retain_parameters && sampling.display_edge_samples.is_none() {
+                    creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
+                } else if sampling.axis_limit.is_some() {
+                    metric::triangulate(&mut parameters, &lengths, &face.surface)?
+                } else {
+                    trim_region::triangulate(&mut parameters, &lengths, &[])?
+                }
+                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
+            let mut points = parameters
+                .iter()
+                .enumerate()
+                .map(|(i, uv)| match boundary_points.get(i) {
+                    Some(&point) => Ok(point),
+                    None => face.surface.evaluate(uv.x(), uv.y()),
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            if let Some(density) = sampling.polygon_density
+                && !(face.surface.degree_u() == 1 && face.surface.degree_v() == 1)
+            {
+                chords::refine_interior(
+                    &face.surface,
+                    &mut parameters,
+                    &mut points,
+                    &mut face_triangles,
+                    face.surface
+                        .polygon_chord_height(density)?
+                        .max(tolerance.absolute()),
+                    (sampling.vertex_limit() / frames.len()).min(MAX_CONSTRAINED_TRIM_VERTICES),
+                )?;
             }
-            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             if vertices
@@ -317,16 +340,10 @@ impl Brep {
             {
                 return Err(GeometryError::TooManyMeshVertices);
             }
-            for (i, uv) in parameters.into_iter().enumerate() {
-                if retain_parameters {
-                    vertex_parameters.push(uv);
-                }
-                vertices.push(if let Some(&p) = boundary_points.get(i) {
-                    p
-                } else {
-                    face.surface.evaluate(uv.x(), uv.y())?
-                });
+            if retain_parameters {
+                vertex_parameters.extend(parameters);
             }
+            vertices.extend(points);
             for triangle in face_triangles {
                 let mut triangle = triangle.map(|i| i + offset);
                 if face.reversed {

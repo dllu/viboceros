@@ -38,6 +38,7 @@ pub(super) struct Sampling<'a> {
     trim_resolution: Option<usize>,
     vertex_limit: usize,
     pub display_edge_samples: Option<usize>,
+    pub polygon_density: Option<Real>,
 }
 impl<'a> Sampling<'a> {
     pub fn uniform(samples: usize) -> Self {
@@ -48,6 +49,7 @@ impl<'a> Sampling<'a> {
             trim_resolution: None,
             vertex_limit: u32::MAX as usize,
             display_edge_samples: None,
+            polygon_density: None,
         }
     }
     pub fn per_face(grids: &'a [[usize; 2]]) -> Self {
@@ -58,6 +60,7 @@ impl<'a> Sampling<'a> {
             trim_resolution: None,
             vertex_limit: 1_048_576,
             display_edge_samples: None,
+            polygon_density: None,
         }
     }
     pub fn with_axis_limit(mut self, limit: usize) -> Self {
@@ -71,6 +74,10 @@ impl<'a> Sampling<'a> {
     }
     pub fn with_display_edge_samples(mut self, samples: usize) -> Self {
         self.display_edge_samples = Some(samples);
+        self
+    }
+    pub fn with_polygon_density(mut self, density: Real) -> Self {
+        self.polygon_density = (density > 0.).then_some(density);
         self
     }
     pub fn grid(self, face: usize) -> [usize; 2] {
