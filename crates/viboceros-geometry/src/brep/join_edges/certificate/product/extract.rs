@@ -146,6 +146,23 @@ impl<'a> Spline<'a> {
         self.degree
     }
 
+    pub fn polynomial_controls(&self) -> Option<impl Iterator<Item = Point3> + '_> {
+        let Controls::Euclidean(controls) = self.controls else {
+            return None;
+        };
+        let weight = controls[0].weight();
+        controls.iter().all(|c| c.weight() == weight).then(|| {
+            (0..controls.len()).map(move |i| {
+                let index = if self.reversed {
+                    controls.len() - 1 - i
+                } else {
+                    i
+                };
+                controls[index].point()
+            })
+        })
+    }
+
     pub fn end_span(
         &self,
         end: bool,

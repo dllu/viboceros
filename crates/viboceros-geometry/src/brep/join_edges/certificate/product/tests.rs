@@ -111,6 +111,42 @@ fn normalized_knots_do_not_lose_tiny_spans_or_extreme_parameter_origins() {
 }
 
 #[test]
+fn dense_cubic_refinements_certify_within_a_small_work_budget() {
+    let points = [[0., 0., 0.], [1., 2., 0.], [2., -1., 0.], [3., 0., 0.]];
+    let mut raised = points;
+    raised[1][2] = 1. / 2048.;
+    raised[2][2] = raised[1][2];
+    let knots = [0., 0., 0., 0., 1., 1., 1., 1.];
+    let mut a = curve(&points, &[1.; 4], 3, &knots);
+    let mut b = curve(&raised, &[1.; 4], 3, &knots);
+    for i in 1..256 {
+        let piece = if i % 2 == 0 { &mut a } else { &mut b };
+        *piece = piece.try_insert_knot(i as Real / 256., 1).unwrap();
+    }
+    let reversed = b.reversed().unwrap();
+    let mut budget = Budget(48_000);
+    let bound = whole_curve_bound(&a, &reversed, true, 0.001, |n| budget.charge(n))
+        .unwrap()
+        .unwrap();
+    assert!(bound < 0.00037);
+    for i in 0..=16 {
+        let t = rational(i as Real / 16.);
+        let reversed_t = -&t;
+        let left = exact_value(&a, &t);
+        let right = exact_value(&reversed, &reversed_t);
+        let square: Rational = left
+            .iter()
+            .zip(&right)
+            .map(|(a, b)| {
+                let difference = a - b;
+                &difference * &difference
+            })
+            .sum();
+        assert!(square <= rational(bound) * rational(bound));
+    }
+}
+
+#[test]
 fn subdivision_can_certify_a_curve_even_when_its_control_hull_exceeds_limit() {
     let a = quadratic();
     let mut points = a

@@ -1,6 +1,6 @@
 //! Endpoint-preserving positive projective parameter correspondences.
 use super::*;
-use num_traits::Signed;
+use num_traits::{One, Signed};
 
 /// F(t) = c*t/(1-t+c*t). Positive c makes F an increasing bijection of [0,1].
 /// All parameters stay rational: a mapped knot need not be a binary64 value.
@@ -15,15 +15,25 @@ impl Map {
         }
     }
 
+    pub fn is_identity(&self) -> bool {
+        self.factor.is_one()
+    }
+
     fn denominator(&self, t: &Rational) -> Rational {
         rational(1.) - t + &self.factor * t
     }
 
     pub fn apply(&self, t: &Rational) -> Rational {
+        if self.is_identity() {
+            return t.clone();
+        }
         &self.factor * t / self.denominator(t)
     }
 
     pub fn inverse(&self, t: &Rational) -> Rational {
+        if self.is_identity() {
+            return t.clone();
+        }
         t / (&self.factor * (rational(1.) - t) + t)
     }
 
@@ -33,7 +43,7 @@ impl Map {
     /// positive denominator cancels on projection. Coordinates and weights
     /// must both be scaled, not just the Euclidean weight field.
     pub fn compose_span(&self, controls: &mut [H], left: &Rational, right: &Rational) {
-        if self.factor == rational(1.) {
+        if self.is_identity() {
             return;
         }
         let k = self.denominator(right) / self.denominator(left);

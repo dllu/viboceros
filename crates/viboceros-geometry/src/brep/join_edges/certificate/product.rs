@@ -6,6 +6,7 @@ use crate::exact_scalar::{Rational, rational};
 mod extract;
 pub(super) mod isocurve;
 mod parameter_map;
+mod polynomial;
 pub(super) mod restriction;
 #[cfg(test)]
 mod tests;
@@ -89,6 +90,11 @@ fn mapped_bound(
     let mut left = rational(0.);
     let one = rational(1.);
     let mut answer: Real = 0.;
+    let cubic = if !tighten && limit > 0. && map.is_identity() {
+        polynomial::Pair::new(a, b, charge)?
+    } else {
+        None
+    };
     while left < one {
         charge(8)?;
         let b_left = map.apply(&left);
@@ -104,6 +110,13 @@ fn mapped_bound(
             std::cmp::min(&a.knots[ai + 1], &one).clone(),
             map.inverse(std::cmp::min(&b.knots[bi + 1], &one)),
         );
+        if let Some(cubic) = &cubic
+            && let Some(upper) = cubic.bound([ai, bi], [&left, &right], limit, charge)?
+        {
+            answer = answer.max(upper);
+            left = right;
+            continue;
+        }
         let ac = a.extract(ai, &left, &right, charge)?;
         let mut bc = b.extract(bi, &b_left, &map.apply(&right), charge)?;
         charge(4 * bc.len())?;
