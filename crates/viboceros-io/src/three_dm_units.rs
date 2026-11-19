@@ -28,6 +28,7 @@ pub(crate) fn transform_geometry(
         },
         G::Point(point) => G::Point(transform.transform_point(*point)?),
         G::TextDot(dot) => G::TextDot(dot.with_point(transform.transform_point(dot.point())?)),
+        G::Leader(leader) => G::Leader(leader.transformed(transform)?),
         G::PointCloud(cloud) => G::PointCloud(cloud.transformed(transform)?),
         G::Line(line) => G::Line(line.transformed(transform, tolerance)?),
         G::Arc(arc) => match arc.transformed_similarity(transform, tolerance)? {

@@ -7861,6 +7861,7 @@ impl Command for DuplicateEdgeCommand {
                         .collect(),
                     Geometry::Point(_)
                     | Geometry::TextDot(_)
+                    | Geometry::Leader(_)
                     | Geometry::PointCloud(_)
                     | Geometry::Line(_)
                     | Geometry::Circle(_)
@@ -8096,7 +8097,8 @@ impl Command for DuplicateMeshEdgeCommand {
                 | Geometry::BlockInstance(_)
                 | Geometry::Brep(_)
                 | Geometry::SubD(_)
-                | Geometry::TextDot(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
+                | Geometry::TextDot(_)
+                | Geometry::Leader(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
             })
             .collect::<Result<Vec<_>, _>>()?;
         if meshes.is_empty() {
@@ -8515,7 +8517,8 @@ impl Command for ExtractWireframeCommand {
                 | Geometry::Polyline(_)
                 | Geometry::NurbsCurve(_)
                 | Geometry::PolyCurve(_)
-                | Geometry::TextDot(_) => {
+                | Geometry::TextDot(_)
+                | Geometry::Leader(_) => {
                     return Err(CommandError::UnsupportedExtractWireframeGeometry);
                 }
             };

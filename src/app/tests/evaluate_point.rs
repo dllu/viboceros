@@ -1,5 +1,26 @@
 use super::{circle_preview::screen_point, circle_preview::viewport_click, curve_fillet::enter, *};
 
+fn render_annotations(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    events: Vec<egui::Event>,
+) -> Vec<egui::epaint::ClippedShape> {
+    let mut output = context.run_ui(
+        egui::RawInput {
+            screen_rect: Some(egui::Rect::from_min_size(
+                egui::Pos2::ZERO,
+                egui::vec2(1000., 800.),
+            )),
+            events,
+            ..Default::default()
+        },
+        |ui| app.show_frame(ui, None),
+    );
+    let shapes = std::mem::take(&mut output.shapes);
+    output.drop_without_applying_deltas();
+    shapes
+}
+
 #[test]
 fn evaluate_point_uses_pick_view_plane_and_preserves_selection_and_history() {
     let mut app = test_app();
@@ -117,29 +138,14 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
     app.viewports[0].plane.set(plane);
     app.maximized_viewport = Some(0);
     let context = egui::Context::default();
-    let frame = |app: &mut VibocerosApp, events| {
-        let mut output = context.run_ui(
-            egui::RawInput {
-                screen_rect: Some(egui::Rect::from_min_size(
-                    egui::Pos2::ZERO,
-                    egui::vec2(1000., 800.),
-                )),
-                events,
-                ..Default::default()
-            },
-            |ui| app.show_frame(ui, None),
-        );
-        let shapes = std::mem::take(&mut output.shapes);
-        output.drop_without_applying_deltas();
-        shapes
-    };
+    let frame = |app: &mut VibocerosApp, events| render_annotations(app, &context, events);
     enter(
         &mut app,
         "EvaluatePt Label=On CoordinateSystem=CPlane Style=Dot",
     );
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::EvaluatePoint { options, pending: None }) if options.label
+        Some(InteractiveCommand::EvaluatePoint { options, pending: None, .. }) if options.label
     ));
     frame(&mut app, vec![]);
     frame(&mut app, vec![]);
@@ -194,5 +200,62 @@ fn evaluate_point_label_is_drawn_before_click_and_selectable_after_placement() {
             placed_label.galley.size().y * 0.5,
         );
     viewport_click(&mut app, &context, inside_right_edge);
+    assert!(app.document.is_selected(id));
+}
+
+#[test]
+fn evaluate_point_leader_previews_the_tail_and_commits_once() {
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    let frame = |app: &mut VibocerosApp, events| render_annotations(app, &context, events);
+    enter(&mut app, "EvaluatePt Label=On");
+    enter(&mut app, "Style");
+    enter(&mut app, "Leader");
+    enter(&mut app, "w0,0,2");
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::EvaluatePoint {
+            leader: Some(_),
+            ..
+        })
+    ));
+    assert!(!app.document.can_undo());
+    assert!(!app.accept_drafting_point(point(0., 0., 2.)));
+    frame(&mut app, vec![]);
+    frame(&mut app, vec![]);
+    let tail = point(2., 1., 2.);
+    let pixel = screen_point(&app, tail);
+    let preview = frame(&mut app, vec![egui::Event::PointerMoved(pixel)]);
+    assert!(
+        preview.iter().any(|shape| matches!(
+            &shape.shape,
+            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00"
+        )),
+        "expected the formatted leader text in the hover preview"
+    );
+    assert!(app.document.objects().next().is_none());
+    viewport_click(&mut app, &context, pixel);
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    let object = app.document.objects().next().unwrap();
+    let id = object.id();
+    let Geometry::Leader(leader) = object.geometry() else {
+        panic!("expected a leader");
+    };
+    assert_eq!(leader.path().vertices(), &[point(0., 0., 2.), tail]);
+    assert_eq!(leader.text(), "0.00,0.00,2.00");
+    assert_eq!(app.document.undo_label(), Some("EvaluatePt"));
+    frame(&mut app, vec![]);
+    let placed = frame(&mut app, vec![]);
+    let label = placed
+        .iter()
+        .find_map(|shape| match &shape.shape {
+            egui::Shape::Text(text) if text.galley.job.text == "0.00,0.00,2.00" => Some(text),
+            _ => None,
+        })
+        .expect("drawn leader label");
+    let label_center = label.pos + label.galley.size() * 0.5;
+    viewport_click(&mut app, &context, label_center);
     assert!(app.document.is_selected(id));
 }

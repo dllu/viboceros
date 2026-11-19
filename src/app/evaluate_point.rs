@@ -21,6 +21,7 @@ pub(super) fn start_command(arguments: &[&str]) -> Option<InteractiveCommand> {
     Some(InteractiveCommand::EvaluatePoint {
         options: EvaluatePointOptions::parse(arguments).ok()?,
         pending: None,
+        leader: None,
     })
 }
 
@@ -29,6 +30,7 @@ impl VibocerosApp {
         let Some(InteractiveCommand::EvaluatePoint {
             mut options,
             pending,
+            leader: None,
         }) = self.active_command
         else {
             return false;
@@ -71,7 +73,11 @@ impl VibocerosApp {
         };
         match next {
             Ok(pending) => {
-                let command = InteractiveCommand::EvaluatePoint { options, pending };
+                let command = InteractiveCommand::EvaluatePoint {
+                    options,
+                    pending,
+                    leader: None,
+                };
                 self.active_command = Some(command);
                 self.push_log(format!("> {input}"));
                 self.push_log(command.prompt().to_owned());
@@ -81,13 +87,34 @@ impl VibocerosApp {
         true
     }
 
-    pub(super) fn finish_evaluate_point(
+    pub(super) fn accept_evaluate_point(
         &mut self,
         point: Point3,
         plane: Frame3,
         options: EvaluatePointOptions,
+        leader: Option<(Point3, Frame3)>,
     ) -> bool {
-        let mut input = format!("EvaluatePt {}", format_model_point(point));
+        if options.wants_leader() && leader.is_none() {
+            if let Err(error) = options.format_label(point, plane, &self.document) {
+                self.push_log(format!("Error: {error}"));
+                return false;
+            }
+            let command = InteractiveCommand::EvaluatePoint {
+                options,
+                pending: None,
+                leader: Some((point, plane)),
+            };
+            self.active_command = Some(command);
+            self.push_log(command.prompt().to_owned());
+            return true;
+        }
+        let (measured, plane) = leader.unwrap_or((point, plane));
+        let mut input = format!("EvaluatePt {}", format_model_point(measured));
+        if leader.is_some() {
+            input.push(' ');
+            input.push_str(&format_model_point(point));
+            input.push_str(" Style=Leader");
+        }
         if options.label {
             input.push_str(" Label=On CoordinateSystem=");
             input.push_str(options.coordinate_system());

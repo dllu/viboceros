@@ -263,6 +263,7 @@ fn bounds(
             }
             ThreeDmGeometry::Point(p) => BoundingBox3::from_points([*p])?,
             ThreeDmGeometry::TextDot(dot) => BoundingBox3::from_points([dot.point()])?,
+            ThreeDmGeometry::Leader(leader) => leader.path().bounds(),
             ThreeDmGeometry::PointCloud(g) => g.bounds(),
             ThreeDmGeometry::Line(g) => BoundingBox3::from_points([g.start(), g.end()])?,
             ThreeDmGeometry::Arc(g) => g.bounds(),

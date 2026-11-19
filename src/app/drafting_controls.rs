@@ -8,6 +8,7 @@ impl VibocerosApp {
         shift_inverts_ortho: bool,
     ) -> DraftingInput {
         let mut input = DraftingInput {
+            plane: None,
             active: self.surface_point_grid_wants_point()
                 && !end_analysis_picking
                 && !self.picking_surface_boundary()

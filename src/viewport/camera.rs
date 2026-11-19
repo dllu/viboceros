@@ -474,8 +474,16 @@ impl Viewport {
         anchor: Option<Point3>,
     ) -> Option<Point3> {
         let plane = self.construction_plane();
-        let local_origin =
-            NaVector3::from(anchor.unwrap_or(plane.origin()).to_array()) - self.target;
+        self.unproject_drafting_frame(pointer, rect, plane.with_origin(anchor.unwrap_or(plane.origin())))
+    }
+
+    pub(super) fn unproject_drafting_frame(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        plane: Frame3,
+    ) -> Option<Point3> {
+        let local_origin = NaVector3::from(plane.origin().to_array()) - self.target;
         let plane = plane
             .with_origin(Point3::try_from([local_origin.x, local_origin.y, local_origin.z]).ok()?);
         let (origin, direction) = self.drafting_local_view_line(pointer, rect)?;

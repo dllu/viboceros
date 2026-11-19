@@ -25,6 +25,7 @@ enum ViboObjectType {
   VIBO_OBJECT_SUBD = 12,
   VIBO_OBJECT_EXTRUSION = 13,
   VIBO_OBJECT_TEXT_DOT = 14,
+  VIBO_OBJECT_LEADER = 15,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;
@@ -300,6 +301,10 @@ typedef struct ViboAnnotationLengthFormat {
   uint32_t display;
   uint32_t zero_suppress;
   uint32_t decimal_separator;
+  double text_height;
+  double arrow_size;
+  double landing_length;
+  double text_gap;
 } ViboAnnotationLengthFormat;
 
 int32_t vibo_annotation_length_format(const uint8_t* style, size_t count,

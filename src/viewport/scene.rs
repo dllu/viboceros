@@ -197,6 +197,7 @@ pub(super) struct CachedScene {
     scene: Arc<GpuViewportScene>,
     reprojection: Option<Reprojection>,
     pub(super) text_dots: Vec<(viboceros_geometry::TextDot, Color32)>,
+    pub(super) leaders: Vec<(viboceros_geometry::Leader, Color32)>,
 }
 
 #[derive(Clone, Copy)]
@@ -695,9 +696,19 @@ impl Viewport {
         }
         let mut scene = GpuSceneBuilder::new();
         let mut text_dots = Vec::new();
+        let mut leaders = Vec::new();
         for object in &key.objects {
             let normal_transform = object.transform.map(AffineNormalTransform3::new);
             let display = &object.geometry;
+            if let Geometry::Leader(leader) = &*display.geometry {
+                let posed = object.transform.map_or_else(
+                    || Some(leader.clone()),
+                    |map| leader.transformed(map).ok(),
+                );
+                if let Some(leader) = posed {
+                    leaders.push((leader, object.color));
+                }
+            }
             match &*display.geometry {
                 Geometry::Point(point) => {
                     if let Some(point) = object.display_point(*point) {
@@ -844,6 +855,7 @@ impl Viewport {
             scene: Arc::clone(&scene),
             reprojection,
             text_dots,
+            leaders,
         });
         scene
     }

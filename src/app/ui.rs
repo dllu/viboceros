@@ -1457,8 +1457,9 @@ impl VibocerosApp {
                                 Some(InteractiveCommand::EvaluatePoint {
                                     options,
                                     pending: None,
+                                    leader,
                                 }) if model_input_active && self.plane_prompt.is_none() => {
-                                    Some(options)
+                                    Some(crate::viewport::EvaluatePointPreview { options, leader })
                                 }
                                 _ => None,
                             },

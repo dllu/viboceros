@@ -1,14 +1,15 @@
 //! World and construction-plane coordinate reporting and annotation.
 use super::*;
 use crate::{CommandContext, parse_point};
-use viboceros_geometry::{Frame3, GeometryError, Point3, TextDot};
+use viboceros_geometry::{Frame3, GeometryError, Leader, Point3, TextDot};
 
-const USAGE: &str = "EvaluatePt point [Label=On|Off] [Style=Dot] [CoordinateSystem=World|CPlane]";
+const USAGE: &str = "EvaluatePt point [leader points] [Label=On|Off] [Style=Dot|Leader] [CoordinateSystem=World|CPlane]";
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct EvaluatePointOptions {
     pub label: bool,
     cplane: bool,
+    leader: bool,
 }
 
 impl EvaluatePointOptions {
@@ -41,7 +42,14 @@ impl EvaluatePointOptions {
                 return Err(CommandError::Usage(USAGE));
             }
             Ok(0)
-        } else if crate::option_name_eq(key, "Style") && value.eq_ignore_ascii_case("Dot") {
+        } else if crate::option_name_eq(key, "Style") {
+            if value.eq_ignore_ascii_case("Leader") {
+                self.leader = true;
+            } else if value.eq_ignore_ascii_case("Dot") {
+                self.leader = false;
+            } else {
+                return Err(CommandError::Usage(USAGE));
+            }
             Ok(1)
         } else if crate::option_name_eq(key, "CoordinateSystem") {
             if value.eq_ignore_ascii_case("CPlane") {
@@ -61,35 +69,73 @@ impl EvaluatePointOptions {
         if self.cplane { "CPlane" } else { "World" }
     }
 
+    pub fn wants_leader(self) -> bool {
+        self.label && self.leader
+    }
+
     pub fn preview_label(
         self,
         point: Point3,
         plane: Frame3,
         document: &Document,
     ) -> Option<TextDot> {
-        if !self.label {
+        if !self.label || self.leader {
             return None;
         }
-        let local = plane.coordinates_of(point).ok()?;
-        self.create_label(point, local, document).ok()
+        let text = self.format_label(point, plane, document).ok()?;
+        TextDot::try_new(point, text).ok()
     }
 
-    fn create_label(
+    pub fn leader_label(
+        self,
+        start: Point3,
+        end: Point3,
+        plane: Frame3,
+        document: &Document,
+    ) -> Result<Leader, GeometryError> {
+        self.create_leader(vec![start, end], plane, document)
+    }
+
+    fn create_leader(
+        self,
+        points: Vec<Point3>,
+        plane: Frame3,
+        document: &Document,
+    ) -> Result<Leader, GeometryError> {
+        let start = points[0];
+        let label = self.format_label(start, plane, document)?;
+        Leader::try_new(
+            plane.with_origin(start),
+            points,
+            label,
+            document.annotation_style().clone(),
+        )
+    }
+
+    pub fn format_label(
+        self,
+        point: Point3,
+        plane: Frame3,
+        document: &Document,
+    ) -> Result<String, GeometryError> {
+        self.label_text(point, plane.coordinates_of(point)?, document)
+    }
+
+    fn label_text(
         self,
         point: Point3,
         local: [f64; 3],
         document: &Document,
-    ) -> Result<TextDot, GeometryError> {
+    ) -> Result<String, GeometryError> {
         let values = if self.cplane { local } else { point.to_array() };
         let meters_per_unit = document
             .units()
             .meters_per_unit()
             .map_err(|_| GeometryError::InvalidAnnotationCoordinates)?;
-        let label = document
+        document
             .annotation_style()
             .format_coordinates(values, meters_per_unit)
-            .ok_or(GeometryError::InvalidAnnotationCoordinates)?;
-        TextDot::try_new(point, label)
+            .ok_or(GeometryError::InvalidAnnotationCoordinates)
     }
 }
 
@@ -122,26 +168,33 @@ impl Command for EvaluatePointCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let mut point = None;
+        let mut points = Vec::new();
         let mut index = 0;
         let mut options = Vec::new();
         while index < arguments.len() {
             if arguments[index].contains('=') {
                 options.push(arguments[index]);
                 index += 1;
-            } else if point.is_none() {
-                let (value, consumed) = parse_point(&arguments[index..])?;
-                point = Some(value);
-                index += consumed;
             } else {
-                return Err(CommandError::Usage(USAGE));
+                let (value, consumed) = parse_point(&arguments[index..])?;
+                points.push(value);
+                index += consumed;
             }
         }
-        let point = point.ok_or(CommandError::Usage(USAGE))?;
+        let point = points.first().copied().ok_or(CommandError::Usage(USAGE))?;
         let options = EvaluatePointOptions::parse(&options)?;
+        if (options.wants_leader() && points.len() < 2)
+            || (!options.wants_leader() && points.len() != 1)
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
         let local = context.construction_plane.coordinates_of(point)?;
-        if options.label {
-            let dot = options.create_label(point, local, document)?;
+        if options.wants_leader() {
+            let leader = options.create_leader(points, context.construction_plane, document)?;
+            document.add_geometry(Geometry::Leader(leader))?;
+        } else if options.label {
+            let text = options.label_text(point, local, document)?;
+            let dot = TextDot::try_new(point, text)?;
             document.add_geometry(Geometry::TextDot(dot))?;
         }
         Ok(format!(
@@ -201,7 +254,7 @@ mod tests {
             "EvaluatePt",
             "EvaluatePt NaN,0,0",
             "EvaluatePt 0,0,0 extra",
-            "EvaluatePt 0,0,0 Style=Leader",
+            "EvaluatePt 0,0,0 Label=On Style=Leader",
             "EvaluatePt 0,0,0 Label=No",
             "EvaluatePt 0,0,0 Label=Off Label=Off",
         ] {
@@ -296,6 +349,67 @@ mod tests {
                     .unwrap();
             }
         }
+    }
+
+    #[test]
+    fn evaluate_point_leader_preserves_its_anchor_path_and_label_through_3dm() {
+        let measured = Point3::try_new(13., 24., 35.).unwrap();
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(10., 20., 30.).unwrap(),
+            Vector3::try_new(0., 1., 0.).unwrap(),
+            Vector3::try_new(0., 0., 1.).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let style_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../viboceros-io/tests/fixtures/evaluate-point-annotation-style.3dm");
+        let style = viboceros_io::read_3dm_file(style_path, Tolerance::DEFAULT)
+            .unwrap()
+            .annotation_style;
+        document.set_annotation_style(style);
+        let report = registry
+            .execute_in_context(
+                &mut document,
+                "EvaluatePt Label=On Style=Leader CoordinateSystem=CPlane 13,24,35 15,30,39 13,32,42",
+                CommandContext { construction_plane: frame },
+            )
+            .unwrap();
+        assert_eq!(
+            report,
+            "World coordinates = 13,24,35\nCPlane coordinates = 4,5,3"
+        );
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("leader.3dm");
+        // The leader retains its own style after the document changes styles.
+        document.set_annotation_style(Default::default());
+        registry
+            .execute(&mut document, &format!("SaveAs \"{}\"", path.display()))
+            .unwrap();
+        let (reopened, _, _) = crate::open_3dm_with_named_views(path.to_str().unwrap()).unwrap();
+        for model in [&document, &reopened] {
+            assert_eq!(model.objects().count(), 1);
+            let Geometry::Leader(leader) = model.objects().next().unwrap().geometry() else {
+                panic!("expected native leader geometry");
+            };
+            assert_eq!(leader.text(), "0.315,0.395,0.235");
+            assert!(!leader.style().archive().is_empty());
+            assert_eq!(leader.plane(), frame.with_origin(measured));
+            assert_eq!(
+                leader
+                    .path()
+                    .vertices()
+                    .iter()
+                    .map(|point| point.to_array())
+                    .collect::<Vec<_>>(),
+                [[13., 24., 35.], [13., 30., 39.], [13., 32., 42.]],
+            );
+        }
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 0);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().count(), 1);
     }
 
     #[test]

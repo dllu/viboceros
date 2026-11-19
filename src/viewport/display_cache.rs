@@ -315,6 +315,11 @@ impl DisplayGeometry {
                         visit(segment.start(), segment.end());
                     }
                 }
+                Geometry::Leader(leader) => {
+                    for segment in leader.path().segments() {
+                        visit(segment.start(), segment.end());
+                    }
+                }
                 Geometry::NurbsCurve(curve) => curve.visit_segments(visit),
                 Geometry::PolyCurve(curve) => {
                     for segment in curve.segments() {

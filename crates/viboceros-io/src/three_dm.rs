@@ -36,6 +36,7 @@ pub use check::{
 mod nested_codec_tests;
 mod point_cloud_data;
 mod text_dot_data;
+mod leader_data;
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -52,6 +53,7 @@ const OBJECT_INSTANCE: c_int = 11;
 const OBJECT_SUBD: c_int = 12;
 const OBJECT_EXTRUSION: c_int = 13;
 const OBJECT_TEXT_DOT: c_int = 14;
+const OBJECT_LEADER: c_int = 15;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -170,6 +172,7 @@ pub enum ThreeDmGeometry {
     },
     Point(Point3),
     TextDot(viboceros_geometry::TextDot),
+    Leader(viboceros_geometry::Leader),
     PointCloud(PointCloud3),
     Line(LineSegment),
     Arc(CircularArc3),
@@ -1340,6 +1343,9 @@ fn decode_object(
                 transform: blocks::affine(coordinates)?,
             }
         }
+        OBJECT_LEADER if knots_u.is_empty() && knots_v.is_empty() && indices.is_empty() => {
+            ThreeDmGeometry::Leader(leader_data::decode(coordinates, geometry_data)?)
+        }
         OBJECT_TEXT_DOT
             if coordinates.len() == 3
                 && knots_u.is_empty()
@@ -1809,6 +1815,18 @@ impl ObjectPayload {
                     ThreeDmError::InvalidModel("block index exceeds native range".into())
                 })?],
                 geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::Leader(leader) => Self {
+                object_type: OBJECT_LEADER,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: leader_data::coordinates(leader),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: leader_data::encode(leader),
             },
             ThreeDmGeometry::TextDot(dot) => Self {
                 object_type: OBJECT_TEXT_DOT,

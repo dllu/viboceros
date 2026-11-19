@@ -70,6 +70,7 @@ impl Geometry {
         match self {
             Self::Point(_) => DuplicateGeometryFamily::Point,
             Self::TextDot(_) => DuplicateGeometryFamily::TextDot,
+            Self::Leader(_) => DuplicateGeometryFamily::Leader,
             Self::PointCloud(_) => DuplicateGeometryFamily::PointCloud,
             Self::Line(_) | Self::Polyline(_) => DuplicateGeometryFamily::PiecewiseLinear,
             Self::Circle(_) => DuplicateGeometryFamily::Circle,
@@ -114,6 +115,13 @@ impl Geometry {
                 text: dot.text().into(),
                 secondary: dot.secondary_text().into(),
                 style: dot.style().clone(),
+            },
+            Self::Leader(leader) => DuplicateGeometryKey::Leader {
+                path: leader.path().vertices().iter().copied().map(point_key).collect(),
+                x_axis: vector_key(leader.plane().x_axis()),
+                y_axis: vector_key(leader.plane().y_axis()),
+                rich_text: leader.rich_text().into(),
+                style: leader.style().archive().into(),
             },
             Self::PointCloud(cloud) => DuplicateGeometryKey::PointCloud(
                 cloud.points().iter().copied().map(point_key).collect(),
@@ -224,6 +232,7 @@ pub(super) enum DuplicateGeometryFamily {
     BlockInstance,
     Point,
     TextDot,
+    Leader,
     PointCloud,
     PiecewiseLinear,
     Circle,
@@ -246,6 +255,13 @@ enum DuplicateGeometryKey {
         text: String,
         secondary: String,
         style: viboceros_geometry::TextDotStyle,
+    },
+    Leader {
+        path: Vec<[u64; 3]>,
+        x_axis: [u64; 3],
+        y_axis: [u64; 3],
+        rich_text: String,
+        style: Vec<u8>,
     },
     PointCloud(Vec<[u64; 3]>),
     PiecewiseLinear(Vec<[u64; 3]>),

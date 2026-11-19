@@ -143,11 +143,12 @@ impl InteractiveCommand {
                 "ArcBlend: pick two curve ends, adjust Ratio/AlternateSolution/Trim/Join, then Enter (Esc cancels)"
             }
             Self::Point => "Point: pick a location in the viewport (Esc to cancel)",
+            Self::EvaluatePoint { leader: Some(_), .. } => "EvaluatePt: pick the leader label location",
             Self::EvaluatePoint { pending, .. } => match pending {
                 Some(super::super::evaluate_point::OptionName::CoordinateSystem) => {
                     "Coordinate system (World / CPlane)"
                 }
-                Some(super::super::evaluate_point::OptionName::Style) => "Label style (Dot)",
+                Some(super::super::evaluate_point::OptionName::Style) => "Label style (Dot / Leader)",
                 None => "EvaluatePt: pick a point (Label / Style / CoordinateSystem)",
             },
             Self::EvaluateUv { .. } => {

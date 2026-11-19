@@ -147,6 +147,7 @@ impl SelectionObject<'_> {
                 VolumeRelation::OUTSIDE
             }),
             Geometry::TextDot(dot) => self.classify_points([dot.point()]),
+            Geometry::Leader(leader) => self.classify_polyline(leader.path().vertices()),
             Geometry::PointCloud(cloud) => self.classify_points(
                 cloud
                     .points()

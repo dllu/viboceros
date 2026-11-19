@@ -285,7 +285,12 @@ impl Viewport {
         } else {
             None
         };
-        let raw_point = self.unproject_drafting_plane(pointer, rect, plane_anchor);
+        let plane = input.plane.unwrap_or_else(|| self.construction_plane());
+        let raw_point = self.unproject_drafting_frame(
+            pointer,
+            rect,
+            plane.with_origin(plane_anchor.unwrap_or(plane.origin())),
+        );
         // Object snaps are a camera-space query. They remain available even
         // when the construction plane is edge-on or behind the camera.
         let object_snap = self.object_snap(pointer, rect, document, input.snap_options());
@@ -294,7 +299,7 @@ impl Viewport {
                 viboceros_drafting::plane::ortho_point(
                     cursor,
                     anchor,
-                    self.construction_plane(),
+                    plane,
                     input.ortho_angle_degrees,
                 )
             })
@@ -305,7 +310,7 @@ impl Viewport {
             input.anchor.and_then(|anchor| {
                 viboceros_drafting::plane::ortho_z_projected(
                     anchor,
-                    self.construction_plane(),
+                    plane,
                     [Real::from(pointer.x), Real::from(pointer.y)],
                     |point| {
                         let [x, y] = self.project_precise(point, rect)?;
@@ -338,7 +343,7 @@ impl Viewport {
                 viboceros_drafting::plane::orthogonal_track_projected(
                     cursor,
                     anchor,
-                    self.construction_plane(),
+                    plane,
                     [Real::from(pointer.x), Real::from(pointer.y)],
                     Real::from(TRACK_CAPTURE_PIXELS),
                     |point| {
@@ -353,7 +358,9 @@ impl Viewport {
             None
         };
         let grid_point = if input.grid_snap {
-            raw_point.and_then(|p| self.snap_to_grid(p))
+            raw_point.and_then(|p| {
+                viboceros_drafting::plane::snap_to_grid(p, plane, self.grid.snap_spacing).ok()
+            })
         } else {
             None
         };
@@ -388,6 +395,7 @@ impl Viewport {
         })
     }
 
+    #[cfg(test)]
     pub(super) fn snap_to_grid(&self, point: Point3) -> Option<Point3> {
         viboceros_drafting::plane::snap_to_grid(
             point,

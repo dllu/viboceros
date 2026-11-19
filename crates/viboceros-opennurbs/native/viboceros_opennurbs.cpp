@@ -288,6 +288,13 @@ class ByteReader {
     return true;
   }
 
+  const uint8_t* Take(size_t count) {
+    if (count > Remaining()) return nullptr;
+    const auto* start = bytes_ + position_;
+    position_ += count;
+    return start;
+  }
+
   size_t Remaining() const { return count_ - position_; }
   bool Finished() const { return position_ == count_; }
 
@@ -299,6 +306,7 @@ class ByteReader {
 
 #include "text_dot_data.h"
 #include "annotation_style.h"
+#include "leader_data.h"
 
 bool append_point(const ON_Point& point, BridgeObject& output) {
   const ON_3dPoint value = point.point;
@@ -1445,7 +1453,7 @@ ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
 }
 
 ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
-                        bool validate = true) {
+                        bool validate = true, ONX_Model* model = nullptr) {
   if (!finite_coordinates(source.coordinates, source.coordinate_count) ||
       !finite_coordinates(source.knots_u, source.knot_u_count) ||
       !finite_coordinates(source.knots_v, source.knot_v_count)) {
@@ -1467,6 +1475,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error,
     }
     case VIBO_OBJECT_TEXT_DOT:
       return decode_text_dot(source, error);
+    case VIBO_OBJECT_LEADER:
+      return decode_leader(source, model, error);
     case VIBO_OBJECT_POINT: {
       if (source.coordinate_count != 3) {
         error = "a point must contain three coordinates";
@@ -1997,6 +2007,8 @@ bool read_geometry_object(const ONX_Model& model, const ON_Geometry* geometry,co
       bool supported = false;
       if (const ON_TextDot* dot = ON_TextDot::Cast(geometry)) {
         supported = append_text_dot(*dot, object);
+      } else if (const ON_Leader* leader = ON_Leader::Cast(geometry)) {
+        supported = append_leader(model, *leader, object);
       } else if (const ON_Point* point = ON_Point::Cast(geometry)) {
         supported = append_point(*point, object);
       } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
@@ -2862,7 +2874,7 @@ extern "C" int32_t vibo_3dm_write(
       std::string geometry_error;
       ON_Object* geometry = source.object_type==VIBO_OBJECT_INSTANCE
           ? structural_instance_for(source, definition_ids, definitions, geometry_error)
-          : geometry_for(source, geometry_error);
+          : geometry_for(source, geometry_error, true, &model);
       if (geometry == nullptr) {
         set_error(error, error_capacity,
                   "object " + std::to_string(index) + ": " + geometry_error);

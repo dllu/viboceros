@@ -4,19 +4,23 @@ namespace vibo_annotation {
 constexpr size_t max_style_size = 8 * 1024 * 1024;
 constexpr int archive_version = 80;
 
-bool retain(const ONX_Model& model, std::vector<uint8_t>& bytes) {
-  const auto reference = model.CurrentDimensionStyle();
-  const auto* style = ON_DimStyle::Cast(reference.ModelComponent());
-  if (style == nullptr || style->Id() == ON_DimStyle::Default.Id()) {
+bool archive_style(const ON_DimStyle& style, std::vector<uint8_t>& bytes) {
+  if (style.Id() == ON_DimStyle::Default.Id() && style.CompareFields(ON_DimStyle::Default)) {
     return true;
   }
   ON_Write3dmBufferArchive archive(1024, max_style_size, archive_version, ON::Version());
-  if (!style->Write(archive) || archive.SizeOfArchive() == 0) {
+  if (!style.Write(archive) || archive.SizeOfArchive() == 0) {
     return false;
   }
   const auto* data = static_cast<const uint8_t*>(archive.Buffer());
   bytes.assign(data, data + archive.SizeOfArchive());
   return true;
+}
+
+bool retain(const ONX_Model& model, std::vector<uint8_t>& bytes) {
+  const auto reference = model.CurrentDimensionStyle();
+  const auto* style = ON_DimStyle::Cast(reference.ModelComponent());
+  return style == nullptr || archive_style(*style, bytes);
 }
 
 bool read(const uint8_t* data, size_t count, ON_DimStyle& style) {
@@ -48,7 +52,11 @@ ViboAnnotationLengthFormat length_format(const ON_DimStyle& style) {
     style.LengthFactor(), style.RoundOff(), style.LengthResolution(),
     static_cast<uint32_t>(style.DimensionLengthDisplay()),
     static_cast<uint32_t>(style.ZeroSuppress()),
-    static_cast<uint32_t>(style.DecimalSeparator())
+    static_cast<uint32_t>(style.DecimalSeparator()),
+    style.TextHeight() * style.DimScale(),
+    style.LeaderArrowSize() * style.DimScale(),
+    style.LeaderHasLanding() ? style.LeaderLandingLength() * style.DimScale() : 0.0,
+    style.TextGap() * style.DimScale()
   };
 }
 

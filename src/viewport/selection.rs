@@ -218,6 +218,19 @@ impl Viewport {
         PickHit::screen(0, distance)
     }
 
+    fn pick_leader(&self, leader: &viboceros_geometry::Leader, pointer: Pos2, rect: Rect) -> PickHit {
+        let text = self
+            .leader_text_bounds(leader, rect)
+            .filter(|bounds| bounds.intersects(rect))
+            .map_or(f32::INFINITY, |bounds| bounds.distance_to_pos(pointer));
+        let distance = leader
+            .path()
+            .segments()
+            .map(|segment| self.selection_line_distance(pointer, segment.start(), segment.end(), rect))
+            .fold(text, f32::min);
+        PickHit::screen(1, distance)
+    }
+
     fn add_projected_text_dot(
         &self,
         projected: &mut ProjectedPrimitives,
@@ -480,6 +493,7 @@ impl Viewport {
                     PickHit::screen(0, distance)
                 }
                 Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
+                Geometry::Leader(leader) => self.pick_leader(leader, pointer, rect),
                 Geometry::PointCloud(cloud) => {
                     let distance = self
                         .pick_point_cloud_member(pointer, rect, cloud)
@@ -813,6 +827,7 @@ impl Viewport {
                     }),
             ),
             Geometry::TextDot(dot) => self.pick_text_dot(dot, pointer, rect),
+            Geometry::Leader(leader) => self.pick_leader(leader, pointer, rect),
             Geometry::PointCloud(cloud) => PickHit::screen(
                 0,
                 self.pick_point_cloud_member(pointer, rect, cloud)
@@ -915,6 +930,16 @@ impl Viewport {
         match &*display.geometry {
             Geometry::Point(point) => self.add_selection_point(&mut projected, *point, rect),
             Geometry::TextDot(dot) => self.add_projected_text_dot(&mut projected, dot, rect),
+            Geometry::Leader(leader) => {
+                for &[a, b] in display.wires() {
+                    self.add_selection_segment(&mut projected, a, b, rect);
+                }
+                if let Some(bounds) = self.leader_text_bounds(leader, rect) {
+                    let [a, b, c, d] = rect_corners(bounds);
+                    projected.add_triangle([Some(a), Some(b), Some(c)]);
+                    projected.add_triangle([Some(a), Some(c), Some(d)]);
+                }
+            }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {
                     if cloud.is_hidden(index) {
@@ -970,6 +995,16 @@ impl Viewport {
             }
             Geometry::TextDot(dot) => {
                 self.add_projected_text_dot(&mut projected, dot, viewport_rect);
+            }
+            Geometry::Leader(leader) => {
+                for segment in leader.path().segments() {
+                    self.add_selection_segment(
+                        &mut projected,
+                        segment.start(),
+                        segment.end(),
+                        viewport_rect,
+                    );
+                }
             }
             Geometry::PointCloud(cloud) => {
                 for (index, point) in cloud.points().iter().enumerate() {

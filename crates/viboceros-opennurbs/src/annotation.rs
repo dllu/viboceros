@@ -12,6 +12,16 @@ struct LengthFormat {
     display: u32,
     zero_suppress: u32,
     decimal_separator: u32,
+    leader: LeaderAppearance,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct LeaderAppearance {
+    pub text_height: f64,
+    pub arrow_size: f64,
+    pub landing_length: f64,
+    pub text_gap: f64,
 }
 
 unsafe extern "C" {
@@ -63,17 +73,26 @@ impl AnnotationStyle {
         &self.archive
     }
 
+    fn format(&self) -> Option<&LengthFormat> {
+        static DEFAULT: OnceLock<Option<LengthFormat>> = OnceLock::new();
+        self.format.as_ref().or_else(|| {
+            DEFAULT
+                .get_or_init(|| LengthFormat::from_archive(&[]))
+                .as_ref()
+        })
+    }
+
+    pub fn leader_appearance(&self) -> LeaderAppearance {
+        self.format()
+            .map_or_else(LeaderAppearance::default, |format| format.leader)
+    }
+
     pub fn format_coordinates(
         &self,
         coordinates: [f64; 3],
         model_meters_per_unit: Option<f64>,
     ) -> Option<String> {
-        static DEFAULT: OnceLock<Option<LengthFormat>> = OnceLock::new();
-        let format = self.format.as_ref().or_else(|| {
-            DEFAULT
-                .get_or_init(|| LengthFormat::from_archive(&[]))
-                .as_ref()
-        })?;
+        let format = self.format()?;
         let mut output = [0_u8; 4096];
         // SAFETY: all pointers cover the specified lengths for the synchronous call.
         let success = unsafe {

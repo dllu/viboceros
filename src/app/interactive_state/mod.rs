@@ -183,6 +183,7 @@ pub(super) enum InteractiveCommand {
     EvaluatePoint {
         options: viboceros_command::EvaluatePointOptions,
         pending: Option<super::evaluate_point::OptionName>,
+        leader: Option<(Point3, Frame3)>,
     },
     EvaluateUv {
         options: viboceros_command::EvaluateUvOptions,

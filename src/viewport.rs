@@ -29,6 +29,7 @@ const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
 mod camera;
 mod text_dot;
+mod leader;
 mod clipping;
 mod curve_line;
 mod curve_offset;
@@ -304,6 +305,7 @@ pub struct DraftingInput {
     pub ortho_angle_degrees: f64,
     pub anchor: Option<Point3>,
     pub reference: Option<Point3>,
+    pub plane: Option<Frame3>,
 }
 
 impl Default for DraftingInput {
@@ -322,6 +324,7 @@ impl Default for DraftingInput {
             ortho_angle_degrees: 90.0,
             anchor: None,
             reference: None,
+            plane: None,
         }
     }
 }
@@ -406,7 +409,7 @@ pub struct ViewportInput<'a> {
     pub extrude_subd_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub soft_crease: Option<soft_crease::Overlay<'a>>,
     pub drafting: DraftingInput,
-    pub(crate) evaluate_point: Option<viboceros_command::EvaluatePointOptions>,
+    pub(crate) evaluate_point: Option<EvaluatePointPreview>,
     pub point_filter: Option<viboceros_drafting::PointFilterSession>,
     pub point_constraint: Option<viboceros_drafting::PointConstraintState>,
     pub translation_constraint: Option<viboceros_command::translation::DestinationConstraint>,
@@ -543,6 +546,12 @@ pub struct ViewportInput<'a> {
     pub current_end_marker: Option<usize>,
     pub end_marker_color: Option<Color32>,
     pub(crate) surface_corners: &'a [SurfaceCornerControl],
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct EvaluatePointPreview {
+    pub(crate) options: viboceros_command::EvaluatePointOptions,
+    pub(crate) leader: Option<(Point3, Frame3)>,
 }
 
 fn selection_candidate(
@@ -841,7 +850,7 @@ pub struct Viewport {
     display_cache: std::rc::Rc<std::cell::RefCell<display_cache::DisplayCache>>,
     grip_preview_cache: std::rc::Rc<std::cell::RefCell<grip_preview::GripPreviewCache>>,
     cached_scene: std::cell::RefCell<Option<scene::CachedScene>>,
-    text_dot_fonts: Option<egui::Context>,
+    annotation_fonts: Option<egui::Context>,
     analysis_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
     curvature_objects: Option<std::sync::Arc<std::collections::BTreeSet<ObjectId>>>,
     curvature_meshes: Option<viboceros_command::curvature_analysis::Meshes>,
@@ -961,7 +970,7 @@ impl Viewport {
             display_cache: Default::default(),
             grip_preview_cache: Default::default(),
             cached_scene: Default::default(),
-            text_dot_fonts: None,
+            annotation_fonts: None,
             analysis_objects: None,
             curvature_objects: None,
             curvature_meshes: None,
@@ -1529,10 +1538,20 @@ impl Viewport {
         self.analysis_objects = input.draft_angle_analysis.map(|view| view.objects.clone());
         self.curvature_objects = input.curvature_analysis.map(|v| v.objects.clone());
         self.curvature_meshes = input.curvature_analysis.map(|v| v.meshes.clone());
-        let drafting = input.drafting;
+        let drafting = input.evaluate_point.and_then(|preview| preview.leader).map_or(
+            input.drafting,
+            |(anchor, frame)| DraftingInput {
+                anchor: Some(anchor),
+                planar: true,
+                plane: Some(frame),
+                snap_projection: Some(frame.with_origin(anchor)),
+                ortho_snap_to_cplane_z: false,
+                ..input.drafting
+            },
+        );
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
-        self.text_dot_fonts = Some(ui.ctx().clone());
+        self.annotation_fonts = Some(ui.ctx().clone());
         use egui::emath::GuiRounding as _;
         let pixels_per_point = ui.ctx().pixels_per_point();
         let rect = response.rect.round_to_pixels(pixels_per_point);
@@ -2532,6 +2551,7 @@ impl Viewport {
             ),
         );
         self.paint_scene_text_dots(&painter, rect);
+        self.paint_scene_leaders(&painter, rect);
         if let Some(rectangle) = input.alignment_plane_preview {
             let stroke = Stroke::new(1.5, Color32::from_rgb(20, 115, 190));
             for (a, b) in rectangle
@@ -2577,14 +2597,22 @@ impl Viewport {
                 )
             });
         self.paint_component_previews(&painter, rect, document, input.component_previews);
-        if let Some(options) = input.evaluate_point
+        if let Some(preview) = input.evaluate_point
             && let Some(cursor) = drafting_cursor
             && !input
                 .point_filter
                 .is_some_and(viboceros_drafting::PointFilterSession::awaiting_source)
-            && let Some(dot) = options.preview_label(cursor.point, self.construction_plane(), document)
         {
-            self.paint_text_dot(&painter, rect, &dot, Color32::from_rgb(20, 115, 190));
+            let color = Color32::from_rgb(20, 115, 190);
+            if let Some((start, plane)) = preview.leader {
+                if let Ok(leader) = preview.options.leader_label(start, cursor.point, plane, document) {
+                    self.paint_leader_preview(&painter, rect, &leader, color);
+                }
+            } else if let Some(dot) =
+                preview.options.preview_label(cursor.point, self.construction_plane(), document)
+            {
+                self.paint_text_dot(&painter, rect, &dot, color);
+            }
         }
         self.paint_chain_targets(&painter, rect, document, input.chain_highlights);
         for &curve in input.nested_length_guides {
@@ -7272,6 +7300,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(0.0, 0.0, 8.0)),
                     reference: None,
+                    plane: None,
                     snap_projection: None,
                 },
             )
@@ -7312,6 +7341,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    plane: None,
                     snap_projection: None,
                 },
             )
@@ -7345,6 +7375,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(anchor),
                     reference: None,
+                    plane: None,
                     snap_projection: None,
                 },
             )
@@ -7519,6 +7550,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: Some(point(8.0, 8.0, 6.0)),
                     reference: None,
+                    plane: None,
                     snap_projection: None,
                 },
             )
@@ -7557,6 +7589,7 @@ mod tests {
                     ortho_angle_degrees: 90.0,
                     anchor: None,
                     reference: None,
+                    plane: None,
                     snap_projection: None,
                 },
             )

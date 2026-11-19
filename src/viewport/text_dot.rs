@@ -29,7 +29,7 @@ impl Viewport {
     pub(super) fn text_dot_bounds(&self, dot: &TextDot, rect: Rect) -> Option<Rect> {
         let center = self.text_dot_center(dot, rect)?;
         let size = self
-            .text_dot_fonts
+            .annotation_fonts
             .as_ref()
             .map_or(Vec2::ZERO, |ctx| layout(ctx, dot).size());
         Some(badge_bounds(center, size))
