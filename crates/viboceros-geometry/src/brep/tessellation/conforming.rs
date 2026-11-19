@@ -1,5 +1,6 @@
 //! Conforming triangulation for independently parameterized shared boundaries.
 
+use super::sampling::trim_cusp_stations;
 use super::trim_image::LiftedTrim;
 use super::*;
 use crate::ParameterSide;
@@ -86,32 +87,40 @@ impl Brep {
             .iter()
             .map(|edge| sample_spans(edge.curve.spans(), samples_per_span))
             .collect::<Result<Vec<_>, _>>()?;
+        let mut cusp_edges = vec![false; stations.len()];
         // Preserve p-curve corners even when the shared model-space edge uses
-        // a different knot layout or parameterization.
+        // a different knot layout or parameterization. Extra samples next to
+        // tangent cusps must also be shared by all incident faces.
         for frame in &frames {
             let face = frame.face.as_ref();
-            for trim in face.loops.iter().flat_map(|l| &l.trims) {
-                let Some(index) = trim.edge else { continue };
-                let edge = &self.edges[index];
-                for t in sample_spans(trim.curve.spans(), 1)? {
-                    let uv = trim.curve.evaluate(t)?;
-                    let p = face.surface.evaluate(uv.x(), uv.y())?;
-                    let fraction = fraction(t, trim.curve.domain())?;
-                    let fraction = if trim.reversed_3d {
-                        1.0 - fraction
-                    } else {
-                        fraction
-                    };
-                    let direct = edge.curve.parameter_at(fraction)?;
-                    let parameter =
-                        if edge.curve.evaluate(direct)?.distance_to(p)? <= search.absolute() {
-                            direct
+            for boundary in &face.loops {
+                let extra = trim_cusp_stations(face, boundary, samples_per_span)?;
+                for (i, trim) in boundary.trims.iter().enumerate() {
+                    let Some(index) = trim.edge else { continue };
+                    let edge = &self.edges[index];
+                    let additions = extra.get(i).map_or(&[][..], Vec::as_slice);
+                    cusp_edges[index] |= !additions.is_empty();
+                    let knots = sample_spans(trim.curve.spans(), 1)?;
+                    for t in knots.into_iter().chain(additions.iter().copied()) {
+                        let uv = trim.curve.evaluate(t)?;
+                        let p = face.surface.evaluate(uv.x(), uv.y())?;
+                        let fraction = fraction(t, trim.curve.domain())?;
+                        let fraction = if trim.reversed_3d {
+                            1.0 - fraction
                         } else {
-                            edge.curve.closest_parameter(p, search)?
+                            fraction
                         };
-                    stations[index].push(parameter);
-                    if stations[index].len() > MAX_CONSTRAINED_TRIM_VERTICES {
-                        return Err(GeometryError::TooManyMeshVertices);
+                        let direct = edge.curve.parameter_at(fraction)?;
+                        let parameter =
+                            if edge.curve.evaluate(direct)?.distance_to(p)? <= search.absolute() {
+                                direct
+                            } else {
+                                edge.curve.closest_parameter(p, search)?
+                            };
+                        stations[index].push(parameter);
+                        if stations[index].len() > MAX_CONSTRAINED_TRIM_VERTICES {
+                            return Err(GeometryError::TooManyMeshVertices);
+                        }
                     }
                 }
             }
@@ -119,10 +128,16 @@ impl Brep {
         let edge_samples = stations
             .into_iter()
             .zip(&self.edges)
-            .map(|(mut ts, edge)| {
+            .zip(cusp_edges)
+            .map(|((mut ts, edge), cusp)| {
                 ts.sort_by(Real::total_cmp);
                 ts.dedup();
                 let domain = edge.curve.domain();
+                let spacing = if cusp {
+                    search.absolute()
+                } else {
+                    tolerance.absolute()
+                };
                 let mut samples = Vec::<(Real, Point3)>::new();
                 for t in ts {
                     let point = if t == *domain.start() {
@@ -133,13 +148,19 @@ impl Brep {
                         edge.curve.evaluate(t)?
                     };
                     if let Some((previous_t, previous)) = samples.last_mut()
-                        && previous.distance_to(point)? <= tolerance.absolute()
+                        && previous.distance_to(point)? <= spacing
                     {
-                        if t == *domain.end() {
+                        if t != *domain.end() {
+                            continue;
+                        }
+                        if *previous_t != *domain.start() {
                             *previous_t = t;
                             *previous = point;
+                            continue;
                         }
-                        continue;
+                        // The two topological endpoints delimit the same
+                        // boundary on its incident faces even on a short edge.
+                        // Interior spacing must not merge those vertices.
                     }
                     samples.push((t, point));
                 }
@@ -238,7 +259,7 @@ impl Brep {
                 &lengths,
                 &face.surface,
                 sampling.grid(index),
-                None,
+                sampling.axis_limit,
             )?;
             let face_triangles = if retain_parameters {
                 creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
@@ -278,14 +299,16 @@ impl Brep {
                     triangle.swap(1, 2);
                 }
                 if crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
-                    &vertices, triangle, tolerance,
+                    &vertices,
+                    triangle,
+                    Tolerance::MESH_VALIDATION,
                 )? {
                     triangles.push(triangle);
                     face_sources.push(index);
                 }
             }
         }
-        let mesh = TriangleMesh::try_new(vertices, triangles, tolerance)?;
+        let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::MESH_VALIDATION)?;
         if !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)? {
             let topology = mesh.topology();
             return Err(GeometryError::UnstitchedBrepTessellation {
