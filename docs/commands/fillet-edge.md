@@ -31,6 +31,10 @@ Use `ChainEdges` to select connected edges on closed polysurfaces. Set
 chain. At a fork, pick a branch or press Enter to confirm the highlighted path.
 Enter at the chain prompt adds the chain to the fillet selection. Esc cancels
 the fillet. Double-click an edge at the main prompt to select its tangent chain.
+`PreviousEdgeSelection` restores the most recent available canceled edge set.
+Use `PreviousEdgeSelection=2` to recall the second most recent set. Each edge
+blend command remembers up to 20 distinct sets in the open document. Recall
+requires the original source geometry to be present and selectable.
 
 The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage

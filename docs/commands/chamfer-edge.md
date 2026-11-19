@@ -19,6 +19,8 @@ the measurement as you move the second point.
 to edge selection. Esc restores the prior edge set.
 Use `ChainEdges` for [connected-edge selection](curve-chains.md), or
 double-click an edge to select its tangent chain.
+`PreviousEdgeSelection` recalls canceled picks. Use `PreviousEdgeSelection=2`
+to select the second most recent set.
 
 For scripts, address original edges by object ID and index, or select whole
 objects and use All=Yes:
@@ -58,7 +60,7 @@ Licensed Rhino capture remains pending after the recorded
 performance are unqualified.
 
 Per-edge distances, variable handles along edges, DistFromEdge, open polysurfaces,
-TrimAndJoin=No, previous edge sets, History editing
+TrimAndJoin=No, History editing
 and saved native defaults remain future work. General collapsing offsets and
 self-intersections require broader qualification.
 

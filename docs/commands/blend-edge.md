@@ -12,6 +12,8 @@ the measurement as you move the second point.
 to edge selection. Esc restores the prior edge set.
 Use `ChainEdges` for [connected-edge selection](curve-chains.md), or
 double-click an edge to select its tangent chain.
+`PreviousEdgeSelection` recalls canceled picks. Use `PreviousEdgeSelection=2`
+to select the second most recent set.
 
 ```text
 BlendEdge Radius=1 RailType=RollingBall object-id 0,2
@@ -27,6 +29,6 @@ On a right-angle straight edge the rolling mode has setback `r`; the width mode 
 
 See the [qualification record](../blend-edge-qualification.json) for tested shapes, failures, sanitizer configuration and current limits. Licensed Rhino capture remains pending the recorded [Wine startup failure](../oracle-sspi.md). Shape equality, native getter parity and comparative performance remain unqualified.
 
-Variable per-edge/along-edge handles, DistFromEdge, open polysurfaces, TrimAndJoin=No, previous edge sets, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
+Variable per-edge/along-edge handles, DistFromEdge, open polysurfaces, TrimAndJoin=No, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
 
 References: [Rhino BlendEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendedge.htm), [public BlendType](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BlendType.htm).

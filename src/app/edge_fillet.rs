@@ -8,8 +8,10 @@ use viboceros_command::{
 
 mod face_edges;
 mod preview;
+mod previous;
 pub(super) use face_edges::FaceEdgeSelection;
 pub(super) use preview::Preview;
+pub(super) use previous::EdgeSelectionHistory;
 
 pub(super) const FACE_EDGES_HINT: &str = "Select faces to add their sharp boundary edges. Enter keeps the picks. Esc discards these face picks.";
 
@@ -42,13 +44,13 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges, or use ChainEdges or FaceEdges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges, or use ChainEdges or FaceEdges. Set Distance=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance=value, FromTwoPoints, RailType or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges, or use ChainEdges or FaceEdges. Set Radius=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromTwoPoints, RailType or Preview."
                 }
             }
         }
@@ -113,6 +115,10 @@ impl VibocerosApp {
                 return true;
             }
         };
+        let previous = words
+            .iter()
+            .position(|word| previous::argument(word).is_some())
+            .and_then(|index| previous::argument(words.remove(index)));
         let chain_options = words
             .iter()
             .position(|word| {
@@ -192,6 +198,9 @@ impl VibocerosApp {
             prompt.name(),
             prompt.options()
         ));
+        if let Some(number) = previous {
+            self.recall_edge_selection(prompt, number);
+        }
         if let Some(chain_options) = chain_options {
             self.begin_edge_blend_chain(&chain_options);
         } else if face_edges.is_some() {
@@ -208,6 +217,11 @@ impl VibocerosApp {
         let (name, options) = keyword
             .split_once(char::is_whitespace)
             .unwrap_or((keyword, ""));
+        if let Some(number) = previous::argument(name) {
+            let number = number.or_else(|| (!options.trim().is_empty()).then_some(options.trim()));
+            self.recall_edge_selection(prompt, number);
+            return true;
+        }
         if name.eq_ignore_ascii_case("ChainEdges") {
             self.begin_edge_blend_chain(options);
             return true;
@@ -378,6 +392,7 @@ impl VibocerosApp {
         self.edge_blend_faces = None;
         self.command_input.clear();
         if !apply {
+            self.remember_edge_selection(prompt);
             self.component_selection.clear();
             self.edge_blend_preview.clear();
             self.push_log(format!("Cancelled {}", prompt.name()));

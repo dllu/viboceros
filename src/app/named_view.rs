@@ -297,6 +297,7 @@ impl VibocerosApp {
                 let mut named_cplanes = NamedViews::default();
                 let imported_cplanes = add_file_cplanes(&mut named_cplanes, cplanes);
                 self.document = document;
+                self.edge_selection_history = Default::default();
                 self.document_path = Some(
                     std::fs::canonicalize(path).unwrap_or_else(|_| std::path::PathBuf::from(path)),
                 );
