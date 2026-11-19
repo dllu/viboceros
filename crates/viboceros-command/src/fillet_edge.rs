@@ -75,8 +75,8 @@ pub struct EdgeBlendSelection {
 
 /// Backward-compatible selected-edge fillet entry point.
 pub type FilletEdgeSelection = EdgeBlendSelection;
-#[derive(Clone, Copy, Debug)]
-enum EdgeBlendKind {
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum EdgeBlendKind {
     Fillet(FilletCorner),
     Chamfer(crate::chamfer_edge::ChamferRailType),
     Curvature(crate::blend_edge::BlendRailType),
@@ -89,7 +89,7 @@ impl EdgeBlendKind {
             Self::Curvature(_) => crate::blend_edge::USAGE,
         }
     }
-    fn command(self) -> &'static str {
+    pub fn command(self) -> &'static str {
         match self {
             Self::Fillet(_) => "FilletEdge",
             Self::Chamfer(_) => "ChamferEdge",
@@ -97,6 +97,16 @@ impl EdgeBlendKind {
         }
     }
 }
+
+/// Read-only input captured from the original edge indices and owned geometry.
+#[derive(Clone, PartialEq)]
+pub struct EdgeBlendPlan {
+    kind: EdgeBlendKind,
+    radius: Real,
+    tolerance: Tolerance,
+    sources: Vec<(ObjectId, GeometrySnapshot, Vec<usize>)>,
+}
+
 impl EdgeBlendSelection {
     pub fn prepare(
         document: &Document,
@@ -146,47 +156,11 @@ impl EdgeBlendSelection {
         radius: Real,
         kind: EdgeBlendKind,
     ) -> Result<Self, CommandError> {
-        if !radius.is_finite() || radius <= 0. {
-            return Err(CommandError::Usage(kind.usage()));
-        }
-        let mut by_object = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
-        for (count, (id, edge)) in picks.into_iter().enumerate() {
-            if count >= 100000 || !document.is_object_selectable(id) {
-                return Err(CommandError::Usage(kind.usage()));
-            }
-            by_object.entry(id).or_default().insert(edge);
-        }
-        if by_object.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-        let mut sources = Vec::new();
-        let mut jobs = Vec::new();
-        for (id, edges) in by_object {
-            let object = document
-                .object(id)
-                .ok_or(CommandError::Usage(kind.usage()))?;
-            let Geometry::Brep(brep) = object.geometry() else {
-                return Err(CommandError::Usage(kind.usage()));
-            };
-            if !brep.is_solid() || edges.iter().any(|&edge| edge >= brep.edges().len()) {
-                return Err(CommandError::Usage(kind.usage()));
-            }
-            sources.push((id, object.geometry_snapshot().clone()));
-            jobs.push((id, brep, edges.into_iter().collect::<Vec<_>>()));
-        }
-        let mut replacements = Vec::new();
-        for (id, brep, edges) in jobs {
-            replacements.push((
-                id,
-                Geometry::Brep(blend(brep, &edges, radius, kind, document.tolerance())?),
-            ));
-        }
-        Ok(Self {
-            kind,
-            sources,
-            replacements,
-            tolerance: document.tolerance(),
-        })
+        EdgeBlendPlan::capture(document, picks, radius, kind)?.solve()
+    }
+    /// Model-space geometry produced by this staged operation.
+    pub fn replacements(&self) -> &[(ObjectId, Geometry)] {
+        &self.replacements
     }
     pub fn commit(&self, document: &mut Document) -> Result<usize, CommandError> {
         run_command_transaction(document, self.kind.command(), |doc| self.apply(doc))
@@ -210,6 +184,71 @@ impl EdgeBlendSelection {
             SelectionMode::Replace,
         )?;
         Ok(self.replacements.len())
+    }
+}
+
+impl EdgeBlendPlan {
+    pub fn capture(
+        document: &Document,
+        picks: impl IntoIterator<Item = (ObjectId, usize)>,
+        radius: Real,
+        kind: EdgeBlendKind,
+    ) -> Result<Self, CommandError> {
+        if !radius.is_finite() || radius <= 0. {
+            return Err(CommandError::Usage(kind.usage()));
+        }
+        let mut by_object = BTreeMap::<ObjectId, BTreeSet<usize>>::new();
+        for (count, (id, edge)) in picks.into_iter().enumerate() {
+            if count >= 100000 || !document.is_object_selectable(id) {
+                return Err(CommandError::Usage(kind.usage()));
+            }
+            by_object.entry(id).or_default().insert(edge);
+        }
+        if by_object.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let mut sources = Vec::with_capacity(by_object.len());
+        for (id, edges) in by_object {
+            let object = document
+                .object(id)
+                .ok_or(CommandError::Usage(kind.usage()))?;
+            let Geometry::Brep(brep) = object.geometry() else {
+                return Err(CommandError::Usage(kind.usage()));
+            };
+            if !brep.is_solid() || edges.iter().any(|&edge| edge >= brep.edges().len()) {
+                return Err(CommandError::Usage(kind.usage()));
+            }
+            sources.push((
+                id,
+                object.geometry_snapshot().clone(),
+                edges.into_iter().collect(),
+            ));
+        }
+        Ok(Self {
+            kind,
+            radius,
+            sources,
+            tolerance: document.tolerance(),
+        })
+    }
+
+    pub fn solve(self) -> Result<EdgeBlendSelection, CommandError> {
+        let mut sources = Vec::with_capacity(self.sources.len());
+        let mut replacements = Vec::with_capacity(self.sources.len());
+        for (id, geometry, edges) in self.sources {
+            let Geometry::Brep(brep) = &*geometry else {
+                unreachable!("captured an edge blend on a B-rep");
+            };
+            let result = blend(brep, &edges, self.radius, self.kind, self.tolerance)?;
+            replacements.push((id, Geometry::Brep(result)));
+            sources.push((id, geometry));
+        }
+        Ok(EdgeBlendSelection {
+            kind: self.kind,
+            sources,
+            replacements,
+            tolerance: self.tolerance,
+        })
     }
 }
 

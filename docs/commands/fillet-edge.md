@@ -17,6 +17,10 @@ multiple object/edge-list pairs; repeated edge indices are applied once.
 same-face seams. Hidden or locked objects, stale geometry, changed tolerance,
 invalid indices and unsupported inputs fail before document replacement.
 
+Type `Preview` to toggle the pending result's wireframe. `Preview=Yes|No` also
+works when starting the interactive command. The preview updates as picks,
+radius or corner treatment change. Enter applies the matching staged result.
+
 The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage
 fails. The adapter imports fresh native solids with original Rust edge-index
@@ -26,7 +30,7 @@ output, boundary face intersections and unexpected contacts before conversion.
 Pole connectors require a continuous surface-image certificate at their vertex.
 
 This checkpoint supports one constant radius, closed B-reps and Linux native
-builds. Variable-radius handles, dynamic preview, open polysurfaces, alternative
+builds. Variable-radius handles, open polysurfaces, alternative
 rail types, chained selection, editing old fillets and broader failure cases
 remain work. The intersection guard bounds input and output to 362 faces. Kernel
 intersection curves must lie entirely on shared trimmed topological edges, and

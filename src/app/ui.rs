@@ -156,6 +156,7 @@ impl VibocerosApp {
         self.show_block_edit(ui.ctx());
         self.show_replace_block_chooser(ui.ctx());
         self.show_command_line(ui);
+        self.update_edge_blend_preview(ui.ctx());
         self.cutting_preview.poll();
         let _ = self.show_viewport_tabs(ui);
         let model_input_active = self.set_view_prompt.is_none() && !self.remember_copy_prompt;
@@ -1561,6 +1562,12 @@ impl VibocerosApp {
                                 .as_ref()
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
                                 .map_or(&[], fillet_corners::Session::preview),
+                            edge_blend_curves: if model_input_active && self.plane_prompt.is_none()
+                            {
+                                self.edge_blend_preview.curves()
+                            } else {
+                                &[]
+                            },
                             preview_curves: self
                                 .face_create_session
                                 .as_ref()

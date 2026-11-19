@@ -1,28 +1,25 @@
 //! Shared original-edge picking and confirmation for native fillets, chamfers and G2 blends.
 use super::*;
-use viboceros_command::blend_edge::{BlendOptions, BlendRailType};
-use viboceros_command::chamfer_edge::{ChamferOptions, ChamferRailType};
-use viboceros_command::{ComponentSelectionKind, EdgeBlendSelection, FilletCorner, FilletOptions};
-#[derive(Clone, Copy, Debug)]
-enum Kind {
-    Fillet(FilletCorner),
-    Chamfer(ChamferRailType),
-    Curvature(BlendRailType),
-}
+use viboceros_command::blend_edge::BlendOptions;
+use viboceros_command::chamfer_edge::ChamferOptions;
+use viboceros_command::{
+    ComponentSelectionKind, EdgeBlendKind as Kind, EdgeBlendPlan, FilletOptions,
+};
+
+mod preview;
+pub(super) use preview::Preview;
+
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Prompt {
     radius: f64,
     kind: Kind,
     tolerance: Tolerance,
     awaiting_value: bool,
+    preview: bool,
 }
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
-        match self.kind {
-            Kind::Fillet(_) => "FilletEdge",
-            Kind::Chamfer(_) => "ChamferEdge",
-            Kind::Curvature(_) => "BlendEdge",
-        }
+        self.kind.command()
     }
     fn parameter(self) -> &'static str {
         if matches!(self.kind, Kind::Chamfer(_)) {
@@ -41,19 +38,19 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges. Set Radius=value or Corner=Automatic|Ball. Enter applies and Esc cancels."
+                    "Select edges. Set Radius=value or Corner=Automatic|Ball. Preview toggles the result."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges; Distance=value / RailType=DistBetweenRails|RollingBall; Enter applies, Esc cancels"
+                    "Select edges. Set Distance=value or RailType=DistBetweenRails|RollingBall. Preview toggles the result."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges; Radius=value / RailType=RollingBall|DistBetweenRails; Enter applies, Esc cancels"
+                    "Select edges. Set Radius=value or RailType=RollingBall|DistBetweenRails. Preview toggles the result."
                 }
             }
         }
     }
     fn options(self) -> String {
-        match self.kind {
+        let model = match self.kind {
             Kind::Fillet(corner) => format!("Radius={} Corner={}", self.radius, corner.token()),
             Kind::Chamfer(rail) | Kind::Curvature(rail) => format!(
                 "{}={} RailType={}",
@@ -61,9 +58,38 @@ impl Prompt {
                 self.radius,
                 rail.token()
             ),
-        }
+        };
+        let preview = if self.preview { "Yes" } else { "No" };
+        format!("{model} Preview={preview}")
     }
 }
+
+fn preview_options<'a>(
+    words: impl IntoIterator<Item = &'a str>,
+    mut preview: bool,
+) -> Result<(Vec<&'a str>, bool), &'static str> {
+    let mut modeling = Vec::new();
+    for word in words {
+        let option = word.trim_start_matches('_');
+        let (name, value) = option
+            .split_once('=')
+            .map_or((option, None), |(name, value)| {
+                (name, Some(value.trim_start_matches('_')))
+            });
+        if !name.eq_ignore_ascii_case("Preview") {
+            modeling.push(word);
+        } else {
+            preview = match value {
+                None => !preview,
+                Some(v) if v.eq_ignore_ascii_case("Yes") => true,
+                Some(v) if v.eq_ignore_ascii_case("No") => false,
+                _ => return Err("expected Preview=Yes or Preview=No"),
+            };
+        }
+    }
+    Ok((modeling, preview))
+}
+
 impl VibocerosApp {
     pub(super) fn try_start_edge_fillet(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
@@ -75,7 +101,19 @@ impl VibocerosApp {
         if !chamfer && !curvature && !name.eq_ignore_ascii_case("FilletEdge") {
             return false;
         }
-        let descriptor = match self.commands.component_selection_prompt(input) {
+        let (words, preview) = match preview_options(words, false) {
+            Ok(options) => options,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+        };
+        let modeling_input = std::iter::once(name)
+            .chain(words.iter().copied())
+            .collect::<Vec<_>>()
+            .join(" ");
+        let descriptor = match self.commands.component_selection_prompt(&modeling_input) {
             Ok(Some(p)) => p,
             Ok(None) => return false,
             Err(e) => {
@@ -100,21 +138,21 @@ impl VibocerosApp {
         }
         let kind = if chamfer {
             let mut o = ChamferOptions::default();
-            if let Err(e) = o.update(&words.collect::<Vec<_>>()) {
+            if let Err(e) = o.update(&words) {
                 self.push_log(format!("Error: {e}"));
                 return true;
             }
             Kind::Chamfer(o.rail)
         } else if curvature {
             let mut o = BlendOptions::default();
-            if let Err(e) = o.update(&words.collect::<Vec<_>>()) {
+            if let Err(e) = o.update(&words) {
                 self.push_log(format!("Error: {e}"));
                 return true;
             }
             Kind::Curvature(o.rail)
         } else {
             let mut options = FilletOptions::default();
-            if let Err(error) = options.update(&words.collect::<Vec<_>>()) {
+            if let Err(error) = options.update(&words) {
                 self.push_log(format!("Error: {error}"));
                 return true;
             }
@@ -126,6 +164,7 @@ impl VibocerosApp {
             kind,
             tolerance: self.document.tolerance(),
             awaiting_value: false,
+            preview,
         };
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
@@ -173,8 +212,16 @@ impl VibocerosApp {
             self.finish_edge_fillet(false);
             return false;
         }
+        let (modeling, preview) = match preview_options(input.split_whitespace(), prompt.preview) {
+            Ok(options) => options,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+        };
         let mut words = Vec::new();
-        for word in input.split_whitespace() {
+        for word in modeling {
             let (key, value) = word
                 .trim_start_matches('_')
                 .split_once('=')
@@ -231,7 +278,10 @@ impl VibocerosApp {
         };
         match result {
             Ok(()) => {
-                prompt.awaiting_value = false;
+                if !words.is_empty() {
+                    prompt.awaiting_value = false;
+                }
+                prompt.preview = preview;
                 self.edge_fillet_prompt = Some(prompt);
                 self.push_log(format!(
                     "{} {}; select edges or Enter applies",
@@ -244,6 +294,20 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
+    fn capture_edge_blend(&self, prompt: Prompt) -> Result<EdgeBlendPlan, String> {
+        if prompt.tolerance != self.document.tolerance() {
+            return Err("tolerance changed; select edges again".into());
+        }
+        let picks = self
+            .component_selection
+            .checked_picks(&self.document)?
+            .into_iter()
+            .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
+            .map(|p| (p.object, p.index));
+        EdgeBlendPlan::capture(&self.document, picks, prompt.radius, prompt.kind)
+            .map_err(|error| error.to_string())
+    }
+
     pub(super) fn finish_edge_fillet(&mut self, apply: bool) {
         let Some(prompt) = self.edge_fillet_prompt.take() else {
             return;
@@ -251,51 +315,18 @@ impl VibocerosApp {
         self.command_input.clear();
         if !apply {
             self.component_selection.clear();
+            self.edge_blend_preview.clear();
             self.push_log(format!("Cancelled {}", prompt.name()));
             return;
         }
-        if prompt.tolerance != self.document.tolerance() {
-            self.edge_fillet_prompt = Some(prompt);
-            self.push_log("Error: tolerance changed; select edges again".into());
-            return;
-        }
         let result = self
-            .component_selection
-            .checked_picks(&self.document)
-            .map_err(str::to_owned)
-            .and_then(|picks| {
-                let picks = picks
-                    .into_iter()
-                    .filter(|p| p.kind == ComponentSelectionKind::BrepEdge)
-                    .map(|p| (p.object, p.index));
-                match prompt.kind {
-                    Kind::Chamfer(rail) => EdgeBlendSelection::prepare_chamfer(
-                        &self.document,
-                        picks,
-                        prompt.radius,
-                        rail,
-                    ),
-                    Kind::Curvature(rail) => EdgeBlendSelection::prepare_curvature(
-                        &self.document,
-                        picks,
-                        prompt.radius,
-                        rail,
-                    ),
-                    Kind::Fillet(corner) => EdgeBlendSelection::prepare_fillet(
-                        &self.document,
-                        picks,
-                        FilletOptions {
-                            radius: prompt.radius,
-                            corner,
-                        },
-                    ),
-                }
-                .map_err(|e| e.to_string())
-            })
+            .capture_edge_blend(prompt)
+            .and_then(|plan| self.edge_blend_preview.selection(plan))
             .and_then(|s| s.commit(&mut self.document).map_err(|e| e.to_string()));
         match result {
             Ok(n) => {
                 self.component_selection.clear();
+                self.edge_blend_preview.clear();
                 self.push_log(format!("{} applied to {n} object(s)", prompt.name()));
             }
             Err(e) => {

@@ -453,7 +453,10 @@ pub mod fillet;
 pub mod fillet_corners;
 mod fillet_edge;
 use fillet_edge::FilletEdgeCommand;
-pub use fillet_edge::{EdgeBlendSelection, FilletCorner, FilletEdgeSelection, FilletOptions};
+pub use fillet_edge::{
+    EdgeBlendKind, EdgeBlendPlan, EdgeBlendSelection, FilletCorner, FilletEdgeSelection,
+    FilletOptions,
+};
 pub mod direction;
 use direction::DirectionCommand;
 #[cfg(test)]

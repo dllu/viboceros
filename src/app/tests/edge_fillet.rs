@@ -73,3 +73,98 @@ fn picked_edge_confirmation_creates_one_undoable_fillet() {
         &before
     );
 }
+
+#[test]
+fn edge_fillet_preview_tracks_options_and_commits_the_displayed_geometry() {
+    use super::circle_preview::viewport_frame;
+    use std::time::{Duration, Instant};
+
+    for (command, parameter) in [
+        ("FilletEdge", "Radius"),
+        ("ChamferEdge", "Distance"),
+        ("BlendEdge", "Radius"),
+    ] {
+        let mut app = test_app();
+        let pick = box_pick(&mut app);
+        let original = app.document.object(pick.object).unwrap().geometry().clone();
+        app.document.clear_history().unwrap();
+        let context = egui::Context::default();
+        submit(&mut app, &format!("{command} {parameter}=1 Preview=Yes"));
+        assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
+        app.accept_component_window(ComponentWindow {
+            picks: vec![pick],
+            modifiers: egui::Modifiers::NONE,
+            preselection: false,
+            crossing: false,
+            inverted: false,
+        });
+
+        let wait = |app: &mut VibocerosApp| {
+            let deadline = Instant::now() + Duration::from_secs(15);
+            loop {
+                let strokes = viewport_frame(app, &context, Vec::new());
+                if !strokes.is_empty() && !app.edge_blend_preview.curves().is_empty() {
+                    return app.edge_blend_preview.curves().to_vec();
+                }
+                assert!(
+                    Instant::now() < deadline,
+                    "{command}: {:?}",
+                    app.command_log
+                );
+                std::thread::sleep(Duration::from_millis(5));
+            }
+        };
+        let first = wait(&mut app);
+        if command == "FilletEdge" {
+            submit(&mut app, "Radius=100");
+            let deadline = Instant::now() + Duration::from_secs(15);
+            loop {
+                assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
+                if app
+                    .command_log
+                    .back()
+                    .unwrap()
+                    .starts_with("Preview unavailable.")
+                {
+                    break;
+                }
+                assert!(Instant::now() < deadline, "{:?}", app.command_log);
+                std::thread::sleep(Duration::from_millis(5));
+            }
+            submit(&mut app, "");
+            assert!(app.edge_fillet_prompt.is_some());
+            assert!(!app.document.can_undo());
+        }
+        submit(&mut app, "Preview=No");
+        assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
+        submit(&mut app, &format!("Preview {parameter}=2"));
+        let edited = wait(&mut app);
+        assert_ne!(first, edited);
+        assert_eq!(
+            app.document.object(pick.object).unwrap().geometry(),
+            &original
+        );
+        assert!(!app.document.can_undo());
+
+        submit(&mut app, "");
+        assert!(app.edge_fillet_prompt.is_none(), "{:?}", app.command_log);
+        let Geometry::Brep(result) = app.document.object(pick.object).unwrap().geometry() else {
+            panic!("expected a staged edge blend");
+        };
+        assert_eq!(
+            result
+                .edges()
+                .iter()
+                .map(|edge| edge.curve())
+                .collect::<Vec<_>>(),
+            edited.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(app.document.undo_label(), Some(command));
+        submit(&mut app, "Undo");
+        assert_eq!(
+            app.document.object(pick.object).unwrap().geometry(),
+            &original
+        );
+        assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
+    }
+}
