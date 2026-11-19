@@ -9,6 +9,9 @@ impl VibocerosApp {
         if self.nested_measurement_captures_input() && self.cancel_nested_measurement() {
             return;
         }
+        if self.finish_edge_blend_faces(false) {
+            return;
+        }
         if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip() {
             return;
         }

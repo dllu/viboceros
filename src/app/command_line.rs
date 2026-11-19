@@ -303,6 +303,8 @@ impl VibocerosApp {
             prompt.hint()
         } else if let Some(prompt) = &self.soft_crease_prompt {
             prompt.hint()
+        } else if self.picking_edge_blend_faces() {
+            edge_fillet::FACE_EDGES_HINT
         } else if let Some(prompt) = self.edge_fillet_prompt {
             prompt.hint()
         } else if self.unjoin_prompt.is_some() {

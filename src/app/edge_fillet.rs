@@ -6,8 +6,12 @@ use viboceros_command::{
     ComponentSelectionKind, EdgeBlendKind as Kind, EdgeBlendPlan, FilletOptions,
 };
 
+mod face_edges;
 mod preview;
+pub(super) use face_edges::FaceEdgeSelection;
 pub(super) use preview::Preview;
+
+pub(super) const FACE_EDGES_HINT: &str = "Select faces to add their sharp boundary edges. Enter keeps the picks. Esc discards these face picks.";
 
 #[derive(Clone, Copy, Debug)]
 pub(super) struct Prompt {
@@ -38,13 +42,13 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
+                    "Select edges, or use FaceEdges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges. Set Distance=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use FaceEdges. Set Distance=value, FromTwoPoints, RailType or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges. Set Radius=value, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use FaceEdges. Set Radius=value, FromTwoPoints, RailType or Preview."
                 }
             }
         }
@@ -101,7 +105,7 @@ impl VibocerosApp {
         if !chamfer && !curvature && !name.eq_ignore_ascii_case("FilletEdge") {
             return false;
         }
-        let (words, preview) = match preview_options(words, false) {
+        let (mut words, preview) = match preview_options(words, false) {
             Ok(options) => options,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -109,6 +113,13 @@ impl VibocerosApp {
                 return true;
             }
         };
+        let face_edges = words.iter().position(|word| {
+            word.trim_start_matches('_')
+                .eq_ignore_ascii_case("FaceEdges")
+        });
+        if let Some(index) = face_edges {
+            words.remove(index);
+        }
         let modeling_input = std::iter::once(name)
             .chain(words.iter().copied())
             .collect::<Vec<_>>()
@@ -174,6 +185,9 @@ impl VibocerosApp {
             prompt.name(),
             prompt.options()
         ));
+        if face_edges.is_some() {
+            self.begin_edge_blend_faces();
+        }
         true
     }
     pub(super) fn try_continue_edge_fillet(&mut self, input: &str) -> bool {
@@ -181,11 +195,22 @@ impl VibocerosApp {
             return false;
         };
         let input = input.trim();
-        if input.is_empty() {
+        let keyword = input.trim_start_matches('_');
+        if keyword.eq_ignore_ascii_case("FaceEdges") {
+            self.begin_edge_blend_faces();
+            return true;
+        }
+        if input.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
+            if self.finish_edge_blend_faces(true) {
+                return true;
+            }
             self.finish_edge_fillet(true);
             return true;
         }
-        if input.trim_start_matches('_').eq_ignore_ascii_case("Cancel") {
+        if keyword.eq_ignore_ascii_case("Cancel") {
+            if self.finish_edge_blend_faces(false) {
+                return true;
+            }
             self.finish_edge_fillet(false);
             return true;
         }
@@ -307,7 +332,11 @@ impl VibocerosApp {
                 "{} {}. {}",
                 prompt.name(),
                 prompt.options(),
-                prompt.hint()
+                if self.picking_edge_blend_faces() {
+                    FACE_EDGES_HINT
+                } else {
+                    prompt.hint()
+                }
             ));
         }
     }
@@ -330,6 +359,7 @@ impl VibocerosApp {
         let Some(prompt) = self.edge_fillet_prompt.take() else {
             return;
         };
+        self.edge_blend_faces = None;
         self.command_input.clear();
         if !apply {
             self.component_selection.clear();

@@ -1,6 +1,8 @@
 //! Stage owned circular, chamfer and G2 edge blends before document edits.
 use super::*;
 use viboceros_document::GeometrySnapshot;
+mod face_edges;
+pub use face_edges::edge_blend_face_edges;
 #[cfg(test)]
 mod tests;
 const USAGE: &str = "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes [Corner=Automatic|Ball]";
@@ -265,16 +267,7 @@ fn blend(
     kind: EdgeBlendKind,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    let origin = brep
-        .vertices()
-        .first()
-        .map(|v| v.point())
-        .unwrap_or_else(|| brep.bounds().min());
-    let zero = Point3::try_new(0., 0., 0.)?;
-    let local = brep.transformed(
-        AffineTransform3::from_translation(origin.vector_to(zero)?),
-        tolerance,
-    )?;
+    let (local, to_world) = local_blend_source(brep, tolerance)?;
     let blended = match kind {
         EdgeBlendKind::Fillet(corner) => {
             let primary = viboceros_smlib::Solid::fillet_brep_edges_with_corner(
@@ -310,10 +303,27 @@ fn blend(
             solid.to_brep(tolerance)?
         }
     };
-    Ok(blended.transformed(
-        AffineTransform3::from_translation(zero.vector_to(origin)?),
+    Ok(blended.transformed(to_world, tolerance)?)
+}
+
+fn local_blend_source(
+    brep: &Brep,
+    tolerance: Tolerance,
+) -> Result<(Brep, AffineTransform3), CommandError> {
+    let origin = brep
+        .vertices()
+        .first()
+        .map(|v| v.point())
+        .unwrap_or_else(|| brep.bounds().min());
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let local = brep.transformed(
+        AffineTransform3::from_translation(origin.vector_to(zero)?),
         tolerance,
-    )?)
+    )?;
+    Ok((
+        local,
+        AffineTransform3::from_translation(zero.vector_to(origin)?),
+    ))
 }
 
 fn checked_local_fillet(

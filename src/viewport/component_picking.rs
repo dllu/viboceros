@@ -9,6 +9,7 @@ pub enum ComponentPickFilter {
     Any,
     Edges,
     Faces,
+    BrepFaces,
     SurfaceAndSubDFaces,
     /// Stored mesh polygons and SubD control faces, including n-gon members.
     InsetFaces,
@@ -202,7 +203,8 @@ impl Viewport {
         }
         let allowed = matches!(
             filter,
-            ComponentPickFilter::MeshAndSubDFaces
+            ComponentPickFilter::BrepFaces
+                | ComponentPickFilter::MeshAndSubDFaces
                 | ComponentPickFilter::RawMeshFaces
                 | ComponentPickFilter::SurfaceAndSubDFaces
                 | ComponentPickFilter::SubDExtrude
@@ -212,7 +214,9 @@ impl Viewport {
             document
                 .selectable_objects()
                 .filter(|o| {
-                    if filter == ComponentPickFilter::InsetFaces {
+                    if filter == ComponentPickFilter::BrepFaces {
+                        matches!(o.geometry(), Geometry::Brep(_))
+                    } else if filter == ComponentPickFilter::InsetFaces {
                         matches!(
                             o.geometry(),
                             Geometry::SubD(_)
@@ -240,7 +244,10 @@ impl Viewport {
             pointer,
             rect,
             document,
-            if filter == ComponentPickFilter::Faces {
+            if matches!(
+                filter,
+                ComponentPickFilter::Faces | ComponentPickFilter::BrepFaces
+            ) {
                 FacePickMode::SurfaceAndBrepAny
             } else {
                 FacePickMode::Any
@@ -399,7 +406,9 @@ impl Viewport {
             if !matches!(
                 object.geometry(),
                 Geometry::NurbsSurface(_) | Geometry::Brep(_)
-            ) {
+            ) || filter == ComponentPickFilter::BrepFaces
+                && !matches!(object.geometry(), Geometry::Brep(_))
+            {
                 continue;
             }
             let display = self.display_cache.borrow_mut().get(

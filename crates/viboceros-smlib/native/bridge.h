@@ -141,6 +141,8 @@ int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indices, size_t 
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                    double radius, double accuracy, int require_ball, int local_merge,
                                    char *error, size_t capacity);
+int vb_imported_solid_tangent_edges(const VbSolid *solid, const size_t *indices, size_t count,
+                                    double angle_degrees, uint8_t *tangent, char *error, size_t capacity);
 int vb_solid_validate_boundary(const VbSolid *solid, double tolerance, char *error, size_t capacity);
 int vb_solid_validate_endpoints(const VbSolid *solid, double tolerance, char *error, size_t capacity);
 int vb_mesh_sizes(const VbMesh *mesh, size_t *vertices, size_t *triangles);

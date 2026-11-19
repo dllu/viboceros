@@ -390,7 +390,9 @@ impl VibocerosApp {
                 .into_iter()
                 .filter(|p| super::extract_surface::eligible(p.kind))
                 .collect()
-        } else if self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some() {
+        } else if (self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
+            && !self.picking_edge_blend_faces()
+        {
             self.unjoinable_picks(click.picks)
         } else {
             click.picks
@@ -475,6 +477,22 @@ impl VibocerosApp {
     }
 
     fn select_components(&mut self, picks: Vec<ComponentPick>, action: ComponentAction) {
+        let picks = if self.picking_edge_blend_faces() {
+            match self.edge_blend_face_picks(picks) {
+                Ok(edges) if !edges.is_empty() => edges,
+                Ok(_) => {
+                    self.push_log("No sharp boundary edges on the picked face".into());
+                    self.component_selection.clear_choices();
+                    return;
+                }
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    return;
+                }
+            }
+        } else {
+            picks
+        };
         if self.picking_blend_curve() {
             if let [pick] = picks.as_slice() {
                 self.pick_blend_curve(Some(pick.object), Some(pick.index));
@@ -761,6 +779,8 @@ impl VibocerosApp {
         {
             let picks = if self.shell_prompt.is_some() {
                 self.shellable_picks(window.picks)
+            } else if self.picking_edge_blend_faces() {
+                window.picks
             } else if self.picking_extract_faces() {
                 window
                     .picks

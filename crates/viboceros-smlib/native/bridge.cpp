@@ -988,6 +988,19 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     vb_validate_boundary_intersections(*solid->value,10*accuracy,false,point_roundoff);
 }
 } // namespace
+extern "C" int vb_imported_solid_tangent_edges(const VbSolid *solid, const size_t *indices,
+                                               size_t count, double angle_degrees, uint8_t *tangent,
+                                               char *error, size_t capacity) {
+    return guarded(error, capacity, [&] {
+        require(solid && solid->value && indices && tangent && count &&
+                    std::isfinite(angle_degrees) && angle_degrees > 0,
+                "Invalid edge tangency query");
+        for (size_t i = 0; i < count; ++i) {
+            require(indices[i] < solid->source_edges.size(), "Source edge index is out of range");
+            tangent[i] = solid->source_edges[indices[i]]->IsTangentEdge(angle_degrees) ? 1 : 0;
+        }
+    });
+}
 extern "C" int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                               double radius, double accuracy, int require_ball, int local_merge,
                                               char *error, size_t capacity) {

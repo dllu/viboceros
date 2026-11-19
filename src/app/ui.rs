@@ -742,7 +742,11 @@ impl VibocerosApp {
                         && self.plane_prompt.is_none()
                         && self.nested_measurement.is_none()
                         && !end_analysis_picking)
-                        .then_some(crate::viewport::ComponentPickFilter::Edges)
+                        .then_some(if self.picking_edge_blend_faces() {
+                            crate::viewport::ComponentPickFilter::BrepFaces
+                        } else {
+                            crate::viewport::ComponentPickFilter::Edges
+                        })
                 })
         });
         let component_pick = component_pick.or_else(|| {

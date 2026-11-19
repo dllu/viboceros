@@ -1,7 +1,44 @@
 //! Import fresh geometry for each SMLib fillet merge.
 use super::*;
 
+unsafe extern "C" {
+    fn vb_imported_solid_tangent_edges(
+        solid: *const NativeSolid,
+        indices: *const usize,
+        count: usize,
+        angle_degrees: f64,
+        tangent: *mut u8,
+        error: *mut c_char,
+        capacity: usize,
+    ) -> c_int;
+}
+
 impl Solid {
+    /// Tests tangent sectors at original edge indices on a fresh import.
+    /// The angular tolerance is in radians.
+    pub fn tangent_source_edges(
+        &self,
+        indices: &[usize],
+        angular_tolerance: f64,
+    ) -> Result<Vec<bool>, Error> {
+        if indices.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut tangent = vec![0; indices.len()];
+        call(|error, capacity| unsafe {
+            vb_imported_solid_tangent_edges(
+                self.handle.as_ptr(),
+                indices.as_ptr(),
+                indices.len(),
+                angular_tolerance.to_degrees(),
+                tangent.as_mut_ptr(),
+                error,
+                capacity,
+            )
+        })?;
+        Ok(tangent.into_iter().map(|value| value != 0).collect())
+    }
+
     /// Fillets original Rust edge indices on a freshly imported temporary solid.
     /// The input B-rep is never mutated. Repeated indices select the edge once.
     pub fn fillet_brep_edges(
