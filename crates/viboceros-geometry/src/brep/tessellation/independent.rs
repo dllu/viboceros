@@ -13,6 +13,25 @@ fn dense_grid_axis_limit(face_count: usize) -> usize {
         .clamp(8, DENSE_GRID_AXIS_LIMIT)
 }
 
+fn polygon_face_grid(
+    surface: &NurbsSurface,
+    density: Real,
+    simple_planes: bool,
+    tolerance: Tolerance,
+) -> Result<[usize; 2], GeometryError> {
+    // An untrimmed support can require far more subdivision than the part
+    // kept by its loops. Retry that face without degrading adjacent faces.
+    for resolution in [density, density * 0.5] {
+        match surface.polygon_mesh_counts(resolution, simple_planes, tolerance) {
+            // Changing density does not change the size of a Bezier decomposition.
+            Err(GeometryError::BezierDecompositionLimit) => break,
+            Err(GeometryError::MeshSubdivisionLimit) if resolution > 0. => continue,
+            result => return result,
+        }
+    }
+    surface.polygon_mesh_counts(0., simple_planes, tolerance)
+}
+
 impl Brep {
     /// Tessellates full rectangular and generally trimmed faces.
     ///
@@ -192,19 +211,21 @@ impl Brep {
             .faces
             .iter()
             .map(|face| {
-                face.sampling_parameter_frame()?
-                    .face
-                    .surface
-                    .polygon_mesh_counts(density, simple_planes, tolerance)
+                let frame = face.sampling_parameter_frame()?;
+                polygon_face_grid(&frame.face.surface, density, simple_planes, tolerance)
             })
             .collect::<Result<Vec<_>, _>>()?;
+        let sampling = Sampling::per_face(&grids);
+        let sparse_sampling = || {
+            sampling
+                .with_axis_limit(dense_grid_axis_limit(self.faces.len()))
+                .with_vertex_limit(SPARSE_POLYGON_VERTEX_LIMIT)
+        };
         if jagged_seams {
-            let sampling = Sampling::per_face(&grids);
             return self
                 .tessellate_sampling(sampling, true, true, tolerance, false, false)
                 .or_else(|error| {
-                    if density == 0.
-                        && !self.has_positional_break()
+                    if !self.has_positional_break()
                         && matches!(
                             error,
                             GeometryError::MeshSubdivisionLimit
@@ -212,7 +233,7 @@ impl Brep {
                         )
                     {
                         self.tessellate_sampling(
-                            sampling.with_axis_limit(dense_grid_axis_limit(self.faces.len())),
+                            sparse_sampling(),
                             true,
                             true,
                             tolerance,
@@ -247,11 +268,9 @@ impl Brep {
             .and_then(|side| side.checked_mul(side))
             .and_then(|n| n.checked_mul(spans?));
         if vertices.is_none_or(|n| n > 1_048_576) {
-            if density == 0. && !self.has_positional_break() {
-                let sampling = Sampling::per_face(&grids)
-                    .with_axis_limit(dense_grid_axis_limit(self.faces.len()));
+            if !self.has_positional_break() {
                 return self
-                    .tessellate_conforming_sampling(sampling, tolerance, false)
+                    .tessellate_conforming_sampling(sparse_sampling(), tolerance, false)
                     .map(|(mesh, _, _)| mesh);
             }
             return Err(GeometryError::MeshSubdivisionLimit);
