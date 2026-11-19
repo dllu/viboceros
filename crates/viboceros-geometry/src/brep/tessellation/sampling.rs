@@ -1,4 +1,5 @@
 use super::*;
+mod cusp;
 
 pub(super) const SPARSE_MESH_VERTEX_LIMIT: usize = 2 * 1_048_576;
 
@@ -111,14 +112,16 @@ pub(super) fn trim_chart_samples(
     jagged_seams: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<Point2>, GeometryError> {
-    let mut samples = sample_trim_loop(boundary, resolution)?;
     if !jagged_seams {
-        return Ok(samples);
+        return sample_trim_loop(boundary, resolution);
     }
+    let surface = &face.surface;
+    let widths = [surface.domain_u(), surface.domain_v()].map(|d| d.end() - d.start());
+    let extra = cusp::stations(boundary, resolution, widths)?;
+    let mut samples = sample_trim_loop_with_stations(boundary, resolution, &extra)?;
     // UV endpoint roundoff can leave two nearly identical polygon vertices.
     // Keep conforming seam samples intact. On independent faces, eliminate
     // only neighboring duplicates that also coincide in the sampled image.
-    let surface = &face.surface;
     let close_uv = [surface.domain_u(), surface.domain_v()]
         .map(|d| (d.end() - d.start()) * (8. * Real::EPSILON));
     let coincident = |a: Point2, b: Point2| -> Result<bool, GeometryError> {

@@ -6791,6 +6791,14 @@ fn sample_trim_loop(
     face_loop: &BrepLoop,
     samples_per_span: usize,
 ) -> Result<Vec<Point2>, GeometryError> {
+    sample_trim_loop_with_stations(face_loop, samples_per_span, &[])
+}
+
+fn sample_trim_loop_with_stations(
+    face_loop: &BrepLoop,
+    samples_per_span: usize,
+    stations: &[Vec<Real>],
+) -> Result<Vec<Point2>, GeometryError> {
     let span_count = face_loop
         .trims
         .iter()
@@ -6804,11 +6812,22 @@ fn sample_trim_loop(
         .checked_mul(samples_per_span)
         .and_then(|count| count.checked_add(1))
         .ok_or(GeometryError::TooManyMeshVertices)?;
+    let capacity = stations.iter().try_fold(capacity, |count, row| {
+        count
+            .checked_add(row.len())
+            .ok_or(GeometryError::TooManyMeshVertices)
+    })?;
     if capacity > u32::MAX as usize {
         return Err(GeometryError::TooManyMeshVertices);
     }
     let mut points = Vec::with_capacity(capacity);
-    for trim in &face_loop.trims {
+    for (index, trim) in face_loop.trims.iter().enumerate() {
+        let mut extra = stations
+            .get(index)
+            .into_iter()
+            .flatten()
+            .copied()
+            .peekable();
         for (start, end) in trim.curve.spans() {
             if points.is_empty() {
                 points.push(trim.curve.evaluate(start)?);
@@ -6818,6 +6837,11 @@ fn sample_trim_loop(
                     [start, end],
                     sample as Real / samples_per_span as Real,
                 )?;
+                while let Some(station) = extra.next_if(|t| *t <= parameter) {
+                    if station < parameter {
+                        points.push(trim.curve.evaluate(station)?);
+                    }
+                }
                 points.push(trim.curve.evaluate(parameter)?);
             }
         }
