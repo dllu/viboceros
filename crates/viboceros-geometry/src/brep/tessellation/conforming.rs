@@ -277,6 +277,9 @@ impl Brep {
             .map(|((mut ts, edge), cusp)| {
                 ts.sort_by(Real::total_cmp);
                 ts.dedup();
+                if sampling.display_edge_samples.is_some() {
+                    ts = chords::refine_display_edge(&edge.curve, ts, tolerance)?;
+                }
                 let domain = edge.curve.domain();
                 let spacing = if cusp {
                     search.absolute()

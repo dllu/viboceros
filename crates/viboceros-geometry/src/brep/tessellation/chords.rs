@@ -1,4 +1,4 @@
-//! Refine long chords inside a trimmed face without changing shared edges.
+//! Refine long chords on shared edges and within trimmed faces.
 use std::collections::HashSet;
 
 use super::audit::key as vertex_location;
@@ -16,6 +16,59 @@ fn distance_to_chord(point: Point3, a: Point3, b: Point3) -> Result<Real, Geomet
     }
     let position = (a.vector_to(point)?.dot(axis)? / length_squared).clamp(0., 1.);
     point.distance_to(a.translated(axis.scaled(position)?)?)
+}
+
+pub(super) fn refine_display_edge(
+    curve: &NurbsCurve,
+    stations: Vec<Real>,
+    tolerance: Tolerance,
+) -> Result<Vec<Real>, GeometryError> {
+    if curve.degree() == 1 {
+        return Ok(stations);
+    }
+    let bounds = curve.control_point_bounds();
+    let height = (bounds.min().distance_to(bounds.max())? * 0.001).max(tolerance.absolute());
+    let mut refined = Vec::with_capacity(stations.len());
+    if let Some(&first) = stations.first() {
+        refined.push(first);
+        let mut start = (first, curve.evaluate(first)?);
+        for end in stations.into_iter().skip(1) {
+            let end = (end, curve.evaluate(end)?);
+            append_edge_stations(curve, start, end, height, 0, &mut refined)?;
+            start = end;
+        }
+    }
+    Ok(refined)
+}
+
+fn append_edge_stations(
+    curve: &NurbsCurve,
+    start: (Real, Point3),
+    end: (Real, Point3),
+    height: Real,
+    depth: u8,
+    output: &mut Vec<Real>,
+) -> Result<(), GeometryError> {
+    const MAX_DEPTH: u8 = 12;
+    let middle = start.0.midpoint(end.0);
+    if depth < MAX_DEPTH && start.0 < middle && middle < end.0 {
+        let point = curve.evaluate(middle)?;
+        // Quarter stations detect bends on both sides of an inflection even
+        // if the curve midpoint lies on the chord.
+        if distance_to_chord(point, start.1, end.1)? > height
+            || distance_to_chord(curve.evaluate(start.0.midpoint(middle))?, start.1, end.1)?
+                > height
+            || distance_to_chord(curve.evaluate(middle.midpoint(end.0))?, start.1, end.1)? > height
+        {
+            append_edge_stations(curve, start, (middle, point), height, depth + 1, output)?;
+            return append_edge_stations(curve, (middle, point), end, height, depth + 1, output);
+        }
+    }
+    if output.len() >= MAX_CONSTRAINED_TRIM_VERTICES {
+        return Err(GeometryError::MeshSubdivisionLimit);
+    }
+    output.push(end.0);
+    Ok(())
 }
 
 pub(super) fn refinement_weight(
@@ -196,6 +249,46 @@ fn split(triangle: [u32; 3], mut mids: [Option<u32>; 3], output: &mut Vec<[u32; 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn display_refines_curved_seam_chords_and_retains_existing_stations() {
+        let tolerance = Tolerance::DEFAULT;
+        let circle = crate::Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            50.,
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized(tolerance)
+                .unwrap(),
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let domain = circle.domain();
+        let start = *domain.start();
+        let end = *domain.end();
+        let original: Vec<_> = circle
+            .spans()
+            .flat_map(|(a, b)| [a, a.midpoint(b)])
+            .chain([end])
+            .collect();
+        let refined = refine_display_edge(&circle, original.clone(), tolerance).unwrap();
+        assert_eq!((refined[0], refined[refined.len() - 1]), (start, end));
+        assert!(original.iter().all(|t| refined.contains(t)));
+        assert!(refined.len() > original.len());
+        for pair in refined.windows(2) {
+            let [a, b] = [pair[0], pair[1]];
+            let middle = circle.evaluate(a.midpoint(b)).unwrap();
+            let gap = distance_to_chord(
+                middle,
+                circle.evaluate(a).unwrap(),
+                circle.evaluate(b).unwrap(),
+            )
+            .unwrap();
+            assert!(gap <= 0.142);
+        }
+    }
 
     #[test]
     fn a_split_that_collapses_a_child_is_rejected_on_both_incident_triangles() {
