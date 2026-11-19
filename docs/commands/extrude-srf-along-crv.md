@@ -5,20 +5,29 @@ boundaries along an open NURBS path with fixed profile orientation. The source
 stays at its original position, independently of the path's location. Curved
 source faces and trim holes remain in the caps when `Solid=Yes`.
 
-Start the command, select surfaces and press Enter, then click a path curve.
-Preselected surface objects and face components work. At the path picker, edit
-`Solid`, `DeleteInput`, `Reverse` and `PathLength`, or enter `Path=id` /
-`PathName=name`. Enter accepts a unique selected curve. PathLength accepts units
-in the application; direct commands use document model units. Failed geometry
-keeps the picker and source selection for retry. Esc/Cancel releases the picker.
+Start the command, select surfaces and press Enter, then click the path near
+the end you want to start from. Preselected surface objects and face components
+work. At the path picker, toggle `Solid`, `DeleteInput` or `SubCurve` by
+name or set them to `Yes` or `No`. Enter accepts a unique selected curve.
+You can also enter `Path=id` or `PathName=name`. Esc cancels the getter.
 
-With selected source objects:
+With `SubCurve=Yes`, choose the path, then pick two points along it or type
+their coordinates. The first pick anchors the interval, and the second has a
+live wire preview of the translated surface. The direction comes from the
+original path click, regardless of the order of the two point picks. Press
+Enter at the first point to use the whole path. Enter at the second point
+ends the command without adding geometry. For scripted intervals, use
+`PathRange=t0,t1` in the original curve domain. Rhino 8's reversed intervals
+use negated parameters, which can extrapolate a curved rail past its ends.
+
+With selected source objects, you can use these command forms.
 
 ```text
 ExtrudeSrfAlongCrv Path=object-id
 ExtrudeSrfAlongCrv PathName=rail Solid=No Reverse=Yes
 ExtrudeSrfAlongCrv Path=object-id Face=3 DeleteInput=Yes
 ExtrudeSrfAlongCrv Path=object-id Faces=0,2 PathLength=10
+ExtrudeSrfAlongCrv Path=object-id PathRange=0.3,0.65
 ```
 
 `FaceRefs=id:index,...` addresses original face indices without object selection.
@@ -27,9 +36,12 @@ produces an independent result. The headless command also accepts one selected
 path curve alongside its selected source faces. Named paths must be unique and
 selectable. Source picking preserves inline face selectors and options.
 
-Defaults are `Solid=Yes DeleteInput=No Reverse=No`, with the whole path used.
-`Reverse` changes the path direction before trimming. `PathLength` takes an arc
-length from that prepared start; it does not move the source to a picked point.
+Initial defaults are `Solid=No DeleteInput=No SubCurve=No Reverse=Auto`.
+A successful extrusion remembers `Solid`, `DeleteInput` and `SubCurve`.
+`Reverse=Yes` and `Reverse=No` explicitly choose the original end or start.
+Typed paths and Enter use the original start in automatic mode. `PathLength`
+takes an arc length from the chosen start. It accepts units in the path
+picker and uses document model units in direct commands.
 The path object is always retained. DeleteInput removes extruded source faces,
 retaining any remainder's identity, attributes and groups. All products stage
 before document edits and form one Undo/Redo entry. Frozen source snapshots
@@ -43,21 +55,22 @@ bounds tensor-product allocation before invoking the native producer. Solid
 output must close as a manifold.
 
 Closed or degenerate paths, closed sources without a boundary, invalid face
-indices and unsupported native imports decline. Self-intersection, folding and
-near-degenerate cases require broader qualification. Automatic direction from
-the clicked path end, native SubCurve point picking, ToBoundary,
-SplitAtTangents controls, live previews and saved option defaults remain future
-work. Use `Reverse` and `PathLength` explicitly. Continuous error and comparative
-performance certificates are not claimed.
+indices and unsupported native imports decline. Failed geometry leaves the
+picker and source selection available for retry. `ToBoundary` and
+`SplitAtTangents` remain future work. Self-intersection, folding and
+near-degenerate cases require broader qualification.
 
-Seven independent Python `surface_path_extrusion` fixtures cover planar and
-warped caps, reversed paths, rational holes, walls, partial paths and translated
-sources. They run the actual Rust command; the pending Rhino side calls public
-[BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brepface/createextrusion).
-No licensed Rhino capture was obtained because of the recorded
-[Wine SSPI startup failure](../oracle-sspi.md). Local results and validation are
-recorded in [qualification](../surface-path-extrusion-qualification.json).
-See also [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrfalongcrv.htm).
+Headless Rhino 8 command captures cover the factory cap setting, clicks on
+both halves of a rail, whole-path confirmation, and `SubCurve` on linear,
+quadratic, rational and multispan rails. Seven independent Python
+`surface_path_extrusion` fixtures also exercise the kernel with planar and
+warped caps, rational holes, partial paths and translated sources. The SDK
+probe calls [BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brepface/createextrusion).
+For the open ring, the Rhino command returns two one-face objects and Viboceros
+groups the two walls in one B-rep. The SDK returns a single B-rep with three
+faces. All three results have the same overall bounds.
+[Rhino SDK capture](../../tools/rhino_oracle/observations/surface_path_extrusion_rhino.json)
+See [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrfalongcrv.htm).
 
 ```sh
 cargo test -p viboceros-smlib --features native --test surface_path_extrusion

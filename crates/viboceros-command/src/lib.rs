@@ -1054,6 +1054,8 @@ pub struct CommandRegistry {
         std::sync::Arc<remembered::Remembered<extrude_surface_apex::SurfaceApexOptions>>,
     surface_extrusion_settings:
         std::sync::Arc<remembered::Remembered<extrude_surface::SurfaceExtrusionSettings>>,
+    surface_path_settings:
+        std::sync::Arc<remembered::Remembered<extrude_surface_path::SurfacePathOptions>>,
     use_extrusions: use_extrusions::Preference,
     face_create_preferences: std::sync::Arc<remembered::Remembered<face_create::Preferences>>,
     sphere_preferences: std::sync::Arc<remembered::Remembered<sphere_input::Preferences>>,
@@ -1131,6 +1133,10 @@ impl CommandRegistry {
 
     pub fn surface_extrusion_settings(&self) -> extrude_surface::SurfaceExtrusionSettings {
         self.surface_extrusion_settings.get()
+    }
+
+    pub fn surface_path_settings(&self) -> extrude_surface_path::SurfacePathOptions {
+        self.surface_path_settings.get()
     }
 
     /// Interactive placement can use a signed model displacement while
@@ -1655,7 +1661,9 @@ impl CommandRegistry {
             })
             .expect("unique built-in command");
         registry
-            .register(extrude_surface_path::ExtrudeSurfacePathCommand)
+            .register(extrude_surface_path::ExtrudeSurfacePathCommand {
+                settings: registry.surface_path_settings.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(use_extrusions::UseExtrusionsCommand(

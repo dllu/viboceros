@@ -1,4 +1,6 @@
 use super::*;
+mod point_picks;
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
@@ -57,7 +59,7 @@ fn surface_path_source_picker_handoff_options_and_cancel() {
     assert!(!app.command_line_idle());
     assert!(!app.component_preselection_available());
     let session = app.surface_path_prompt.as_ref().unwrap();
-    assert!(!session.options.solid && session.options.reverse);
+    assert!(!session.options.solid && session.options.reverse == Some(true));
     enter(&mut app, "Solid=Yes DeleteInput=Yes PathLength=1mm");
     let options = app.surface_path_prompt.as_ref().unwrap().options;
     assert!(options.solid && options.delete_input);
@@ -109,7 +111,7 @@ fn surface_path_component_sources_and_clicked_path_commit_one_history_entry() {
         preselection: true,
         modifiers: egui::Modifiers::default(),
     });
-    enter(&mut app, "ExtrudeSrfAlongCrv DeleteInput=Yes");
+    enter(&mut app, "ExtrudeSrfAlongCrv Solid=Yes DeleteInput=Yes");
     assert!(app.object_prompt.is_none());
     assert!(app.surface_path_prompt.is_some());
     app.apply_selection_click(SelectionClick {

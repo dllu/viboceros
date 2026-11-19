@@ -2,68 +2,103 @@
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusions};
 
-pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [Reverse=Yes|No] [PathLength=length] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
-pub(super) struct ExtrudeSurfacePathCommand;
-#[derive(Clone, Copy, Debug, PartialEq)]
+pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [SubCurve=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+pub(super) struct ExtrudeSurfacePathCommand {
+    pub(super) settings: std::sync::Arc<remembered::Remembered<SurfacePathOptions>>,
+}
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct SurfacePathOptions {
     pub solid: bool,
     pub delete_input: bool,
-    pub reverse: bool,
+    pub subcurve: bool,
+    pub reverse: Option<bool>,
     pub path_length: Option<f64>,
-}
-impl Default for SurfacePathOptions {
-    fn default() -> Self {
-        Self {
-            solid: true,
-            delete_input: false,
-            reverse: false,
-            path_length: None,
-        }
-    }
+    pub path_range: Option<[f64; 2]>,
 }
 impl SurfacePathOptions {
     pub fn update(&mut self, words: &[&str]) -> Result<(), CommandError> {
         let mut next = *self;
         let mut seen = BTreeSet::new();
         for word in words {
+            let word = word.trim_start_matches('_');
             let (key, value) = word
-                .trim_start_matches('_')
                 .split_once('=')
-                .ok_or(CommandError::Usage(USAGE))?;
+                .map_or((word, None), |(key, value)| (key, Some(value)));
             let key = key.to_ascii_lowercase();
             if !seen.insert(key.clone()) {
                 return Err(CommandError::Usage(USAGE));
             }
+            let toggle = |current: bool| match value {
+                Some(value) => parse_yes_no(value).ok_or(CommandError::Usage(USAGE)),
+                None => Ok(!current),
+            };
+            let require_value = || value.ok_or(CommandError::Usage(USAGE));
             match key.as_str() {
-                "solid" => next.solid = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?,
-                "deleteinput" => {
-                    next.delete_input = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?
-                }
+                "solid" => next.solid = toggle(next.solid)?,
+                "deleteinput" => next.delete_input = toggle(next.delete_input)?,
+                "subcurve" => next.subcurve = toggle(next.subcurve)?,
                 "reverse" => {
-                    next.reverse = parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?
+                    let value = require_value()?;
+                    next.reverse = if value.trim_start_matches('_').eq_ignore_ascii_case("Auto") {
+                        None
+                    } else {
+                        Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?)
+                    };
                 }
                 "pathlength" => {
-                    let n = parse_finite_real(value)?;
+                    let n = parse_finite_real(require_value()?)?;
                     if n <= 0. {
                         return Err(CommandError::Usage(USAGE));
                     }
                     next.path_length = Some(n);
                 }
+                "pathrange" => {
+                    let (a, b) = require_value()?
+                        .split_once(',')
+                        .ok_or(CommandError::Usage(USAGE))?;
+                    let a = parse_finite_real(a)?;
+                    let b = parse_finite_real(b)?;
+                    if a == b {
+                        return Err(CommandError::Usage(
+                            "PathRange requires two distinct parameters",
+                        ));
+                    }
+                    next.path_range = Some([a.min(b), a.max(b)]);
+                }
                 _ => return Err(CommandError::Usage(USAGE)),
             }
+        }
+        if next.path_length.is_some() && next.path_range.is_some() {
+            return Err(CommandError::Usage("Specify PathLength or PathRange"));
         }
         *self = next;
         Ok(())
     }
+    fn remembered(self) -> Self {
+        Self {
+            reverse: None,
+            path_length: None,
+            path_range: None,
+            ..self
+        }
+    }
     pub fn command_options(self) -> String {
         let mut result = format!(
-            "Solid={} DeleteInput={} Reverse={}",
+            "Solid={} DeleteInput={} SubCurve={} Reverse={}",
             if self.solid { "Yes" } else { "No" },
             if self.delete_input { "Yes" } else { "No" },
-            if self.reverse { "Yes" } else { "No" }
+            if self.subcurve { "Yes" } else { "No" },
+            match self.reverse {
+                Some(true) => "Yes",
+                Some(false) => "No",
+                None => "Auto",
+            }
         );
         if let Some(n) = self.path_length {
             result.push_str(&format!(" PathLength={n}"));
+        }
+        if let Some([a, b]) = self.path_range {
+            result.push_str(&format!(" PathRange={a},{b}"));
         }
         result
     }
@@ -81,14 +116,24 @@ pub struct SurfacePathInput {
 }
 impl SurfacePathInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
-        let mut result = Self::default();
+        Self::parse_with_options(words, SurfacePathOptions::default())
+    }
+
+    pub fn parse_with_options(
+        words: &[&str],
+        options: SurfacePathOptions,
+    ) -> Result<Self, CommandError> {
+        let mut result = Self {
+            options,
+            ..Self::default()
+        };
         let mut face_words = Vec::new();
         let mut option_words = Vec::new();
         for word in words {
-            let (key, value) = word
-                .trim_start_matches('_')
-                .split_once('=')
-                .ok_or(CommandError::Usage(USAGE))?;
+            let Some((key, value)) = word.trim_start_matches('_').split_once('=') else {
+                option_words.push(*word);
+                continue;
+            };
             match key.to_ascii_lowercase().as_str() {
                 "path" | "pathname" => {
                     if result.path.is_some() {
@@ -152,7 +197,10 @@ pub fn prepare_surface_path(
     options: SurfacePathOptions,
     tolerance: Tolerance,
 ) -> Result<NurbsCurve, CommandError> {
-    let mut curve = if options.reverse {
+    if let Some(range) = options.path_range {
+        return prepare_surface_path_range(curve, range, options.reverse == Some(true));
+    }
+    let mut curve = if options.reverse == Some(true) {
         curve.reversed()?
     } else {
         curve.clone()
@@ -172,6 +220,39 @@ pub fn prepare_surface_path(
     }
     Ok(curve)
 }
+
+pub fn prepare_surface_path_range(
+    curve: &NurbsCurve,
+    [a, b]: [f64; 2],
+    reverse: bool,
+) -> Result<NurbsCurve, CommandError> {
+    let domain = curve.domain();
+    let (start, end) = (a.min(b), a.max(b));
+    if !a.is_finite()
+        || !b.is_finite()
+        || start == end
+        || !domain.contains(&start)
+        || !domain.contains(&end)
+    {
+        return Err(CommandError::Usage(
+            "Pick two distinct points along the path",
+        ));
+    }
+    if !reverse {
+        return Ok(curve.try_trimmed(start..=end)?);
+    }
+    // In reverse SubCurve mode Rhino evaluates the negated original parameters.
+    // They can reach beyond either end of the source parameter domain.
+    let interval = -end..=-start;
+    let extended;
+    let source = if domain.contains(interval.start()) && domain.contains(interval.end()) {
+        curve
+    } else {
+        extended = curve.try_extended_to(interval.clone())?;
+        &extended
+    };
+    Ok(source.try_trimmed(interval)?.reversed()?)
+}
 impl Command for ExtrudeSurfacePathCommand {
     fn name(&self) -> &'static str {
         "ExtrudeSrfAlongCrv"
@@ -180,7 +261,7 @@ impl Command for ExtrudeSurfacePathCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        let input = SurfacePathInput::parse(args)?;
+        let input = SurfacePathInput::parse_with_options(args, self.settings.get())?;
         if input.path.is_some() || matches!(input.faces, SurfaceFaces::References(_)) {
             return Ok(None);
         }
@@ -194,7 +275,7 @@ impl Command for ExtrudeSurfacePathCommand {
         }))
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
-        let input = SurfacePathInput::parse(args)?;
+        let input = SurfacePathInput::parse_with_options(args, self.settings.get())?;
         let id = resolve_surface_path(doc, input.path.as_ref())?;
         let path = doc
             .object(id)
@@ -238,6 +319,7 @@ impl Command for ExtrudeSurfacePathCommand {
                 }
             },
         )?;
+        self.settings.set(input.options.remembered());
         Ok(format!("Extruded {count} surface face(s) along the path"))
     }
 }

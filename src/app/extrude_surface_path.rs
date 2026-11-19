@@ -1,12 +1,18 @@
 //! Frozen source-face selection followed by a path-curve picker.
 use super::*;
+mod subcurve;
+use subcurve::PathPoints;
+use viboceros_command::extrude_surface::SurfaceFaces;
 use viboceros_command::extrude_surface_path::{
     SurfacePathInput, SurfacePathOptions, SurfacePathSelector, resolve_surface_path,
 };
+
 pub(super) struct SurfacePathSession {
     pub(super) sources: extrude_surface::SurfaceExtrusionSources,
     pub(super) options: SurfacePathOptions,
+    points: Option<PathPoints>,
 }
+
 impl VibocerosApp {
     pub(super) fn try_start_surface_path_input(&mut self, input: &str) -> bool {
         let mut words = input.split_whitespace();
@@ -16,7 +22,10 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let Ok(parsed) = SurfacePathInput::parse(&words.collect::<Vec<_>>()) else {
+        let Ok(parsed) = SurfacePathInput::parse_with_options(
+            &words.collect::<Vec<_>>(),
+            self.commands.surface_path_settings(),
+        ) else {
             return false;
         };
         let sources = match self.prepare_surface_extrusion_sources(parsed.faces) {
@@ -31,20 +40,13 @@ impl VibocerosApp {
         self.surface_path_prompt = Some(SurfacePathSession {
             sources,
             options: parsed.options,
+            points: None,
         });
         self.command_input.clear();
         if let Some(selector) = parsed.path {
-            match resolve_surface_path(&self.document, Some(&selector)) {
-                Ok(id) => {
-                    self.finish_surface_path(id);
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
+            self.select_surface_path(Some(&selector), None);
         } else {
-            self.push_log(format!(
-                "ExtrudeSrfAlongCrv: select path curve ({})",
-                parsed.options.command_options()
-            ));
+            self.log_surface_path_prompt();
         }
         true
     }
@@ -52,18 +54,23 @@ impl VibocerosApp {
         let Some(session) = self.surface_path_prompt.as_ref() else {
             return false;
         };
-        let mut options = session.options;
+        let options = session.options;
+        if session.points.is_some() {
+            return self.continue_surface_path_points(input);
+        }
+        let keyword = input.trim_start_matches(['_', '-']);
         let words = input.split_whitespace().collect::<Vec<_>>();
-        if words.is_empty() {
-            match resolve_surface_path(&self.document, None) {
-                Ok(id) => {
-                    self.finish_surface_path(id);
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
+        if words.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
+            self.select_surface_path(None, None);
+            self.command_input.clear();
             return true;
         }
-        if !words.iter().all(|w| w.contains('=')) {
+        if !words.iter().all(|word| {
+            word.contains('=')
+                || ["Solid", "DeleteInput", "SubCurve"]
+                    .iter()
+                    .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
+        }) {
             return false;
         }
         let mut normalized = Vec::new();
@@ -90,41 +97,26 @@ impl VibocerosApp {
         }
         let refs = normalized.iter().map(String::as_str).collect::<Vec<_>>();
         let result = (|| {
-            let parsed = SurfacePathInput::parse(&refs)?;
-            if !matches!(
-                parsed.faces,
-                viboceros_command::extrude_surface::SurfaceFaces::Single
-            ) {
+            let parsed = SurfacePathInput::parse_with_options(&refs, options)?;
+            if !matches!(parsed.faces, SurfaceFaces::Single) {
                 return Err(viboceros_command::CommandError::Usage(
                     "Select source faces before choosing the path",
                 ));
             }
-            let option_words = refs
-                .iter()
-                .copied()
-                .filter(|w| {
-                    !w.trim_start_matches('_')
-                        .split_once('=')
-                        .is_some_and(|(k, _)| {
-                            k.eq_ignore_ascii_case("Path") || k.eq_ignore_ascii_case("PathName")
-                        })
-                })
-                .collect::<Vec<_>>();
-            options.update(&option_words)?;
             let path = parsed
                 .path
                 .as_ref()
-                .map(|s| resolve_surface_path(&self.document, Some(s)))
+                .map(|selector| resolve_surface_path(&self.document, Some(selector)))
                 .transpose()?;
-            Ok::<_, viboceros_command::CommandError>(path)
+            Ok((parsed.options, path))
         })();
         match result {
-            Ok(path) => {
+            Ok((options, path)) => {
                 self.surface_path_prompt.as_mut().unwrap().options = options;
-                if let Some(id) = path {
-                    self.finish_surface_path(id);
+                if let Some(path) = path {
+                    self.accept_surface_path(path, None);
                 } else {
-                    self.push_log(options.command_options());
+                    self.log_surface_path_prompt();
                 }
             }
             Err(e) => self.push_log(format!("Error: {e}")),
@@ -132,32 +124,91 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    pub(super) fn pick_surface_extrusion_path(&mut self, id: Option<ObjectId>) -> bool {
-        if self.surface_path_prompt.is_none() {
+    pub(super) fn pick_surface_extrusion_path(
+        &mut self,
+        id: Option<ObjectId>,
+        pick: Option<(usize, egui::Pos2)>,
+    ) -> bool {
+        let Some(session) = self.surface_path_prompt.as_ref() else {
             return false;
-        }
-        if let Some(id) = id {
-            match resolve_surface_path(&self.document, Some(&SurfacePathSelector::Id(id))) {
-                Ok(id) => {
-                    self.finish_surface_path(id);
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
+        };
+        if let Some(id) = id.filter(|_| session.points.is_none()) {
+            self.select_surface_path(Some(&SurfacePathSelector::Id(id)), pick);
         }
         true
     }
-    fn finish_surface_path(&mut self, path: ObjectId) -> bool {
-        let Some(session) = self.surface_path_prompt.take() else {
-            return false;
+
+    fn select_surface_path(
+        &mut self,
+        selector: Option<&SurfacePathSelector>,
+        pick: Option<(usize, egui::Pos2)>,
+    ) {
+        match resolve_surface_path(&self.document, selector) {
+            Ok(path) => self.accept_surface_path(path, pick),
+            Err(e) => self.push_log(format!("Error: {e}")),
+        }
+    }
+
+    fn accept_surface_path(&mut self, path: ObjectId, pick: Option<(usize, egui::Pos2)>) {
+        let session = self.surface_path_prompt.as_ref().unwrap();
+        if !session.sources.is_current(&self.document) {
+            self.push_log("Error: surface source changed; select the faces again".into());
+            return;
+        }
+        let options = session.options;
+        let needs_points = options.subcurve && options.path_range.is_none();
+        if !needs_points && (pick.is_none() || options.reverse.is_some()) {
+            self.finish_surface_path(path, options);
+            return;
+        }
+        let rail = self.document.object(path).unwrap();
+        let curve = match rail.geometry().nurbs_curve_representation() {
+            Ok(Some(curve)) => curve,
+            Ok(None) => return,
+            Err(e) => {
+                self.push_log(format!("Error: {e}"));
+                return;
+            }
         };
-        if session.sources.snapshots.iter().any(|(id, s)| {
-            self.document
-                .object(*id)
-                .is_none_or(|o| o.geometry_snapshot() != s)
-        }) {
+        let reverse = options.reverse.unwrap_or_else(|| {
+            pick.and_then(|(viewport, pointer)| {
+                let view = &self.viewports[viewport];
+                view.pick_edge_parameter(&curve, pointer, view.screen_rect()?, false)
+            })
+            .is_some_and(|t| t > curve.domain().start().midpoint(*curve.domain().end()))
+        });
+        if needs_points {
+            self.begin_surface_path_points(path, curve, reverse);
+        } else {
+            self.finish_surface_path(
+                path,
+                SurfacePathOptions {
+                    reverse: Some(reverse),
+                    ..options
+                },
+            );
+        }
+    }
+
+    fn log_surface_path_prompt(&mut self) {
+        let session = self.surface_path_prompt.as_ref().unwrap();
+        let prompt = session.hint();
+        if session.points.is_some() {
+            self.push_log(prompt.into());
+        } else {
+            self.push_log(format!(
+                "Select path curve near start ({})",
+                session.options.command_options()
+            ));
+        }
+    }
+
+    fn finish_surface_path(&mut self, path: ObjectId, options: SurfacePathOptions) {
+        let session = self.surface_path_prompt.take().unwrap();
+        if !session.sources.is_current(&self.document) {
             self.surface_path_prompt = Some(session);
             self.push_log("Error: surface source changed; select the faces again".into());
-            return false;
+            return;
         }
         let refs = session
             .sources
@@ -168,14 +219,12 @@ impl VibocerosApp {
             .join(",");
         let command = format!(
             "ExtrudeSrfAlongCrv Path={path} FaceRefs={refs} {}",
-            session.options.command_options()
+            options.command_options()
         );
         if self.try_execute_command(&command) {
             self.component_selection.clear();
-            true
         } else {
             self.surface_path_prompt = Some(session);
-            false
         }
     }
 }

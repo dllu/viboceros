@@ -27,8 +27,10 @@ pub(super) fn run(
         let options = viboceros_command::extrude_surface_path::SurfacePathOptions {
             solid: f.solid,
             delete_input: false,
-            reverse: f.reverse,
+            subcurve: false,
+            reverse: Some(f.reverse),
             path_length: f.path_length,
+            path_range: None,
         };
         CommandRegistry::with_builtins().execute(
             &mut doc,

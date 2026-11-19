@@ -383,6 +383,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
+    pub(crate) surface_path_extrusion: Option<surface_extrusion::SurfacePathPreview<'a>>,
     pub insert_edges: Option<&'a [viboceros_geometry::LineSegment]>,
     pub insert_mesh: Option<&'a TriangleMesh>,
     pub offset_mesh_preview: Option<&'a viboceros_command::offset_mesh::Prepared>,
@@ -566,6 +567,7 @@ impl Default for ViewportInput<'_> {
             direction: None,
             surface_apex: None,
             surface_extrusion: None,
+            surface_path_extrusion: None,
             insert_edges: None,
             insert_mesh: None,
             offset_mesh_preview: None,
@@ -2880,6 +2882,15 @@ impl Viewport {
                             .is_some_and(|filter| filter.awaiting_source())
                     })
                     .map(|cursor| cursor.point),
+                document.tolerance(),
+            );
+        }
+        if let (Some(preview), Some(parameter)) = (input.surface_path_extrusion, edge_parameter) {
+            self.paint_surface_path_extrusion(
+                &painter,
+                rect,
+                preview,
+                parameter,
                 document.tolerance(),
             );
         }

@@ -208,6 +208,11 @@ impl VibocerosApp {
             .map(|ids| ids.iter().copied().collect::<Vec<_>>())
             .unwrap_or_default();
         selection_preview_ids.extend(self.block_edit_picked_sources());
+        selection_preview_ids.extend(
+            self.surface_path_prompt
+                .as_ref()
+                .and_then(|session| session.selected_rail(&self.document)),
+        );
         if let Some(session) = &self.offset_mesh_session {
             selection_preview_ids.extend(session.flip_picks());
         }
@@ -559,8 +564,18 @@ impl VibocerosApp {
                 && self.point_constraint.is_none())
             .then_some(reference.curve())
         });
-        let edge_parameters =
-            split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters);
+        let surface_path = self.surface_path_prompt.as_ref().filter(|_| {
+            model_input_active
+                && self.plane_prompt.is_none()
+                && self.point_filter.is_none()
+                && self.point_constraint.is_none()
+        });
+        let edge_curve = edge_curve.or_else(|| surface_path?.point_curve(&self.document));
+        let surface_path_extrusion = surface_path.and_then(|path| path.preview(&self.document));
+        let edge_parameters = surface_path.map_or_else(
+            || split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters),
+            |session| session.point_markers(),
+        );
         let edge_distance_parameters =
             split_selection.and_then(viboceros_command::SplitEdgeSelection::distance_parameters);
         let edge_endpoints = match &self.edge_prompt {
@@ -1323,6 +1338,7 @@ impl VibocerosApp {
                                 .map(direction::Session::overlay),
                             surface_apex,
                             surface_extrusion,
+                            surface_path_extrusion,
                             insert_edges,
                             insert_mesh,
                             offset_mesh_preview: self
@@ -1716,12 +1732,15 @@ impl VibocerosApp {
         let menu_action = self.show_selection_menu(ui);
         let mut menu_consumed = parametric_menu_consumed || menu_action.is_some();
         if let Some(object_id) = menu_action {
-            let mode = self.selection_menu.take().unwrap().choice.mode;
+            let choice = self.selection_menu.take().unwrap().choice;
             if let Some(object_id) = object_id {
-                self.apply_selection_click(SelectionClick {
-                    object_id: Some(object_id),
-                    mode,
-                });
+                self.apply_viewport_selection_click(
+                    SelectionClick {
+                        object_id: Some(object_id),
+                        mode: choice.mode,
+                    },
+                    Some((choice.viewport, choice.pointer)),
+                );
             }
         } else if let Some(menu) = self.selection_menu.as_mut() {
             if ui.input(|input| {
@@ -1729,8 +1748,9 @@ impl VibocerosApp {
                     || input.pointer.secondary_clicked()
             }) {
                 let click = menu.highlighted_click();
+                let pick = (menu.choice.viewport, menu.choice.pointer);
                 self.selection_menu = None;
-                self.apply_selection_click(click);
+                self.apply_viewport_selection_click(click, Some(pick));
                 menu_consumed = true;
             } else if ui.input(|input| input.pointer.primary_clicked()) {
                 let pointer = ui.input(|input| input.pointer.interact_pos());

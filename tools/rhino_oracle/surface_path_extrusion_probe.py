@@ -13,7 +13,8 @@ def validate(operation):
             or operation['source'].get('type') not in ('surface', 'brep', 'box_brep')):
         raise ValueError('invalid surface path extrusion fields or options')
     length, path = operation['path_length'], operation['path']
-    if length is not None and (type(length) not in (int, float) or not math.isfinite(length) or length <= 0):
+    if length is not None and (type(length) not in (int, float)
+                               or math.isnan(length) or math.isinf(length) or length <= 0):
         raise ValueError('invalid path length')
     if (not isinstance(path, dict) or not isinstance(path.get('control_points'), list)
             or not 2 <= len(path['control_points']) <= 100000):

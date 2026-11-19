@@ -1,7 +1,8 @@
-//! Straight wall and cap wires cached for the surface distance getter.
+//! Wall and cap wires for straight and curved surface extrusion getters.
 use super::{curve_sampling::ViewportCurve, surface_apex::FaceDraft, *};
 use viboceros_command::{
     extrude_surface::{SurfaceExtrusionOptions, surface_extrusion_reference_normal},
+    extrude_surface_path::prepare_surface_path_range,
     translation::DestinationConstraint,
 };
 use viboceros_geometry::{BoundingBox3, Brep};
@@ -27,6 +28,15 @@ pub(crate) struct SurfaceExtrusionPreview<'a> {
     pub plane: Frame3,
     pub options: SurfaceExtrusionOptions,
     pub hover: Option<f64>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct SurfacePathPreview<'a> {
+    pub draft: &'a SurfaceExtrusionDraft,
+    pub curve: &'a NurbsCurve,
+    pub start: f64,
+    pub reverse: bool,
+    pub solid: bool,
 }
 
 impl SurfaceExtrusionDraft {
@@ -121,6 +131,75 @@ pub(crate) fn signed_height(constraint: DestinationConstraint, point: Point3) ->
 }
 
 impl Viewport {
+    pub(super) fn paint_surface_path_extrusion(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        preview: SurfacePathPreview<'_>,
+        end: f64,
+        tolerance: Tolerance,
+    ) {
+        let curve = preview.curve;
+        let Some((start_point, end_point)) = curve
+            .evaluate(preview.start)
+            .ok()
+            .zip(curve.evaluate(end).ok())
+        else {
+            return;
+        };
+        if start_point.is_near(end_point, tolerance) {
+            return;
+        }
+        let Ok(path) = prepare_surface_path_range(curve, [preview.start, end], preview.reverse)
+        else {
+            return;
+        };
+        let domain = path.domain();
+        let Ok(origin) = path.evaluate(*domain.start()) else {
+            return;
+        };
+        let Ok(displacement) = path
+            .evaluate(*domain.end())
+            .and_then(|end| origin.vector_to(end))
+        else {
+            return;
+        };
+        let mut rail = Vec::new();
+        path.visit_segments(|a, b| {
+            if let (Ok(a), Ok(b)) = (origin.vector_to(a), origin.vector_to(b)) {
+                rail.push([a, b]);
+            }
+        });
+        let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+        let paint_segment = |a, b| {
+            if let Some(segment) = self.project_segment(a, b, rect) {
+                painter.line_segment(segment, stroke);
+            }
+        };
+        let paint = |a: Point3, b: Point3, da: Vector3, db: Vector3| {
+            if let (Ok(a), Ok(b)) = (a.translated(da), b.translated(db)) {
+                paint_segment(a, b);
+            }
+        };
+        for face in &preview.draft.faces {
+            let cap = preview
+                .solid
+                .then_some(face.cap.as_slice())
+                .into_iter()
+                .flatten()
+                .copied();
+            for [a, b] in face.outline.rim().chain(cap) {
+                paint_segment(a, b);
+                paint(a, b, displacement, displacement);
+            }
+            for point in face.outline.boundary_rulings() {
+                for &[from, to] in &rail {
+                    paint(point, point, from, to);
+                }
+            }
+        }
+    }
+
     pub(super) fn surface_extrusion_end_on_point(
         &self,
         constraint: DestinationConstraint,
