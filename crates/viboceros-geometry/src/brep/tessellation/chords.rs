@@ -53,8 +53,21 @@ pub(super) fn refine_interior(
             break;
         }
         proposals.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
+        proposals.truncate(limit - parameters.len());
+        let coarse = points.len();
         let mut cuts = BTreeMap::new();
-        for (_, key, uv, point) in proposals.into_iter().take(limit - parameters.len()) {
+        for &(_, key, _, point) in &proposals {
+            cuts.insert(key, points.len() as u32);
+            points.push(point);
+        }
+        keep_nondegenerate_cuts(points, triangles, &mut cuts)?;
+        points.truncate(coarse);
+        proposals.retain(|(_, key, _, _)| cuts.contains_key(key));
+        if proposals.is_empty() {
+            break;
+        }
+        cuts.clear();
+        for (_, key, uv, point) in proposals {
             cuts.insert(key, parameters.len() as u32);
             parameters.push(uv);
             points.push(point);
@@ -62,15 +75,60 @@ pub(super) fn refine_interior(
         let original = std::mem::take(triangles);
         triangles.reserve(original.len() + cuts.len() * 2);
         for triangle in original {
-            split(triangle, &cuts, triangles);
+            let mids = triangle_edges(triangle).map(|key| cuts.get(&key).copied());
+            split(triangle, mids, triangles);
         }
     }
     Ok(())
 }
 
-fn split(triangle: [u32; 3], cuts: &BTreeMap<[u32; 2], u32>, output: &mut Vec<[u32; 3]>) {
+fn keep_nondegenerate_cuts(
+    points: &[Point3],
+    triangles: &[[u32; 3]],
+    cuts: &mut BTreeMap<[u32; 2], u32>,
+) -> Result<(), GeometryError> {
+    use crate::nurbs_surface::tessellation_triangle_is_nondegenerate as valid;
+    let tolerance = Tolerance::MESH_VALIDATION;
+    let mut children = Vec::with_capacity(4);
+    for &triangle in triangles {
+        let edges = triangle_edges(triangle);
+        let mids = edges.map(|key| cuts.get(&key).copied());
+        let active = usize::from(mids[0].is_some())
+            | usize::from(mids[1].is_some()) << 1
+            | usize::from(mids[2].is_some()) << 2;
+        if active == 0 {
+            continue;
+        }
+        let mut preserves_topology = valid(points, triangle, tolerance)?;
+        // A neighboring triangle may reject a shared cut. Check each
+        // possible subset so its removal cannot leave an invalid split.
+        for mask in 1..=active {
+            if mask & active != mask || !preserves_topology {
+                continue;
+            }
+            children.clear();
+            let selected =
+                std::array::from_fn(|i| if mask & (1 << i) != 0 { mids[i] } else { None });
+            split(triangle, selected, &mut children);
+            for &child in &children {
+                preserves_topology &= valid(points, child, tolerance)?;
+            }
+        }
+        if !preserves_topology {
+            for key in edges {
+                cuts.remove(&key);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn triangle_edges([a, b, c]: [u32; 3]) -> [[u32; 2]; 3] {
+    [edge(a, b), edge(b, c), edge(c, a)]
+}
+
+fn split(triangle: [u32; 3], mut mids: [Option<u32>; 3], output: &mut Vec<[u32; 3]>) {
     let [a, b, c] = triangle;
-    let mut mids = [edge(a, b), edge(b, c), edge(c, a)].map(|k| cuts.get(&k).copied());
     if let [Some(ab), Some(bc), Some(ca)] = mids {
         output.extend([[a, ab, ca], [ab, b, bc], [ca, bc, c], [ab, bc, ca]]);
         return;
@@ -94,6 +152,15 @@ fn split(triangle: [u32; 3], cuts: &BTreeMap<[u32; 2], u32>, output: &mut Vec<[u
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_split_that_collapses_a_child_is_rejected_on_both_incident_triangles() {
+        let points = [[0., 0.], [2., 0.], [1., 1.], [1., 1.], [1., -1.]]
+            .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+        let mut cuts = BTreeMap::from([([0, 1], 3)]);
+        keep_nondegenerate_cuts(&points, &[[0, 1, 2], [1, 0, 4]], &mut cuts).unwrap();
+        assert!(cuts.is_empty());
+    }
 
     #[test]
     fn interior_chord_refines_both_incident_triangles_without_splitting_trims() {
