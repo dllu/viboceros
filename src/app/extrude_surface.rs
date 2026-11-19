@@ -1,9 +1,11 @@
 //! Frozen face sources and shared drafting input for surface extrusion.
 use super::*;
+mod boundary;
 mod linear;
 use crate::viewport::surface_extrusion::{
     SurfaceExtrusionDraft, SurfaceExtrusionPreview, signed_height,
 };
+pub(super) use boundary::Boundary;
 use viboceros_command::extrude_surface::{
     SurfaceExtrusionInput, SurfaceExtrusionOptions, SurfaceFaces, surface_extrusion_targets,
 };
@@ -70,12 +72,16 @@ impl SurfaceExtrusionSources {
 
 impl VibocerosApp {
     pub(super) fn picking_surface_boundary(&self) -> bool {
-        self.picking_straight_surface_boundary() || self.picking_surface_apex_boundary()
+        self.picking_straight_surface_boundary()
+            || self.picking_surface_apex_boundary()
+            || self.picking_surface_path_boundary()
     }
 
     pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef) {
         if self.picking_straight_surface_boundary() {
             self.pick_straight_surface_boundary(reference);
+        } else if self.picking_surface_path_boundary() {
+            self.pick_surface_path_boundary(reference);
         } else {
             self.pick_surface_apex_boundary(reference);
         }

@@ -1,8 +1,54 @@
 //! Fixed-orientation surface extrusion along a chosen curve.
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
+use crate::surface_reference::{BoundaryInput, BoundaryRef};
 
-pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [DeleteInput=Yes|No] [SubCurve=Yes|No] [SplitAtTangents=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+#[cfg(feature = "native-smlib")]
+mod boundary;
+#[cfg(feature = "native-smlib")]
+pub use boundary::preview_boundary_edges;
+
+#[cfg(feature = "native-smlib")]
+struct SweepProduct {
+    brep: Brep,
+    finished: bool,
+}
+
+#[cfg(feature = "native-smlib")]
+fn sweep_face(
+    brep: &Brep,
+    path: &NurbsCurve,
+    native: &viboceros_smlib::KernelCurve,
+    cutter: Option<&Brep>,
+    solid: bool,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<SweepProduct, CommandError> {
+    let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
+    let zero = Point3::try_new(0., 0., 0.)?;
+    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
+        .extruded_faces_along_curve_with_tangents(
+            native,
+            solid || cutter.is_some(),
+            split_at_tangents,
+            tolerance,
+        )?
+        .to_brep(tolerance)?;
+    let (result, finished) = if let Some(cutter) = cutter {
+        let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
+        let cutter = cutter.transformed(to_local, tolerance)?;
+        boundary::limit(&local, path, result, &cutter, tolerance)?
+    } else {
+        (result, true)
+    };
+    let to_world = AffineTransform3::from_translation(zero.vector_to(origin)?);
+    Ok(SweepProduct {
+        brep: result.transformed(to_world, tolerance)?,
+        finished,
+    })
+}
+
+pub const USAGE: &str = "ExtrudeSrfAlongCrv [Path=id|PathName=name] [Solid=Yes|No] [ToBoundary=id[:face]] [DeleteInput=Yes|No] [SubCurve=Yes|No] [SplitAtTangents=Yes|No] [Reverse=Auto|Yes|No] [PathLength=length|PathRange=t0,t1] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfacePathCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<SurfacePathOptions>>,
 }
@@ -85,9 +131,16 @@ impl SurfacePathOptions {
         }
     }
     pub fn command_options(self) -> String {
-        let mut result = format!(
-            "Solid={} DeleteInput={} SubCurve={} SplitAtTangents={} Reverse={}",
+        format!(
+            "Solid={} {}",
             if self.solid { "Yes" } else { "No" },
+            self.path_options()
+        )
+    }
+
+    pub fn path_options(self) -> String {
+        let mut result = format!(
+            "DeleteInput={} SubCurve={} SplitAtTangents={} Reverse={}",
             if self.delete_input { "Yes" } else { "No" },
             if self.subcurve { "Yes" } else { "No" },
             if self.split_at_tangents { "Yes" } else { "No" },
@@ -116,6 +169,7 @@ pub struct SurfacePathInput {
     pub options: SurfacePathOptions,
     pub faces: SurfaceFaces,
     pub path: Option<SurfacePathSelector>,
+    pub boundary: BoundaryInput,
 }
 impl SurfacePathInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
@@ -133,16 +187,30 @@ impl SurfacePathInput {
         let mut face_words = Vec::new();
         let mut option_words = Vec::new();
         for word in words {
-            let Some((key, value)) = word.trim_start_matches('_').split_once('=') else {
+            let keyword = word.trim_start_matches('_');
+            let (name, value) = keyword
+                .split_once('=')
+                .map_or((keyword, None), |(name, value)| (name, Some(value)));
+            if name.eq_ignore_ascii_case("ToBoundary") {
+                if result.boundary != BoundaryInput::None {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                result.boundary = match value {
+                    Some(value) => BoundaryInput::Reference(BoundaryRef::parse(value)?),
+                    None => BoundaryInput::Select,
+                };
+                continue;
+            }
+            let Some(value) = value else {
                 option_words.push(*word);
                 continue;
             };
-            match key.to_ascii_lowercase().as_str() {
+            match name.to_ascii_lowercase().as_str() {
                 "path" | "pathname" => {
                     if result.path.is_some() {
                         return Err(CommandError::Usage(USAGE));
                     }
-                    result.path = Some(if key.eq_ignore_ascii_case("Path") {
+                    result.path = Some(if name.eq_ignore_ascii_case("Path") {
                         SurfacePathSelector::Id(
                             value.parse().map_err(|_| CommandError::Usage(USAGE))?,
                         )
@@ -260,12 +328,15 @@ impl Command for ExtrudeSurfacePathCommand {
     fn name(&self) -> &'static str {
         "ExtrudeSrfAlongCrv"
     }
+    fn commits_on_error(&self, error: &CommandError) -> bool {
+        matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
+    }
     fn object_selection_prompt(
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
         let input = SurfacePathInput::parse_with_options(args, self.settings.get())?;
-        if input.path.is_some() || matches!(input.faces, SurfaceFaces::References(_)) {
+        if matches!(input.faces, SurfaceFaces::References(_)) {
             return Ok(None);
         }
         Ok(Some(ObjectSelectionPrompt {
@@ -279,6 +350,11 @@ impl Command for ExtrudeSurfacePathCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let input = SurfacePathInput::parse_with_options(args, self.settings.get())?;
+        let boundary = match input.boundary {
+            BoundaryInput::Reference(reference) => Some((reference, reference.capture(doc)?)),
+            BoundaryInput::None => None,
+            BoundaryInput::Select => return Err(CommandError::Usage("Select a boundary surface")),
+        };
         let id = resolve_surface_path(doc, input.path.as_ref())?;
         let path = doc
             .object(id)
@@ -289,6 +365,12 @@ impl Command for ExtrudeSurfacePathCommand {
         let path = prepare_surface_path(&path, input.options, doc.tolerance())?;
         #[cfg(feature = "native-smlib")]
         let native = viboceros_smlib::KernelCurve::from_nurbs_for_modeling(&path)?;
+        #[cfg(feature = "native-smlib")]
+        if let Some((reference, cutter)) = boundary {
+            let count = boundary::apply(doc, &input, id, &path, &native, reference, &cutter)?;
+            self.settings.set(input.options.remembered());
+            return Ok(format!("Extruded {count} surface face(s) to the boundary"));
+        }
         let count = apply_face_extrusion_products(
             doc,
             &input.faces,
@@ -296,28 +378,16 @@ impl Command for ExtrudeSurfacePathCommand {
             |brep, tolerance| {
                 #[cfg(feature = "native-smlib")]
                 {
-                    let origin = brep
-                        .vertices()
-                        .first()
-                        .map(|v| v.point())
-                        .unwrap_or_else(|| brep.bounds().min());
-                    let zero = Point3::try_new(0., 0., 0.)?;
-                    let local = brep.transformed(
-                        AffineTransform3::from_translation(origin.vector_to(zero)?),
+                    let result = sweep_face(
+                        brep,
+                        &path,
+                        &native,
+                        None,
+                        input.options.solid,
+                        input.options.split_at_tangents,
                         tolerance,
-                    )?;
-                    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-                        .extruded_faces_along_curve_with_tangents(
-                            &native,
-                            input.options.solid,
-                            input.options.split_at_tangents,
-                            tolerance,
-                        )?
-                        .to_brep(tolerance)?
-                        .transformed(
-                            AffineTransform3::from_translation(zero.vector_to(origin)?),
-                            tolerance,
-                        )?;
+                    )?
+                    .brep;
                     let components = if input.options.solid {
                         vec![result]
                     } else {
@@ -327,7 +397,7 @@ impl Command for ExtrudeSurfacePathCommand {
                 }
                 #[cfg(not(feature = "native-smlib"))]
                 {
-                    let _ = (brep, tolerance, &path);
+                    let _ = (brep, tolerance, &path, &boundary);
                     Err(CommandError::SurfacePathExtrusionRequiresNativeKernel)
                 }
             },

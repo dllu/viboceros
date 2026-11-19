@@ -4,6 +4,9 @@ use crate::viewport::surface_extrusion::{SurfaceExtrusionDraft, SurfacePathPrevi
 use viboceros_drafting::PointInput;
 use viboceros_geometry::NurbsCurve;
 
+#[cfg(feature = "native-smlib")]
+mod boundary_preview;
+
 pub(super) struct PathPoints {
     rail: ObjectId,
     snapshot: viboceros_document::GeometrySnapshot,
@@ -11,6 +14,8 @@ pub(super) struct PathPoints {
     reverse: bool,
     start: Option<f64>,
     draft: Option<SurfaceExtrusionDraft>,
+    #[cfg(feature = "native-smlib")]
+    boundary_preview: Option<boundary_preview::Preview>,
 }
 
 impl PathPoints {
@@ -25,8 +30,12 @@ impl PathPoints {
 impl SurfacePathSession {
     pub(in crate::app) fn hint(&self) -> &'static str {
         match self.points.as_ref().map(|points| points.start) {
+            None if matches!(self.boundary, Boundary::Selecting) => "Select a boundary surface",
+            None if matches!(self.boundary, Boundary::Picked { .. }) => {
+                "Select path curve near start. DeleteInput / SubCurve / SplitAtTangents / Reverse / PathLength"
+            }
             None => {
-                "Select path curve near start. Solid / DeleteInput / SubCurve / SplitAtTangents / Reverse / PathLength"
+                "Select path curve near start. Solid / DeleteInput / SubCurve / SplitAtTangents / ToBoundary / Reverse / PathLength"
             }
             Some(None) => "Starting point on curve. Press Enter for whole path curve",
             Some(Some(_)) => "Ending point on curve",
@@ -51,7 +60,10 @@ impl SurfacePathSession {
 
     pub(in crate::app) fn preview(&self, document: &Document) -> Option<SurfacePathPreview<'_>> {
         let points = self.points.as_ref()?;
-        if !self.sources.is_current(document) || !points.is_current(document) {
+        if !self.sources.is_current(document)
+            || !points.is_current(document)
+            || !self.boundary.is_current(document)
+        {
             return None;
         }
         Some(SurfacePathPreview {
@@ -77,6 +89,13 @@ impl VibocerosApp {
             return;
         }
         let session = self.surface_path_prompt.as_mut().unwrap();
+        let draft = matches!(session.boundary, Boundary::None)
+            .then(|| SurfaceExtrusionDraft::capture(&self.document, &session.sources.targets))
+            .flatten();
+        #[cfg(feature = "native-smlib")]
+        let boundary_preview = session.boundary.face().and_then(|boundary| {
+            boundary_preview::Preview::capture(&self.document, &session.sources.targets, boundary)
+        });
         session.points = Some(PathPoints {
             rail,
             snapshot: self
@@ -88,7 +107,9 @@ impl VibocerosApp {
             curve,
             reverse,
             start: None,
-            draft: SurfaceExtrusionDraft::capture(&self.document, &session.sources.targets),
+            draft,
+            #[cfg(feature = "native-smlib")]
+            boundary_preview,
         });
         self.log_surface_path_prompt();
     }
@@ -147,6 +168,10 @@ impl VibocerosApp {
         let Some(points) = session.points.as_mut() else {
             return false;
         };
+        if !session.boundary.is_current(&self.document) {
+            self.reset_surface_path_boundary();
+            return true;
+        }
         if !points.is_current(&self.document) {
             self.push_log("Error: path curve changed; restart ExtrudeSrfAlongCrv".into());
             return true;

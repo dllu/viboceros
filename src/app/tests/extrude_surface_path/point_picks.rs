@@ -4,7 +4,7 @@ use super::super::circle_preview::{screen_point, viewport_click};
 use super::*;
 use viboceros_geometry::NurbsCurve;
 
-fn scene(curve: NurbsCurve) -> (VibocerosApp, ObjectId, ObjectId) {
+pub(super) fn scene(curve: NurbsCurve) -> (VibocerosApp, ObjectId, ObjectId) {
     let mut app = test_app();
     app.viewports[0] = Viewport::new(ViewKind::Front);
     app.active_viewport = 0;
@@ -42,7 +42,7 @@ fn scene(curve: NurbsCurve) -> (VibocerosApp, ObjectId, ObjectId) {
     (app, surface, rail)
 }
 
-fn quadratic() -> NurbsCurve {
+pub(super) fn quadratic() -> NurbsCurve {
     NurbsCurve::try_new(
         2,
         vec![
@@ -56,7 +56,7 @@ fn quadratic() -> NurbsCurve {
 }
 
 #[cfg(feature = "native-smlib")]
-fn frame_rails(app: &mut VibocerosApp, ctx: &egui::Context) {
+pub(super) fn frame_rails(app: &mut VibocerosApp, ctx: &egui::Context) {
     viewport_frame(app, ctx, vec![]);
     viewport_frame(app, ctx, vec![]);
     let bounds =
@@ -66,7 +66,7 @@ fn frame_rails(app: &mut VibocerosApp, ctx: &egui::Context) {
 }
 
 #[cfg(feature = "native-smlib")]
-fn hover(
+pub(super) fn hover(
     app: &mut VibocerosApp,
     ctx: &egui::Context,
     target: Point3,

@@ -12,6 +12,14 @@ work. At the path picker, toggle `Solid`, `DeleteInput`, `SubCurve` or
 unique selected curve. You can also enter `Path=id` or `PathName=name`.
 Esc cancels the getter.
 
+Choose `ToBoundary` at the path picker, then pick a surface or a polysurface
+face and select the path near its start. The cutter closes the result where
+its finite trim spans the sweep. The path must reach the cutter. With
+`SubCurve=Yes`, the wire preview shows the cut for the current interval.
+Enclosed cutter holes leave openings in the result. A cutter hole that
+interrupts the rim can leave a full sweep and report that the cut failed.
+In a batch, `DeleteInput=Yes` removes only source faces that produce a cut.
+
 With `SubCurve=Yes`, choose the path, then pick two points along it or type
 their coordinates. The first pick anchors the interval, and the second has a
 live wire preview of the translated surface. The direction comes from the
@@ -29,6 +37,7 @@ ExtrudeSrfAlongCrv PathName=rail Solid=No Reverse=Yes
 ExtrudeSrfAlongCrv Path=object-id Face=3 DeleteInput=Yes
 ExtrudeSrfAlongCrv Path=object-id Faces=0,2 PathLength=10
 ExtrudeSrfAlongCrv Path=object-id PathRange=0.3,0.65
+ExtrudeSrfAlongCrv Path=object-id ToBoundary=cutter-id:face-index
 ```
 
 `FaceRefs=id:index,...` addresses original face indices without object selection.
@@ -59,15 +68,16 @@ the result and validates solid closure. An aggregate control-net budget
 bounds tensor-product allocation.
 
 Closed or degenerate paths, closed sources without a boundary, invalid face
-indices and unsupported native imports decline. Failed geometry leaves the
-picker and source selection available for retry. `ToBoundary` remains future
-work. Self-intersection, folding and near-degenerate cases require broader
+indices and unsupported native imports decline. Invalid picks can be retried.
+A prepared sweep that misses its cutter leaves the geometry and undo history
+intact. Self-intersection, folding and near-degenerate cases require broader
 qualification.
 
 Headless Rhino 8 command captures cover the factory cap setting, clicks on
 both halves of a rail, whole-path confirmation, and `SubCurve` on linear,
 quadratic, rational and multispan rails. Tangent split captures cover smooth
-joins, corners, trim holes and sharp bends in the rail. Seven independent
+joins, corners, trim holes and sharp bends in the rail. Boundary captures cover
+flat, oblique, warped and coincident cutters. Seven independent
 Python `surface_path_extrusion` fixtures also exercise the kernel with planar and
 warped caps, rational holes, partial paths and translated sources. The SDK
 probe calls [BrepFace.CreateExtrusion](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brepface/createextrusion).

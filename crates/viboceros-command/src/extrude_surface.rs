@@ -5,6 +5,8 @@ mod apply;
 #[cfg(feature = "native-smlib")]
 mod boundary;
 pub(super) use apply::{apply_face_extrusion_products, apply_face_extrusions};
+#[cfg(feature = "native-smlib")]
+pub(super) use apply::{apply_staged_products, capture_source_face};
 
 pub const USAGE: &str = "ExtrudeSrf distance | base target | ToBoundary=id[:face] [BothSides=Yes|No] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Direction=x,y,z] [Face=index|Faces=All|Faces=i,j] [FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceCommand {
@@ -467,7 +469,10 @@ pub fn surface_extrusion_reference_normal(
 }
 
 #[cfg(feature = "native-smlib")]
-fn local_sweep_source(brep: &Brep, tolerance: Tolerance) -> Result<(Point3, Brep), CommandError> {
+pub(super) fn local_sweep_source(
+    brep: &Brep,
+    tolerance: Tolerance,
+) -> Result<(Point3, Brep), CommandError> {
     let origin = brep
         .vertices()
         .first()
@@ -481,7 +486,7 @@ fn local_sweep_source(brep: &Brep, tolerance: Tolerance) -> Result<(Point3, Brep
     Ok((origin, local))
 }
 #[cfg(feature = "native-smlib")]
-fn split_wall_edges(
+pub(super) fn split_wall_edges(
     source: &Brep,
     split_at_tangents: bool,
     tolerance: Tolerance,

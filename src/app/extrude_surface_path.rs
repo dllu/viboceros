@@ -1,16 +1,21 @@
 //! Frozen source-face selection followed by a path-curve picker.
+use super::extrude_surface::Boundary;
 use super::*;
+mod boundary;
 mod subcurve;
 use subcurve::PathPoints;
 use viboceros_command::extrude_surface::SurfaceFaces;
 use viboceros_command::extrude_surface_path::{
     SurfacePathInput, SurfacePathOptions, SurfacePathSelector, resolve_surface_path,
 };
+use viboceros_command::surface_reference::BoundaryInput;
 
 pub(super) struct SurfacePathSession {
     pub(super) sources: extrude_surface::SurfaceExtrusionSources,
     pub(super) options: SurfacePathOptions,
     points: Option<PathPoints>,
+    boundary: Boundary,
+    pending_path: Option<ObjectId>,
 }
 
 impl VibocerosApp {
@@ -41,9 +46,22 @@ impl VibocerosApp {
             sources,
             options: parsed.options,
             points: None,
+            boundary: Boundary::None,
+            pending_path: None,
         });
         self.command_input.clear();
-        if let Some(selector) = parsed.path {
+        if parsed.boundary != BoundaryInput::None {
+            let path = parsed.path.as_ref().and_then(|selector| {
+                match resolve_surface_path(&self.document, Some(selector)) {
+                    Ok(path) => Some(path),
+                    Err(error) => {
+                        self.push_log(format!("Error: {error}"));
+                        None
+                    }
+                }
+            });
+            self.start_surface_path_boundary(parsed.boundary, path);
+        } else if let Some(selector) = parsed.path {
             self.select_surface_path(Some(&selector), None);
         } else {
             self.log_surface_path_prompt();
@@ -58,6 +76,10 @@ impl VibocerosApp {
         if session.points.is_some() {
             return self.continue_surface_path_points(input);
         }
+        if self.picking_surface_path_boundary() {
+            self.continue_surface_path_boundary(input);
+            return true;
+        }
         let keyword = input.trim_start_matches(['_', '-']);
         let words = input.split_whitespace().collect::<Vec<_>>();
         if words.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
@@ -67,9 +89,15 @@ impl VibocerosApp {
         }
         if !words.iter().all(|word| {
             word.contains('=')
-                || ["Solid", "DeleteInput", "SubCurve", "SplitAtTangents"]
-                    .iter()
-                    .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
+                || [
+                    "Solid",
+                    "DeleteInput",
+                    "SubCurve",
+                    "SplitAtTangents",
+                    "ToBoundary",
+                ]
+                .iter()
+                .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
         }) {
             return false;
         }
@@ -108,12 +136,14 @@ impl VibocerosApp {
                 .as_ref()
                 .map(|selector| resolve_surface_path(&self.document, Some(selector)))
                 .transpose()?;
-            Ok((parsed.options, path))
+            Ok((parsed.options, parsed.boundary, path))
         })();
         match result {
-            Ok((options, path)) => {
+            Ok((options, boundary, path)) => {
                 self.surface_path_prompt.as_mut().unwrap().options = options;
-                if let Some(path) = path {
+                if boundary != BoundaryInput::None {
+                    self.start_surface_path_boundary(boundary, path);
+                } else if let Some(path) = path {
                     self.accept_surface_path(path, None);
                 } else {
                     self.log_surface_path_prompt();
@@ -132,7 +162,9 @@ impl VibocerosApp {
         let Some(session) = self.surface_path_prompt.as_ref() else {
             return false;
         };
-        if let Some(id) = id.filter(|_| session.points.is_none()) {
+        if let Some(id) = id.filter(|_| {
+            session.points.is_none() && !matches!(session.boundary, Boundary::Selecting)
+        }) {
             self.select_surface_path(Some(&SurfacePathSelector::Id(id)), pick);
         }
         true
@@ -153,6 +185,10 @@ impl VibocerosApp {
         let session = self.surface_path_prompt.as_ref().unwrap();
         if !session.sources.is_current(&self.document) {
             self.push_log("Error: surface source changed; select the faces again".into());
+            return;
+        }
+        if !session.boundary.is_current(&self.document) {
+            self.reset_surface_path_boundary();
             return;
         }
         let options = session.options;
@@ -193,13 +229,14 @@ impl VibocerosApp {
     fn log_surface_path_prompt(&mut self) {
         let session = self.surface_path_prompt.as_ref().unwrap();
         let prompt = session.hint();
-        if session.points.is_some() {
+        if session.points.is_some() || matches!(session.boundary, Boundary::Selecting) {
             self.push_log(prompt.into());
         } else {
-            self.push_log(format!(
-                "Select path curve near start ({})",
-                session.options.command_options()
-            ));
+            let options = match session.boundary {
+                Boundary::Picked { .. } => session.options.path_options(),
+                _ => format!("{} ToBoundary", session.options.command_options()),
+            };
+            self.push_log(format!("Select path curve near start ({options})"));
         }
     }
 
@@ -210,6 +247,11 @@ impl VibocerosApp {
             self.push_log("Error: surface source changed; select the faces again".into());
             return;
         }
+        if !session.boundary.is_current(&self.document) {
+            self.surface_path_prompt = Some(session);
+            self.reset_surface_path_boundary();
+            return;
+        }
         let refs = session
             .sources
             .targets
@@ -217,10 +259,13 @@ impl VibocerosApp {
             .map(|(id, index)| format!("{id}:{index}"))
             .collect::<Vec<_>>()
             .join(",");
-        let command = format!(
+        let mut command = format!(
             "ExtrudeSrfAlongCrv Path={path} FaceRefs={refs} {}",
             options.command_options()
         );
+        if let Boundary::Picked { reference, .. } = session.boundary {
+            command.push_str(&format!(" ToBoundary={reference}"));
+        }
         if self.try_execute_command(&command) {
             self.component_selection.clear();
         } else {

@@ -32,7 +32,7 @@ pub(crate) fn apply_face_extrusion_products(
     Ok(count)
 }
 
-pub(super) fn capture_source_face(
+pub(crate) fn capture_source_face(
     doc: &Document,
     id: ObjectId,
     face: usize,
@@ -45,7 +45,7 @@ pub(super) fn capture_source_face(
     })
 }
 
-pub(super) fn apply_staged_products(
+pub(crate) fn apply_staged_products(
     doc: &mut Document,
     staged: Vec<Geometry>,
     deleted_faces: impl Iterator<Item = (ObjectId, usize)>,

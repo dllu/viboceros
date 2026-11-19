@@ -193,6 +193,8 @@ impl VibocerosApp {
             Some(viboceros_command::ObjectSelectionFilter::FaceAppend)
         } else if self.picking_mesh_polyline() || self.picking_offset_mesh_flips() {
             Some(viboceros_command::ObjectSelectionFilter::Mesh)
+        } else if self.picking_surface_path_boundary() {
+            Some(viboceros_command::ObjectSelectionFilter::SurfaceComponents)
         } else if end_analysis_picking || self.surface_path_prompt.is_some() {
             Some(viboceros_command::ObjectSelectionFilter::Curves)
         } else if self.picking_surface_offset_points() {
@@ -201,6 +203,10 @@ impl VibocerosApp {
             self.viewport_object_filter()
         };
         let selection_preview = self.selection_preview_filter();
+        let path_boundary = self
+            .surface_path_prompt
+            .as_ref()
+            .and_then(|session| session.picked_boundary(&self.document));
         let mut selection_preview_ids = self
             .object_prompt
             .as_ref()
@@ -212,6 +218,16 @@ impl VibocerosApp {
             self.surface_path_prompt
                 .as_ref()
                 .and_then(|session| session.selected_rail(&self.document)),
+        );
+        selection_preview_ids.extend(
+            path_boundary
+                .filter(|boundary| {
+                    boundary.face.is_none()
+                        || self.document.object(boundary.object).is_some_and(|object| {
+                            matches!(object.geometry(), Geometry::NurbsSurface(_))
+                        })
+                })
+                .map(|boundary| boundary.object),
         );
         if let Some(session) = &self.offset_mesh_session {
             selection_preview_ids.extend(session.flip_picks());
@@ -572,6 +588,9 @@ impl VibocerosApp {
         });
         let edge_curve = edge_curve.or_else(|| surface_path?.point_curve(&self.document));
         let surface_path_extrusion = surface_path.and_then(|path| path.preview(&self.document));
+        #[cfg(feature = "native-smlib")]
+        let surface_path_boundary =
+            surface_path.and_then(|path| path.boundary_preview(&self.document));
         let edge_parameters = surface_path.map_or_else(
             || split_selection.map_or(&[][..], viboceros_command::SplitEdgeSelection::parameters),
             |session| session.point_markers(),
@@ -644,6 +663,19 @@ impl VibocerosApp {
         }
         let raw_mesh_face_highlights = self.component_selection.raw_face_picks(&self.document);
         let mut component_highlights = self.component_selection.highlights(&self.document);
+        component_highlights.extend(path_boundary.and_then(|boundary| {
+            let index = boundary.face?;
+            // Untrimmed surfaces use the same face picker but have no BrepFace component.
+            matches!(
+                self.document.object(boundary.object)?.geometry(),
+                Geometry::Brep(_)
+            )
+            .then_some(crate::viewport::ComponentPick {
+                object: boundary.object,
+                kind: viboceros_command::ComponentSelectionKind::BrepFace,
+                index,
+            })
+        }));
         component_highlights.extend(self.curve_offset_edge_highlights());
         if let Some(reference) = self
             .subcurve_prompt
@@ -1339,6 +1371,8 @@ impl VibocerosApp {
                             surface_apex,
                             surface_extrusion,
                             surface_path_extrusion,
+                            #[cfg(feature = "native-smlib")]
+                            surface_path_boundary,
                             insert_edges,
                             insert_mesh,
                             offset_mesh_preview: self
@@ -1776,6 +1810,13 @@ impl VibocerosApp {
             }
         }
         let mut handled_action = false;
+        #[cfg(feature = "native-smlib")]
+        self.update_surface_path_boundary_preview(
+            viewport_outputs
+                .iter()
+                .find_map(|output| output.edge_hover_parameter),
+            ui.ctx(),
+        );
         let drafting_hover = viewport_outputs
             .iter()
             .enumerate()

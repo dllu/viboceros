@@ -1,4 +1,5 @@
 use super::*;
+mod boundary;
 mod point_picks;
 mod tangents;
 
