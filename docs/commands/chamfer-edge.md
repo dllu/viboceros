@@ -13,6 +13,8 @@ Cancel/Esc releases it without geometry changes.
 
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, distance or rail update it.
+`FromTwoPoints` sets the distance from two picked or typed points and previews
+the measurement as you move the second point.
 
 For scripts, address original edges by object ID and index, or select whole
 objects and use All=Yes:

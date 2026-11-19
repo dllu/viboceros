@@ -20,6 +20,8 @@ invalid indices and unsupported inputs fail before document replacement.
 Type `Preview` to toggle the pending result's wireframe. `Preview=Yes|No` also
 works when starting the interactive command. The preview updates as picks,
 radius or corner treatment change. Enter applies the matching staged result.
+Use `FromTwoPoints` to set the radius with two viewport picks or typed
+coordinates. With preview enabled, the second point updates the wireframe.
 
 The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage

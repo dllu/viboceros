@@ -6,6 +6,8 @@ Start `BlendEdge`, select edges and press Enter. Edge-component preselection, cl
 
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, radius or rail update it.
+`FromTwoPoints` sets the radius from two picked or typed points and previews
+the measurement as you move the second point.
 
 ```text
 BlendEdge Radius=1 RailType=RollingBall object-id 0,2

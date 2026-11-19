@@ -38,6 +38,7 @@ impl Kind {
 #[derive(Clone, Copy)]
 enum Getter {
     Fillet,
+    EdgeBlend { hover: Option<(Point3, f64)> },
     Offset,
     OffsetSrf,
     Circle,
@@ -73,6 +74,7 @@ impl Getter {
     fn resume(self, app: &mut VibocerosApp) {
         match self {
             Self::Fillet => app.curve_fillet_prompt(),
+            Self::EdgeBlend { .. } => app.log_edge_blend_prompt(),
             Self::Offset => app.curve_offset_prompt(),
             Self::OffsetSrf => app.log_offset_surface(),
             Self::Circle => {
@@ -87,6 +89,7 @@ impl Getter {
         let value = value.to_string();
         match self {
             Self::Fillet => app.continue_curve_fillet(&value),
+            Self::EdgeBlend { .. } => app.try_continue_edge_fillet(&value),
             Self::Offset => app.continue_curve_offset(&value),
             Self::OffsetSrf => app.continue_offset_surface(&value),
             Self::Circle => app.try_continue_circle(&value),
@@ -118,18 +121,26 @@ impl VibocerosApp {
     }
 
     pub(super) fn start_nested_measurement(&mut self, input: &str) -> bool {
-        if !self.nested_measurement_captures_input()
-            || self.object_prompt.is_some()
-            || self.nested_measurement.is_some()
-        {
-            return false;
-        }
         let Some(kind) = Kind::parse(input) else {
             return false;
         };
         let Some(getter) = Getter::active(self, input.starts_with('\'')) else {
             return false;
         };
+        self.begin_nested_measurement(kind, getter)
+    }
+
+    pub(super) fn start_edge_blend_distance(&mut self) -> bool {
+        self.begin_nested_measurement(Kind::Distance, Getter::EdgeBlend { hover: None })
+    }
+
+    fn begin_nested_measurement(&mut self, kind: Kind, getter: Getter) -> bool {
+        if !self.nested_measurement_captures_input()
+            || self.object_prompt.is_some()
+            || self.nested_measurement.is_some()
+        {
+            return false;
+        }
         self.nested_measurement = Some(Session {
             kind,
             getter,
@@ -159,6 +170,39 @@ impl VibocerosApp {
             }
         }
         true
+    }
+
+    pub(super) fn update_edge_blend_distance_hover(&mut self, point: Option<Point3>) -> bool {
+        let Some(Session {
+            getter: Getter::EdgeBlend { hover },
+            ..
+        }) = self.nested_measurement.as_mut()
+        else {
+            return false;
+        };
+        let sample = match (self.active_command, point) {
+            (
+                Some(InteractiveCommand::Distance {
+                    start: Some(start), ..
+                }),
+                Some(point),
+            ) => start.distance_to(point).ok().map(|value| (start, value)),
+            _ => None,
+        };
+        std::mem::replace(hover, sample) != sample
+    }
+
+    pub(super) fn edge_blend_distance_hover(&self) -> Option<f64> {
+        let Getter::EdgeBlend {
+            hover: Some((anchor, value)),
+        } = self.nested_measurement.as_ref()?.getter
+        else {
+            return None;
+        };
+        let InteractiveCommand::Distance { start, .. } = self.active_command? else {
+            return None;
+        };
+        (start == Some(anchor) && !self.distance_units_prompt).then_some(value)
     }
 
     pub(super) fn nested_measurement_kind(&self) -> Option<Kind> {
@@ -314,6 +358,15 @@ impl VibocerosApp {
     }
 
     pub(super) fn finish_nested_value(&mut self, value: f64) -> bool {
+        if value <= 0.
+            && self
+                .nested_measurement
+                .as_ref()
+                .is_some_and(|s| matches!(s.getter, Getter::EdgeBlend { .. }))
+        {
+            self.push_log("Error: pick two different points for the edge blend size".into());
+            return false;
+        }
         let Some(session) = self.resume_nested_getter() else {
             return false;
         };

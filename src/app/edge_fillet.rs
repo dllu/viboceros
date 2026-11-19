@@ -38,13 +38,13 @@ impl Prompt {
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges. Set Radius=value or Corner=Automatic|Ball. Preview toggles the result."
+                    "Select edges. Set Radius=value, FromTwoPoints, Corner=Automatic|Ball or Preview."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges. Set Distance=value or RailType=DistBetweenRails|RollingBall. Preview toggles the result."
+                    "Select edges. Set Distance=value, FromTwoPoints, RailType or Preview."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges. Set Radius=value or RailType=RollingBall|DistBetweenRails. Preview toggles the result."
+                    "Select edges. Set Radius=value, FromTwoPoints, RailType or Preview."
                 }
             }
         }
@@ -191,6 +191,16 @@ impl VibocerosApp {
         }
         if input
             .trim_start_matches('_')
+            .eq_ignore_ascii_case("FromTwoPoints")
+        {
+            if !self.start_edge_blend_distance() {
+                return false;
+            }
+            self.component_selection.clear_choices();
+            return true;
+        }
+        if input
+            .trim_start_matches('_')
             .eq_ignore_ascii_case(prompt.parameter())
         {
             prompt.awaiting_value = true;
@@ -283,17 +293,25 @@ impl VibocerosApp {
                 }
                 prompt.preview = preview;
                 self.edge_fillet_prompt = Some(prompt);
-                self.push_log(format!(
-                    "{} {}; select edges or Enter applies",
-                    prompt.name(),
-                    prompt.options()
-                ));
+                self.log_edge_blend_prompt();
             }
             Err(e) => self.push_log(format!("Error: {e}")),
         };
         self.command_input.clear();
         true
     }
+
+    pub(super) fn log_edge_blend_prompt(&mut self) {
+        if let Some(prompt) = self.edge_fillet_prompt {
+            self.push_log(format!(
+                "{} {}. {}",
+                prompt.name(),
+                prompt.options(),
+                prompt.hint()
+            ));
+        }
+    }
+
     fn capture_edge_blend(&self, prompt: Prompt) -> Result<EdgeBlendPlan, String> {
         if prompt.tolerance != self.document.tolerance() {
             return Err("tolerance changed; select edges again".into());

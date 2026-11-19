@@ -168,3 +168,145 @@ fn edge_fillet_preview_tracks_options_and_commits_the_displayed_geometry() {
         assert!(viewport_frame(&mut app, &context, Vec::new()).is_empty());
     }
 }
+
+#[test]
+fn edge_fillet_from_two_points_restores_the_picker_and_rejects_coincident_points() {
+    use crate::app::nested_measurement::Kind;
+
+    for (command, parameter) in [
+        ("FilletEdge", "Radius"),
+        ("ChamferEdge", "Distance"),
+        ("BlendEdge", "Radius"),
+    ] {
+        let mut app = test_app();
+        let pick = box_pick(&mut app);
+        app.document.clear_history().unwrap();
+        let previous = point(-1., -2., -3.);
+        app.last_point = Some(previous);
+        submit(&mut app, command);
+        app.accept_component_window(ComponentWindow {
+            picks: vec![pick],
+            modifiers: egui::Modifiers::NONE,
+            preselection: false,
+            crossing: false,
+            inverted: false,
+        });
+        for input in ["_FromTwoPoints", "w1,2,3", "w1,2,3"] {
+            submit(&mut app, input);
+        }
+        assert_eq!(app.nested_measurement_kind(), Some(Kind::Distance));
+        assert!(app.command_log.back().unwrap().starts_with("Error:"));
+        submit(&mut app, "Cancel");
+        assert!(app.nested_measurement.is_none());
+        assert_eq!(app.last_point, Some(previous));
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains(&format!("{parameter}=1"))
+        );
+
+        for input in ["FromTwoPoints", "w1,2,3", "w1,2,5"] {
+            submit(&mut app, input);
+        }
+        assert!(app.nested_measurement.is_none());
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains(&format!("{parameter}=2"))
+        );
+        assert_eq!(app.last_point, Some(previous));
+        assert_eq!(
+            app.component_selection
+                .checked_picks(&app.document)
+                .unwrap(),
+            [pick]
+        );
+        assert!(!app.document.can_undo());
+        submit(&mut app, "");
+        assert!(app.edge_fillet_prompt.is_none(), "{:?}", app.command_log);
+        assert_eq!(app.document.undo_label(), Some(command));
+    }
+}
+
+#[test]
+fn edge_fillet_from_two_points_draws_the_trial_blend_and_accepts_viewport_clicks() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    use std::time::{Duration, Instant};
+
+    let mut app = test_app();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.active_viewport = 0;
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    app.grid_snap = true;
+    let pick = box_pick(&mut app);
+    app.document.clear_history().unwrap();
+    submit(&mut app, "ChamferEdge Distance=1 Preview=Yes");
+    app.accept_component_window(ComponentWindow {
+        picks: vec![pick],
+        modifiers: egui::Modifiers::NONE,
+        preselection: false,
+        crossing: false,
+        inverted: false,
+    });
+    let context = egui::Context::default();
+    viewport_frame(&mut app, &context, vec![]);
+    viewport_frame(&mut app, &context, vec![]);
+    app.viewports[0]
+        .zoom_bounding_box(
+            viboceros_geometry::BoundingBox3::from_points([
+                point(-2., -2., 0.),
+                point(14., 14., 10.),
+            ])
+            .unwrap(),
+        )
+        .unwrap();
+    let wait = |app: &mut VibocerosApp, prior: &[viboceros_geometry::NurbsCurve]| {
+        let deadline = Instant::now() + Duration::from_secs(10);
+        loop {
+            let strokes = viewport_frame(app, &context, vec![]);
+            let curves = app.edge_blend_preview.curves();
+            if !strokes.is_empty() && !curves.is_empty() && curves != prior {
+                return curves.to_vec();
+            }
+            assert!(Instant::now() < deadline, "{:?}", app.command_log);
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    };
+    let initial = wait(&mut app, &[]);
+    submit(&mut app, "FromTwoPoints");
+    let first = screen_point(&app, point(1., 12., 0.));
+    viewport_click(&mut app, &context, first);
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::Distance { start: Some(p), .. }) if p == point(1., 12., 0.)
+    ));
+    let second = screen_point(&app, point(3., 12., 0.));
+    viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(second)]);
+    let trial = wait(&mut app, &initial);
+    assert!(!app.document.can_undo());
+    assert_eq!(app.edge_blend_distance_hover(), Some(2.));
+    viewport_click(&mut app, &context, second);
+    assert!(app.nested_measurement.is_none());
+    assert!(app.command_log.back().unwrap().contains("Distance=2"));
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        [pick]
+    );
+    submit(&mut app, "");
+    let Geometry::Brep(committed) = app.document.object(pick.object).unwrap().geometry() else {
+        panic!("expected a committed chamfer");
+    };
+    assert!(
+        committed
+            .edges()
+            .iter()
+            .map(|edge| edge.curve())
+            .eq(trial.iter())
+    );
+    assert_eq!(app.document.undo_label(), Some("ChamferEdge"));
+}

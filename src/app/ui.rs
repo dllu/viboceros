@@ -740,6 +740,7 @@ impl VibocerosApp {
                     ((self.unjoin_prompt.is_some() || self.edge_fillet_prompt.is_some())
                         && model_input_active
                         && self.plane_prompt.is_none()
+                        && self.nested_measurement.is_none()
                         && !end_analysis_picking)
                         .then_some(crate::viewport::ComponentPickFilter::Edges)
                 })
@@ -1893,6 +1894,9 @@ impl VibocerosApp {
         let apex_hover = (model_input_active && self.plane_prompt.is_none())
             .then_some(resolved_drafting_hover)
             .flatten();
+        if self.update_edge_blend_distance_hover(apex_hover) {
+            ui.ctx().request_repaint();
+        }
         if self.update_surface_apex_hover(apex_hover) {
             ui.ctx().request_repaint();
         }

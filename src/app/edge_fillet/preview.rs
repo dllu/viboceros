@@ -34,11 +34,21 @@ impl Preview {
             .map_or(&[], |solved| &solved.curves)
     }
 
-    fn update(&mut self, plan: Option<EdgeBlendPlan>, context: &egui::Context) -> Option<String> {
+    fn update(
+        &mut self,
+        plan: Option<EdgeBlendPlan>,
+        moving: bool,
+        context: &egui::Context,
+    ) -> Option<String> {
+        let compatible = |previous: &EdgeBlendPlan| {
+            plan.as_ref().is_some_and(|current| {
+                previous == current || moving && previous.matches_except_size(current)
+            })
+        };
         if self
             .result
             .as_ref()
-            .is_some_and(|(previous, _)| Some(previous) != plan.as_ref())
+            .is_some_and(|(previous, _)| !compatible(previous))
         {
             self.clear();
         }
@@ -49,13 +59,23 @@ impl Preview {
                 Err(mpsc::TryRecvError::Disconnected) => Err("edge blend stopped".into()),
             };
             let job = self.job.take().unwrap();
-            if Some(&job.plan) == plan.as_ref() {
-                let error = result.as_ref().err().cloned();
+            if compatible(&job.plan) {
+                let error = if moving {
+                    None
+                } else {
+                    result.as_ref().err().cloned()
+                };
                 self.result = Some((job.plan, result));
-                return error;
+                if !moving {
+                    return error;
+                }
             }
         }
-        let plan = plan.filter(|_| self.result.is_none())?;
+        let plan = plan.filter(|current| {
+            self.result
+                .as_ref()
+                .is_none_or(|(previous, _)| previous != current)
+        })?;
         let request = plan.clone();
         let context = context.clone();
         let (sender, result) = mpsc::channel();
@@ -115,11 +135,18 @@ impl Preview {
 
 impl VibocerosApp {
     pub(in crate::app) fn update_edge_blend_preview(&mut self, context: &egui::Context) {
+        let hover = self.edge_blend_distance_hover();
         let plan = self
             .edge_fillet_prompt
             .filter(|prompt| prompt.preview)
-            .and_then(|prompt| self.capture_edge_blend(prompt).ok());
-        if let Some(error) = self.edge_blend_preview.update(plan, context) {
+            .and_then(|mut prompt| {
+                prompt.radius = hover.unwrap_or(prompt.radius);
+                self.capture_edge_blend(prompt).ok()
+            });
+        if let Some(error) = self
+            .edge_blend_preview
+            .update(plan, hover.is_some(), context)
+        {
             self.push_log(format!("Preview unavailable. {error}"));
         }
     }

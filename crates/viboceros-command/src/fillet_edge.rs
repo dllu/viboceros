@@ -188,6 +188,12 @@ impl EdgeBlendSelection {
 }
 
 impl EdgeBlendPlan {
+    pub fn matches_except_size(&self, other: &Self) -> bool {
+        self.kind == other.kind
+            && self.tolerance == other.tolerance
+            && self.sources == other.sources
+    }
+
     pub fn capture(
         document: &Document,
         picks: impl IntoIterator<Item = (ObjectId, usize)>,
