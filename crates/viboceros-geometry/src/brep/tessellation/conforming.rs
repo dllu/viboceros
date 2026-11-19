@@ -50,6 +50,29 @@ impl FaceTriangulation {
         }
         Ok(())
     }
+
+    fn refine(
+        &mut self,
+        surface: &NurbsSurface,
+        height: Real,
+        allowance: usize,
+        locations: &mut HashSet<[u64; 3]>,
+    ) -> Result<Option<Real>, GeometryError> {
+        let limit = self
+            .points
+            .len()
+            .saturating_add(allowance)
+            .min(MAX_CONSTRAINED_TRIM_VERTICES);
+        chords::refine_interior(
+            surface,
+            &mut self.parameters,
+            &mut self.points,
+            &mut self.triangles,
+            height,
+            limit,
+            locations,
+        )
+    }
 }
 
 #[cfg(test)]
@@ -434,6 +457,8 @@ impl Brep {
         let mut vertex_parameters = Vec::new();
         let vertex_limit = sampling.vertex_limit().min(u32::MAX as usize);
         let mut remaining = vertex_limit - coarse_vertices;
+        let reserve = remaining / 6;
+        remaining -= reserve;
         let minimum_weight = (coarse_vertices / frames.len() / 16).max(1);
         let weights = face_meshes
             .iter()
@@ -454,52 +479,61 @@ impl Brep {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         let mut pending_weight = weights.iter().sum::<u64>();
-        let mut locations = sampling.chord_density.map(|_| {
-            let mut occupied = HashSet::with_capacity(coarse_vertices);
-            occupied.extend(
+        if refine_chords {
+            let mut locations = HashSet::with_capacity(coarse_vertices);
+            locations.extend(
                 face_meshes
                     .iter()
                     .flat_map(|mesh| mesh.points.iter().copied().map(vertex_location)),
             );
-            occupied
-        });
-        for (index, (frame, face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
-            let face = frame.face.as_ref();
-            let FaceTriangulation {
-                mut parameters,
-                mut points,
-                triangles: mut face_triangles,
-                chord_height,
-            } = face_mesh;
-            if let (Some(chord_height), Some(locations)) = (chord_height, &mut locations) {
-                // Reserve every coarse face before sharing the remaining
-                // budget using the estimated work required by each face.
-                let coarse = points.len();
+            let mut deferred = Vec::new();
+            for (index, (frame, face_mesh)) in frames.iter().zip(&mut face_meshes).enumerate() {
+                let Some(height) = face_mesh.chord_height else {
+                    continue;
+                };
                 let weight = weights[index];
                 let allowance = ((remaining as u64 * weight).div_ceil(pending_weight)) as usize;
                 pending_weight -= weight;
-                let limit = points
-                    .len()
-                    .saturating_add(allowance)
-                    .min(MAX_CONSTRAINED_TRIM_VERTICES);
-                chords::refine_interior(
-                    &face.surface,
-                    &mut parameters,
-                    &mut points,
-                    &mut face_triangles,
-                    chord_height,
-                    limit,
-                    locations,
-                )?;
-                remaining -= points.len() - coarse;
+                let coarse = face_mesh.points.len();
+                if let Some(error) =
+                    face_mesh.refine(&frame.face.surface, height, allowance, &mut locations)?
+                {
+                    deferred.push((error - height, index, height));
+                }
+                remaining -= face_mesh.points.len() - coarse;
             }
+            // Share the reserve using the measured shortfalls in the first
+            // pass. A small but strongly curved chart can need more cuts
+            // than larger charts with the same predicted work.
+            remaining += reserve;
+            deferred.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
+            let highest = deferred.first().map_or(1., |item| item.0);
+            let priority = |shortfall: Real| ((4096. * shortfall / highest).ceil() as u64).max(1);
+            let mut pending_priority = deferred.iter().map(|item| priority(item.0)).sum::<u64>();
+            for (shortfall, index, height) in deferred {
+                let weight = priority(shortfall);
+                let allowance = ((remaining as u64 * weight).div_ceil(pending_priority)) as usize;
+                pending_priority -= weight;
+                let face_mesh = &mut face_meshes[index];
+                let coarse = face_mesh.points.len();
+                let _ = face_mesh.refine(
+                    &frames[index].face.surface,
+                    height,
+                    allowance,
+                    &mut locations,
+                )?;
+                remaining -= face_mesh.points.len() - coarse;
+            }
+        }
+        for (index, (frame, face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
+            let face = frame.face.as_ref();
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             if retain_parameters {
-                vertex_parameters.extend(parameters);
+                vertex_parameters.extend(face_mesh.parameters);
             }
-            vertices.extend(points);
-            for triangle in face_triangles {
+            vertices.extend(face_mesh.points);
+            for triangle in face_mesh.triangles {
                 let mut triangle = triangle.map(|i| i + offset);
                 if face.reversed {
                     triangle.swap(1, 2);
@@ -516,7 +550,6 @@ impl Brep {
                 }
             }
         }
-        drop(locations);
         let mesh = TriangleMesh::try_new(vertices, triangles, Tolerance::MESH_VALIDATION)?;
         if !self.mesh_boundary_conforms(&mesh, &face_sources, samples_per_span, tolerance)? {
             let topology = mesh.topology();

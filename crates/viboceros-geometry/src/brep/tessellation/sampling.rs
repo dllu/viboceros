@@ -2,7 +2,7 @@ use super::*;
 mod cusp;
 
 pub(super) const SPARSE_MESH_VERTEX_LIMIT: usize = 2 * 1_048_576;
-pub(super) const SPARSE_POLYGON_VERTEX_LIMIT: usize = 4 * 1_048_576;
+pub(super) const SPARSE_POLYGON_VERTEX_LIMIT: usize = 5 * 1_048_576;
 
 fn grid_axes(spans: [usize; 2], samples: [usize; 2]) -> [usize; 2] {
     std::array::from_fn(|axis| spans[axis].saturating_mul(samples[axis]).saturating_add(1))
