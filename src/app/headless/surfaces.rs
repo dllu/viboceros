@@ -328,3 +328,46 @@ pub(super) fn jets(
     }
     Ok(json!(results))
 }
+
+pub(super) fn pullback_edge(
+    document: &Document,
+    reference: ComponentRef,
+    id: &str,
+    face: Option<usize>,
+    reversed: bool,
+    endpoints: Option<[[f64; 2]; 2]>,
+) -> Result<Value> {
+    let pick = reference.pick(|id| model::revision(document, id))?;
+    if pick.kind != ComponentSelectionKind::BrepEdge {
+        return Err("pullback requires a B-rep edge reference".into());
+    }
+    let Some(Geometry::Brep(brep)) = document.object(pick.object).map(|o| o.geometry()) else {
+        return Err("pullback requires a B-rep source object".into());
+    };
+    let spatial = brep
+        .edges()
+        .get(pick.index)
+        .ok_or("B-rep edge index is out of range")?
+        .curve();
+    let surface = surface(document, id, face)?;
+    let tolerance = document.tolerance();
+    let curve = if let Some([a, b]) = endpoints {
+        let mut endpoints = [Point2::try_from(a)?, Point2::try_from(b)?];
+        if reversed {
+            endpoints.reverse();
+        }
+        surface.try_pullback_curve_certified_with_endpoints(spatial, endpoints, tolerance)?
+    } else {
+        surface.try_pullback_curve_certified(spatial, tolerance)?
+    };
+    let curve = if reversed { curve.reversed()? } else { curve };
+    let (controls, weights): (Vec<_>, Vec<_>) = curve
+        .control_points()
+        .iter()
+        .map(|p| (p.point().to_array(), p.weight()))
+        .unzip();
+    Ok(json!({
+        "degree": curve.degree(), "knots": curve.knots(),
+        "control_points": controls, "weights": weights,
+    }))
+}

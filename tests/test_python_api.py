@@ -239,6 +239,24 @@ class PythonApiTests(unittest.TestCase):
                 self.assertEqual(set(model.run("Undo").added), set(parts))
                 self.assertEqual(model.run("Redo").added, (joined,))
 
+    def test_pullback_brep_edge_certifies_directed_trim_on_a_support(self):
+        model = self.model
+        knots = [0, 0, 1, 1]
+        support = NurbsSurface(1, 1, knots, knots, [[(0, 0, 0), (0, 1, 0)], [(1, 0, 0), (1, 1, 1)]])
+        corners = [(.25, .125), (.75, .125), (.75, .625), (.25, .625)]
+        trim = [TrimCurve.line(a, b) for a, b in zip(corners, corners[1:] + corners[:1])]
+        panel = model.add_nurbs_surface(support, trim_loops=[trim])
+        target = model.add_nurbs_surface(support)
+        edge, = (e for e in model.components(panel)
+                 if e.kind == "brep_edge" and all(p[0] == .75 for p in e.points))
+        expected = tuple(tuple(p[:2]) for p in edge.points[::-1])
+        result = model.pullback_brep_edge(edge, target, reversed=True, endpoints=expected)
+        self.assertEqual(tuple(result.control_points[0]), expected[0])
+        self.assertEqual(tuple(result.control_points[-1]), expected[-1])
+        with self.assertRaises(SessionError):
+            model.pullback_brep_edge(edge, target, endpoints=((.375, .125), (.375, .625)))
+        self.assertEqual([o.id for o in model.objects()], [panel, target])
+
     @unittest.skipUnless(os.environ.get("VIBOCEROS_TEST_GPU") == "1", "requires a wgpu adapter")
     def test_shaded_png_from_multiple_views(self):
         model = self.model

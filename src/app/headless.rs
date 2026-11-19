@@ -74,6 +74,14 @@ enum Request {
         face: Option<usize>,
         samples: Vec<surfaces::Sample>,
     },
+    PullbackBrepEdge {
+        edge: ComponentRef,
+        id: String,
+        face: Option<usize>,
+        #[serde(default)]
+        reversed: bool,
+        endpoints: Option<[[f64; 2]; 2]>,
+    },
     Project {
         point: [f64; 3],
         view: Option<ViewRef>,
@@ -209,6 +217,13 @@ impl Session {
             Request::SurfaceJets { id, face, samples } => {
                 surfaces::jets(document, &id, face, samples)?
             }
+            Request::PullbackBrepEdge {
+                edge,
+                id,
+                face,
+                reversed,
+                endpoints,
+            } => surfaces::pullback_edge(document, edge, &id, face, reversed, endpoints)?,
             Request::Project { point, view } => {
                 let position = self.project_point(point, view.as_ref())?;
                 json!([position.x, position.y])

@@ -81,6 +81,10 @@ Read controls and knots from an object with `surface_definition()`. Use
 `surface_jets(obj, (u, v), ...)` to inspect the point and all partials through
 order two in native UV. `SurfaceSample` specifies left or right limits at
 knots. Pass `face=` to query the supporting surface of a B-rep face.
+`pullback_brep_edge(edge, obj, face=...)` returns a `TrimCurve` whose
+entire spatial image matches the named edge at document tolerance.
+Use `reversed=True` to reverse the result or supply `endpoints=(start, end)`
+to match the UV endpoints of neighboring trims.
 
 Use `sew_brep_edges((first, second, reversed), ...)` when the mating edges
 are known. Get each edge from `components()`. Set `reversed` to `True` for
