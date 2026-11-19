@@ -5,6 +5,14 @@ use super::*;
 const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
 const DENSE_GRID_AXIS_LIMIT: usize = 32;
 
+fn dense_grid_axis_limit(face_count: usize) -> usize {
+    // Reserve part of the mesh budget for the actual trim curves. Allow more
+    // interior grid detail per face when the body has fewer supports.
+    (SPARSE_MESH_VERTEX_LIMIT.div_ceil(face_count) / 2)
+        .isqrt()
+        .clamp(8, DENSE_GRID_AXIS_LIMIT)
+}
+
 impl Brep {
     /// Tessellates full rectangular and generally trimmed faces.
     ///
@@ -58,8 +66,8 @@ impl Brep {
             )
         });
         if spans.saturating_mul(4) > DISPLAY_GRID_VERTEX_TARGET && !self.has_positional_break() {
-            let sampling =
-                Sampling::uniform(resolution.min(2)).with_axis_limit(DENSE_GRID_AXIS_LIMIT);
+            let sampling = Sampling::uniform(resolution.min(2))
+                .with_axis_limit(dense_grid_axis_limit(self.faces.len()));
             return self
                 .tessellate_sampling(sampling, false, true, tolerance, false, true)
                 .map(|(mesh, sources, _)| (mesh, sources));
@@ -162,7 +170,7 @@ impl Brep {
                         )
                     {
                         self.tessellate_sampling(
-                            sampling.with_axis_limit(DENSE_GRID_AXIS_LIMIT),
+                            sampling.with_axis_limit(dense_grid_axis_limit(self.faces.len())),
                             true,
                             true,
                             tolerance,

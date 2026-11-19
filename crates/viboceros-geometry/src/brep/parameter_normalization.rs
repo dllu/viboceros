@@ -114,6 +114,18 @@ impl TrimParameterNormalization {
         Ok(normalized)
     }
 
+    pub(super) fn normalize_for_triangulation(
+        self,
+        parameter: Point2,
+    ) -> Result<[Real; 2], GeometryError> {
+        let [x, y] = self.normalize(parameter)?;
+        // Spade rejects nonzero coordinates below its predicate range. This
+        // changes only the normalized predicates, not the UVs used to lift
+        // existing triangle vertices back to the surface.
+        let p = spade::mitigate_underflow(TriangulationPoint2::new(x, y));
+        Ok([p.x, p.y])
+    }
+
     pub(super) fn denormalize(self, parameter: [Real; 2]) -> Result<Point2, GeometryError> {
         let point: [Real; 2] = std::array::from_fn(|axis| {
             parameter[axis].mul_add(self.relative_scale[axis], self.origin[axis])

@@ -51,7 +51,7 @@ pub(in crate::brep) fn triangulate(
     };
     let normalized = parameters
         .iter()
-        .map(|&p| normalization.normalize(p))
+        .map(|&p| normalization.normalize_for_triangulation(p))
         .collect::<Result<Vec<_>, _>>()?;
     let mut ranges = Vec::with_capacity(lengths.len());
     let mut start = 0;

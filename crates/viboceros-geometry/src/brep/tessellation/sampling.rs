@@ -1,5 +1,7 @@
 use super::*;
 
+pub(super) const SPARSE_MESH_VERTEX_LIMIT: usize = 2 * 1_048_576;
+
 #[derive(Clone, Copy)]
 pub(super) struct Sampling<'a> {
     pub edge: usize,
@@ -46,7 +48,9 @@ impl<'a> Sampling<'a> {
         }
     }
     pub fn vertex_limit(self) -> usize {
-        if self.grids.is_some() || self.axis_limit.is_some() {
+        if self.axis_limit.is_some() {
+            SPARSE_MESH_VERTEX_LIMIT
+        } else if self.grids.is_some() {
             1_048_576
         } else {
             u32::MAX as usize
@@ -92,7 +96,7 @@ impl<'a> Sampling<'a> {
             total = total
                 .checked_add(count.ok_or(GeometryError::MeshSubdivisionLimit)?)
                 .ok_or(GeometryError::MeshSubdivisionLimit)?;
-            if total > 1_048_576 {
+            if total > self.vertex_limit() {
                 return Err(GeometryError::MeshSubdivisionLimit);
             }
         }

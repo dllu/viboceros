@@ -84,6 +84,22 @@ mod tests {
     }
 
     #[test]
+    fn triangulation_retains_subnormal_boundary_samples() {
+        let tiny = f64::from_bits(1);
+        let points = [
+            p(0., 0.),
+            p(0.5, tiny),
+            p(1., 0.),
+            p(1., 1.),
+            p(0., 1.),
+            p(0.5, 0.5),
+        ];
+        let triangles = triangulate_trim_region(&points, &[5]).unwrap().unwrap();
+        assert_eq!(triangles.len(), 5);
+        assert!(triangles.iter().any(|t| t.contains(&1)));
+    }
+
+    #[test]
     fn triangulation_keeps_a_positive_facet_thinner_than_the_polygon_epsilon() {
         let points = [p(0., 0.), p(1., 0.), p(1., 1.), p(0., 1.), p(0.5, 1e-15)];
         let triangles = triangulate_trim_region(&points, &[4]).unwrap().unwrap();
