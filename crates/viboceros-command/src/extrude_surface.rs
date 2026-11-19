@@ -269,6 +269,10 @@ impl Command for ExtrudeSurfaceCommand {
     fn name(&self) -> &'static str {
         "ExtrudeSrf"
     }
+    fn commits_on_error(&self, error: &CommandError) -> bool {
+        matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
+    }
+
     fn object_selection_prompt(
         &self,
         args: &[&str],
@@ -307,53 +311,65 @@ impl Command for ExtrudeSurfaceCommand {
             .partition(|s| !SurfaceExtrusionInput::accepts_option(s));
         let settings = self.settings.get();
         let input = SurfaceExtrusionInput::parse_with_options(&words, settings.options)?;
-        let boundary = match input.boundary {
-            BoundaryInput::None => None,
+        let (count, display_distance, both_sides) = match input.boundary {
+            BoundaryInput::None => {
+                let distance = parse_face_extrusion_distance(
+                    &positional,
+                    input.options.direction.is_some(),
+                    USAGE,
+                )?;
+                let display_distance = match distance {
+                    Distance::Numeric(height) => height,
+                    Distance::Explicit(vector) => vector.length()?,
+                };
+                // Whole-object preselection stays on retained inputs. Explicit
+                // face targeting selects the constructed objects.
+                let retained_selection = (!input.options.delete_input
+                    && matches!(input.faces, SurfaceFaces::Single))
+                .then(|| doc.selected_object_ids().collect::<Vec<_>>());
+                let count = apply_face_extrusion_products(
+                    doc,
+                    &input.faces,
+                    input.options.delete_input,
+                    |brep, tolerance| {
+                        produce(
+                            brep,
+                            distance,
+                            input.options,
+                            context.construction_plane,
+                            tolerance,
+                        )
+                    },
+                )?;
+                if let Some(selection) = retained_selection {
+                    doc.select_command_results(selection)?;
+                }
+                (count, Some(display_distance), input.options.both_sides)
+            }
             BoundaryInput::Reference(reference) if positional.is_empty() => {
-                Some(reference.capture(doc)?)
+                #[cfg(feature = "native-smlib")]
+                {
+                    let count = boundary::apply(
+                        doc,
+                        &input.faces,
+                        reference,
+                        input.options,
+                        context.construction_plane,
+                    )?;
+                    (count, settings.distance, false)
+                }
+                #[cfg(not(feature = "native-smlib"))]
+                {
+                    reference.capture(doc)?;
+                    return Err(CommandError::SurfaceExtrusionRequiresNativeKernel);
+                }
             }
             _ => return Err(CommandError::Usage(USAGE)),
         };
-        let (target, display_distance) = if let Some(boundary) = &boundary {
-            (SweepTarget::Boundary(boundary), settings.distance)
-        } else {
-            let distance = parse_face_extrusion_distance(
-                &positional,
-                input.options.direction.is_some(),
-                USAGE,
-            )?;
-            let display_distance = match distance {
-                Distance::Numeric(height) => height,
-                Distance::Explicit(vector) => vector.length()?,
-            };
-            (SweepTarget::Distance(distance), Some(display_distance))
-        };
-        // Whole-object preselection stays on retained inputs. Explicit face
-        // targeting keeps the existing component-result selection policy.
-        let retained_selection = (!input.options.delete_input
-            && matches!(input.faces, SurfaceFaces::Single))
-        .then(|| doc.selected_object_ids().collect::<Vec<_>>());
-        let count = apply_face_extrusion_products(
-            doc,
-            &input.faces,
-            input.options.delete_input,
-            |brep, tolerance| {
-                produce(
-                    brep,
-                    target,
-                    input.options,
-                    context.construction_plane,
-                    tolerance,
-                )
-            },
-        )?;
-        if let Some(selection) = retained_selection {
-            doc.select_command_results(selection)?;
-        }
         self.settings.set(SurfaceExtrusionSettings {
             options: SurfaceExtrusionOptions {
                 direction: None,
-                both_sides: input.options.both_sides && boundary.is_none(),
+                both_sides,
                 ..input.options
             },
             distance: display_distance,
@@ -361,12 +377,6 @@ impl Command for ExtrudeSurfaceCommand {
         Ok(format!("Extruded {count} surface face(s)"))
     }
 }
-#[derive(Clone, Copy)]
-enum SweepTarget<'a> {
-    Distance(Distance),
-    Boundary(&'a Brep),
-}
-
 #[cfg(feature = "native-smlib")]
 pub(super) fn sweep_surface_key(surface: &NurbsSurface) -> u64 {
     use std::hash::{DefaultHasher, Hash, Hasher};
@@ -481,38 +491,35 @@ fn local_sweep_source(brep: &Brep, tolerance: Tolerance) -> Result<(Point3, Brep
     )?;
     Ok((origin, local))
 }
+#[cfg(feature = "native-smlib")]
+fn split_wall_edges(
+    source: &Brep,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<std::borrow::Cow<'_, Brep>, CommandError> {
+    let splits = source.sweep_boundary_splits(split_at_tangents)?;
+    if splits.is_empty() {
+        Ok(std::borrow::Cow::Borrowed(source))
+    } else {
+        Ok(std::borrow::Cow::Owned(
+            source.try_split_edges_at_parameters(&splits, tolerance)?,
+        ))
+    }
+}
+
 fn produce(
     brep: &Brep,
-    target: SweepTarget<'_>,
+    distance: Distance,
     options: SurfaceExtrusionOptions,
     cplane: Frame3,
     tolerance: Tolerance,
 ) -> Result<Vec<Geometry>, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
-        let (origin, mut local) = local_sweep_source(brep, tolerance)?;
-        let splits = local.sweep_boundary_splits(options.split_at_tangents)?;
-        if !splits.is_empty() {
-            local = local.try_split_edges_at_parameters(&splits, tolerance)?;
-        }
+        let (origin, local) = local_sweep_source(brep, tolerance)?;
+        let local = split_wall_edges(&local, options.split_at_tangents, tolerance)?;
         let source = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
         let zero = Point3::try_new(0., 0., 0.)?;
-        let distance = match target {
-            SweepTarget::Distance(distance) => distance,
-            SweepTarget::Boundary(boundary) => {
-                let boundary = boundary.transformed(
-                    AffineTransform3::from_translation(origin.vector_to(zero)?),
-                    tolerance,
-                )?;
-                let direction =
-                    face_extrusion_direction(&source, options.direction, cplane, tolerance)?;
-                let result = boundary::extrude(&local, &source, &boundary, direction, tolerance)?;
-                return Ok(vec![Geometry::Brep(result.transformed(
-                    AffineTransform3::from_translation(zero.vector_to(origin)?),
-                    tolerance,
-                )?)]);
-            }
-        };
         let vector = match distance {
             Distance::Explicit(v) => v,
             Distance::Numeric(h) => {
@@ -550,15 +557,12 @@ fn produce(
     }
     #[cfg(not(feature = "native-smlib"))]
     {
-        match target {
-            SweepTarget::Distance(Distance::Numeric(h)) => {
+        match distance {
+            Distance::Numeric(h) => {
                 let _ = h;
             }
-            SweepTarget::Distance(Distance::Explicit(v)) => {
+            Distance::Explicit(v) => {
                 let _ = v;
-            }
-            SweepTarget::Boundary(boundary) => {
-                let _ = boundary;
             }
         }
         let _ = (brep, options, cplane, tolerance);

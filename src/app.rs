@@ -1412,7 +1412,11 @@ impl VibocerosApp {
             Err(error) => {
                 self.command_file.fail_dispatch();
                 self.push_log(format!("Error: {error}"));
-                false
+                // A rejected boundary finishes its picker and can leave an undoable solid.
+                matches!(
+                    error,
+                    viboceros_command::CommandError::SurfaceExtrusionBoundaryRejected
+                )
             }
         }
     }

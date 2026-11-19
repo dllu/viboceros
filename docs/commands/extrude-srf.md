@@ -19,7 +19,7 @@ Enter `Direction` and pick two points to set the axis, then specify the distance
 distance is measured from. Toggle `BothSides`, `Solid`, `DeleteInput` and
 `SplitAtTangents` by name or set them to `Yes` or `No`. A successful extrusion
 saves these four options for the next invocation, which starts with a fresh
-direction and base point. A failed placement keeps the getter and source picks
+direction and base point. A failed distance placement keeps the getter and source picks
 available for retry. Esc cancels and discards pending option edits.
 
 Enter `ToBoundary` at the distance prompt and click a surface or B-rep face
@@ -28,6 +28,14 @@ boundary selection. The sweep extends toward the cutter on one side and uses
 the original face and the cutter as caps. Enclosed cutter holes leave open
 rims. `DeleteInput` and `SplitAtTangents` apply to the result. Scripts can use
 `ToBoundary=id` or `ToBoundary=id:face`.
+
+A coplanar cutter that meets the source rim completes the sweep using the
+original face as the closing cap.
+A rejected cutter ends the picker. A cutter that crosses the sweep walls
+can leave an untrimmed solid. The solid uses the diagonal of the combined
+source and cutter bounds as its length. In a batch, completed cuts and
+retained solids share one Undo step. `DeleteInput` applies to completed cuts.
+The command leaves the picked cutter and retained preselected sources selected.
 
 With selected objects:
 
@@ -67,8 +75,9 @@ Sources remain unchanged unless `DeleteInput=Yes`: whole selected surface
 objects are deleted, while selected faces are removed from a polysurface and
 its remaining faces retain the original object identity, attributes and groups.
 All geometry and remainders stage before document edits. Results use the current
-layer and form one Undo/Redo operation. Whole-object preselection stays on
-retained inputs; explicit face targets and deleted-input workflows select results.
+layer and form one Undo/Redo operation. For distance sweeps, whole-object
+preselection stays on retained inputs. Explicit face targets and deleted-input
+workflows select the results.
 
 The adapter uses `SmTopologySweep` with `SmTranslationalSweepGeometry`, sweeps
 only lamina boundary edges higher, and copies caps to their translated positions.
@@ -79,9 +88,8 @@ decline exact planes. Source geometry is copied before sweep, stitching and
 orientation. Native construction and Rust B-rep transfer both validate results.
 
 Tangential planar extrusion, zero displacement, closed sources without a
-boundary and unsupported native imports decline. The picked cutter must cover
-the extrusion section. An incomplete cut leaves the picker available for retry.
-General self-intersection and degenerate surfaces need broader qualification.
+boundary and unsupported native imports decline. General self-intersection and
+degenerate surfaces need broader qualification.
 
 The Python `surface_extrusion` operation takes an owned `source`, original `face`
 index, `displacement`, `solid` and `both_sides`. Eight independent fixtures cover
