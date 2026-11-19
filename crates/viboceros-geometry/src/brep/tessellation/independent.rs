@@ -69,7 +69,14 @@ impl Brep {
                         }
                     }
                 }
-                self.tessellate_impl(samples_per_span, false, true, tolerance, false)
+                self.tessellate_sampling(
+                    Sampling::uniform(samples_per_span),
+                    false,
+                    true,
+                    tolerance,
+                    false,
+                    true,
+                )
             })
             .map(|(mesh, sources, _)| (mesh, sources))
     }
@@ -139,6 +146,7 @@ impl Brep {
             jagged_seams,
             tolerance,
             retain_parameters,
+            false,
         )
     }
 
@@ -149,6 +157,7 @@ impl Brep {
         jagged_seams: bool,
         tolerance: Tolerance,
         retain_parameters: bool,
+        skip_empty_faces: bool,
     ) -> Result<(TriangleMesh, Vec<usize>, Vec<Point2>), GeometryError> {
         sampling.validate(&self.faces)?;
         let samples_per_span = sampling.edge;
@@ -163,59 +172,67 @@ impl Brep {
             let frame = face.sampling_parameter_frame()?;
             let face = frame.face.as_ref();
             let resolution = sampling.grid(face_index);
-            let (mesh, parameters) = if face_covers_full_surface_domain(face, tolerance)? {
-                let (surface_mesh, parameters) = face.surface.tessellate_grid_with_resolution(
-                    resolution,
-                    preserve_quads,
-                    tolerance,
-                    retain_parameters,
-                )?;
-                let mut face_vertices = surface_mesh.vertices().to_vec();
-                if !jagged_seams {
-                    self.snap_face_boundary_vertices(
-                        face,
-                        &mut face_vertices,
+            let piece = (|| {
+                if face_covers_full_surface_domain(face, tolerance)? {
+                    let (surface_mesh, parameters) = face.surface.tessellate_grid_with_resolution(
                         resolution,
-                        samples_per_span,
+                        preserve_quads,
                         tolerance,
+                        retain_parameters,
                     )?;
+                    let mut face_vertices = surface_mesh.vertices().to_vec();
+                    if !jagged_seams {
+                        self.snap_face_boundary_vertices(
+                            face,
+                            &mut face_vertices,
+                            resolution,
+                            samples_per_span,
+                            tolerance,
+                        )?;
+                    }
+                    Ok((
+                        TriangleMesh::try_new_faces(
+                            face_vertices,
+                            surface_mesh.faces().to_vec(),
+                            Tolerance::MESH_VALIDATION,
+                        )?,
+                        parameters,
+                    ))
+                } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
+                    let surface = face
+                        .surface
+                        .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
+                    surface.tessellate_grid_with_resolution(
+                        resolution,
+                        preserve_quads,
+                        tolerance,
+                        retain_parameters,
+                    )
+                } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
+                    self.tessellate_planar_trimmed_face(
+                        face_index,
+                        face,
+                        samples_per_span,
+                        jagged_seams,
+                        tolerance,
+                        retain_parameters,
+                    )
+                } else {
+                    self.tessellate_nonplanar_trimmed_face(
+                        face_index,
+                        face,
+                        sampling,
+                        jagged_seams,
+                        tolerance,
+                        retain_parameters,
+                    )
                 }
-                (
-                    TriangleMesh::try_new_faces(
-                        face_vertices,
-                        surface_mesh.faces().to_vec(),
-                        Tolerance::MESH_VALIDATION,
-                    )?,
-                    parameters,
-                )
-            } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
-                let surface = face
-                    .surface
-                    .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
-                surface.tessellate_grid_with_resolution(
-                    resolution,
-                    preserve_quads,
-                    tolerance,
-                    retain_parameters,
-                )?
-            } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
-                self.tessellate_planar_trimmed_face(
-                    face_index,
-                    face,
-                    samples_per_span,
-                    jagged_seams,
-                    tolerance,
-                    retain_parameters,
-                )?
-            } else {
-                self.tessellate_nonplanar_trimmed_face(
-                    face_index,
-                    face,
-                    sampling,
-                    jagged_seams,
-                    tolerance,
-                    retain_parameters,
-                )?
+            })();
+            let (mesh, parameters) = match piece {
+                // A collapsed face can retain wire geometry. Its neighbors
+                // still contribute to the display mesh.
+                Err(GeometryError::EmptyMesh) if skip_empty_faces => continue,
+                result => result?,
             };
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;

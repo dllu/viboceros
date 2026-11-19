@@ -886,7 +886,7 @@ impl InteractiveCommand {
                 "ExtrudeSrfTapered: pick the direction target (Esc to cancel)"
             }
             Self::ExtrudeSurfaceToPoint { .. } => {
-                "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput, SplitAtTangents; Esc to cancel)"
+                "ExtrudeSrfToPoint: pick the apex (Solid, DeleteInput, ToBoundary, SplitAtTangents; Esc to cancel)"
             }
             Self::ExtrudeCurveToPoint { options }
                 if matches!(

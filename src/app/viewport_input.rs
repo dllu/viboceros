@@ -3,6 +3,15 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if self.picking_surface_apex_boundary()
+            && let Some((object, face)) = output.face_click
+        {
+            self.pick_surface_apex_boundary(viboceros_command::extrude_surface_apex::BoundaryRef {
+                object,
+                face: Some(face),
+            });
+            return true;
+        }
         if let Some(click) = output.curvature_click {
             return self.pick_curvature_location(click);
         }

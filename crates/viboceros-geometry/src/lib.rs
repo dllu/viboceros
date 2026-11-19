@@ -251,7 +251,6 @@ pub use units::{LengthUnitSystem, UnitError};
 
 pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
-pub use brep::LoftOptions;
 pub use brep::{
     Brep, BrepBooleanOperation, BrepBoundaryRestoration, BrepConvexBooleanPlan,
     BrepConvexIntersection, BrepConvexRegion, BrepCoplanarPartitionComponent,
@@ -271,6 +270,7 @@ pub use brep::{
     split_polyhedral_brep_by_trimmed_sheets, split_polyhedral_brep_with_surfaces,
     subtract_convex_breps, subtract_polyhedral_breps, union_convex_breps, union_polyhedral_breps,
 };
+pub use brep::{CoplanarFaceExtrusion, LoftOptions};
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,
     DEFAULT_CATENARY_POINT_COUNT, MAX_CATENARY_POINT_COUNT, MIN_POLYLINE_CATENARY_POINT_COUNT,

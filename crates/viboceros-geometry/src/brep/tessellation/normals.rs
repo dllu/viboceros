@@ -40,7 +40,7 @@ impl Brep {
             })
             .collect::<Result<Vec<_>, _>>()?;
         let sampling = Sampling::per_face(&grids);
-        let output = self.tessellate_sampling(sampling, true, false, tolerance, true);
+        let output = self.tessellate_sampling(sampling, true, false, tolerance, true, false);
         let output = match output {
             Err(GeometryError::UnsupportedBrepNormalCrease { .. }) => {
                 self.tessellate_conforming_sampling(sampling, tolerance, true)?

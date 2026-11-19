@@ -224,7 +224,10 @@ impl VibocerosApp {
             prompt.message()
         } else if self.distance_units_prompt {
             "Enter a Distance unit name or Model_Units"
-        } else if let Some(hint) = self.nested_measurement_hint() {
+        } else if let Some(hint) = self
+            .nested_measurement_hint()
+            .or_else(|| self.surface_apex_hint())
+        {
             hint
         } else if let Some(p) = &self.select_uv_prompt {
             p.hint()

@@ -344,7 +344,8 @@ impl VibocerosApp {
             .is_some_and(construction_plane::PlanePrompt::requests_curve);
         let face_pick = if self.picking_mesh_trim_target() {
             Some(FacePickMode::MeshAny)
-        } else if self.selecting_curvature_source()
+        } else if self.picking_surface_apex_boundary()
+            || self.selecting_curvature_source()
             || self.picking_offset_surface_sources()
             || self
                 .offset_surface_session
@@ -857,6 +858,11 @@ impl VibocerosApp {
         } else {
             preview_document
         };
+        let surface_apex = self
+            .surface_extrusion_sources
+            .as_ref()
+            .filter(|_| model_input_active && self.plane_prompt.is_none())
+            .and_then(|sources| sources.apex_draft(&self.document));
         let twist_preview = self
             .twist_session
             .as_ref()
@@ -1305,6 +1311,7 @@ impl VibocerosApp {
                                 .as_ref()
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
                                 .map(direction::Session::overlay),
+                            surface_apex,
                             insert_edges,
                             insert_mesh,
                             offset_mesh_preview: self
@@ -1793,10 +1800,16 @@ impl VibocerosApp {
                 ui.ctx().request_repaint();
             }
         }
-        let distribution_hover = viewport_outputs
+        let resolved_drafting_hover = viewport_outputs
             .iter()
             .find_map(|output| output.drafting_resolved_hover);
-        if self.update_distribute_preview(distribution_hover) {
+        let apex_hover = (model_input_active && self.plane_prompt.is_none())
+            .then_some(resolved_drafting_hover)
+            .flatten();
+        if self.update_surface_apex_hover(apex_hover) {
+            ui.ctx().request_repaint();
+        }
+        if self.update_distribute_preview(resolved_drafting_hover) {
             ui.ctx().request_repaint();
         }
         if self.update_offset_mesh_preview(drafting_hover) {
