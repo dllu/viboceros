@@ -60,6 +60,10 @@ enum Request {
         surface: surfaces::Definition,
         patches: Vec<surfaces::Patch>,
     },
+    EditBrepFaceCharts {
+        id: String,
+        edits: Vec<surfaces::ChartEdit>,
+    },
     SewBrepEdges {
         pairs: Vec<(ComponentRef, ComponentRef, bool)>,
         anchor: Option<String>,
@@ -197,6 +201,12 @@ impl Session {
                     return Err("finish the active command before adding surfaces".into());
                 }
                 surfaces::add_patches(&mut self.app.document, surface, patches)?
+            }
+            Request::EditBrepFaceCharts { id, edits } => {
+                if self.pending() {
+                    return Err("finish the active command before editing face charts".into());
+                }
+                surfaces::edit_face_charts(&mut self.app.document, &id, edits)?
             }
             Request::SewBrepEdges {
                 pairs,

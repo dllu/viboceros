@@ -19,6 +19,37 @@ class PythonApiTests(unittest.TestCase):
         self.addCleanup(folder.cleanup)
         self.folder = Path(folder.name)
 
+    def test_face_chart_edit_keeps_spatial_edges_and_commits_atomically(self):
+        model = self.model
+        knots = (0., 0., 1., 1.)
+        original = NurbsSurface(1, 1, knots, knots,
+                                (((0., 0., 0.), (0., 1., 0.)), ((1., 0., 0.), (1., 1., 0.))))
+        corners = ((0., 0.), (1., 0.), (1., 1.), (0., 1.))
+        loop = [TrimCurve(1, knots, (a, b)) for a, b in zip(corners, corners[1:] + corners[:1])]
+        obj = model.add_nurbs_surface(original, trim_loops=[loop], name="Retained edges")
+        quadratic = (0., 0., 0., 1., 1., 1.)
+        updated = NurbsSurface(2, 2, quadratic, quadratic, tuple(
+            tuple((x / 2, y / 2, 0.8 if x == y == 1 else 0.) for y in range(3))
+            for x in range(3)
+        ))
+        new_trim = TrimCurve(2, quadratic, ((0., 0.), (0.5, 0.), (1., 0.)))
+        edit = (0, updated, [(0, 0, new_trim)])
+        edges = [p.points for p in model.components(obj) if p.kind == "brep_edge"]
+        with self.assertRaisesRegex(SessionError, "out of range"):
+            model.edit_brep_face_charts(obj, edit, (1, updated, []))
+        off_edge = TrimCurve(2, quadratic, ((0., 0.), (0.5, 0.3), (1., 0.)))
+        with self.assertRaisesRegex(SessionError, "p-curve interior leaves"):
+            model.edit_brep_face_charts(obj, (0, updated, [(0, 0, off_edge)]))
+        self.assertAlmostEqual(model.surface_jets(obj, (0.5, 0.5))[0].point[2], 0.)
+
+        model.edit_brep_face_charts(obj, edit)
+        self.assertEqual([p.points for p in model.components(obj) if p.kind == "brep_edge"], edges)
+        self.assertAlmostEqual(model.surface_jets(obj, (0.5, 0.5))[0].point[2], 0.2)
+        self.assertIn("1 valid, 0 invalid, 0 not checked", model.command("Check", select=[obj]).messages[-1])
+        self.assertEqual(model.run("Undo").modified, (obj,))
+        self.assertAlmostEqual(model.surface_jets(obj, (0.5, 0.5))[0].point[2], 0.)
+        self.assertEqual(model.run("Redo").modified, (obj,))
+
     def test_persistent_commands_and_ordered_selection(self):
         model = self.model
         self.assertIn("BooleanDifference", model.commands())

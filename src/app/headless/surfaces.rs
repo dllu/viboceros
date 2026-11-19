@@ -1,6 +1,6 @@
 //! Exact tensor-product surface admission, patch extraction, and native UV evaluation.
 use super::*;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::{ColorRgb, Geometry, ObjectAttributes};
 use viboceros_geometry::{
@@ -26,6 +26,13 @@ pub(super) struct Patch {
     opacity: Option<f64>,
     #[serde(default)]
     trim_loops: Vec<Vec<TrimCurve>>,
+}
+
+#[derive(Deserialize)]
+pub(super) struct ChartEdit {
+    face: usize,
+    surface: Definition,
+    trims: Vec<(usize, usize, TrimCurve)>,
 }
 
 #[derive(Deserialize)]
@@ -266,6 +273,39 @@ pub(super) fn sew_edges(
         document.add_geometry_with_attributes(Geometry::Brep(sewn), attributes)
     })?;
     Ok(json!(id.to_string()))
+}
+
+pub(super) fn edit_face_charts(
+    document: &mut Document,
+    id: &str,
+    edits: Vec<ChartEdit>,
+) -> Result<Value> {
+    let id = model::object_id(id)?;
+    let Some(Geometry::Brep(source)) = document.object(id).map(|object| object.geometry()) else {
+        return Err("face chart editing requires a B-rep object".into());
+    };
+    let mut edited = source.clone();
+    let mut seen = BTreeSet::new();
+    for edit in edits {
+        if !seen.insert(edit.face) {
+            return Err("face chart edit indices must be unique".into());
+        }
+        let trims = edit
+            .trims
+            .into_iter()
+            .map(|(boundary, index, curve)| Ok((boundary, index, curve.build()?)))
+            .collect::<Result<Vec<_>>>()?;
+        edited
+            .try_edit_face_chart(
+                edit.face,
+                edit.surface.build()?,
+                trims,
+                document.tolerance(),
+            )
+            .map_err(|error| format!("face {}: {error}", edit.face))?;
+    }
+    document.replace_object_geometries([(id, Geometry::Brep(edited))])?;
+    Ok(Value::Null)
 }
 
 fn surface<'a>(document: &'a Document, id: &str, face: Option<usize>) -> Result<&'a NurbsSurface> {

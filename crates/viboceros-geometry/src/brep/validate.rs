@@ -72,7 +72,7 @@ impl Brep {
         Ok(())
     }
 
-    fn validate_loop(
+    pub(super) fn validate_loop(
         &self,
         face: &BrepFace,
         face_loop: &BrepLoop,

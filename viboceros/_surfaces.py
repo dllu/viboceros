@@ -42,6 +42,9 @@ class TrimCurve:
     control_points: Sequence[UV]
     weights: Sequence[float] | None = None
 
+    def _payload(self) -> dict:
+        return asdict(self)
+
     @classmethod
     def line(cls, start: UV, end: UV) -> TrimCurve:
         return cls(1, (0., 0., 1., 1.), (start, end))

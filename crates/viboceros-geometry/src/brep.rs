@@ -51,6 +51,7 @@ pub use curve_network::{PlanarCurveArrangement, PlanarCurveRegion};
 mod edge_split;
 mod face_apex;
 pub use face_apex::CoplanarFaceExtrusion;
+mod face_edit;
 mod face_split;
 mod face_subset;
 mod incidence;
