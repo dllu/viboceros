@@ -17,6 +17,7 @@ impl VibocerosApp {
             "Loose",
             "InCPlane",
             "BothSides",
+            "ThroughPoint",
         ];
         if self.ribbon_session.as_ref().unwrap().menu.is_none()
             && !local.iter().any(|n| {
@@ -60,6 +61,7 @@ impl VibocerosApp {
                 if d > 0. && d.is_finite() {
                     let s = self.ribbon_session.as_mut().unwrap();
                     s.options.distance = d;
+                    s.through_point = false;
                     s.menu = None;
                     s.distance_start = None;
                     self.active_command = Some(InteractiveCommand::Ribbon { anchor: None });
@@ -117,6 +119,16 @@ impl VibocerosApp {
                 let s = self.ribbon_session.as_mut().unwrap();
                 s.options = p.options;
                 s.menu = None;
+                if p.through_point {
+                    s.through_point = true;
+                } else if args.iter().any(|arg| {
+                    let name = arg.split_once('=').map_or(*arg, |(name, _)| name);
+                    name.trim_start_matches('_')
+                        .eq_ignore_ascii_case("Distance")
+                        || solver::length(arg, self.document.units()).is_ok()
+                }) {
+                    s.through_point = false;
+                }
                 self.command_input.clear();
                 if let Some(point) = p.side {
                     self.accept_ribbon_point(point);

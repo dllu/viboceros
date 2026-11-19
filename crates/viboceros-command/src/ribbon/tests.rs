@@ -22,6 +22,8 @@ fn options_reject_duplicate_values_and_resolve_model_units() {
         vec!["Loose=Yes", "Loose=No"],
         vec!["OutputLayer=Target"],
         vec!["w0,0,0", "w1,2,3"],
+        vec!["ThroughPoint=w0,2,0", "ThroughPoint"],
+        vec!["ThroughPoint=w0,2,0", "w1,2,3"],
     ] {
         assert!(
             parse(
@@ -33,6 +35,64 @@ fn options_reject_duplicate_values_and_resolve_model_units() {
             .is_err(),
             "{args:?}"
         );
+    }
+}
+
+#[test]
+fn ribbon_through_point_matches_rhino_signed_width_and_remembers_it() {
+    let cases = [
+        ("Line 0,0,0 6,0,0", "ThroughPoint=w9,-2,5", 2., -2., 0.),
+        (
+            "Line 0,0,0 6,0,0",
+            "BothSides ThroughPoint=w2,-3,0",
+            3.,
+            -3.,
+            3.,
+        ),
+        (
+            "Line 0,0,0 6,0,6",
+            "InCPlane=Yes ThroughPoint=w2,3,10",
+            3.,
+            0.,
+            3.,
+        ),
+        (
+            "Polyline 0,0,0 6,0,0 6,6,0",
+            "Corner=Round ThroughPoint=w9,-1,0",
+            3.,
+            -3.,
+            6.,
+        ),
+        (
+            "Polyline 0,0,0 6,0,0 6,6,0",
+            "Corner=Round ThroughPoint=w7,-3,0",
+            3.,
+            -3.,
+            6.,
+        ),
+    ];
+    for (source, args, width, min_y, max_y) in cases {
+        let registry = CommandRegistry::with_builtins();
+        let mut doc = Document::default();
+        registry.execute(&mut doc, source).unwrap();
+        registry.execute(&mut doc, "SelAll").unwrap();
+        registry
+            .execute(&mut doc, &format!("Ribbon {args}"))
+            .unwrap();
+        let result = doc
+            .objects()
+            .find_map(|o| match o.geometry() {
+                Geometry::Brep(brep) => Some(brep),
+                _ => None,
+            })
+            .unwrap();
+        assert!((result.bounds().min().y() - min_y).abs() < 1e-9, "{args}");
+        assert!((result.bounds().max().y() - max_y).abs() < 1e-9, "{args}");
+        assert!(
+            (registry.ribbon_options().distance - width).abs() < 1e-9,
+            "{args}"
+        );
+        assert!(!registry.ribbon_options().both_sides);
     }
 }
 

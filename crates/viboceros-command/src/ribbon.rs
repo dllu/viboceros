@@ -2,6 +2,7 @@
 use super::*;
 mod geometry;
 mod options;
+pub use geometry::Source;
 pub use options::{Input, Options, USAGE, length, parse};
 #[cfg(test)]
 mod tests;
@@ -81,13 +82,14 @@ impl RibbonCommand {
         if sources.next().is_some() {
             return Err(CommandError::RibbonSourceUnavailable);
         }
-        let outputs = geometry::build(
+        let solver = Source::capture(
             source.geometry().curve_ref().unwrap(),
-            input.options,
-            side,
+            input.options.in_cplane,
             context,
             doc.tolerance(),
         )?;
+        let distance = solver.signed_distance(input.options, side, input.through_point)?;
+        let outputs = solver.solve(input.options, distance)?;
         let attributes = if input.options.input_layer {
             source.attributes().clone()
         } else {
@@ -106,7 +108,9 @@ impl RibbonCommand {
         if postselected {
             doc.clear_selection();
         }
-        self.0.set(input.options.remembered());
+        let mut remembered = input.options.remembered();
+        remembered.distance = distance.abs();
+        self.0.set(remembered);
         Ok(format!("Created {count} ribbon surface(s)"))
     }
 }

@@ -3,15 +3,18 @@
 [Curve commands](curves-index.md) · [Smooth geometry](../geometry/smooth-ribbons.md)
 
 Run `Ribbon` with one curve selected, or pick a curve after starting the command.
-The curve pick advances directly to the side prompt. Pick the desired side to
-create a ruled ribbon. `Distance` accepts a positive number, a length with units,
-or two picked points. Typed side points use the shared world/CPlane coordinates,
-snaps and drafting controls. Escape cancels the draft without a model edit.
+The curve pick advances directly to the side prompt. Move the cursor to either
+side to preview the ruled ribbon, then click or type a point to create it.
+`Distance` accepts a positive number, a length with units, or two picked
+points. Choose `ThroughPoint` to vary the width with the cursor and pick or
+type the target location. Both modes use the shared coordinate and snapping
+controls. Escape cancels the draft without a model edit.
 
 ```text
 Ribbon .5 0,5,0
 Ribbon Distance=2cm 0,5,0 BothSides=Yes Corner=Round
 Ribbon .5 0,5,0 Loose=Yes InCPlane=Yes OutputLayer=Input
+Ribbon ThroughPoint=w2,3,0
 ```
 
 Ordinary ribbons support lines, planar smooth NURBS and planar polylines, including
@@ -35,12 +38,15 @@ Outputs do not inherit source groups. Preselected inputs remain selected;
 command-first inputs and all results are unselected after completion and replay.
 Creation is one Undo step. Accepted distance, corner, Loose, InCPlane, layer and
 tolerance settings belong to the registry; Undo does not reset them. BothSides
-applies to the current invocation. Drafts invalidate when source state changes.
+applies to the current invocation. A successful ThroughPoint pick remembers the
+inferred width. The [Rhino capture](../ribbon-through-point-reference.json)
+includes line extensions, off-plane picks, and rounded polyline corners.
+Drafts invalidate when source state changes.
 
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
-tolerance and Corner. ThroughPoint, Trim/self-intersection policies, source subcurves, history-based
-regeneration and cursor previews remain unfinished. Both-sided Loose polycurves
+tolerance and Corner. Trim and self-intersection policies, source subcurves,
+and history-based regeneration remain unfinished. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

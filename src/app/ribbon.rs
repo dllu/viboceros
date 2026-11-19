@@ -3,6 +3,7 @@ use super::*;
 use viboceros_command::ribbon::{self as solver, Options};
 use viboceros_document::Object;
 mod input;
+mod preview;
 
 pub(super) struct Session {
     source: Object,
@@ -15,6 +16,8 @@ pub(super) struct Session {
     options: Options,
     menu: Option<&'static str>,
     distance_start: Option<Point3>,
+    through_point: bool,
+    preview: preview::Preview,
 }
 impl Session {
     pub(super) fn hint(&self) -> &'static str {
@@ -26,8 +29,9 @@ impl Session {
             Some("Tolerance") => "Positive tolerance, or Default / 0 for document tolerance",
             Some("Corner") => "Sharp, Round, Smooth, Chamfer or None",
             Some("OutputLayer") => "Current or Input",
+            _ if self.through_point => "Through point; pick or type the offset location",
             _ => {
-                "Side to ribbon; Distance, Loose, Corner, BothSides, InCPlane, OutputLayer; Esc cancels"
+                "Side to ribbon; Distance, ThroughPoint, Loose, Corner, BothSides, InCPlane, OutputLayer"
             }
         }
     }
@@ -95,6 +99,8 @@ impl VibocerosApp {
             options: parsed.options,
             menu: None,
             distance_start: None,
+            through_point: parsed.through_point,
+            preview: preview::Preview::default(),
         });
         self.active_command = Some(InteractiveCommand::Ribbon { anchor: None });
         self.drafting_plane = Some(plane);
@@ -130,6 +136,7 @@ impl VibocerosApp {
                 match start.distance_to(point) {
                     Ok(d) if d > 0. => {
                         s.options.distance = d;
+                        s.through_point = false;
                         s.menu = None;
                         s.distance_start = None;
                         self.active_command = Some(InteractiveCommand::Ribbon { anchor: None });
@@ -154,8 +161,9 @@ impl VibocerosApp {
         }
         let s = self.ribbon_session.take().unwrap();
         let input = format!(
-            "Ribbon {} {}",
+            "Ribbon {} {}{}",
             s.options.arguments(),
+            if s.through_point { "ThroughPoint " } else { "" },
             format_model_point(point)
         );
         let context = viboceros_command::CommandContext {

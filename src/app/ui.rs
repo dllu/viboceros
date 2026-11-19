@@ -1625,9 +1625,15 @@ impl VibocerosApp {
                             show_edge_blend_handles,
                             edge_blend_handle_mode,
                             preview_curves: self
-                                .face_create_session
+                                .ribbon_session
                                 .as_ref()
-                                .map(face_create::Session::preview_curves)
+                                .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                .and_then(|s| s.preview_curves(&self.document))
+                                .or_else(|| {
+                                    self.face_create_session
+                                        .as_ref()
+                                        .map(face_create::Session::preview_curves)
+                                })
                                 .or_else(|| {
                                     self.subd_ellipsoid_session
                                         .as_ref()
@@ -1964,6 +1970,7 @@ impl VibocerosApp {
             ui.ctx().request_repaint();
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
+        self.update_ribbon_preview(apex_hover, ui.ctx());
         if self.observe_surface_extrusion_hover(apex_hover) {
             ui.ctx().request_repaint();
         }

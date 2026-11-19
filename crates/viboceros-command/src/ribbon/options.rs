@@ -1,7 +1,7 @@
 use super::*;
 use viboceros_geometry::{LengthUnitSystem, RibbonCornerStyle};
 
-pub const USAGE: &str = "Ribbon [distance|Distance=value] side-point [BothSides=Yes|No] [Corner=Sharp|Round|Smooth|Chamfer|None] [Loose=Yes|No] [InCPlane=Yes|No] [OutputLayer=Current|Input] [Tolerance=value|Default]";
+pub const USAGE: &str = "Ribbon [distance|Distance=value] side-point | Ribbon ThroughPoint=point [BothSides=Yes|No] [Corner=Sharp|Round|Smooth|Chamfer|None] [Loose=Yes|No] [InCPlane=Yes|No] [OutputLayer=Current|Input] [Tolerance=value|Default]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Options {
@@ -71,6 +71,7 @@ impl Options {
 pub struct Input {
     pub options: Options,
     pub side: Option<Point3>,
+    pub through_point: bool,
 }
 
 pub fn length(text: &str, units: &LengthUnitSystem) -> Result<Real, CommandError> {
@@ -87,21 +88,43 @@ pub fn parse(
 ) -> Result<Input, CommandError> {
     let mut seen = [false; 7];
     let mut side = None;
+    let mut through_point = false;
+    let parse_point = |text| {
+        viboceros_drafting::PointInput::parse_with_units(text, units).map(|point| {
+            point
+                .and_then(|point| point.resolve(context.construction_plane, None))
+                .map_err(|_| CommandError::Usage(USAGE))
+        })
+    };
     let mut i = 0;
     while i < args.len() {
         let word = args[i];
+        let (name, value) = word
+            .split_once('=')
+            .map_or((word, None), |(name, value)| (name, Some(value)));
+        if option_name_eq(name, "ThroughPoint") {
+            if through_point {
+                return Err(CommandError::Usage(USAGE));
+            }
+            through_point = true;
+            if let Some(value) = value {
+                let point = parse_point(value).ok_or(CommandError::Usage(USAGE))??;
+                if side.replace(point).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            }
+            i += 1;
+            continue;
+        }
         let mut consumed = 1;
-        let (name, value) = if let Some(pair) = word.split_once('=') {
-            pair
+        let (name, value) = if let Some(value) = value {
+            (name, value)
         } else if option_name_eq(word, "BothSides") {
             ("BothSides", "Yes")
         } else if length(word, units).is_ok() {
             ("Distance", word)
-        } else if let Some(point) = viboceros_drafting::PointInput::parse_with_units(word, units) {
-            let point = point
-                .and_then(|p| p.resolve(context.construction_plane, None))
-                .map_err(|_| CommandError::Usage(USAGE))?;
-            if side.replace(point).is_some() {
+        } else if let Some(point) = parse_point(word) {
+            if side.replace(point?).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
             i += 1;
@@ -164,5 +187,6 @@ pub fn parse(
     Ok(Input {
         options: options.validate()?,
         side,
+        through_point,
     })
 }

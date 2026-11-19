@@ -226,7 +226,7 @@ mod ribbon;
 mod ruled_surface;
 mod section_basis;
 pub use ribbon::{
-    RibbonCornerStyle, try_fixed_plane_ribbon, try_fixed_plane_ribbon_with_fit_tolerance,
+    RibbonCornerStyle, ribbon_through_distance, try_fixed_plane_ribbon, try_fixed_plane_ribbon_with_fit_tolerance,
     try_fixed_plane_ribbon_with_ruled, try_loose_ribbon, try_loose_ribbon_in_plane,
     try_loose_ribbon_in_plane_with_ruled, try_loose_ribbon_with_ruled, try_polyline_ribbon,
     try_polyline_ribbon_with_ruled, try_smooth_ribbon, try_smooth_ribbon_with_fit_tolerance,

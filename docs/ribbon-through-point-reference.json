@@ -1,0 +1,41 @@
+{
+  "rhino_version": "8.32.26160.13001",
+  "command": "Ribbon",
+  "sequences": {
+    "line": {
+      "source": [[0, 0, 0], [6, 0, 0]],
+      "note": "Point beyond the endpoint and above the plane, both sides, then loose",
+      "steps": [
+        {"input": "_Ribbon _ThroughPoint w9,-2,5", "min": [0.0, -2.0, 0.0], "max": [6.0, 0.0, 0.0]},
+        {"input": "_Ribbon _BothSides _ThroughPoint w2,-3,0", "min": [0.0, -3.0, 0.0], "max": [6.0, 3.0, 0.0]},
+        {"input": "_Ribbon _Loose=Yes _ThroughPoint w2,3,0", "min": [0.0, 0.0, 0.0], "max": [6.0, 3.0, 0.0]}
+      ]
+    },
+    "distance_recall": {
+      "source": [[0, 0, 0], [6, 0, 0]],
+      "note": "Accepted width 3 carries forward to the next side pick",
+      "steps": [
+        {"input": "_Ribbon w2,1,0", "min": [0.0, 0.0, 0.0], "max": [6.0, 2.0, 0.0]},
+        {"input": "_Ribbon _ThroughPoint w2,3,0", "min": [0.0, 0.0, 0.0], "max": [6.0, 3.0, 0.0]},
+        {"input": "_Ribbon w2,1,0", "min": [0.0, 0.0, 0.0], "max": [6.0, 3.0, 0.0]}
+      ]
+    },
+    "round_corner": {
+      "source": [[0, 0, 0], [6, 0, 0], [6, 6, 0]],
+      "note": "Outside picks on either side of the corner use width 3",
+      "steps": [
+        {"input": "_Ribbon _Corner=_Round _ThroughPoint w9,-1,0", "min": [0.0, -3.0, 0.0], "max": [9.0, 6.0, 0.0]},
+        {"input": "_Ribbon _Corner=_Round _ThroughPoint w7,-3,0", "min": [0.0, -3.0, 0.0], "max": [9.0, 6.0, 0.0]},
+        {"input": "_Ribbon _Corner=_Round _ThroughPoint w5,2,0", "min": [0.0, 0.0, 0.0], "max": [6.0, 6.0, 0.0]}
+      ]
+    },
+    "oblique_line": {
+      "source": [[0, 0, 0], [6, 0, 6]],
+      "note": "The off-plane point gives width 3 with both plane settings",
+      "steps": [
+        {"input": "_Ribbon _ThroughPoint w2,3,10", "min": [0.0, 0.0, 0.0], "max": [6.0, 3.0, 6.0]},
+        {"input": "_Ribbon _InCPlane=Yes _ThroughPoint w2,3,10", "min": [0.0, 0.0, 0.0], "max": [6.0, 3.0, 6.0]}
+      ]
+    }
+  }
+}
