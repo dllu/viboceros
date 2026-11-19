@@ -62,13 +62,19 @@ mod tests {
         let r = run_request(&q).unwrap();
         assert_eq!(r.results.len(), 8);
         for row in r.results {
-            let b = &row.value["breps"][0];
+            let breps = row.value["breps"].as_array().unwrap();
             if row.id == "surface_ring_walls" {
-                assert_eq!(b["is_solid"], false);
-                assert_eq!(b["face_count"], 2);
-                assert!(b["volume"].is_null());
+                assert_eq!(breps.len(), 2);
+                for b in breps {
+                    assert_eq!(b["is_solid"], false);
+                    assert_eq!(b["face_count"], 1);
+                    assert!(b["volume"].is_null());
+                }
                 continue;
             }
+            let [b] = breps.as_slice() else {
+                panic!("{}: {}", row.id, row.value)
+            };
             assert_eq!(b["is_solid"], true);
             let expected = match row.id.as_str() {
                 "surface_warped_oblique" => 10.5,

@@ -1,13 +1,64 @@
 //! Truncate the conical sweep, retaining the picked support and its trim holes.
 use super::*;
+use crate::extrude_surface::sweep_surface_key as surface_key;
 use std::collections::HashMap;
-use std::hash::{DefaultHasher, Hash, Hasher};
 use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
-const NO_SECTION: &str =
+mod flat;
+mod sections;
+mod shallow;
+
+pub(super) const NO_SECTION: &str =
     "The boundary must span the complete extrusion between the source and the apex";
 
-pub(super) fn truncate(
+pub(super) fn extrude(
+    source: &Brep,
+    boundary: &Brep,
+    apex: Point3,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    if let Some(cut) =
+        source.try_shallow_apex_to_planar_boundary(apex, boundary, split_at_tangents, tolerance)?
+    {
+        return Ok(cut);
+    }
+    if let Some(cut) = flat::truncate(source, boundary, apex, split_at_tangents, tolerance)? {
+        return Ok(cut);
+    }
+    let result = cone(source, apex, split_at_tangents, tolerance)
+        .and_then(|sweep| truncate(&sweep, boundary, apex, tolerance));
+    if result.is_ok() {
+        return result;
+    }
+    shallow::retry(source, boundary, apex, split_at_tangents, tolerance)?.map_or(result, Ok)
+}
+
+fn cone(
+    source: &Brep,
+    apex: Point3,
+    split_at_tangents: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    Ok(Shape::from_brep(source, tolerance)?
+        .extruded_faces_to_point_with_tangents(apex, true, split_at_tangents, tolerance)?
+        .to_brep(tolerance)?)
+}
+
+fn truncate(
+    cone: &Brep,
+    boundary: &Brep,
+    apex: Point3,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let direct = truncate_radially(cone, boundary, apex, tolerance);
+    if direct.is_ok() || boundary.faces()[0].surface().plane(tolerance)?.is_some() {
+        return direct;
+    }
+    sections::truncate(cone, boundary, apex, tolerance)
+}
+
+fn truncate_radially(
     cone: &Brep,
     boundary: &Brep,
     apex: Point3,
@@ -108,27 +159,6 @@ fn reaches_apex(
         .flat_map(|boundary| boundary.trims())
         .flat_map(|trim| trim.vertices())
         .any(|index| brep.vertices()[index].point().is_near(apex, tolerance))
-}
-
-fn surface_key(surface: &NurbsSurface) -> u64 {
-    // Use geometric data instead of face order for provenance. Confirm exact
-    // carrier equality after lookup to guard against hash collisions.
-    let mut key = DefaultHasher::new();
-    surface.degree_u().hash(&mut key);
-    surface.degree_v().hash(&mut key);
-    let mut real = |number: f64| {
-        (if number == 0. { 0 } else { number.to_bits() }).hash(&mut key);
-    };
-    for &knot in surface.knots_u().iter().chain(surface.knots_v()) {
-        real(knot);
-    }
-    for point in surface.control_points() {
-        for coordinate in point.point().to_array() {
-            real(coordinate);
-        }
-        real(point.weight());
-    }
-    key.finish()
 }
 
 #[cfg(test)]

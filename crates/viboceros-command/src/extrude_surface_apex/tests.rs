@@ -321,36 +321,4 @@ fn planar_rectangle(x: f64, z: f64) -> Geometry {
 }
 
 #[cfg(feature = "native-smlib")]
-#[test]
-fn surface_apex_later_boundary_miss_preserves_batch_and_redo() {
-    let mut doc = Document::default();
-    let registry = CommandRegistry::with_builtins();
-    let s = doc.add_geometry(planar_rectangle(0., 0.)).unwrap();
-    let other = doc.add_geometry(planar_rectangle(20., 0.)).unwrap();
-    let boundary = doc
-        .add_geometry(Geometry::NurbsSurface(
-            NurbsSurface::try_bilinear([
-                p(-1., -1., 6.),
-                p(3., -1., 6.),
-                p(3., 4., 6.),
-                p(-1., 4., 6.),
-            ])
-            .unwrap(),
-        ))
-        .unwrap();
-    registry.execute(&mut doc, "Point 50,50,50").unwrap();
-    registry.execute(&mut doc, "Undo").unwrap();
-    let before = format!("{doc:?}");
-    assert!(
-        registry
-            .execute(
-                &mut doc,
-                &format!(
-                    "ExtrudeSrfToPoint 1,1.5,12 ToBoundary={boundary} FaceRefs={s}:0,{other}:0 DeleteInput=Yes"
-                )
-            )
-            .is_err()
-    );
-    assert_eq!(format!("{doc:?}"), before);
-    assert!(doc.can_redo());
-}
+mod boundary;

@@ -3,11 +3,12 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn apply_selection_click(&mut self, click: SelectionClick) {
-        if self.picking_surface_apex_boundary() {
+        if self.picking_surface_boundary() {
             if let Some(object) = click.object_id {
-                self.pick_surface_apex_boundary(
-                    viboceros_command::extrude_surface_apex::BoundaryRef { object, face: None },
-                );
+                self.pick_surface_boundary(viboceros_command::surface_reference::BoundaryRef {
+                    object,
+                    face: None,
+                });
             }
             return;
         }

@@ -1,7 +1,10 @@
 //! Assemble coplanar ruled walls by source incidence, even when edges overlap.
 use super::incidence::count_edge_uses;
 use super::*;
+use crate::Plane;
 use std::collections::{HashMap, hash_map::Entry};
+
+mod planar_boundary;
 
 /// Output of extruding one planar face to an apex at or close to its plane.
 pub enum CoplanarFaceExtrusion {
@@ -55,34 +58,10 @@ impl Brep {
         split_at_tangents: bool,
         tolerance: Tolerance,
     ) -> Result<Option<CoplanarFaceExtrusion>, GeometryError> {
-        let [face] = self.faces.as_slice() else {
-            return Ok(None);
-        };
-        let Some(plane) = face.surface.plane(tolerance)? else {
-            return Ok(None);
-        };
-        // SMLib's second stitching pass searches up to 40 model tolerances.
-        // Assemble the topology explicitly within that distance so even very
-        // shallow sweeps preserve vertices that are close and distinct.
-        if plane.signed_distance_to(apex)?.abs() > 40.0 * tolerance.absolute() {
+        if self.shallow_apex_plane(apex, tolerance)?.is_none() {
             return Ok(None);
         }
-        let uses = self.edge_use_counts();
-        if !uses.contains(&1) {
-            return invalid("surface apex extrusion requires a boundary");
-        }
-        let mut splits = Vec::new();
-        for (index, &count) in uses.iter().enumerate() {
-            if count == 1 {
-                let cuts = self.edges[index]
-                    .curve
-                    .surface_apex_wall_breaks(split_at_tangents)?;
-                if !cuts.is_empty() {
-                    splits.push((index, cuts));
-                }
-            }
-        }
-        let mut source = self.try_split_edges_at_parameters(&splits, tolerance)?;
+        let mut source = self.with_apex_wall_splits(split_at_tangents, tolerance)?;
         let base = source.faces.pop().expect("single source face");
         let uses = count_edge_uses(std::slice::from_ref(&base), source.edges.len());
         let mut faces = Vec::new();
@@ -185,5 +164,58 @@ impl Brep {
             subset.faces,
             tolerance,
         )?)))
+    }
+
+    fn shallow_apex_plane(
+        &self,
+        apex: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Option<(Plane, Real)>, GeometryError> {
+        let [face] = self.faces.as_slice() else {
+            return Ok(None);
+        };
+        let Some(plane) = face.surface.plane(tolerance)? else {
+            return Ok(None);
+        };
+        let height = plane.signed_distance_to(apex)?;
+        // SMLib's second stitching pass searches up to 40 model tolerances.
+        // Explicit incidence preserves distinct vertices within that distance.
+        Ok((height.abs() <= 40.0 * tolerance.absolute()).then_some((plane, height)))
+    }
+
+    fn with_apex_wall_splits(
+        &self,
+        split_at_tangents: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.try_split_edges_at_parameters(
+            &self.sweep_boundary_splits(split_at_tangents)?,
+            tolerance,
+        )
+    }
+
+    /// Find wall splits on naked edges while retaining every original seam.
+    /// Sharp breaks always split. The tangent option also splits geometric
+    /// curvature breaks. Existing face interiors and their edges stay intact.
+    pub fn sweep_boundary_splits(
+        &self,
+        split_at_tangents: bool,
+    ) -> Result<Vec<(usize, Vec<Real>)>, GeometryError> {
+        let uses = self.edge_use_counts();
+        if !uses.contains(&1) {
+            return invalid("surface extrusion requires a boundary");
+        }
+        let mut splits = Vec::new();
+        for (index, &count) in uses.iter().enumerate() {
+            if count == 1 {
+                let cuts = self.edges[index]
+                    .curve
+                    .surface_apex_wall_breaks(split_at_tangents)?;
+                if !cuts.is_empty() {
+                    splits.push((index, cuts));
+                }
+            }
+        }
+        Ok(splits)
     }
 }

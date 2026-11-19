@@ -1,4 +1,4 @@
-"""Independent public face-extrusion fixtures; licensed capture remains pending."""
+"""Independent public face-extrusion fixtures."""
 import copy
 import math
 
@@ -8,8 +8,8 @@ def validate(operation):
         raise ValueError('invalid surface extrusion fields')
     v = operation['displacement']
     if (not isinstance(v, list) or len(v) != 3
-            or any(type(x) not in (int, float) or not math.isfinite(x) for x in v)
-            or not 0 < math.hypot(*v) < float('inf')
+            or any(type(x) not in (int, float) or math.isnan(x) or math.isinf(x) for x in v)
+            or not 0 < math.hypot(math.hypot(v[0], v[1]), v[2]) < float('inf')
             or type(operation['face']) is not int or operation['face'] < 0
             or type(operation['solid']) is not bool or type(operation['both_sides']) is not bool
             or not isinstance(operation['source'], dict)

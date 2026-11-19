@@ -33,9 +33,9 @@ an independent result. Inline face selectors and options survive source picking.
 At the apex prompt, enter `ToBoundary`, pick one boundary surface or B-rep
 face, then place the apex beyond it. The preview ends at the boundary and the
 result uses the base and the picked surface as caps. Holes enclosed by the cut
-section remain open. Partial coverage and holes crossing the outer section
-leave the point prompt available for retry. Scripts can use `ToBoundary=id`
-or `ToBoundary=id:index`.
+section remain open and their rims appear in the preview. Partial coverage and
+holes crossing the section rim leave the point prompt available for retry.
+Scripts can use `ToBoundary=id` or `ToBoundary=id:index`.
 
 Initial options are `Solid=No DeleteInput=No SplitAtTangents=No`. A successful
 extrusion saves those choices for the next invocation. Esc discards provisional
@@ -73,9 +73,36 @@ wall endpoint or closed seam omits that wall from the result and preview.
 `Solid=Yes` keeps the base. The result can be open or have zero volume.
 When every wall is omitted, `Solid=No` produces a point at the apex. Rhino
 stores that point as a vertex-only B-rep.
-`ToBoundary` requires a sweep with volume. Closed sources without a boundary,
-invalid face indices and unsupported imports decline. General self-intersection,
-folding, and downstream meshing require broader qualification.
+With a planar cutter, `ToBoundary` also accepts very shallow and coplanar
+sweeps when the picked face spans the full section. Perspective projection
+preserves the exact rim, enclosed cutter holes and shared edge topology. A
+coplanar section collapses to a line and the result has zero volume. The
+analytic cut also works with a perpendicular cutter for a flat sweep. Rhino
+declined that alignment in the captured rectangular case.
+
+Flat sweeps to a warped cutter use the picked face's intersection with the
+source plane as the rim. Sections outside the sweep are ignored. A flat cut
+requires one connected section spanning the sweep. The cut retains the
+source and wall topology and uses a collapsed cap bounded by the rim. One
+tilted Rhino capture retained the full cutter face.
+
+Very shallow noncoplanar sweeps to a warped cutter can use a tighter working
+tolerance and an affine stretch along the source normal. The trim is restored
+to the original coordinates on the warped cutter. Licensed captures cover
+placements above and below the source plane and a tilted, translated source.
+
+For a noncoplanar apex, a warped cutter can intersect the sweep in several
+disconnected sections. The command keeps the nearest complete section and
+leaves the apex getter open if a closer partial section interferes. The
+viewport uses the first hit along each sampled ruling. Within one model
+tolerance of the source plane, competing hits on a ruling hide the preview.
+For a planar cutter that cannot be meshed, the preview intersects the plane
+and tests its trims directly.
+
+Closed sources without a boundary, invalid face indices and unsupported
+imports decline. Extremely small nonzero heights, shallow near-parallel
+cutters, and general self-intersection and folding require broader
+qualification.
 
 Nine independent Python `surface_apex_extrusion` fixtures cover planar and
 warped bases, targets above/below/off-axis, rational holes, uncapped walls,
@@ -92,8 +119,9 @@ Private headless Rhino captures also cover mouse input, both origin shortcuts,
 option toggles, reuse of successful option changes, and coplanar points on
 rectangles, annuli, and closed seams.
 Separate `ToBoundary` captures cover planar and warped caps, a circular
-opening, and incomplete section coverage. The command uses a native Boolean
-cut and checks that the source base and boundary cap survive.
+opening, incomplete section coverage, and oblique cuts of coplanar sweeps.
+Ordinary sweeps use a native Boolean cut with a check that the base and
+boundary cap survive.
 The SDK recipe combines disconnected walls for its geometry comparison;
 the command corpus verifies separate output objects. See
 [native qualification](../surface-apex-native-qualification.json),

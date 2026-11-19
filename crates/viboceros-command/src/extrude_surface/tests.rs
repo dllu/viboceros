@@ -29,6 +29,7 @@ fn surface_extrusion_options_validate_atomically_and_face_targets_are_checked() 
             "BothSides=Yes",
             "DeleteInput=Yes",
             "Solid=No",
+            "_SplitAtTangents",
             "Direction=0,0,2",
         ])
         .unwrap();
@@ -43,8 +44,14 @@ fn surface_extrusion_options_validate_atomically_and_face_targets_are_checked() 
         .options,
         options
     );
+    assert!(options.split_at_tangents);
     let before = options;
     assert!(options.update(&["Solid=Yes", "Direction=0,0,0"]).is_err());
+    assert!(
+        options
+            .update(&["SplitAtTangents", "SplitAtTangents=Yes"])
+            .is_err()
+    );
     assert_eq!(options, before);
     assert!(SurfaceExtrusionInput::parse(&["Face=0", "Faces=1"]).is_err());
     let mut doc = Document::default();
@@ -87,7 +94,10 @@ fn surface_extrusion_curved_caps_both_sides_delete_and_history() {
         .unwrap();
     let source = doc.object(id).unwrap().clone();
     registry
-        .execute(&mut doc, "ExtrudeSrf 2 BothSides=Yes DeleteInput=Yes")
+        .execute(
+            &mut doc,
+            "ExtrudeSrf 2 Solid=Yes BothSides=Yes DeleteInput=Yes",
+        )
         .unwrap();
     assert!(doc.object(id).is_none());
     let result = doc.selected_objects().next().unwrap();
@@ -219,7 +229,7 @@ fn surface_extrusion_numeric_distance_uses_native_plane_normal_independently_of_
     registry
         .execute_in_context(
             &mut doc,
-            "ExtrudeSrf 2",
+            "ExtrudeSrf 2 Solid=Yes",
             CommandContext {
                 construction_plane: plane,
             },

@@ -1764,25 +1764,8 @@ impl VibocerosApp {
                     options,
                 );
             }
-            InteractiveCommand::ExtrudeSurface {
-                base: None,
-                options,
-            } => {
-                self.active_command = Some(InteractiveCommand::ExtrudeSurface {
-                    base: Some(point),
-                    options,
-                });
-                self.push_log("ExtrudeSrf: pick the direction target".into());
-            }
-            InteractiveCommand::ExtrudeSurface {
-                base: Some(base),
-                mut options,
-            } => {
-                options.direction = None;
-                return self.finish_surface_extrusion(
-                    &format!("{} {}", format_model_point(base), format_model_point(point)),
-                    options,
-                );
+            InteractiveCommand::ExtrudeSurface { stage, options } => {
+                return self.accept_surface_extrusion_point(stage, options, point);
             }
             InteractiveCommand::ExtrudeSurfaceTapered {
                 base: None,

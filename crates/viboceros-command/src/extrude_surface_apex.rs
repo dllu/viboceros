@@ -1,6 +1,7 @@
 //! Native surface and original face extrusion to an explicit apex.
 use super::*;
 use crate::extrude_surface::{SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusion_products};
+pub use crate::surface_reference::{BoundaryInput, BoundaryRef};
 #[cfg(feature = "native-smlib")]
 mod boundary;
 pub const USAGE: &str = "ExtrudeSrfToPoint apex|0|w0 [ToBoundary=id[:face]] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
@@ -100,67 +101,6 @@ impl ApexPoint {
             Self::ConstructionPlaneOrigin => construction_plane.origin(),
         }
     }
-}
-
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct BoundaryRef {
-    pub object: ObjectId,
-    pub face: Option<usize>,
-}
-
-impl BoundaryRef {
-    pub fn parse(input: &str) -> Result<Self, CommandError> {
-        let (id, face) = match input.split_once(':') {
-            Some((id, face)) => (
-                id,
-                Some(face.parse().map_err(|_| CommandError::Usage(USAGE))?),
-            ),
-            None => (input, None),
-        };
-        Ok(Self {
-            object: id.parse().map_err(|_| CommandError::Usage(USAGE))?,
-            face,
-        })
-    }
-
-    pub fn capture(self, document: &Document) -> Result<Brep, CommandError> {
-        let object = document
-            .object(self.object)
-            .filter(|_| document.is_object_selectable(self.object))
-            .ok_or(CommandError::Usage("Boundary surface is unavailable"))?;
-        let tolerance = document.tolerance();
-        match object.geometry() {
-            Geometry::NurbsSurface(surface) if self.face.unwrap_or(0) == 0 => {
-                Ok(Brep::try_surface_face(surface.clone(), tolerance)?)
-            }
-            Geometry::Brep(brep) => {
-                let index = self.face.or_else(|| (brep.faces().len() == 1).then_some(0));
-                let index = index.filter(|&index| index < brep.faces().len()).ok_or(
-                    CommandError::Usage("Pick one boundary face or specify its index"),
-                )?;
-                Ok(brep.duplicate_faces(&[index], tolerance)?)
-            }
-            _ => Err(CommandError::Usage("Pick one boundary surface")),
-        }
-    }
-}
-
-impl std::fmt::Display for BoundaryRef {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.object)?;
-        if let Some(index) = self.face {
-            write!(f, ":{index}")?;
-        }
-        Ok(())
-    }
-}
-
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum BoundaryInput {
-    #[default]
-    None,
-    Select,
-    Reference(BoundaryRef),
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -348,19 +288,20 @@ fn native_extrusion(
     let shift = AffineTransform3::from_translation(origin.vector_to(zero)?);
     let local = brep.transformed(shift, tolerance)?;
     let apex = shift.transform_point(apex)?;
-    let result = viboceros_smlib::Shape::from_brep(&local, tolerance)?
-        .extruded_faces_to_point_with_tangents(
-            apex,
-            options.solid || boundary.is_some(),
-            options.split_at_tangents,
-            tolerance,
-        )?
-        .to_brep(tolerance)?;
-    let result = if let Some(boundary) = boundary {
-        let boundary = boundary.transformed(shift, tolerance)?;
-        boundary::truncate(&result, &boundary, apex, tolerance)?
+    let boundary = boundary
+        .map(|face| face.transformed(shift, tolerance))
+        .transpose()?;
+    let result = if let Some(boundary) = &boundary {
+        boundary::extrude(&local, boundary, apex, options.split_at_tangents, tolerance)?
     } else {
-        result
+        viboceros_smlib::Shape::from_brep(&local, tolerance)?
+            .extruded_faces_to_point_with_tangents(
+                apex,
+                options.solid,
+                options.split_at_tangents,
+                tolerance,
+            )?
+            .to_brep(tolerance)?
     };
     Ok(result.transformed(
         AffineTransform3::from_translation(zero.vector_to(origin)?),

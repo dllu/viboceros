@@ -1,9 +1,19 @@
 use super::*;
+
+mod boundary;
+mod distance_preview;
+mod point_getters;
+mod tangents;
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
 }
 fn surface(app: &mut VibocerosApp) -> ObjectId {
+    surface_at(app, 0., 1.)
+}
+
+fn surface_at(app: &mut VibocerosApp, z: f64, warp: f64) -> ObjectId {
     app.document
         .add_geometry(Geometry::NurbsSurface(
             viboceros_geometry::NurbsSurface::try_new(
@@ -12,10 +22,10 @@ fn surface(app: &mut VibocerosApp) -> ObjectId {
                 2,
                 2,
                 vec![
-                    point(0., 0., 0.),
-                    point(2., 0., 0.),
-                    point(0., 3., 0.),
-                    point(2., 3., 1.),
+                    point(0., 0., z),
+                    point(2., 0., z),
+                    point(0., 3., z),
+                    point(2., 3., z + warp),
                 ],
                 vec![0., 0., 1., 1.],
                 vec![0., 0., 1., 1.],
@@ -29,7 +39,7 @@ fn surface_extrusion_source_picker_options_and_cancel_preserve_model_geometry() 
     let mut app = test_app();
     let id = surface(&mut app);
     let before = app.document.object(id).unwrap().clone();
-    enter(&mut app, "ExtrudeSrf BothSides=Yes Solid=No");
+    enter(&mut app, "ExtrudeSrf BothSides=Yes");
     assert!(app.object_prompt.is_some());
     app.apply_selection_click(SelectionClick {
         object_id: Some(id),
@@ -61,7 +71,7 @@ fn surface_extrusion_failure_and_stale_sources_keep_the_getter() {
     enter(&mut app, "ExtrudeSrf");
     let active = app.active_command;
     let before = format!("{:?}", app.document);
-    enter(&mut app, "0");
+    enter(&mut app, "w1,1.5,0.5");
     assert_eq!(app.active_command, active);
     assert_eq!(format!("{:?}", app.document), before);
     app.document
@@ -82,14 +92,28 @@ fn surface_extrusion_distance_and_direction_points_commit_from_frozen_faces() {
         app.document
             .select_objects_direct([id], SelectionMode::Replace)
             .unwrap();
-        enter(&mut app, "ExtrudeSrf BothSides=Yes DeleteInput=Yes");
+        enter(
+            &mut app,
+            "ExtrudeSrf Solid=Yes BothSides=Yes DeleteInput=Yes",
+        );
         if numeric {
             enter(&mut app, "2");
         } else {
+            enter(&mut app, "Direction");
             assert!(app.accept_drafting_point(point(1., 2., 3.)));
             assert!(app.accept_drafting_point(point(1., 2., 5.)));
+            assert!(app.active_command.is_some());
+            assert_eq!(app.document.objects().count(), 1);
+            enter(&mut app, "2");
         }
         assert!(app.active_command.is_none());
+        assert!(
+            app.commands
+                .surface_extrusion_settings()
+                .options
+                .direction
+                .is_none()
+        );
         assert!(app.document.object(id).is_none());
         assert_eq!(app.document.objects().count(), 1);
         let Geometry::Brep(b) = app.document.selected_objects().next().unwrap().geometry() else {

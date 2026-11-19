@@ -96,6 +96,8 @@ pub enum CommandError {
     TaperedExtrusionRequiresNativeKernel,
     #[error("ExtrudeSrf requires the native kernel; build with --features native-smlib")]
     SurfaceExtrusionRequiresNativeKernel,
+    #[error("The selected surface doesn't form a boundary for the extrusion.")]
+    SurfaceExtrusionBoundaryRejected,
     #[error("ExtrudeSrfAlongCrv requires the native kernel; build with --features native-smlib")]
     SurfacePathExtrusionRequiresNativeKernel,
     #[error("ExtrudeSrfToPoint requires the native-smlib kernel feature")]

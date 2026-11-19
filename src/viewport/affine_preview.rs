@@ -346,6 +346,24 @@ impl Viewport {
                     .and_then(|getter| getter.mouse_line(self.construction_plane())),
             },
         );
+        if filter.is_none()
+            && constraint.is_none()
+            && cursor.is_none_or(|cursor| cursor.object_snap.is_none())
+            && let Some(preview) = input.surface_extrusion
+            && let Some(point) =
+                self.surface_extrusion_end_on_point(preview.constraint, pointer, rect)
+        {
+            return Some(drafting::DraftingCursor {
+                pointer,
+                point,
+                source_point: point,
+                object_snap: None,
+                track: None,
+                ortho: false,
+                ortho_z: false,
+                grid_snapped: false,
+            });
+        }
         if let Some((getter, rails)) = input.pipe_preview
             && getter.picking_station()
             && filter.is_none()

@@ -1,14 +1,37 @@
 //! Frozen face sources and shared drafting input for surface extrusion.
 use super::*;
+mod linear;
+use crate::viewport::surface_extrusion::{
+    SurfaceExtrusionDraft, SurfaceExtrusionPreview, signed_height,
+};
 use viboceros_command::extrude_surface::{
     SurfaceExtrusionInput, SurfaceExtrusionOptions, SurfaceFaces, surface_extrusion_targets,
 };
+use viboceros_command::surface_reference::{BoundaryInput, BoundaryRef};
 
 pub(super) struct SurfaceExtrusionSources {
     pub(super) targets: Vec<(ObjectId, usize)>,
     pub(super) apex: Option<extrude_surface_apex::Session>,
     pub(super) snapshots: Vec<(ObjectId, viboceros_document::GeometrySnapshot)>,
+    linear: Option<LinearSession>,
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub(super) enum Stage {
+    Distance,
+    Boundary,
+    BasePoint,
+    DirectionStart { to_boundary: bool },
+    DirectionEnd { start: Point3, to_boundary: bool },
+}
+
+struct LinearSession {
+    draft: Option<SurfaceExtrusionDraft>,
+    plane: Frame3,
+    base: Option<Point3>,
+    hover: Option<f64>,
+}
+
 impl SurfaceExtrusionSources {
     pub(super) fn is_current(&self, document: &Document) -> bool {
         self.snapshots.iter().all(|(id, snapshot)| {
@@ -17,9 +40,47 @@ impl SurfaceExtrusionSources {
                 .is_some_and(|object| object.geometry_snapshot() == snapshot)
         })
     }
+
+    pub(super) fn linear_preview(
+        &self,
+        document: &Document,
+        command: Option<InteractiveCommand>,
+    ) -> Option<SurfaceExtrusionPreview<'_>> {
+        let Some(InteractiveCommand::ExtrudeSurface {
+            stage: Stage::Distance,
+            options,
+        }) = command
+        else {
+            return None;
+        };
+        if !self.is_current(document) {
+            return None;
+        }
+        let session = self.linear.as_ref()?;
+        let draft = session.draft.as_ref()?;
+        Some(SurfaceExtrusionPreview {
+            draft,
+            options,
+            plane: session.plane,
+            constraint: draft.constraint(session.base, options, session.plane),
+            hover: session.hover,
+        })
+    }
 }
 
 impl VibocerosApp {
+    pub(super) fn picking_surface_boundary(&self) -> bool {
+        self.picking_straight_surface_boundary() || self.picking_surface_apex_boundary()
+    }
+
+    pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef) {
+        if self.picking_straight_surface_boundary() {
+            self.pick_straight_surface_boundary(reference);
+        } else {
+            self.pick_surface_apex_boundary(reference);
+        }
+    }
+
     pub(super) fn prepare_surface_extrusion_sources(
         &self,
         mut faces: SurfaceFaces,
@@ -70,47 +131,25 @@ impl VibocerosApp {
             targets,
             snapshots,
             apex: None,
+            linear: None,
         }))
     }
 
-    pub(super) fn try_start_surface_extrusion_input(&mut self, input: &str) -> bool {
-        let mut words = input.split_whitespace();
-        if !words.next().is_some_and(|s| {
-            s.trim_start_matches(['_', '-'])
-                .eq_ignore_ascii_case("ExtrudeSrf")
-        }) {
-            return false;
-        }
-        let Ok(parsed) = SurfaceExtrusionInput::parse(&words.collect::<Vec<_>>()) else {
-            return false;
-        };
-        let sources = match self.prepare_surface_extrusion_sources(parsed.faces) {
-            Ok(Some(s)) => s,
-            Ok(None) => return false,
-            Err(e) => {
-                self.push_log(format!("Error: {e}"));
-                return true;
-            }
-        };
-        self.cancel_interactive_command(false);
-        self.surface_extrusion_sources = Some(sources);
-        self.active_command = Some(InteractiveCommand::ExtrudeSurface {
-            base: None,
-            options: parsed.options,
-        });
-        self.command_input.clear();
-        self.push_log(self.active_command.unwrap().prompt().into());
-        true
-    }
     pub(super) fn finish_surface_extrusion(
         &mut self,
-        distance: &str,
+        distance: f64,
+        remembered: f64,
         options: SurfaceExtrusionOptions,
     ) -> bool {
-        self.finish_surface_face_command(&format!(
+        let success = self.finish_surface_face_command(&format!(
             "ExtrudeSrf {distance} {}",
             options.command_options()
-        ))
+        ));
+        if success {
+            self.commands
+                .remember_surface_extrusion_distance(remembered);
+        }
+        success
     }
     pub(super) fn finish_surface_face_command(&mut self, command: &str) -> bool {
         let Some(sources) = self.surface_extrusion_sources.take() else {
@@ -130,9 +169,10 @@ impl VibocerosApp {
         let command = format!("{command} FaceRefs={refs}");
         let saved = self.active_command;
         let plane = self.drafting_plane;
+        let command_plane = sources.linear.as_ref().map(|session| session.plane);
         let constraint = self.point_constraint.take();
         let filter = self.point_filter.take();
-        if self.try_execute_command(&command) {
+        if self.try_execute_command_with_plane(&command, command_plane) {
             self.active_command = None;
             self.drafting_plane = None;
             self.component_selection.clear();
@@ -145,57 +185,5 @@ impl VibocerosApp {
             self.surface_extrusion_sources = Some(sources);
             false
         }
-    }
-    pub(super) fn try_continue_surface_extrusion(&mut self, input: &str) -> bool {
-        let Some(InteractiveCommand::ExtrudeSurface {
-            mut base,
-            mut options,
-        }) = self.active_command
-        else {
-            return false;
-        };
-        let words = input.split_whitespace().collect::<Vec<_>>();
-        if words.is_empty() {
-            return false;
-        }
-        if words.iter().all(|s| s.contains('=')) {
-            match options.update(&words) {
-                Ok(()) => {
-                    self.active_command =
-                        Some(InteractiveCommand::ExtrudeSurface { base, options });
-                    self.push_log(options.command_options());
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
-            self.command_input.clear();
-            return true;
-        }
-        if input
-            .trim_start_matches('_')
-            .eq_ignore_ascii_case("Direction")
-        {
-            base = None;
-            options.direction = None;
-            self.active_command = Some(InteractiveCommand::ExtrudeSurface { base, options });
-            self.command_input.clear();
-            self.push_log("ExtrudeSrf: pick two direction points".into());
-            return true;
-        }
-        if base.is_none()
-            && let Some(length) = viboceros_drafting::PointInput::parse_length_with_units(
-                input,
-                self.document.units(),
-            )
-        {
-            match length {
-                Ok(h) => {
-                    self.finish_surface_extrusion(&h.to_string(), options);
-                }
-                Err(e) => self.push_log(format!("Error: {e}")),
-            }
-            self.command_input.clear();
-            return true;
-        }
-        false
     }
 }

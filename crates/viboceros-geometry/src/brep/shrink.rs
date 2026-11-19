@@ -18,6 +18,46 @@ pub enum BrepSurfaceShrinkMode {
 }
 
 impl Brep {
+    /// Control bounds of the face carriers after cropping to the outer trim
+    /// boxes with the OpenNURBS ten-percent parameter margin.
+    pub fn padded_trim_bounds(&self) -> Result<BoundingBox3, GeometryError> {
+        let mut bounds: Option<BoundingBox3> = None;
+        for face in &self.faces {
+            let Some(outer) = face.loops.first() else {
+                return Err(GeometryError::EmptyPointSet);
+            };
+            let mut outer_bounds = None;
+            for trim in &outer.trims {
+                let [lo, hi] = trim_bounds(&trim.curve, &face.surface)?;
+                include(&mut outer_bounds, lo);
+                include(&mut outer_bounds, hi);
+            }
+            let [u, v] = outer_bounds.ok_or(GeometryError::EmptyPointSet)?;
+            let domains = [face.surface.domain_u(), face.surface.domain_v()];
+            let expanded = |[lo, hi]: [Real; 2], domain: &std::ops::RangeInclusive<Real>| {
+                let padding = 0.1 * (hi - lo);
+                (lo - padding).max(*domain.start())..=(hi + padding).min(*domain.end())
+            };
+            let [u, v] = [expanded(u, &domains[0]), expanded(v, &domains[1])];
+            let restricted = if u.start() < u.end()
+                && v.start() < v.end()
+                && [u.clone(), v.clone()] != domains
+            {
+                Some(face.surface.try_trimmed(u, v)?)
+            } else {
+                None
+            };
+            let surface = restricted.as_ref().unwrap_or(&face.surface);
+            let face_bounds =
+                BoundingBox3::from_points(surface.control_points().iter().map(|p| p.point()))?;
+            bounds = Some(match bounds {
+                Some(bounds) => bounds.union(face_bounds)?,
+                None => face_bounds,
+            });
+        }
+        bounds.ok_or(GeometryError::EmptyPointSet)
+    }
+
     /// Restrict every underlying surface, retaining native UV coordinates,
     /// orientation, vertices, edges, loops, and numeric indices. Boundary
     /// curve weights are unchanged; the underlying control net changes by

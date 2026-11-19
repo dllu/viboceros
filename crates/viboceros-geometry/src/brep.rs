@@ -2706,6 +2706,21 @@ impl Brep {
         self.transformed_with_validation(transform, tolerance, true)
     }
 
+    /// Orthogonally projects the exact surfaces and edges onto a plane.
+    /// Retains the face charts and edge incidence when faces overlap or collapse.
+    pub fn try_projected_onto_plane(
+        &self,
+        plane: crate::Plane,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.transform_topology(
+            AffineTransform3::try_planar_projection(plane)?,
+            false,
+            tolerance,
+            true,
+        )
+    }
+
     pub(crate) fn transformed_with_validation(
         &self,
         transform: AffineTransform3,
@@ -2727,6 +2742,21 @@ impl Brep {
             );
         }
         let orientation_reversing = transform.orientation_reversing()?;
+        self.transform_topology(
+            transform,
+            orientation_reversing,
+            tolerance,
+            check_correspondence,
+        )
+    }
+
+    fn transform_topology(
+        &self,
+        transform: AffineTransform3,
+        orientation_reversing: bool,
+        tolerance: Tolerance,
+        check_correspondence: bool,
+    ) -> Result<Self, GeometryError> {
         let scale = transform.maximum_linear_scale()?;
         let vertices = self
             .vertices
