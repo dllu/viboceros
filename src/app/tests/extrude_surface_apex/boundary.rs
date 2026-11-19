@@ -191,15 +191,7 @@ fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
     viewport_frame(&mut app, &context, Vec::new());
     viewport_frame(&mut app, &context, Vec::new());
     let target = point(6., 1.5, 0.);
-    let mut apex = screen_point(&app, target);
-    let mut preview = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(apex)]);
-    let projected = screen_point(&app, target);
-    if projected != apex {
-        // The command log can resize the viewport after the boundary pick.
-        apex = projected;
-        preview = viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(apex)]);
-    }
-    assert_eq!(screen_point(&app, target), apex);
+    let (apex, preview) = boundary_hover(&mut app, &context, target);
     let expected = point(3.82412509014911, 0.9560312725372776, 0.);
     let start = screen_point(&app, point(0., 0., 0.));
     let cut = screen_point(&app, expected);
@@ -237,6 +229,145 @@ fn surface_apex_warped_boundary_previews_a_flat_sweep_and_accepts_the_mouse() {
     }
     assert!(app.document.object(source).is_some());
     assert!(app.document.object(boundary).is_some());
+}
+
+#[test]
+fn surface_apex_previews_the_nearest_raised_cut_after_an_ambiguous_flat_pick() {
+    use super::super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    use viboceros_geometry::{BoundingBox3, NurbsSurface};
+
+    let mut app = test_app();
+    app.document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    app.osnap = false;
+    app.grid_snap = false;
+    let source = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(
+            NurbsSurface::try_bilinear([
+                point(0., 0., 0.),
+                point(2., 0., 0.),
+                point(2., 3., 0.),
+                point(0., 3., 0.),
+            ])
+            .unwrap(),
+        ))
+        .unwrap();
+    let cutter = NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        vec![
+            point(2.4, -1., 0.63),
+            point(3.6, -1., -2.28),
+            point(4.8, -1., 0.57),
+            point(2.4, 4., 0.97),
+            point(3.6, 4., -1.88),
+            point(4.8, 4., 1.03),
+        ],
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let boundary = app
+        .document
+        .add_geometry(Geometry::NurbsSurface(cutter))
+        .unwrap();
+    app.document
+        .select_objects_direct([source], SelectionMode::Replace)
+        .unwrap();
+    app.document.clear_history().unwrap();
+    let before = format!("{:?}", app.document);
+    enter(
+        &mut app,
+        &format!("ExtrudeSrfToPoint ToBoundary={boundary} DeleteInput=Yes"),
+    );
+    let context = egui::Context::default();
+    viewport_frame(&mut app, &context, Vec::new());
+    viewport_frame(&mut app, &context, Vec::new());
+    let bounds = BoundingBox3::from_points([point(-0.5, -1.5, -2.), point(6.5, 4.5, 2.)]).unwrap();
+    app.viewports[0].zoom_bounding_box(bounds).unwrap();
+    viewport_frame(&mut app, &context, Vec::new());
+
+    let (apex, preview) = boundary_hover(&mut app, &context, point(6., 1.5, 0.));
+    assert!(preview.is_empty(), "two cuts cross the flat sweep");
+    viewport_click(&mut app, &context, apex);
+    assert!(app.active_command.is_some());
+    assert!(
+        app.command_log
+            .iter()
+            .any(|line| line.starts_with("Error:"))
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+
+    let plane = app.viewports[0]
+        .construction_plane()
+        .with_origin(point(0., 0., 0.25));
+    app.viewports[0].set_construction_plane(plane);
+    viewport_frame(&mut app, &context, Vec::new());
+    let (apex, preview) = boundary_hover(&mut app, &context, point(6., 1.5, 0.25));
+    let start = screen_point(&app, point(0., 0., 0.));
+    let expected = point(2.6994134512323598, 0.6748533628080899, 0.11247556046801499);
+    let cut = screen_point(&app, expected);
+    let hover = app
+        .surface_extrusion_sources
+        .as_ref()
+        .and_then(|sources| sources.apex_draft(&app.document))
+        .and_then(|draft| draft.hover);
+    assert!(
+        preview
+            .iter()
+            .any(|[a, b]| a.distance(start) < 0.001 && b.distance(cut) < 3.),
+        "{} preview lines, closest start/end errors {:?}, hover {hover:?}, log {:?}",
+        preview.len(),
+        preview
+            .iter()
+            .min_by(|a, b| a[0].distance(start).total_cmp(&b[0].distance(start)))
+            .map(|[a, b]| (a.distance(start), b.distance(cut))),
+        app.command_log
+    );
+    assert_eq!(format!("{:?}", app.document), before);
+    viewport_click(&mut app, &context, apex);
+    if cfg!(feature = "native-smlib") {
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        let Geometry::Brep(sweep) = app.document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("expected a truncated sweep");
+        };
+        assert!(sweep.is_solid());
+        assert!(
+            sweep
+                .vertices()
+                .iter()
+                .any(|v| v.point().distance_to(expected).unwrap() < 1e-5)
+        );
+        assert!(app.document.object(source).is_none());
+        enter(&mut app, "Undo");
+    } else {
+        assert!(app.active_command.is_some());
+    }
+    assert!(app.document.object(source).is_some());
+}
+
+fn boundary_hover(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    target: Point3,
+) -> (egui::Pos2, Vec<[egui::Pos2; 2]>) {
+    use super::super::circle_preview::{screen_point, viewport_frame};
+
+    // A command log update can resize the viewport across several frames.
+    for _ in 0..8 {
+        let apex = screen_point(app, target);
+        assert!(app.viewports[0].screen_rect().unwrap().contains(apex));
+        let preview = viewport_frame(app, context, vec![egui::Event::PointerMoved(apex)]);
+        if screen_point(app, target) == apex {
+            return (apex, preview);
+        }
+    }
+    panic!("viewport did not settle while hovering at {target:?}");
 }
 
 #[test]

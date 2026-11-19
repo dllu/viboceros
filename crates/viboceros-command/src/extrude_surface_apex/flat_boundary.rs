@@ -1,7 +1,8 @@
 //! Cut a flat sweep at the picked face's intersection with the source plane.
 use super::*;
 use viboceros_geometry::{
-    BoundingBox3, Plane, SurfaceBrepIntersectionEvent, SurfaceIntersectionOutput,
+    BoundingBox3, CoplanarFaceExtrusion, Plane, SurfaceBrepIntersectionEvent,
+    SurfaceIntersectionOutput, curve_brep_intersection_events,
     surface_brep_intersection_events_with_operation,
 };
 use viboceros_smlib::Shape;
@@ -45,13 +46,30 @@ pub(super) fn truncate(
             ))
         },
     )?;
-    let sections: Vec<_> = events
+    let mut sections: Vec<_> = events
         .into_iter()
         .filter_map(|event| match event {
             SurfaceBrepIntersectionEvent::Curve(curve) => Some(curve),
             SurfaceBrepIntersectionEvent::Point(_) => None,
         })
         .collect();
+    if sections.len() > 1 {
+        // The enclosing rectangle can meet cutter branches outside the fan.
+        // Use the actual flat sweep's trimmed faces to distinguish them from
+        // additional cuts through the sweep.
+        let Some(CoplanarFaceExtrusion::Brep(flat_sweep)) =
+            source.try_extruded_face_to_coplanar_point(apex, true, split_at_tangents, tolerance)?
+        else {
+            return Err(CommandError::Usage(boundary::NO_SECTION));
+        };
+        let mut relevant = Vec::new();
+        for section in sections {
+            if !curve_brep_intersection_events(&section, &flat_sweep, tolerance)?.is_empty() {
+                relevant.push(section);
+            }
+        }
+        sections = relevant;
+    }
     let [section] = sections.as_slice() else {
         return Err(CommandError::Usage(boundary::NO_SECTION));
     };

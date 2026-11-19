@@ -78,21 +78,31 @@ impl SurfaceApexDraft {
 }
 
 impl BoundaryDraft {
-    fn project(&self, start: Point3, apex: Point3, tolerance: Tolerance) -> Option<Point3> {
+    fn project(
+        &self,
+        start: Point3,
+        apex: Point3,
+        flat: bool,
+        tolerance: Tolerance,
+    ) -> Option<Point3> {
         let direction = start.direction_to(apex).ok()?.as_vector();
         let length = start.distance_to(apex).ok()?;
-        self.mesh
+        let hits = self
+            .mesh
             .as_ref()?
             .project_point(start, direction, tolerance)
-            .ok()?
-            .into_iter()
-            .filter_map(|point| {
-                let distance = direction.dot(start.vector_to(point).ok()?).ok()?;
-                (distance > tolerance.absolute() && distance < length - tolerance.absolute())
-                    .then_some((distance, point))
-            })
-            .min_by(|(a, _), (b, _)| a.total_cmp(b))
-            .map(|(_, point)| point)
+            .ok()?;
+        // Mesh projection returns hits in increasing line parameter.
+        let mut hits = hits.into_iter().filter_map(|point| {
+            let distance = direction.dot(start.vector_to(point).ok()?).ok()?;
+            (distance > tolerance.absolute() && distance < length - tolerance.absolute())
+                .then_some(point)
+        });
+        let first = hits.next()?;
+        if flat && hits.any(|other| !other.is_near(first, tolerance)) {
+            return None;
+        }
+        Some(first)
     }
 
     fn clipped_edges(
@@ -103,15 +113,22 @@ impl BoundaryDraft {
     ) -> Option<Vec<[Point3; 2]>> {
         let mut edges = Vec::new();
         for face in &source.faces {
+            let flat = face.plane.is_some_and(|plane| {
+                let extent = plane.origin().distance_to(apex).unwrap_or_default();
+                let rounding = (64. * f64::EPSILON * extent).min(tolerance.absolute());
+                plane
+                    .signed_distance_to(apex)
+                    .is_ok_and(|distance| distance.abs() <= rounding)
+            });
             for &[a, b] in face.walls.iter().flat_map(|wall| &wall.rim) {
                 edges.push([a, b]);
                 edges.push([
-                    self.project(a, apex, tolerance)?,
-                    self.project(b, apex, tolerance)?,
+                    self.project(a, apex, flat, tolerance)?,
+                    self.project(b, apex, flat, tolerance)?,
                 ]);
             }
             for start in FaceDraft::rulings(face.walls.iter()) {
-                edges.push([start, self.project(start, apex, tolerance)?]);
+                edges.push([start, self.project(start, apex, flat, tolerance)?]);
             }
         }
         Some(edges)

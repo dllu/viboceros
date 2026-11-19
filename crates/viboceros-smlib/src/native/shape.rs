@@ -217,6 +217,15 @@ impl Shape {
         })
     }
 
+    /// Keep the portions of a sheet inside a solid, retaining the sheet's
+    /// underlying surfaces. The solid supplies trim boundaries.
+    pub fn trimmed_inside(&self, solid: &Solid) -> Result<Option<Self>, Error> {
+        let model =
+            self.model
+                .boolean_options(solid, BooleanOperation::Intersection, false, true)?;
+        Ok((!model.is_empty()?).then_some(Self { model }))
+    }
+
     /// Create an independent normal offset or wall volume using the kernel.
     pub fn offset(&self, distance: f64, solid: bool) -> Result<Self, Error> {
         self.offset_with_accuracy(distance, solid, 1e-9)

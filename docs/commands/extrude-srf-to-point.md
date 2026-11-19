@@ -81,9 +81,16 @@ works with a perpendicular cutter for a flat sweep. Rhino declined that
 alignment in the captured rectangular case.
 
 Flat sweeps to a warped cutter use the picked face's intersection with the
-source plane as the rim. They require one connected section spanning the
-sweep. The cut retains the source and wall topology and uses a collapsed cap
-bounded by the rim. One tilted Rhino capture retained the full cutter face.
+source plane as the rim. Sections outside the sweep are ignored. A flat cut
+requires one connected section spanning the sweep. The cut retains the
+source and wall topology and uses a collapsed cap bounded by the rim. One
+tilted Rhino capture retained the full cutter face.
+
+For a noncoplanar apex, a warped cutter can intersect the sweep in several
+disconnected sections. The command keeps the nearest complete section and
+leaves the apex getter open if a closer partial section interferes. The
+viewport uses the first hit along each ruling and hides the flat preview
+if a sampled ruling has more than one hit.
 
 Closed sources without a boundary, invalid face indices and unsupported
 imports decline. Very shallow nonflat cuts to warped surfaces, holes wholly

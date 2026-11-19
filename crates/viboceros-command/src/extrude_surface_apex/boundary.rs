@@ -4,10 +4,25 @@ use std::collections::HashMap;
 use std::hash::{DefaultHasher, Hash, Hasher};
 use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
+mod sections;
+
 pub(super) const NO_SECTION: &str =
     "The boundary must span the complete extrusion between the source and the apex";
 
 pub(super) fn truncate(
+    cone: &Brep,
+    boundary: &Brep,
+    apex: Point3,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let direct = truncate_radially(cone, boundary, apex, tolerance);
+    if direct.is_ok() || boundary.faces()[0].surface().plane(tolerance)?.is_some() {
+        return direct;
+    }
+    sections::truncate(cone, boundary, apex, tolerance)
+}
+
+fn truncate_radially(
     cone: &Brep,
     boundary: &Brep,
     apex: Point3,

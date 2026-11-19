@@ -1,5 +1,173 @@
 use super::*;
 
+fn double_section_cutter(left: f64, right: f64, center_y: f64, reverse: bool) -> NurbsSurface {
+    let width = right - left;
+    let points = [-1., 4.]
+        .into_iter()
+        .flat_map(|y| {
+            let height = |x| (x - 2.8) * (x - 4.4) + (y - center_y) * (0.08 + 0.01 * (x - 3.6));
+            let slope = 2. * left - 7.2 + 0.01 * (y - center_y);
+            let mut row = [
+                p(left, y, height(left)),
+                p(left + 0.5 * width, y, height(left) + 0.5 * width * slope),
+                p(right, y, height(right)),
+            ];
+            if reverse {
+                row.reverse();
+            }
+            row
+        })
+        .collect();
+    NurbsSurface::try_new(
+        2,
+        1,
+        3,
+        2,
+        points,
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap()
+}
+
+fn document_with_folded_cutter(
+    left: f64,
+    right: f64,
+    center_y: f64,
+    reverse: bool,
+) -> (Document, ObjectId, ObjectId) {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    let mut doc = Document::new(tolerance);
+    let source = doc.add_geometry(planar_rectangle(0., 0.)).unwrap();
+    let boundary = doc
+        .add_geometry(Geometry::NurbsSurface(double_section_cutter(
+            left, right, center_y, reverse,
+        )))
+        .unwrap();
+    doc.clear_history().unwrap();
+    (doc, source, boundary)
+}
+
+#[test]
+fn surface_apex_ignores_flat_sections_that_miss_the_sweep() {
+    for (left, right, center_y, native_vertices) in [
+        (
+            2.4,
+            4.4,
+            2.65,
+            [
+                p(2.700271288843304, 0.262601733316239, 0.),
+                p(2.716678053757396, 0.679169513439349, 0.),
+                p(2.802216350315363, 2.6991688686317383, 0.),
+                p(2.784604640488288, 2.3038488398779284, 0.),
+            ],
+        ),
+        (
+            2.8,
+            4.8,
+            2.9,
+            [
+                p(4.4933112489671085, 1.1233278122417767, 0.),
+                p(4.50256699425501, 0.9384626228456288, 0.),
+                p(4.443924243644748, 2.0835284086332195, 0.),
+                p(4.454250176083497, 1.886437455979126, 0.),
+            ],
+        ),
+    ] {
+        let (mut doc, source, boundary) = document_with_folded_cutter(left, right, center_y, false);
+        let registry = CommandRegistry::with_builtins();
+        let command = format!(
+            "ExtrudeSrfToPoint 6,1.5,0 ToBoundary={boundary} FaceRefs={source}:0 DeleteInput=Yes"
+        );
+        registry.execute(&mut doc, &command).unwrap();
+        assert_cut_rim(&doc, &native_vertices, false);
+        assert!(doc.object(source).is_none());
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert!(doc.object(source).is_some());
+    }
+}
+
+#[test]
+fn surface_apex_raised_sweep_selects_the_nearest_complete_section() {
+    let near_at_quarter = [
+        p(2.721009359342296, 0.27037850975336075, 0.04506308495889353),
+        p(2.6994134512323598, 0.6748533628080899, 0.11247556046801499),
+        p(2.821986034587447, 2.6917552370297075, 0.05137412716171534),
+        p(2.7649788582261645, 2.308755285443459, 0.1152074524260902),
+    ];
+    for (height, right, reverse, native_vertices) in [
+        (0.25, 4.8, false, near_at_quarter),
+        (0.25, 4.8, true, near_at_quarter),
+        (0.25, 4.4, false, near_at_quarter),
+        (
+            0.01,
+            4.8,
+            false,
+            [
+                p(
+                    2.746148567965311,
+                    0.27980571298699175,
+                    0.0018653714199132255,
+                ),
+                p(2.761798734069421, 0.6904496835173553, 0.004602997890115729),
+                p(2.8539735517776847, 2.679759918083368, 0.0021349338794442044),
+                p(2.833540098788743, 2.2916149753028145, 0.0047225668313145225),
+            ],
+        ),
+    ] {
+        let (mut doc, source, boundary) = document_with_folded_cutter(2.4, right, 1.5, reverse);
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute(
+                &mut doc,
+                &format!(
+                    "ExtrudeSrfToPoint 6,1.5,{height} ToBoundary={boundary} FaceRefs={source}:0"
+                ),
+            )
+            .unwrap();
+        assert_cut_rim(&doc, &native_vertices, true);
+        assert!(doc.object(source).is_some());
+    }
+}
+
+#[test]
+fn surface_apex_rejects_ambiguous_flat_cuts_and_nearer_partial_sections_atomically() {
+    for (height, left, reverse) in [(0., 2.4, false), (0., 2.4, true), (0.25, 2.8, false)] {
+        let (mut doc, source, boundary) = document_with_folded_cutter(left, 4.8, 1.5, reverse);
+        let before = format!("{doc:?}");
+        let command = format!(
+            "ExtrudeSrfToPoint 6,1.5,{height} ToBoundary={boundary} FaceRefs={source}:0 DeleteInput=Yes"
+        );
+        assert!(
+            CommandRegistry::with_builtins()
+                .execute(&mut doc, &command)
+                .is_err()
+        );
+        assert_eq!(format!("{doc:?}"), before);
+    }
+}
+
+fn assert_cut_rim(doc: &Document, expected: &[Point3], raised: bool) {
+    let Geometry::Brep(cut) = doc.selected_objects().next().unwrap().geometry() else {
+        panic!("expected a boundary-cut B-rep")
+    };
+    assert_eq!(
+        [cut.faces().len(), cut.edges().len(), cut.vertices().len()],
+        [6, 12, 8]
+    );
+    assert!(cut.is_solid());
+    let volume = cut.signed_volume(doc.tolerance()).unwrap();
+    assert_eq!(volume > 0., raised);
+    for &point in expected {
+        assert!(
+            cut.vertices()
+                .iter()
+                .any(|v| v.point().is_near(point, doc.tolerance())),
+            "{point:?}"
+        );
+    }
+}
+
 #[test]
 fn surface_apex_planar_boundaries_cut_flat_and_shallow_sweeps() {
     for (height, normal, native_vertices) in [
