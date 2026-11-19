@@ -63,15 +63,22 @@ Drafts invalidate when source state changes.
 For a simple closed planar polyline, it keeps the surviving Sharp inward offset
 loops when a narrow passage or lobe collapses. Multiple loops have separate source intervals.
 If a single loop survives, singular ruled faces fill the omitted intervals.
+On an open three-segment planar polyline, crossed inside clips can keep several
+pieces of the middle rail. With Sharp corners and coincident outer rails, the
+side pick chooses the loop at the bend or the ribbon toward the open ends.
+At a two-segment Sharp corner, a short leg can limit the other rail when the
+miter falls beyond its end.
 `Trim=No` preserves the full ruled strips where they overlap. The live preview
 follows the setting. [Rhino 8 corner captures](../ribbon-trim-reference.json),
-[closed inward captures](../ribbon-global-trim-reference.json)
+[closed inward captures](../ribbon-global-trim-reference.json),
+[open crossing captures](../ribbon-open-trim-reference.json)
 
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
-tolerance, Corner, and Trim. Global trimming for open, self-crossing or smooth
-sources and non-Sharp corners remains unfinished, along with history-based
-regeneration. Both-sided Loose polycurves
+tolerance, Corner, and Trim. Global trimming remains incomplete for longer
+open chains, self-crossing and smooth sources, and other closed corner styles.
+BothSides on crossed open offsets and history-based regeneration remain
+unfinished. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

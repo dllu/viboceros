@@ -149,7 +149,7 @@ fn build(
     let options = input.options.validate()?;
     let source = Source::capture(curve, options.in_cplane, context, tolerance)?;
     let distance = source.signed_distance(options, side, input.through_point)?;
-    let outputs = source.solve(options, distance)?;
+    let outputs = source.solve_at_pick(options, distance, Some(side))?;
     let mut remembered = options.remembered();
     remembered.distance = distance.abs();
     Ok((outputs, remembered))

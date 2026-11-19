@@ -109,6 +109,50 @@ impl Source {
     }
 
     pub fn solve(&self, options: Options, d: Real) -> Result<Vec<Brep>, CommandError> {
+        self.solve_at_pick(options, d, None)
+    }
+
+    /// Preserve the pick in the preview key only where the coincident open
+    /// rails can produce different walks at the same signed distance.
+    pub fn preview_pick(&self, options: Options, distance: Real, point: Point3) -> Option<Point3> {
+        use viboceros_geometry::RibbonCornerStyle;
+        if !options.trim
+            || options.loose
+            || options.both_sides
+            || options.corner != RibbonCornerStyle::Sharp
+            || self.curve.degree() != 1
+            || (self.fixed && !self.parallel)
+        {
+            return None;
+        }
+        let [a, b, c, d] = self.side_curve.control_points() else {
+            return None;
+        };
+        let direction = a.point().direction_to(b.point()).ok()?.as_vector();
+        let opposite = c.point().direction_to(d.point()).ok()?.as_vector();
+        if direction.dot(opposite).ok()? >= 0.
+            || direction.cross(opposite).ok()?.length().ok()? > self.tolerance.angular()
+        {
+            return None;
+        }
+        let separation = a
+            .point()
+            .vector_to(c.point())
+            .ok()?
+            .cross(direction)
+            .ok()?
+            .length()
+            .ok()?;
+        ((2. * distance.abs() - separation).abs() <= 2. * self.tolerance.absolute())
+            .then_some(point)
+    }
+
+    pub fn solve_at_pick(
+        &self,
+        options: Options,
+        d: Real,
+        side_point: Option<Point3>,
+    ) -> Result<Vec<Brep>, CommandError> {
         let source = &self.curve;
         let fixed = self.fixed;
         let normal = self.normal;
@@ -182,7 +226,7 @@ impl Source {
             ]);
         }
         if let Some(polyline) = polyline {
-            return viboceros_geometry::try_polyline_ribbon_with_trim(
+            return viboceros_geometry::try_polyline_ribbon_with_pick(
                 &polyline,
                 d,
                 options.both_sides,
@@ -190,6 +234,7 @@ impl Source {
                 tolerance,
                 options.corner,
                 options.trim,
+                side_point,
                 &mut ruled,
             )
             .map_err(CommandError::from);

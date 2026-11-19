@@ -102,10 +102,20 @@ fn ribbon_trim_preserves_native_strip_geometry_and_incidence() {
 
 #[test]
 fn ribbon_trims_closed_sharp_offsets_and_preserves_native_ruled_sections() {
-    let reference: serde_json::Value = serde_json::from_str(include_str!(
+    verify_native_ruled_sections(include_str!(
         "../../../../docs/ribbon-global-trim-reference.json"
-    ))
-    .unwrap();
+    ));
+}
+
+#[test]
+fn ribbon_trims_open_inside_crossings_and_resolves_coincident_rails_by_pick() {
+    verify_native_ruled_sections(include_str!(
+        "../../../../docs/ribbon-open-trim-reference.json"
+    ));
+}
+
+fn verify_native_ruled_sections(fixture: &str) {
+    let reference: serde_json::Value = serde_json::from_str(fixture).unwrap();
     let model = Tolerance::try_new(
         reference["model_absolute_tolerance"].as_f64().unwrap(),
         Tolerance::DEFAULT.relative(),

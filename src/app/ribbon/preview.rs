@@ -8,6 +8,7 @@ struct Request {
     options: Options,
     distance: f64,
     through_point: bool,
+    side_point: Option<Point3>,
 }
 
 impl Request {
@@ -16,6 +17,7 @@ impl Request {
             || (self.through_point
                 && current.through_point
                 && self.options == current.options
+                && self.side_point == current.side_point
                 && self.distance.is_sign_positive() == current.distance.is_sign_positive())
     }
 }
@@ -87,7 +89,9 @@ impl Preview {
             .name("ribbon-preview".into())
             .spawn(move || {
                 let mut edges = Vec::new();
-                if let Ok(outputs) = source.solve(request.options, request.distance) {
+                if let Ok(outputs) =
+                    source.solve_at_pick(request.options, request.distance, request.side_point)
+                {
                     for brep in outputs {
                         edges.extend(brep.edges().iter().map(|edge| edge.curve().clone()));
                     }
@@ -153,6 +157,7 @@ impl VibocerosApp {
                     options,
                     distance,
                     through_point,
+                    side_point: source.preview_pick(options, distance, point),
                 },
                 source,
             ))

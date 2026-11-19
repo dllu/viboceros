@@ -428,6 +428,71 @@ fn ribbon_trim_preview_splits_an_inward_offset_at_a_narrow_neck() {
 }
 
 #[test]
+fn ribbon_coincident_open_rails_follow_the_side_pick_at_fixed_width() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    enter(&mut app, "Polyline 0,0,0 6,0,0 6,2,0 0,2,0");
+    let source = app.document.objects().next().unwrap().id();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Ribbon 1 Trim=Yes");
+    pick(&mut app, source);
+    viewport_frame(&mut app, &context, vec![]);
+    let await_preview = |app: &mut VibocerosApp, target, count| {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            let cursor = screen_point(app, target);
+            viewport_frame(app, &context, vec![egui::Event::PointerMoved(cursor)]);
+            if cursor == screen_point(app, target)
+                && app
+                    .ribbon_session
+                    .as_ref()
+                    .unwrap()
+                    .preview_curves(&app.document)
+                    .is_some_and(|edges| edges.len() == count)
+            {
+                return cursor;
+            }
+            assert!(
+                Instant::now() < deadline,
+                "Ribbon did not preview {count} edges at {target:?}"
+            );
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    };
+    await_preview(&mut app, point(2., 1., 0.), 13);
+    let cursor = await_preview(&mut app, point(5., 1., 0.), 22);
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    viewport_click(&mut app, &context, cursor);
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let topology = |app: &VibocerosApp| {
+        let Geometry::Brep(brep) = app
+            .document
+            .objects()
+            .find(|object| object.id() != source)
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a ruled ribbon");
+        };
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len(),
+        )
+    };
+    assert_eq!(topology(&app), (6, 22, 15));
+    enter(&mut app, "Undo");
+    enter(&mut app, "Ribbon");
+    pick(&mut app, source);
+    enter(&mut app, "w2,1,0");
+    assert_eq!(topology(&app), (5, 13, 8));
+}
+
+#[test]
 fn ribbon_corner_hover_and_click_use_the_same_side() {
     let mut app = test_app();
     let context = egui::Context::default();

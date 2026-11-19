@@ -3,6 +3,7 @@ use super::corner::{RibbonCornerStyle, smooth_corner};
 mod assembly;
 mod correspondence;
 mod global;
+mod open;
 use crate::curve_offset::{
     polyline_offset_corner_arc, polyline_offset_corner_layout, polyline_offset_layout_with_trim,
 };
@@ -73,6 +74,25 @@ pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
     trim: bool,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
 ) -> Result<Vec<Brep>, E> {
+    try_polyline_ribbon_with_pick(
+        source, distance, both_sides, normal, tolerance, corner, trim, None, ruled,
+    )
+}
+
+/// Keep the side pick available when coincident open offset rails define
+/// alternative paths.
+#[allow(clippy::too_many_arguments)]
+pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
+    source: &Polyline3,
+    distance: Real,
+    both_sides: bool,
+    normal: UnitVector3,
+    tolerance: Tolerance,
+    corner: impl Into<RibbonCornerStyle>,
+    trim: bool,
+    side_point: Option<Point3>,
+    ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
+) -> Result<Vec<Brep>, E> {
     let corner = corner.into();
     if !distance.is_finite() || distance == 0. {
         return Err(GeometryError::InvalidCurveOffsetDistance.into());
@@ -96,6 +116,14 @@ pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
             corner.layout_style(),
             trim,
         )?;
+        if trim
+            && !both_sides
+            && !source.is_closed()
+            && let Some(brep) =
+                open::build(source, &layout, d, corner, side_point, tolerance, ruled)?
+        {
+            return Ok(vec![brep]);
+        }
         if trim
             && corner == RibbonCornerStyle::Sharp
             && source.is_closed()

@@ -140,6 +140,46 @@ pub(super) fn sew_untrimmed(
         .try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)
 }
 
+struct Ruling {
+    edge: Option<(usize, bool)>,
+    vertices: [usize; 2],
+}
+
+fn rulings(brep: &Brep, face: &crate::BrepFace) -> Result<[Ruling; 2], GeometryError> {
+    let vertices = corner_vertices(face)?;
+    let ruling = |a: usize, b: usize| {
+        let [Some(source), Some(offset)] = [vertices[a], vertices[b]] else {
+            return Err(invalid());
+        };
+        let edge = face
+            .loops()
+            .iter()
+            .flat_map(|loop_| loop_.trims())
+            .filter_map(|trim| trim.edge())
+            .find_map(|id| {
+                let ends = brep.edges()[id].vertices();
+                if ends == [source, offset] {
+                    Some((id, false))
+                } else if ends == [offset, source] {
+                    Some((id, true))
+                } else {
+                    None
+                }
+            });
+        Ok(Ruling {
+            edge,
+            vertices: [source, offset],
+        })
+    };
+    Ok([ruling(0, 1)?, ruling(3, 2)?])
+}
+
+fn joins(a: &Ruling, b: &Ruling) -> Option<(usize, usize, bool)> {
+    let (after, invert_after) = a.edge?;
+    let (before, invert_before) = b.edge?;
+    Some((after, before, invert_after != invert_before))
+}
+
 /// Join consecutive source sections across their common ruling. Several
 /// singular faces can overlap after a lobe collapses, so geometric coincidence
 /// alone cannot decide which boundaries belong together.
@@ -155,32 +195,7 @@ pub(super) fn sew_sections(
     let mut sections = brep
         .faces()
         .iter()
-        .map(|face| {
-            let vertices = corner_vertices(face)?;
-            let domain = face.surface().domain_v();
-            let ruling = |a: usize, b: usize| -> Result<_, GeometryError> {
-                let [Some(source), Some(offset)] = [vertices[a], vertices[b]] else {
-                    return Err(invalid());
-                };
-                let edge = face
-                    .loops()
-                    .iter()
-                    .flat_map(|loop_| loop_.trims())
-                    .filter_map(|trim| trim.edge())
-                    .find_map(|id| {
-                        let ends = brep.edges()[id].vertices();
-                        if ends == [source, offset] {
-                            Some((id, false))
-                        } else if ends == [offset, source] {
-                            Some((id, true))
-                        } else {
-                            None
-                        }
-                    });
-                Ok((edge, [source, offset].map(|id| brep.vertices()[id].point())))
-            };
-            Ok::<_, GeometryError>((domain, [ruling(0, 1)?, ruling(3, 2)?]))
-        })
+        .map(|face| Ok::<_, GeometryError>((face.surface().domain_v(), rulings(&brep, face)?)))
         .collect::<Result<Vec<_>, _>>()?;
     sections.sort_unstable_by(|a, b| a.0.start().total_cmp(b.0.start()));
     let mut pairs = Vec::new();
@@ -194,15 +209,69 @@ pub(super) fn sew_sections(
             domain.end() == next.start()
         };
         if adjacent
-            && end
-                .1
-                .into_iter()
-                .zip(start.1)
-                .all(|(a, b)| a.is_near(b, tolerance))
-            && let (Some((after, invert_after)), Some((before, invert_before))) = (end.0, start.0)
+            && end.vertices.into_iter().zip(start.vertices).all(|(a, b)| {
+                brep.vertices()[a]
+                    .point()
+                    .is_near(brep.vertices()[b].point(), tolerance)
+            })
+            && let Some(pair) = joins(end, start)
         {
-            pairs.push((after, before, invert_after != invert_before));
+            pairs.push(pair);
         }
     }
     brep.try_join_edge_pairs(&pairs, tolerance.absolute(), tolerance)
+}
+
+/// A crossing open offset follows the offset rail walk, which can revisit a
+/// source segment. Consecutive sections can share just one vertex of a ruling.
+pub(super) fn sew_walk(
+    patches: Vec<Patch>,
+    close: bool,
+    coincident_offsets: Option<[(usize, usize); 2]>,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    let brep = Brep::try_combine(
+        patches.into_iter().map(|patch| patch.brep).collect(),
+        tolerance,
+    )?;
+    let rulings = brep
+        .faces()
+        .iter()
+        .map(|face| rulings(&brep, face))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut edges = Vec::new();
+    let mut vertices = Vec::new();
+    if let Some(ends) = coincident_offsets {
+        let [a, b] = ends.map(|(section, end)| rulings[section][end].vertices[1]);
+        vertices.push((a, b));
+    }
+    let count = if close {
+        rulings.len()
+    } else {
+        rulings.len().saturating_sub(1)
+    };
+    for i in 0..count {
+        let end = &rulings[i][1];
+        let start = &rulings[(i + 1) % rulings.len()][0];
+        let pairs = [0, 1].map(|i| (end.vertices[i], start.vertices[i]));
+        let coincident = pairs.map(|(a, b)| {
+            let a = brep.vertices()[a].point();
+            let b = brep.vertices()[b].point();
+            crate::curve_points_coincident(a, b) && a.is_near(b, tolerance)
+        });
+        if coincident == [true, true]
+            && let Some(pair) = joins(end, start)
+        {
+            edges.push(pair);
+        } else {
+            vertices.extend(
+                pairs
+                    .into_iter()
+                    .zip(coincident)
+                    .filter_map(|(pair, equal)| equal.then_some(pair)),
+            );
+        }
+    }
+    brep.try_identify_vertices(&vertices, tolerance)?
+        .try_join_edge_pairs(&edges, tolerance.absolute(), tolerance)
 }
