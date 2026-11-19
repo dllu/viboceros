@@ -1,5 +1,6 @@
 //! Refine a display-triangle hit against the actual surface and viewing line.
 use super::*;
+use viboceros_geometry::NurbsSurface;
 
 impl Viewport {
     pub(super) fn refine_surface_pick(

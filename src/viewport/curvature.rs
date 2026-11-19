@@ -156,7 +156,7 @@ impl Viewport {
             painter.circle_filled(pixel, 3.5, PICK_PREVIEW_COLOR);
         }
         if let CurvatureSample::Curve { point, tangent, .. } = guides.sample {
-            let length = 36. / Real::from(self.pixels_per_model_unit_at_origin(rect));
+            let length = 36. / self.model_to_view_scale(rect);
             if let Ok(delta) = tangent.as_vector().scaled(length)
                 && let Ok(start) = delta
                     .scaled(-1.)
