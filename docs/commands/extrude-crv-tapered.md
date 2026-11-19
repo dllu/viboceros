@@ -14,6 +14,11 @@ Typed distances accept document units. Enter repeats the last signed distance.
 Failed geometry keeps the getter and input curves available for retry.
 Esc cancels the command.
 
+Choose `ToBoundary` at the distance getter and pick the cutter face. Closed
+planar profiles with `Solid=Yes` retain the base and cutter caps. `Solid=No`
+leaves the trimmed walls, and open planar profiles produce sheets. The cutter
+must span the temporary taper, whose length comes from the combined bounds.
+
 Headless examples, with curves selected:
 
 ```text
@@ -21,6 +26,7 @@ ExtrudeCrvTapered 2 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered -2 DraftAngle=-10 Corners=Round DeleteInput=Yes
 ExtrudeCrvTapered 0,0,0 0,0,2 DraftAngle=10 Solid=Yes
 ExtrudeCrvTapered 2 Direction=0,0,1 DraftAngle=10 Solid=Yes
+ExtrudeCrvTapered ToBoundary=cutter-id:face-index DraftAngle=-10 Solid=Yes
 ```
 
 The initial options are `DraftAngle=5 Solid=No Corners=Sharp DeleteInput=No`
@@ -41,8 +47,8 @@ Retained curves stay selected after extrusion and are released on replay.
 `DeleteInput=Yes` deletes sources in that same operation.
 
 Nonzero draft currently requires connected planar profiles and extrusion normal
-to their plane. Oblique directions, nonplanar profiles, Smooth corners,
-ToBoundary and SplitAtTangents control remain future work. Nested closed objects are
+to their plane. Oblique directions, nonplanar profiles, Smooth corners and
+SplitAtTangents control remain future work. Nested closed objects are
 extruded independently. Existing native curve-import degree, knot and rational
 weight limits apply. Complex self-intersecting offsets and collapsing profiles
 require broader qualification. No continuous error or performance certificate is
@@ -63,7 +69,9 @@ Rust command and the public
 [RhinoCommon tapered-extrusion API](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/M_Rhino_Geometry_Brep_CreateFromTaperedExtrude_1.htm).
 Headless Rhino 8 command captures cover distance entry, direction reversal,
 base-point input, remembered settings and source selection across Undo and
-Redo. The SDK fixtures audit bounds and volumes independently of the getter.
+Redo. Boundary picks in Rhino's viewport cover capped and uncapped rectangles,
+an oblique cutter, reversed sweeps and an open line. The SDK fixtures audit
+bounds and volumes independently of the getter.
 See the [qualification record](../tapered-extrusion-qualification.json) and
 [Rhino command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudecrvtapered.htm).
 

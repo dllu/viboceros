@@ -121,6 +121,15 @@ impl CoplanarMergeSelection {
 fn merge(source: &Brep, tolerance: Tolerance) -> Result<Option<(Brep, usize)>, CommandError> {
     merge_brep(source, tolerance, None)
 }
+
+#[cfg(feature = "native-smlib")]
+pub(super) fn within_native_merge_budget(source: &Brep) -> bool {
+    source.faces().len() <= 362
+        && source.faces().iter().fold(0usize, |n, face| {
+            n.saturating_add(face.surface().control_points().len())
+        }) <= 2_000_000
+}
+
 fn merge_brep(
     source: &Brep,
     tolerance: Tolerance,
@@ -128,10 +137,7 @@ fn merge_brep(
 ) -> Result<Option<(Brep, usize)>, CommandError> {
     #[cfg(feature = "native-smlib")]
     {
-        let controls = source.faces().iter().fold(0usize, |n, f| {
-            n.saturating_add(f.surface().control_points().len())
-        });
-        if source.faces().len() > 362 || controls > 2_000_000 {
+        if !within_native_merge_budget(source) {
             return Err(CommandError::Usage(
                 "Coplanar face merging supports at most 362 faces and 2,000,000 surface controls per B-rep",
             ));

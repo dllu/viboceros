@@ -2,8 +2,9 @@
 use super::*;
 pub use crate::extrude_surface::Distance;
 use crate::extrude_surface::parse_face_extrusion_distance;
+use crate::surface_reference::BoundaryInput;
 
-pub const USAGE: &str = "ExtrudeCrvTapered distance | base target [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle]";
+pub const USAGE: &str = "ExtrudeCrvTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle]";
 pub(super) struct ExtrudeTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -24,6 +25,20 @@ impl Default for TaperedExtrusionSettings {
 }
 
 impl TaperedExtrusionSettings {
+    #[cfg(feature = "native-smlib")]
+    pub(super) fn boundary_options(
+        self,
+        mut options: TaperedExtrusionOptions,
+    ) -> TaperedExtrusionOptions {
+        if options.draft_angle == 0. {
+            options.draft_angle = if self.options.draft_angle == 0. {
+                TaperedExtrusionOptions::default().draft_angle
+            } else {
+                self.options.draft_angle
+            };
+        }
+        options
+    }
     pub(super) fn after_success(options: TaperedExtrusionOptions, distance: f64) -> Self {
         Self {
             options: TaperedExtrusionOptions {
@@ -65,9 +80,29 @@ impl TaperedExtrusionOptions {
 
     pub fn recognizes(word: &str) -> bool {
         word.contains('=')
-            || ["Solid", "DeleteInput", "FlipAngle"]
+            || ["Solid", "DeleteInput", "FlipAngle", "ToBoundary"]
                 .iter()
                 .any(|key| word.trim_start_matches('_').eq_ignore_ascii_case(key))
+    }
+
+    /// Parse the options accepted before a distance or a cutter pick.
+    pub fn parse_command_options(
+        words: &[&str],
+        defaults: Self,
+    ) -> Result<(Self, BoundaryInput), CommandError> {
+        let mut boundary = BoundaryInput::None;
+        let mut options = Vec::with_capacity(words.len());
+        for &word in words {
+            if let Some(parsed) = BoundaryInput::parse_option(word)? {
+                if boundary != BoundaryInput::None {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                boundary = parsed;
+            } else {
+                options.push(word);
+            }
+        }
+        Ok((Self::parse_with_options(&options, defaults)?, boundary))
     }
     /// Apply one accepted option line atomically, retaining prior values.
     pub fn update(&mut self, words: &[&str]) -> Result<(), CommandError> {
@@ -153,6 +188,9 @@ impl Command for ExtrudeTaperedCommand {
     fn name(&self) -> &'static str {
         "ExtrudeCrvTapered"
     }
+    fn commits_on_error(&self, error: &CommandError) -> bool {
+        matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
+    }
     fn object_selection_prompt(
         &self,
         args: &[&str],
@@ -160,7 +198,7 @@ impl Command for ExtrudeTaperedCommand {
         if args.iter().any(|s| !TaperedExtrusionOptions::recognizes(s)) {
             return Ok(None);
         }
-        TaperedExtrusionOptions::parse_with_options(args, self.settings.get().options)?;
+        TaperedExtrusionOptions::parse_command_options(args, self.settings.get().options)?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Curves,
@@ -179,7 +217,45 @@ impl Command for ExtrudeTaperedCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (options, distance) = parse(args, self.settings.get().options)?;
+        let settings = self.settings.get();
+        let (words, positional): (Vec<_>, Vec<_>) = args
+            .iter()
+            .copied()
+            .partition(|s| TaperedExtrusionOptions::recognizes(s));
+        let (options, boundary) =
+            TaperedExtrusionOptions::parse_command_options(&words, settings.options)?;
+        match boundary {
+            BoundaryInput::None => {}
+            BoundaryInput::Select => return Err(CommandError::Usage("Select a boundary surface")),
+            BoundaryInput::Reference(reference) => {
+                if !positional.is_empty() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                #[cfg(feature = "native-smlib")]
+                {
+                    let options = settings.boundary_options(options);
+                    let count = crate::tapered_boundary::apply(
+                        doc,
+                        crate::tapered_boundary::Inputs::Curves,
+                        options,
+                        reference,
+                        context.construction_plane,
+                    )?;
+                    self.settings.set(TaperedExtrusionSettings::after_success(
+                        options,
+                        settings.distance,
+                    ));
+                    return Ok(format!("Tapered {count} curve object(s) to the boundary"));
+                }
+                #[cfg(not(feature = "native-smlib"))]
+                {
+                    reference.capture(doc)?;
+                    return Err(CommandError::TaperedExtrusionRequiresNativeKernel);
+                }
+            }
+        }
+        let distance =
+            parse_face_extrusion_distance(&positional, options.direction.is_some(), USAGE)?;
         let curves = doc
             .selected_objects()
             .filter_map(|o| {
@@ -224,19 +300,6 @@ impl Command for ExtrudeTaperedCommand {
         Ok(format!("Tapered {count} curve object(s)"))
     }
 }
-fn parse(
-    args: &[&str],
-    defaults: TaperedExtrusionOptions,
-) -> Result<(TaperedExtrusionOptions, Distance), CommandError> {
-    let (options, positional): (Vec<_>, Vec<_>) = args
-        .iter()
-        .copied()
-        .partition(|s| TaperedExtrusionOptions::recognizes(s));
-    let options = TaperedExtrusionOptions::parse_with_options(&options, defaults)?;
-    let distance = parse_face_extrusion_distance(&positional, options.direction.is_some(), USAGE)?;
-    Ok((options, distance))
-}
-
 impl Distance {
     pub(super) fn remembered(self) -> Result<f64, GeometryError> {
         match self {
@@ -280,7 +343,7 @@ pub(super) fn retain_selected_inputs(
 }
 
 #[cfg(feature = "native-smlib")]
-fn local_profile(
+pub(super) fn local_profile(
     curve: &NurbsCurve,
 ) -> Result<(Point3, viboceros_smlib::KernelCurve), CommandError> {
     let origin = curve.evaluate(*curve.domain().start())?;
@@ -293,7 +356,7 @@ fn local_profile(
 }
 
 #[cfg(feature = "native-smlib")]
-fn profile_normal(
+pub(super) fn profile_normal(
     profile: &viboceros_smlib::KernelCurve,
     tolerance: Tolerance,
 ) -> Result<Option<Vector3>, CommandError> {

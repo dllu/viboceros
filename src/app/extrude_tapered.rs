@@ -2,11 +2,13 @@
 use super::*;
 use crate::viewport::surface_extrusion::signed_height;
 use viboceros_command::{
-    extrude_surface_tapered::SurfaceTaperedInput, extrude_tapered::TaperedExtrusionOptions,
+    extrude_surface::SurfaceFaces, extrude_surface_tapered::SurfaceTaperedInput,
+    extrude_tapered::TaperedExtrusionOptions, surface_reference::BoundaryInput,
     translation::DestinationConstraint,
 };
 use viboceros_geometry::Vector3;
 
+mod boundary;
 #[cfg(feature = "native-smlib")]
 mod preview;
 mod sources;
@@ -16,8 +18,9 @@ use sources::Sources;
 pub(super) enum Stage {
     Distance,
     BasePoint,
-    DirectionStart,
-    DirectionEnd(Point3),
+    Boundary,
+    DirectionStart { to_boundary: bool },
+    DirectionEnd { start: Point3, to_boundary: bool },
     Angle,
     Corners,
 }
@@ -27,10 +30,19 @@ impl Stage {
         match self {
             Self::Distance => "Extrusion distance",
             Self::BasePoint => "BasePoint",
-            Self::DirectionStart => "Base point for direction",
-            Self::DirectionEnd(_) => "Second direction point",
+            Self::Boundary => "Select a boundary surface",
+            Self::DirectionStart { .. } => "Base point for direction",
+            Self::DirectionEnd { .. } => "Second direction point",
             Self::Angle => "Draft angle",
             Self::Corners => "Corners (Sharp Round)",
+        }
+    }
+
+    fn after_direction(to_boundary: bool) -> Self {
+        if to_boundary {
+            Self::Boundary
+        } else {
+            Self::Distance
         }
     }
 }
@@ -72,7 +84,7 @@ impl VibocerosApp {
         }
         let settings = self.commands.tapered_extrusion_settings(surface);
         let words = words.collect::<Vec<_>>();
-        let (options, faces, sources) = if surface {
+        let (options, faces, sources, boundary) = if surface {
             let Ok(parsed) = SurfaceTaperedInput::parse_with_options(&words, settings.options)
             else {
                 return false;
@@ -88,16 +100,17 @@ impl VibocerosApp {
             let Some(sources) = Sources::faces(&self.document, &faces.targets) else {
                 return false;
             };
-            (parsed.options, Some(faces), sources)
+            (parsed.options, Some(faces), sources, parsed.boundary)
         } else {
-            let Ok(options) = TaperedExtrusionOptions::parse_with_options(&words, settings.options)
+            let Ok((options, boundary)) =
+                TaperedExtrusionOptions::parse_command_options(&words, settings.options)
             else {
                 return false;
             };
             let Some(sources) = Sources::curves(&self.document) else {
                 return false;
             };
-            (options, None, sources)
+            (options, None, sources, boundary)
         };
         self.cancel_interactive_command(false);
         self.surface_extrusion_sources = faces;
@@ -110,7 +123,7 @@ impl VibocerosApp {
             preview: preview::Preview::default(),
         });
         self.command_input.clear();
-        self.set_tapered_stage(surface, Stage::Distance, options);
+        self.open_tapered_boundary_or_distance(surface, boundary, options);
         true
     }
 
@@ -124,14 +137,18 @@ impl VibocerosApp {
         if stage == Stage::Distance {
             let distance = self.commands.tapered_extrusion_settings(surface).distance;
             self.push_log(format!(
-                "Extrusion distance <{distance}> (Direction {} FlipAngle SetBasePoint)",
-                options.command_options()
+                "Extrusion distance <{distance}> (Direction {} FlipAngle ToBoundary SetBasePoint)",
+                options.command_options(),
             ));
-        } else if matches!(stage, Stage::DirectionStart | Stage::DirectionEnd(_))
-            && let Some(axis) = self
-                .tapered_extrusion_session
-                .as_ref()
-                .and_then(|session| session.constraint(options).direction)
+        } else if stage == Stage::Boundary && surface {
+            self.push_log("Select a boundary surface (Direction)".into());
+        } else if matches!(
+            stage,
+            Stage::DirectionStart { .. } | Stage::DirectionEnd { .. }
+        ) && let Some(axis) = self
+            .tapered_extrusion_session
+            .as_ref()
+            .and_then(|session| session.constraint(options).direction)
         {
             let [x, y, z] = axis.as_vector().to_array();
             self.push_log(format!("{} <{x:.3},{y:.3},{z:.3}>", stage.prompt()));
@@ -156,12 +173,22 @@ impl VibocerosApp {
         if keyword.eq_ignore_ascii_case("Cancel") || input == "!" {
             return false;
         }
-        if input.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
+        if stage == Stage::Boundary {
+            self.continue_tapered_boundary(surface, keyword, options);
+        } else if input.is_empty() || keyword.eq_ignore_ascii_case("Enter") {
             if stage == Stage::Distance {
                 let distance = self.commands.tapered_extrusion_settings(surface).distance;
                 self.accept_tapered_length(surface, distance, options);
             } else {
-                self.set_tapered_stage(surface, Stage::Distance, options);
+                let to_boundary = matches!(
+                    stage,
+                    Stage::DirectionStart { to_boundary: true }
+                        | Stage::DirectionEnd {
+                            to_boundary: true,
+                            ..
+                        }
+                );
+                self.set_tapered_stage(surface, Stage::after_direction(to_boundary), options);
             }
         } else if stage == Stage::Angle || stage == Stage::Corners {
             let key = if stage == Stage::Angle {
@@ -175,7 +202,7 @@ impl VibocerosApp {
             }
         } else if stage == Stage::Distance {
             let next = match keyword.to_ascii_lowercase().as_str() {
-                "direction" => Some(Stage::DirectionStart),
+                "direction" => Some(Stage::DirectionStart { to_boundary: false }),
                 "setbasepoint" => Some(Stage::BasePoint),
                 "draftangle" => Some(Stage::Angle),
                 "corners" => Some(Stage::Corners),
@@ -201,13 +228,24 @@ impl VibocerosApp {
                 {
                     return false;
                 }
-                let prior_direction = options.direction;
-                match options.update(&words) {
-                    Ok(()) => {
-                        if prior_direction != options.direction {
+                let updated = if surface {
+                    SurfaceTaperedInput::parse_with_options(&words, options).and_then(|input| {
+                        if input.faces != SurfaceFaces::Single {
+                            return Err(viboceros_command::CommandError::Usage(
+                                "Select source faces before choosing a distance",
+                            ));
+                        }
+                        Ok((input.options, input.boundary))
+                    })
+                } else {
+                    TaperedExtrusionOptions::parse_command_options(&words, options)
+                };
+                match updated {
+                    Ok((updated, boundary)) => {
+                        if options.direction != updated.direction {
                             self.tapered_extrusion_session.as_mut().unwrap().hover = None;
                         }
-                        self.set_tapered_stage(surface, stage, options);
+                        self.open_tapered_boundary_or_distance(surface, boundary, updated);
                     }
                     Err(error) => self.log_tapered_error(surface, error),
                 }
@@ -287,11 +325,18 @@ impl VibocerosApp {
                 session.base = Some(point);
                 session.hover = None;
             }
-            Stage::DirectionStart => {
-                self.set_tapered_stage(surface, Stage::DirectionEnd(point), options);
+            Stage::DirectionStart { to_boundary } => {
+                self.set_tapered_stage(
+                    surface,
+                    Stage::DirectionEnd {
+                        start: point,
+                        to_boundary,
+                    },
+                    options,
+                );
                 return true;
             }
-            Stage::DirectionEnd(start) => {
+            Stage::DirectionEnd { start, to_boundary } => {
                 if start.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: extrusion direction points must differ".into());
                     return false;
@@ -301,8 +346,10 @@ impl VibocerosApp {
                 };
                 options.direction = Some(axis.as_vector());
                 self.tapered_extrusion_session.as_mut().unwrap().hover = None;
+                self.set_tapered_stage(surface, Stage::after_direction(to_boundary), options);
+                return true;
             }
-            Stage::Angle | Stage::Corners => return false,
+            Stage::Angle | Stage::Corners | Stage::Boundary => return false,
         }
         self.set_tapered_stage(surface, Stage::Distance, options);
         true
@@ -342,6 +389,15 @@ impl VibocerosApp {
         height: f64,
         options: TaperedExtrusionOptions,
     ) -> bool {
+        self.finish_tapered_input(surface, &height.to_string(), options)
+    }
+
+    fn finish_tapered_input(
+        &mut self,
+        surface: bool,
+        target: &str,
+        options: TaperedExtrusionOptions,
+    ) -> bool {
         let Some(session) = self.tapered_extrusion_session.take() else {
             return false;
         };
@@ -356,7 +412,7 @@ impl VibocerosApp {
         } else {
             "ExtrudeCrvTapered"
         };
-        let command = format!("{command} {height} {}", options.command_options());
+        let command = format!("{command} {target} {}", options.command_options());
         if surface {
             let success = self.finish_surface_face_command_with_plane(&command, Some(plane));
             if !success {

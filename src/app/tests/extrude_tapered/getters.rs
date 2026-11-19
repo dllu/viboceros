@@ -60,7 +60,7 @@ fn tapered_getters_edit_the_distance_base_direction_and_options_independently() 
         assert!(matches!(
             app.active_command,
             Some(InteractiveCommand::ExtrudeTapered {
-                stage: Stage::DirectionEnd(_),
+                stage: Stage::DirectionEnd { .. },
                 ..
             })
         ));

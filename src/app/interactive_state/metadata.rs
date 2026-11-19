@@ -400,7 +400,7 @@ impl InteractiveCommand {
                 axis_start: start, ..
             } => start,
             Self::ExtrudeTapered { stage, .. } => match stage {
-                extrude_tapered::Stage::DirectionEnd(point) => Some(point),
+                extrude_tapered::Stage::DirectionEnd { start, .. } => Some(start),
                 _ => None,
             },
             Self::ExtrudeSurface { stage, .. } => match stage {

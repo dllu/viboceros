@@ -215,3 +215,6 @@ fn surface_taper_numeric_direction_uses_the_face_plane_independently_of_cplane()
             < 1e-4
     );
 }
+
+#[cfg(feature = "native-smlib")]
+mod boundary;

@@ -215,6 +215,10 @@ pub mod extrude_surface_tapered;
 pub mod extrude_tapered;
 mod knot_refinement;
 pub mod shell;
+#[cfg(feature = "native-smlib")]
+mod surface_boundary_cut;
+#[cfg(feature = "native-smlib")]
+mod tapered_boundary;
 use extrude_apex::ExtrudeCurveToPointCommand;
 mod planar_surface;
 pub mod plane_surface;

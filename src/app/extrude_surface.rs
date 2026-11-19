@@ -73,6 +73,7 @@ impl SurfaceExtrusionSources {
 impl VibocerosApp {
     pub(super) fn picking_surface_boundary(&self) -> bool {
         self.picking_straight_surface_boundary()
+            || self.picking_tapered_boundary()
             || self.picking_surface_apex_boundary()
             || self.picking_surface_path_boundary()
     }
@@ -80,6 +81,8 @@ impl VibocerosApp {
     pub(super) fn pick_surface_boundary(&mut self, reference: BoundaryRef) {
         if self.picking_straight_surface_boundary() {
             self.pick_straight_surface_boundary(reference);
+        } else if self.picking_tapered_boundary() {
+            self.pick_tapered_boundary(reference);
         } else if self.picking_surface_path_boundary() {
             self.pick_surface_path_boundary(reference);
         } else {

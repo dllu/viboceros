@@ -18,6 +18,16 @@ toggle by name. Typed distances accept document units. Enter repeats the
 last signed distance. Failed geometry keeps the getter and frozen source
 faces available for retry. Esc cancels the command.
 
+Choose `ToBoundary` at the distance getter to pick a cutter face. The cutter
+getter also accepts `Direction`. A successful cut uses the actual cutter
+surface as its end cap, including oblique and warped cutters. The temporary
+taper uses the diagonal of the combined source and cutter bounds, so a narrow
+cutter or a collapsing inward taper can fail even close to the source.
+A cutter hole inside the section leaves an opening. One that crosses the
+rim can leave the full temporary sweep and report a failed cut. A contracting
+source opening certified to collapse during the temporary sweep is filled by
+a separate face at the base.
+
 With source objects selected:
 
 ```text
@@ -27,6 +37,7 @@ ExtrudeSrfTapered 0,0,0 0,0,2 DraftAngle=10 DeleteInput=Yes
 ExtrudeSrfTapered 2 Face=0 DraftAngle=0
 ExtrudeSrfTapered 2 Faces=0,2 Direction=0,0,1 Solid=No
 ExtrudeSrfTapered 2 Faces=All
+ExtrudeSrfTapered ToBoundary=cutter-id:face-index DraftAngle=-10
 ```
 
 `FaceRefs=id:index,...` explicitly addresses original faces without object
@@ -61,8 +72,8 @@ tolerance and control/face resource checks; input geometry stays unchanged.
 
 Nonplanar offset ends cannot currently be capped for nonzero draft. Seam/vertex
 loops, unsupported imports, zero displacement and invalid angles decline.
-Angles must be finite and strictly between -90 and 90 degrees. Smooth corners,
-nonzero oblique planar sweeps and ToBoundary remain future work. Self-intersecting offsets,
+Angles must be finite and strictly between -90 and 90 degrees. Smooth corners
+and nonzero oblique sweeps of planar sources remain future work. Self-intersecting offsets,
 collapsing profiles, touching holes and near-degenerate cases require broader
 qualification. Native UV trims can be closed within tolerance without identical
 endpoint coordinates; the pure certified trimmed-bounds query can decline those
@@ -80,8 +91,9 @@ tight bounds. The pending Rhino recipe joins copied edge curves, calls public
 retains the actual base face and caps the planar top. Zero draft uses public
 BrepFace.CreateExtrusion. Mock tests cover SDK dispatch and owned-object cleanup.
 Headless Rhino 8 command captures cover signed distances, direction and
-base-point input, remembered settings and source selection. The rectangular
-inward draft in the capture subdivides its walls into more faces. See
+base-point input, remembered settings and source selection. Boundary captures
+cover flat, oblique and warped cutters, crossings at holes, and coincident caps.
+Rhino subdivides planar inward taper walls into more faces. See
 [qualification](../surface-tapered-extrusion-qualification.json) and
 [Rhino's command reference](https://docs.mcneel.com/rhino/8/help/en-us/commands/extrudesrftapered.htm).
 

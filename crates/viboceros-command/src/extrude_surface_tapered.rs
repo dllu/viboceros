@@ -7,7 +7,9 @@ use crate::extrude_surface::{
 use crate::extrude_tapered::{
     TaperedExtrusionOptions, TaperedExtrusionSettings, retain_selected_inputs,
 };
-pub const USAGE: &str = "ExtrudeSrfTapered distance | base target [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
+use crate::surface_reference::BoundaryInput;
+
+pub const USAGE: &str = "ExtrudeSrfTapered distance | base target | ToBoundary=id[:face] [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceTaperedCommand {
     pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
 }
@@ -15,6 +17,7 @@ pub(super) struct ExtrudeSurfaceTaperedCommand {
 pub struct SurfaceTaperedInput {
     pub options: TaperedExtrusionOptions,
     pub faces: SurfaceFaces,
+    pub boundary: BoundaryInput,
 }
 impl SurfaceTaperedInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
@@ -41,20 +44,24 @@ impl SurfaceTaperedInput {
                 common.push(*word);
             }
         }
-        let mut result = Self {
+        let (options, boundary) = TaperedExtrusionOptions::parse_command_options(&common, options)
+            .map_err(|error| match error {
+                CommandError::Usage(_) => CommandError::Usage(USAGE),
+                error => error,
+            })?;
+        Ok(Self {
             faces: SurfaceExtrusionInput::parse(&face_words)?.faces,
             options,
-        };
-        result.options.update(&common).map_err(|e| match e {
-            CommandError::Usage(_) => CommandError::Usage(USAGE),
-            e => e,
-        })?;
-        Ok(result)
+            boundary,
+        })
     }
 }
 impl Command for ExtrudeSurfaceTaperedCommand {
     fn name(&self) -> &'static str {
         "ExtrudeSrfTapered"
+    }
+    fn commits_on_error(&self, error: &CommandError) -> bool {
+        matches!(error, CommandError::SurfaceExtrusionBoundaryRejected)
     }
     fn object_selection_prompt(
         &self,
@@ -89,7 +96,38 @@ impl Command for ExtrudeSurfaceTaperedCommand {
             .iter()
             .copied()
             .partition(|s| TaperedExtrusionOptions::recognizes(s));
-        let input = SurfaceTaperedInput::parse_with_options(&words, self.settings.get().options)?;
+        let settings = self.settings.get();
+        let input = SurfaceTaperedInput::parse_with_options(&words, settings.options)?;
+        match input.boundary {
+            BoundaryInput::None => {}
+            BoundaryInput::Select => return Err(CommandError::Usage("Select a boundary surface")),
+            BoundaryInput::Reference(reference) => {
+                if !positional.is_empty() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                #[cfg(feature = "native-smlib")]
+                {
+                    let options = settings.boundary_options(input.options);
+                    let count = crate::tapered_boundary::apply(
+                        doc,
+                        crate::tapered_boundary::Inputs::Faces(&input.faces),
+                        options,
+                        reference,
+                        context.construction_plane,
+                    )?;
+                    self.settings.set(TaperedExtrusionSettings::after_success(
+                        options,
+                        settings.distance,
+                    ));
+                    return Ok(format!("Tapered {count} surface face(s) to the boundary"));
+                }
+                #[cfg(not(feature = "native-smlib"))]
+                {
+                    reference.capture(doc)?;
+                    return Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel);
+                }
+            }
+        }
         let distance =
             parse_face_extrusion_distance(&positional, input.options.direction.is_some(), USAGE)?;
         let targets = surface_extrusion_targets(doc, &input.faces)?;

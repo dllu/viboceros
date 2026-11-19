@@ -219,3 +219,5 @@ fn surface_taper_failed_direction_can_be_repaired_with_the_same_source_getter() 
     assert!(app.active_command.is_none());
     assert_eq!(app.document.selected_object_count(), 1);
 }
+
+mod boundary;

@@ -1,10 +1,70 @@
-//! Identify the sweep and cutter faces that bound the retained section.
+//! Cut closed sweeps to a finite boundary face and keep the source section.
 use super::*;
-use crate::extrude_surface::sweep_surface_key;
+use crate::extrude_surface::{split_wall_edges, sweep_surface_key};
 use std::collections::HashMap;
 use std::ops::RangeInclusive;
+use viboceros_smlib::{BooleanOperation, Shape, Solid};
 
-pub(super) fn select_section(
+const REJECTED: CommandError = CommandError::SurfaceExtrusionBoundaryRejected;
+
+pub(super) struct BoundaryDifference {
+    stock: Solid,
+    tool: Solid,
+    pub(super) result: Brep,
+}
+
+impl BoundaryDifference {
+    pub(super) fn subtract(
+        stock: &Brep,
+        boundary: &Brep,
+        offset: Vector3,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, CommandError> {
+        let stock = Solid::from_brep(stock, tolerance)?;
+        let tool = boundary_tool(boundary, offset, tolerance)?;
+        let result = stock.boolean_with_postprocess(&tool, BooleanOperation::Difference, false)?;
+        if result.is_empty()? {
+            return Ok(None);
+        }
+        Ok(Some(Self {
+            stock,
+            tool,
+            result: result.to_brep(tolerance)?,
+        }))
+    }
+
+    pub(super) fn keep_source_section(
+        self,
+        source: &Brep,
+        end: &NurbsSurface,
+        boundary: &Brep,
+        tolerance: Tolerance,
+    ) -> Result<Brep, CommandError> {
+        select_section(
+            self.result,
+            &self.stock.to_brep(tolerance)?,
+            source,
+            end,
+            &self.tool.to_brep(tolerance)?,
+            boundary,
+            tolerance,
+        )
+    }
+}
+
+pub(super) fn boundary_tool(
+    boundary: &Brep,
+    offset: Vector3,
+    tolerance: Tolerance,
+) -> Result<Solid, CommandError> {
+    let profile = split_wall_edges(boundary, false, tolerance)?;
+    let tool = Shape::from_brep(&profile, tolerance)?
+        .extruded_faces(offset, true, tolerance)?
+        .to_brep(tolerance)?;
+    Ok(Solid::from_brep(&tool, tolerance)?)
+}
+
+fn select_section(
     result: Brep,
     original: &Brep,
     source: &Brep,
@@ -33,6 +93,7 @@ pub(super) fn select_section(
         .ok_or(REJECTED)?
         .surface();
     let mut walls = HashMap::<u64, Vec<&NurbsSurface>>::new();
+    let mut wall_carriers = Vec::new();
     for face in original.faces() {
         let surface = face.surface();
         if surface != base && surface != end {
@@ -40,6 +101,7 @@ pub(super) fn select_section(
                 .entry(sweep_surface_key(surface))
                 .or_default()
                 .push(surface);
+            wall_carriers.push(surface);
         }
     }
 
@@ -48,6 +110,7 @@ pub(super) fn select_section(
     let on_carrier = |surface: &NurbsSurface, carrier, plane: Option<Plane>| {
         surface == carrier || plane.is_some_and(|plane| on_plane(surface, plane, tolerance))
     };
+    let mut comparisons = 1_000_000usize;
     let mut roles = result
         .faces()
         .iter()
@@ -60,6 +123,12 @@ pub(super) fn select_section(
             } else if walls
                 .get(&sweep_surface_key(surface))
                 .is_some_and(|matches| matches.contains(&surface))
+                || matches_reparameterized_wall(
+                    surface,
+                    &wall_carriers,
+                    &mut comparisons,
+                    tolerance,
+                )
             {
                 CutFace::Wall
             } else {
@@ -159,14 +228,48 @@ fn only_cap_holes_are_open(brep: &Brep, is_cap: impl Fn(&NurbsSurface) -> bool) 
         .all(|(uses, hole)| uses == [1, 1] || hole && matches!(uses, [0, 1] | [1, 0]))
 }
 
-fn copied_carrier(copy: &NurbsSurface, original: &NurbsSurface, tolerance: Tolerance) -> bool {
+pub(super) fn copied_carrier(
+    copy: &NurbsSurface,
+    original: &NurbsSurface,
+    tolerance: Tolerance,
+) -> bool {
     if copy == original {
         return true;
     }
     if let Ok(Some(plane)) = original.plane(tolerance) {
         return on_plane(copy, plane, tolerance);
     }
-    // Import can change the orientation and affine domain of a curved cap.
+    same_spline_carrier(copy, original, tolerance)
+}
+
+fn matches_reparameterized_wall(
+    surface: &NurbsSurface,
+    originals: &[&NurbsSurface],
+    comparisons: &mut usize,
+    tolerance: Tolerance,
+) -> bool {
+    if surface.degree_u() == 1 && surface.degree_v() == 1 {
+        return false;
+    }
+    for &wall in originals {
+        let cost = surface
+            .control_points()
+            .len()
+            .max(wall.control_points().len());
+        let Some(remaining) = comparisons.checked_sub(cost) else {
+            *comparisons = 0;
+            return false;
+        };
+        *comparisons = remaining;
+        if same_spline_carrier(surface, wall, tolerance) {
+            return true;
+        }
+    }
+    false
+}
+
+fn same_spline_carrier(copy: &NurbsSurface, original: &NurbsSurface, tolerance: Tolerance) -> bool {
+    // The kernel can reorient a curved carrier or normalize its parameter domains.
     let a = axes(original);
     let b = axes(copy);
     let relative = tolerance.relative() + 32. * f64::EPSILON;
@@ -249,4 +352,46 @@ pub(super) fn on_plane(surface: &NurbsSurface, plane: Plane, tolerance: Toleranc
             .signed_distance_to(control.point())
             .is_ok_and(|distance| distance.abs() <= tolerance.absolute())
     })
+}
+
+pub(super) fn axial_point(point: Point3, direction: Vector3) -> Result<f64, GeometryError> {
+    Vector3::try_from(point.to_array())?.dot(direction)
+}
+
+pub(super) fn axial_extent(
+    bounds: BoundingBox3,
+    direction: Vector3,
+) -> Result<[f64; 2], GeometryError> {
+    let [a, b] = [bounds.min().to_array(), bounds.max().to_array()];
+    let axes = direction.to_array();
+    let lo = Point3::try_from(std::array::from_fn(
+        |i| if axes[i] < 0. { b[i] } else { a[i] },
+    ))?;
+    let hi = Point3::try_from(std::array::from_fn(
+        |i| if axes[i] < 0. { a[i] } else { b[i] },
+    ))?;
+    Ok([axial_point(lo, direction)?, axial_point(hi, direction)?])
+}
+
+pub(super) fn hole_crosses_sweep(
+    boundary: &Brep,
+    sweep: &Brep,
+    tolerance: Tolerance,
+) -> Result<bool, CommandError> {
+    use viboceros_geometry::BrepLoopType;
+
+    for boundary_loop in boundary.faces()[0].loops() {
+        if boundary_loop.loop_type() != BrepLoopType::Inner {
+            continue;
+        }
+        for edge in boundary_loop.trims().iter().filter_map(|trim| trim.edge()) {
+            let curve = boundary.edges()[edge].curve();
+            if !viboceros_smlib::curve_brep_intersection_events(curve, sweep, None, tolerance)?
+                .is_empty()
+            {
+                return Ok(true);
+            }
+        }
+    }
+    Ok(false)
 }

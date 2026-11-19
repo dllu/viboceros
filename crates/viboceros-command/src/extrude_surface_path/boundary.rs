@@ -1,12 +1,10 @@
 //! Cut the finite swept solid with a tool grown from the selected face.
 use super::*;
 use crate::extrude_surface::{
-    apply_staged_products, capture_source_face, split_wall_edges, surface_extrusion_targets,
+    apply_staged_products, capture_source_face, surface_extrusion_targets,
 };
-use viboceros_smlib::{BooleanOperation, KernelCurve, Shape, Solid};
-
-mod topology;
-use topology::on_plane;
+use crate::surface_boundary_cut::{BoundaryDifference, hole_crosses_sweep, on_plane};
+use viboceros_smlib::KernelCurve;
 
 const REJECTED: CommandError = CommandError::SurfaceExtrusionBoundaryRejected;
 
@@ -118,29 +116,6 @@ pub(super) fn limit(
     }
 }
 
-fn hole_crosses_sweep(
-    boundary: &Brep,
-    sweep: &Brep,
-    tolerance: Tolerance,
-) -> Result<bool, CommandError> {
-    use viboceros_geometry::BrepLoopType;
-
-    for boundary_loop in boundary.faces()[0].loops() {
-        if boundary_loop.loop_type() != BrepLoopType::Inner {
-            continue;
-        }
-        for edge in boundary_loop.trims().iter().filter_map(|trim| trim.edge()) {
-            let curve = boundary.edges()[edge].curve();
-            if !viboceros_smlib::curve_brep_intersection_events(curve, sweep, None, tolerance)?
-                .is_empty()
-            {
-                return Ok(true);
-            }
-        }
-    }
-    Ok(false)
-}
-
 fn cut(
     source: &Brep,
     rail: &NurbsCurve,
@@ -205,34 +180,17 @@ fn cut(
     } else {
         travel.normalized_nonzero()?.as_vector()
     };
-    let tool_profile = split_wall_edges(boundary, false, tolerance)?;
-    let tool = Shape::from_brep(&tool_profile, tolerance)?
-        .extruded_faces(direction.scaled(tool_length)?, true, tolerance)?
-        .to_brep(tolerance)?;
-    let native_sweep = Solid::from_brep(sweep, tolerance)?;
-    let native_tool = Solid::from_brep(&tool, tolerance)?;
-    let result =
-        native_sweep.boolean_with_postprocess(&native_tool, BooleanOperation::Difference, false)?;
-    if result.is_empty()? {
-        return Err(REJECTED);
-    }
-    let result = result.to_brep(tolerance)?;
+    let difference =
+        BoundaryDifference::subtract(sweep, boundary, direction.scaled(tool_length)?, tolerance)?
+            .ok_or(REJECTED)?;
     if coincident {
-        return if result.is_solid() {
-            Ok(result)
+        return if difference.result.is_solid() {
+            Ok(difference.result)
         } else {
             Err(REJECTED)
         };
     }
-    topology::select_section(
-        result,
-        &native_sweep.to_brep(tolerance)?,
-        source,
-        &end,
-        &native_tool.to_brep(tolerance)?,
-        boundary,
-        tolerance,
-    )
+    difference.keep_source_section(source, &end, boundary, tolerance)
 }
 
 fn rim_hits_cutter(

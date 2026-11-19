@@ -1,5 +1,6 @@
 //! Stage straight surface sweeps that stop at a picked boundary.
 use super::*;
+use crate::surface_boundary_cut::{axial_extent, axial_point};
 use viboceros_smlib::Shape;
 
 mod section;
@@ -210,22 +211,6 @@ fn coincident_sweep(
         }
     }
     Ok(Some(BoundarySweep::Miss))
-}
-
-fn axial_point(point: Point3, direction: Vector3) -> Result<f64, GeometryError> {
-    Vector3::try_from(point.to_array())?.dot(direction)
-}
-
-fn axial_extent(bounds: BoundingBox3, direction: Vector3) -> Result<[f64; 2], GeometryError> {
-    let [a, b] = [bounds.min().to_array(), bounds.max().to_array()];
-    let axes = direction.to_array();
-    let lo = Point3::try_from(std::array::from_fn(
-        |i| if axes[i] < 0. { b[i] } else { a[i] },
-    ))?;
-    let hi = Point3::try_from(std::array::from_fn(
-        |i| if axes[i] < 0. { a[i] } else { b[i] },
-    ))?;
-    Ok([axial_point(lo, direction)?, axial_point(hi, direction)?])
 }
 
 #[cfg(test)]

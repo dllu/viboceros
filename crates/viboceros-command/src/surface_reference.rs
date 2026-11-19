@@ -124,3 +124,20 @@ pub enum BoundaryInput {
     Select,
     Reference(BoundaryRef),
 }
+
+impl BoundaryInput {
+    /// Recognize a boundary getter option or an explicit face reference.
+    pub fn parse_option(word: &str) -> Result<Option<Self>, CommandError> {
+        let word = word.trim_start_matches(['_', '-']);
+        let (key, value) = word
+            .split_once('=')
+            .map_or((word, None), |(key, value)| (key, Some(value)));
+        if !key.eq_ignore_ascii_case("ToBoundary") {
+            return Ok(None);
+        }
+        Ok(Some(match value {
+            Some(value) => Self::Reference(BoundaryRef::parse(value)?),
+            None => Self::Select,
+        }))
+    }
+}
