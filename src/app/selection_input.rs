@@ -11,6 +11,12 @@ impl VibocerosApp {
         click: SelectionClick,
         pick: Option<(usize, egui::Pos2)>,
     ) {
+        if self.picking_edge_blend_edit() {
+            if let Some(id) = click.object_id {
+                self.select_edge_blend_edit_object(id);
+            }
+            return;
+        }
         if self.picking_surface_boundary() {
             if let Some(object) = click.object_id {
                 self.pick_surface_boundary(
@@ -765,6 +771,15 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.picking_edge_blend_edit() {
+            if let [id] = selection.object_ids.as_slice() {
+                self.select_edge_blend_edit_object(*id);
+            } else if !selection.object_ids.is_empty() {
+                self.push_log("Select one joined edge blend to edit.".into());
+            }
+            self.selection_window_override = None;
+            return;
+        }
         if self.pick_surface_offset_points(selection.object_ids.iter().copied(), selection.mode) {
             return;
         }

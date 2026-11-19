@@ -4,6 +4,8 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod edge_blend;
+pub use edge_blend::EdgeBlendSizes;
 mod analysis_mesh;
 mod edge_insertion;
 mod edge_ring;

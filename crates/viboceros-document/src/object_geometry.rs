@@ -150,18 +150,42 @@ impl Document {
 
     pub(super) fn commit_object_geometries_with_text_policy(
         &mut self,
-        mut staged: Vec<(usize, Geometry)>,
+        staged: Vec<(usize, Geometry)>,
         transaction_label: &'static str,
         edit_label: &'static str,
         history: ReplacementHistory,
+        preserve_geometry_user_text: impl FnMut(&Object, &Geometry) -> bool,
+    ) -> Result<usize, DocumentError> {
+        let staged = staged
+            .into_iter()
+            .map(|(index, geometry)| Ok((index, self.refresh_instance_geometry(geometry)?.into())))
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        self.commit_object_geometry_snapshots(
+            staged,
+            transaction_label,
+            edit_label,
+            history,
+            false,
+            preserve_geometry_user_text,
+        )
+    }
+
+    pub(super) fn commit_object_geometry_snapshots(
+        &mut self,
+        mut staged: Vec<(usize, GeometrySnapshot)>,
+        transaction_label: &'static str,
+        edit_label: &'static str,
+        history: ReplacementHistory,
+        compare_edge_blend_recipe: bool,
         mut preserve_geometry_user_text: impl FnMut(&Object, &Geometry) -> bool,
     ) -> Result<usize, DocumentError> {
-        staged = staged
-            .into_iter()
-            .map(|(index, geometry)| Ok((index, self.refresh_instance_geometry(geometry)?)))
-            .collect::<Result<Vec<_>, DocumentError>>()?;
         if history == ReplacementHistory::ChangesOnly {
-            staged.retain(|(index, geometry)| *self.objects[*index].geometry != *geometry);
+            staged.retain(|(index, geometry)| {
+                let before = &self.objects[*index].geometry;
+                before != geometry
+                    || (compare_edge_blend_recipe
+                        && before.edge_blend_recipe() != geometry.edge_blend_recipe())
+            });
         }
         if staged.is_empty() {
             return Ok(0);
@@ -184,7 +208,7 @@ impl Document {
                 runtime_serial: Object::new_runtime_serial(),
                 geometry_event_serial: Object::new_runtime_serial(),
                 id: source.id,
-                geometry: geometry.into(),
+                geometry,
                 geometry_user_text: if preserve_text {
                     source.geometry_user_text.clone()
                 } else {

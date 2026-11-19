@@ -18,8 +18,8 @@ impl VibocerosApp {
         if self.edge_blend_faces.is_none() {
             let prior = self
                 .component_selection
-                .checked_picks(&self.document)
-                .and_then(|picks| stage_sources(&self.document, picks));
+                .checked_picks(self.edge_blend_source_document())
+                .and_then(|picks| stage_sources(self.edge_blend_source_document(), picks));
             match prior {
                 Ok(prior) => {
                     self.edge_blend_faces = Some(FaceEdgeSelection {
@@ -49,17 +49,13 @@ impl VibocerosApp {
         }
         let selection = self.edge_blend_faces.take().unwrap();
         if !accept {
+            let document = edit::source_document(&self.edge_blend_edit, &self.document);
             let prior = selection
                 .prior
                 .into_iter()
-                .filter_map(|(pick, snapshot)| {
-                    current(&self.document, pick, &snapshot).then_some(pick)
-                })
+                .filter_map(|(pick, snapshot)| current(document, pick, &snapshot).then_some(pick))
                 .collect::<Vec<_>>();
-            match self
-                .component_selection
-                .replace(&self.document, prior.clone())
-            {
+            match self.component_selection.replace(document, prior.clone()) {
                 Ok(()) => {
                     self.edge_blend_adjustment.sizes = selection.sizes;
                     self.retain_edge_blend_picks(&prior);
@@ -78,20 +74,25 @@ impl VibocerosApp {
         &self,
         picks: Vec<ComponentPick>,
     ) -> Result<Vec<ComponentPick>, String> {
+        let document = self.edge_blend_source_document();
+        let target = self.edge_blend_edit_target();
         let mut faces = BTreeMap::<ObjectId, Vec<usize>>::new();
         for pick in picks {
+            if target.is_some_and(|id| id != pick.object) {
+                continue;
+            }
             if pick.kind != ComponentSelectionKind::BrepFace
-                || !self.document.is_object_selectable(pick.object)
+                || !document.is_object_selectable(pick.object)
             {
                 return Err("Pick faces on an available closed polysurface".into());
             }
             faces.entry(pick.object).or_default().push(pick.index);
         }
-        let tolerance = self.document.tolerance();
+        let tolerance = document.tolerance();
         let mut result = Vec::new();
         for (object, indices) in faces {
             let Some(Geometry::Brep(brep)) =
-                self.document.object(object).map(|object| object.geometry())
+                document.object(object).map(|object| object.geometry())
             else {
                 return Err("Pick faces on a closed polysurface".into());
             };

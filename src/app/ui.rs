@@ -184,7 +184,9 @@ impl VibocerosApp {
         } else {
             self.zoom_target
         };
-        let object_filter = if self.picking_mesh_trim_target() {
+        let object_filter = if self.picking_edge_blend_edit() {
+            Some(viboceros_command::ObjectSelectionFilter::Any)
+        } else if self.picking_mesh_trim_target() {
             None
         } else if self.selecting_insert_source() {
             Some(viboceros_command::ObjectSelectionFilter::MeshAndSubD)
@@ -662,7 +664,9 @@ impl VibocerosApp {
             self.component_selection.valid_picks(&self.document);
         }
         let raw_mesh_face_highlights = self.component_selection.raw_face_picks(&self.document);
-        let mut component_highlights = self.component_selection.highlights(&self.document);
+        let edge_document =
+            edge_fillet::edit::source_document(&self.edge_blend_edit, &self.document);
+        let mut component_highlights = self.component_selection.highlights(edge_document);
         component_highlights.extend(path_boundary.and_then(|boundary| {
             let index = boundary.face?;
             // Untrimmed surfaces use the same face picker but have no BrepFace component.
@@ -740,7 +744,8 @@ impl VibocerosApp {
                     ((self.unjoin_prompt.is_some()
                         || self.edge_fillet_prompt.is_some()
                             && !self.adjusting_edge_blend()
-                            && !self.edge_blend_waiting_for_next_size())
+                            && !self.edge_blend_waiting_for_next_size()
+                            && !self.picking_edge_blend_edit())
                         && model_input_active
                         && self.plane_prompt.is_none()
                         && self.nested_measurement.is_none()
@@ -885,7 +890,7 @@ impl VibocerosApp {
                 || (self.picking_pipe_rail() && !self.picking_pipe_chain())
                 || self.picking_splop_reference_curve());
         let preview_document = surface_rebuild::viewport_document(
-            &self.document,
+            edge_document,
             self.boolean_two_prompt.as_ref().and_then(|p| p.scene()),
             self.blend_surface_prompt
                 .as_ref()
@@ -1151,7 +1156,15 @@ impl VibocerosApp {
                             })
                     })
             });
-        let selection_allowed_objects = if self
+        let selection_allowed_objects = if self.picking_edge_blend_edit() {
+            Some(
+                self.document
+                    .selectable_objects()
+                    .filter(|object| object.geometry_snapshot().edge_blend_recipe().is_some())
+                    .map(|object| object.id())
+                    .collect(),
+            )
+        } else if self
             .select_uv_prompt
             .as_ref()
             .is_some_and(|p| p.selecting())
@@ -1369,7 +1382,7 @@ impl VibocerosApp {
             Vec::new()
         };
         let edge_placement_curves = if edge_handle_input {
-            self.edge_handle_placement_curves(&self.document)
+            self.edge_handle_placement_curves(edge_document)
         } else {
             Vec::new()
         };

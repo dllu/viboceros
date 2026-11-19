@@ -69,23 +69,22 @@ impl VibocerosApp {
         true
     }
     pub(super) fn unjoinable_picks(&self, picks: Vec<ComponentPick>) -> Vec<ComponentPick> {
+        let document = self.edge_blend_source_document();
+        let target = self.edge_blend_edit_target();
         let mut joined = std::collections::BTreeMap::new();
         picks
             .into_iter()
             .filter(|pick| {
                 if pick.kind != ComponentSelectionKind::BrepEdge
-                    || !self.document.is_object_selectable(pick.object)
+                    || target.is_some_and(|id| id != pick.object)
+                    || !document.is_object_selectable(pick.object)
                 {
                     return false;
                 }
                 joined
                     .entry(pick.object)
                     .or_insert_with(|| {
-                        match self
-                            .document
-                            .object(pick.object)
-                            .map(|object| object.geometry())
-                        {
+                        match document.object(pick.object).map(|object| object.geometry()) {
                             Some(Geometry::Brep(brep)) => brep.edges_shared_by_distinct_faces(),
                             _ => Vec::new(),
                         }

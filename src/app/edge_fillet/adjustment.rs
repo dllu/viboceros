@@ -108,6 +108,7 @@ impl VibocerosApp {
         let Some(prompt) = self.edge_fillet_prompt else {
             return;
         };
+        let document = edit::source_document(&self.edge_blend_edit, &self.document);
         let sizes = &mut self.edge_blend_adjustment.sizes;
         for pick in picks
             .into_iter()
@@ -122,7 +123,7 @@ impl VibocerosApp {
                 sizes.remove(&pick);
                 continue;
             }
-            if let Some(object) = self.document.object(pick.object) {
+            if let Some(object) = document.object(pick.object) {
                 let source = object.geometry_snapshot();
                 let entry = sizes
                     .entry(pick)
@@ -135,11 +136,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn retain_edge_blend_picks(&mut self, picks: &[ComponentPick]) {
+        let document = edit::source_document(&self.edge_blend_edit, &self.document);
         let picks = picks.iter().copied().collect::<BTreeSet<_>>();
         self.edge_blend_adjustment
             .sizes
             .retain(|pick, (snapshot, _)| {
-                picks.contains(pick) && current(&self.document, *pick, snapshot)
+                picks.contains(pick) && current(document, *pick, snapshot)
             });
     }
 
@@ -149,13 +151,22 @@ impl VibocerosApp {
     }
 
     pub(super) fn begin_edge_blend_adjustment(&mut self, mut prompt: Prompt) {
+        if self.edge_blend_edit_target().is_some()
+            && self
+                .component_selection
+                .checked_picks(self.edge_blend_source_document())
+                .is_ok_and(|picks| picks.is_empty())
+        {
+            self.restore_latest_edge_blend(prompt);
+            return;
+        }
         if let Err(error) = self.capture_edge_blend(prompt, None) {
             self.push_log(format!("Error: {error}"));
             return;
         }
         let picks = self
             .component_selection
-            .checked_picks(&self.document)
+            .checked_picks(self.edge_blend_source_document())
             .unwrap_or_default();
         self.retain_edge_blend_picks(&picks);
         self.track_edge_blend_picks(picks, ComponentAction::Add);
@@ -205,7 +216,7 @@ impl VibocerosApp {
             .edge_blend_adjustment
             .sizes
             .get(&pick)
-            .filter(|(snapshot, _)| current(&self.document, pick, snapshot))
+            .filter(|(snapshot, _)| current(self.edge_blend_source_document(), pick, snapshot))
             .map(|(_, sizes)| sizes.clone())
             .unwrap_or_else(|| [prompt.radius; 2].into());
         if let Some(edit) = edit {
@@ -229,7 +240,7 @@ impl VibocerosApp {
             return Ok(ProfileEdit::All(size));
         };
         let stale = "The edge source changed. Use SelectEdges to pick it again.";
-        if !current(&self.document, id.pick, source) {
+        if !current(self.edge_blend_source_document(), id.pick, source) {
             return Err(stale);
         }
         if !prompt.toggles.link_handles {
@@ -271,7 +282,9 @@ impl VibocerosApp {
             ..*prompt
         };
         let edit = self.edge_blend_edit(old, size, set_all)?;
-        let picks = self.component_selection.checked_picks(&self.document)?;
+        let picks = self
+            .component_selection
+            .checked_picks(self.edge_blend_source_document())?;
         let updated = picks
             .into_iter()
             .filter(|pick| match edit {
@@ -280,7 +293,7 @@ impl VibocerosApp {
             })
             .map(|pick| {
                 let source = self
-                    .document
+                    .edge_blend_source_document()
                     .object(pick.object)
                     .unwrap()
                     .geometry_snapshot()
@@ -317,13 +330,15 @@ impl VibocerosApp {
         };
         let picks = self
             .component_selection
-            .checked_picks(&self.document)
+            .checked_picks(self.edge_blend_source_document())
             .unwrap_or_default();
         let mut handles = Vec::new();
         let trial = self.edge_blend_trial(prompt, self.edge_blend_adjustment.drag_size);
         for pick in picks {
-            let Some(Geometry::Brep(brep)) =
-                self.document.object(pick.object).map(|o| o.geometry())
+            let Some(Geometry::Brep(brep)) = self
+                .edge_blend_source_document()
+                .object(pick.object)
+                .map(|o| o.geometry())
             else {
                 continue;
             };
@@ -381,7 +396,7 @@ impl VibocerosApp {
         };
         if !self
             .component_selection
-            .checked_picks(&self.document)
+            .checked_picks(self.edge_blend_source_document())
             .is_ok_and(|picks| picks.contains(&id.pick))
         {
             return false;
@@ -392,7 +407,7 @@ impl VibocerosApp {
         else {
             return false;
         };
-        let Some(object) = self.document.object(id.pick.object) else {
+        let Some(object) = self.edge_blend_source_document().object(id.pick.object) else {
             return false;
         };
         let Geometry::Brep(brep) = object.geometry() else {

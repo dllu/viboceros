@@ -26,6 +26,7 @@ Use `ChainEdges` for [connected-edge selection](curve-chains.md), or
 double-click an edge to select its tangent chain.
 `PreviousEdgeSelection` recalls canceled picks. Use `PreviousEdgeSelection=2`
 to select the second most recent set.
+Use `Edit` or double-click a joined result to [reopen the latest edge set](fillet-edge.md).
 
 ```text
 BlendEdge Radius=1 RailType=RollingBall object-id 0,2
@@ -44,6 +45,6 @@ On a right-angle straight edge the rolling mode has setback `r`; the width mode 
 
 See the [qualification record](../blend-edge-qualification.json) for tested shapes, failures, sanitizer configuration and current limits. Licensed Rhino capture remains pending the recorded [Wine startup failure](../oracle-sspi.md). Shape equality, native getter parity and comparative performance remain unqualified.
 
-Variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, History editing and native saved defaults remain future work. SMLib produces a single corner face for the three-edge box fixture. Rhino produces a six-face corner patch. Curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision. See the qualification record.
+Variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, persisted edge sets and native saved defaults remain future work. SMLib produces a single corner face for the three-edge box fixture. Rhino produces a six-face corner patch. Curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision. See the qualification record.
 
 References: [Rhino BlendEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendedge.htm), [public BlendType](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BlendType.htm).

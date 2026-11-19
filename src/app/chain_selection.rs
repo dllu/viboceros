@@ -1,4 +1,5 @@
 //! Standalone mixed curve/edge chains retain live selection and pending redo.
+use super::edge_fillet::edit as edge_edit;
 use super::*;
 use viboceros_command::chain_selection::{Session, Target, parse_options};
 mod edge_blend;
@@ -37,6 +38,30 @@ impl Prompt {
     fn measuring(&self) -> bool {
         self.purpose == Purpose::Measure
     }
+    fn document<'a>(
+        &self,
+        edit: &'a Option<edge_edit::Edit>,
+        document: &'a Document,
+    ) -> &'a Document {
+        if self.edge_blend() {
+            edge_edit::source_document(edit, document)
+        } else {
+            document
+        }
+    }
+
+    fn document_mut<'a>(
+        &self,
+        edit: &'a mut Option<edge_edit::Edit>,
+        document: &'a mut Document,
+    ) -> &'a mut Document {
+        if self.edge_blend() {
+            edge_edit::source_document_mut(edit, document)
+        } else {
+            document
+        }
+    }
+
     pub(super) fn hint(&self) -> &'static str {
         if self.session.choosing_branch() {
             "Select a branch to follow, or Enter to confirm the preview; Esc cancels"
@@ -123,7 +148,10 @@ impl VibocerosApp {
         let Some(p) = &mut self.chain_prompt else {
             return;
         };
-        if !p.session.current(&self.document) {
+        if !p
+            .session
+            .current(p.document(&self.edge_blend_edit, &self.document))
+        {
             self.validate_chain();
             return;
         }
@@ -151,17 +179,15 @@ impl VibocerosApp {
             }
             return;
         }
-        let result = p
-            .session
-            .pick_input(&self.document, picks[0])
-            .and_then(|()| {
-                if p.measuring() {
-                    Ok(())
-                } else {
-                    p.session
-                        .apply(&mut self.document, self.commands.component_selection())
-                }
-            });
+        let document = p.document_mut(&mut self.edge_blend_edit, &mut self.document);
+        let result = p.session.pick_input(document, picks[0]).and_then(|()| {
+            if p.measuring() {
+                Ok(())
+            } else {
+                p.session
+                    .apply(document, self.commands.component_selection())
+            }
+        });
         if result.is_ok() {
             p.defer_apply = false;
         }
@@ -204,12 +230,13 @@ impl VibocerosApp {
             self.log_nested_length();
             return;
         }
+        let document = p.document_mut(&mut self.edge_blend_edit, &mut self.document);
         let result = if accept {
             p.session
-                .apply(&mut self.document, self.commands.component_selection())
+                .apply(document, self.commands.component_selection())
         } else {
             p.session
-                .cancel(&mut self.document, self.commands.component_selection())
+                .cancel(document, self.commands.component_selection())
         };
         if result.is_ok() && accept && p.edge_blend() {
             self.track_edge_blend_picks(
@@ -244,11 +271,10 @@ impl VibocerosApp {
         }
     }
     pub(super) fn validate_chain(&mut self) {
-        if self
-            .chain_prompt
-            .as_ref()
-            .is_some_and(|p| !p.session.current(&self.document))
-        {
+        if self.chain_prompt.as_ref().is_some_and(|p| {
+            !p.session
+                .current(p.document(&self.edge_blend_edit, &self.document))
+        }) {
             self.finish_chain(false);
             self.push_log("Error: chain sources or tolerance changed; select again".into());
         }
@@ -276,7 +302,8 @@ impl VibocerosApp {
             }
         }
         if input.is_empty() || input.eq_ignore_ascii_case("Enter") {
-            match p.session.enter(&self.document) {
+            let document = p.document_mut(&mut self.edge_blend_edit, &mut self.document);
+            match p.session.enter(document) {
                 Ok(true) => self.finish_chain(true),
                 Ok(false) => {
                     p.preview = p.session.preview();
@@ -284,7 +311,7 @@ impl VibocerosApp {
                         Ok(())
                     } else {
                         p.session
-                            .apply(&mut self.document, self.commands.component_selection())
+                            .apply(document, self.commands.component_selection())
                     };
                     self.command_input.clear();
                     if let Err(e) = result {
@@ -377,13 +404,14 @@ impl VibocerosApp {
             self.command_input.clear();
             return true;
         }
+        let document = p.document_mut(&mut self.edge_blend_edit, &mut self.document);
         let result = if input.eq_ignore_ascii_case("Undo") {
-            p.session.undo(&self.document)
+            p.session.undo(document)
         } else if input.eq_ignore_ascii_case("Next") || input.eq_ignore_ascii_case("All") {
             p.session
-                .extend(&self.document, input.eq_ignore_ascii_case("Next"))
+                .extend(document, input.eq_ignore_ascii_case("Next"))
         } else {
-            parse_options(input, p.session.options(), self.document.tolerance())
+            parse_options(input, p.session.options(), document.tolerance())
                 .and_then(|o| p.session.set_options(o))
         };
         let result = result.and_then(|()| {
@@ -391,7 +419,7 @@ impl VibocerosApp {
                 Ok(())
             } else {
                 p.session
-                    .apply(&mut self.document, self.commands.component_selection())
+                    .apply(document, self.commands.component_selection())
             }
         });
         if result.is_ok() {

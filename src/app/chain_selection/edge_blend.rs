@@ -35,10 +35,11 @@ impl VibocerosApp {
 
     fn open_edge_blend_chain(&mut self, options: CurveChainOptions) -> bool {
         self.component_selection.clear_choices();
-        match Session::new_for_edge_blend(
-            &self.document,
+        match Session::new_for_edge_blend_on(
+            self.edge_blend_source_document(),
             self.commands.component_selection(),
             options,
+            self.edge_blend_edit_target(),
         ) {
             Ok(session) => {
                 let prompt = Prompt::new(session, Purpose::EdgeBlend);

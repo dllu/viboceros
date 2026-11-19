@@ -35,6 +35,7 @@ Use `ChainEdges` for [connected-edge selection](curve-chains.md), or
 double-click an edge to select its tangent chain.
 `PreviousEdgeSelection` recalls canceled picks. Use `PreviousEdgeSelection=2`
 to select the second most recent set.
+Use `Edit` or double-click a joined result to [reopen the latest edge set](fillet-edge.md).
 
 For scripts, address original edges by object ID and index, or select whole
 objects and use All=Yes:
@@ -74,7 +75,7 @@ Licensed Rhino capture remains pending after the recorded
 performance are unqualified.
 
 Variable `DistBetweenRails` distances, `DistFromEdge`, open polysurfaces,
-History editing and saved native defaults remain future work. General collapsing offsets and
+Persisted edge sets and saved native defaults remain future work. General collapsing offsets and
 self-intersections require broader qualification.
 
 Reference: [Rhino ChamferEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/chamferedge.htm)

@@ -172,7 +172,7 @@ impl VibocerosApp {
             return true;
         }
         if let Some(id) = output.object_double_click.take()
-            && self.try_open_block_edit_double_click(id)
+            && (self.try_open_block_edit_double_click(id) || self.open_edge_blend_double_click(id))
         {
             return true;
         }

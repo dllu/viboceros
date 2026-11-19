@@ -53,6 +53,14 @@ Use `PreviousEdgeSelection=2` to recall the second most recent set. Each edge
 blend command remembers up to 20 distinct sets in the open document. Recall
 requires the original source geometry to be present and selectable.
 
+Use `Edit` to select one joined result and press Enter, or double-click the
+result to reopen its latest edge set. `Edit=object-id` opens a specific result.
+The same workflow works for fillets, chamfers and blends. The original edges
+and saved handles are available for adjustment and preview. Use `SelectEdges` to add or remove original edges.
+Removing every edge and pressing Enter restores the geometry from before
+that set. Edits are undoable. The edge set is available while the document
+is open.
+
 The operation stages every result, preserves object identity, attributes and
 groups, and records one undo step. All inputs remain unchanged if any stage
 fails. The adapter imports fresh native solids with original Rust edge-index
@@ -63,9 +71,8 @@ Pole connectors require a continuous surface-image certificate at their vertex.
 
 This checkpoint supports variable radii on closed B-reps in Linux native
 builds. `Corner=Ball` requires a common radius on each solid.
-Open polysurfaces, alternative rail types, editing old fillets and broader failure cases
-remain work. The intersection guard bounds input and output to 362 faces. Kernel
-intersection curves must lie entirely on shared trimmed topological edges, and
+Open polysurfaces, alternative rail types and broader failure cases remain work.
+The intersection guard bounds input and output to 362 faces. Kernel intersection curves must lie entirely on shared trimmed topological edges, and
 isolated contacts must lie on shared edges or vertices. Adjacent faces are
 checked too, with supplementary kernel searches for interior branches. The
 check does not certify individual-surface injectivity or exhaustive intersection

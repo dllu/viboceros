@@ -3,6 +3,7 @@ use crate::viewport::{ComponentPick, ComponentWindow};
 use viboceros_command::ComponentSelectionKind;
 mod adjustment;
 mod chain_edges;
+mod edit;
 mod face_edges;
 mod from_curve;
 mod previous;

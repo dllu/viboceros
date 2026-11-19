@@ -248,7 +248,10 @@ impl VibocerosApp {
             && self.lasso_selection.is_none()
     }
     pub(super) fn accept_component_click(&mut self, click: ComponentClick) {
-        if self.adjusting_edge_blend() || self.edge_blend_waiting_for_next_size() {
+        if self.adjusting_edge_blend()
+            || self.edge_blend_waiting_for_next_size()
+            || self.picking_edge_blend_edit()
+        {
             return;
         }
         if self.picking_edge_blend_chain() {
@@ -443,6 +446,14 @@ impl VibocerosApp {
         } else {
             picks
         };
+        let picks = if let Some(target) = self.edge_blend_edit_target() {
+            picks
+                .into_iter()
+                .filter(|pick| pick.object == target)
+                .collect()
+        } else {
+            picks
+        };
         let action = if click.preselection {
             ComponentAction::Toggle
         } else if click.modifiers.ctrl || click.modifiers.command {
@@ -457,7 +468,7 @@ impl VibocerosApp {
         match picks.as_slice() {
             [] => self.component_selection.clear_choices(),
             [_] => self.select_components(picks, action),
-            _ => match stage_sources(&self.document, picks) {
+            _ => match stage_sources(self.edge_blend_source_document(), picks) {
                 Ok(candidates) => {
                     for (index, (pick, _)) in candidates.iter().enumerate() {
                         let kind = match pick.kind {
@@ -677,10 +688,9 @@ impl VibocerosApp {
             .map(|pick| pick.object)
             .collect::<Vec<_>>();
         let edge_blend_picks = self.edge_fillet_prompt.is_some().then(|| picks.clone());
-        match self
-            .component_selection
-            .apply(&self.document, picks, action)
-        {
+        let document =
+            super::edge_fillet::edit::source_document(&self.edge_blend_edit, &self.document);
+        match self.component_selection.apply(document, picks, action) {
             Ok(()) => {
                 if let Some(picks) = edge_blend_picks {
                     self.track_edge_blend_picks(picks, action);
@@ -715,6 +725,7 @@ impl VibocerosApp {
         if self.picking_edge_blend_chain()
             || self.adjusting_edge_blend()
             || self.edge_blend_waiting_for_next_size()
+            || self.picking_edge_blend_edit()
         {
             return;
         }
@@ -847,7 +858,9 @@ impl VibocerosApp {
             .and_then(|n| self.component_selection.candidates.get(n))
             .cloned();
         match candidate {
-            Some((pick, snapshot)) if current(&self.document, pick, &snapshot) => {
+            Some((pick, snapshot))
+                if current(self.edge_blend_source_document(), pick, &snapshot) =>
+            {
                 if let Some(mut click) = self.component_selection.loop_choice.take() {
                     click.picks = vec![pick];
                     self.accept_component_loop_click(click);

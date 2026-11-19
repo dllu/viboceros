@@ -45,7 +45,8 @@ impl VibocerosApp {
             .sizes
             .iter()
             .any(|(&pick, (snapshot, sizes))| {
-                !sizes.interior.is_empty() && current(&self.document, pick, snapshot)
+                !sizes.interior.is_empty()
+                    && current(self.edge_blend_source_document(), pick, snapshot)
             })
     }
 
@@ -122,13 +123,13 @@ impl VibocerosApp {
         };
         if !self
             .component_selection
-            .checked_picks(&self.document)
+            .checked_picks(self.edge_blend_source_document())
             .is_ok_and(|picks| picks.contains(&id.pick))
         {
             return false;
         }
         let Some(source) = self
-            .document
+            .edge_blend_source_document()
             .object(id.pick.object)
             .map(|object| object.geometry_snapshot().clone())
         else {

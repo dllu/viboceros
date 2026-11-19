@@ -68,6 +68,11 @@ impl VibocerosApp {
     }
 
     pub(super) fn recall_edge_selection(&mut self, mut prompt: Prompt, number: Option<&str>) {
+        if self.edge_blend_edit_target().is_some() {
+            self.push_log("Select edges on the edge blend you are editing.".into());
+            self.command_input.clear();
+            return;
+        }
         self.command_input.clear();
         if self.picking_edge_blend_faces() {
             self.push_log(

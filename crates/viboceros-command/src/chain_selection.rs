@@ -52,10 +52,13 @@ struct Pending {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Scope {
     Mixed,
-    EdgeBlend,
+    EdgeBlend(Option<ObjectId>),
 }
 impl Scope {
-    fn includes(self, geometry: &Geometry) -> bool {
+    fn includes(self, id: ObjectId, geometry: &Geometry) -> bool {
+        if matches!(self, Self::EdgeBlend(Some(owner)) if owner != id) {
+            return false;
+        }
         matches!(geometry, Geometry::Brep(_))
             || self == Self::Mixed
                 && (geometry.curve_ref().is_some() || matches!(geometry, Geometry::NurbsSurface(_)))
@@ -97,7 +100,15 @@ impl Session {
         selection: &component_selection::ComponentSelection,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, Some(selection), options, Scope::EdgeBlend)
+        Self::new_for_edge_blend_on(doc, selection, options, None)
+    }
+    pub fn new_for_edge_blend_on(
+        doc: &Document,
+        selection: &component_selection::ComponentSelection,
+        options: CurveChainOptions,
+        owner: Option<ObjectId>,
+    ) -> Result<Self, CommandError> {
+        Self::with_selection(doc, Some(selection), options, Scope::EdgeBlend(owner))
     }
     fn with_selection(
         doc: &Document,
@@ -113,7 +124,7 @@ impl Session {
         for object in doc.selectable_objects() {
             let geo = object.geometry();
             let id = object.id();
-            if !scope.includes(geo) {
+            if !scope.includes(id, geo) {
                 continue;
             }
             sources.insert(id, object.geometry_snapshot().clone());
@@ -129,7 +140,7 @@ impl Session {
                     ),
                     _ => continue,
                 };
-                let joined = if scope == Scope::EdgeBlend {
+                let joined = if matches!(scope, Scope::EdgeBlend(_)) {
                     if !brep.is_solid() {
                         continue;
                     }
@@ -200,7 +211,7 @@ impl Session {
         }
         let now = doc
             .selectable_objects()
-            .filter(|o| self.scope.includes(o.geometry()))
+            .filter(|o| self.scope.includes(o.id(), o.geometry()))
             .map(|o| (o.id(), o.geometry_snapshot()))
             .collect::<BTreeMap<_, _>>();
         self.baseline_sources.iter().all(|(&id, w)| {

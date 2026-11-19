@@ -1,6 +1,6 @@
 //! Stage owned circular, chamfer and G2 edge blends before document edits.
 use super::*;
-use viboceros_document::GeometrySnapshot;
+use viboceros_document::{EdgeBlendMode, EdgeBlendRecipe, GeometrySnapshot};
 pub use viboceros_smlib::EdgeBlendSizes;
 mod face_edges;
 pub use face_edges::edge_blend_face_edges;
@@ -73,7 +73,7 @@ fn corner_option(word: &str) -> Option<&str> {
 #[derive(Clone, Debug)]
 pub struct EdgeBlendSelection {
     kind: EdgeBlendKind,
-    sources: Vec<(ObjectId, GeometrySnapshot)>,
+    sources: Vec<EdgeBlendSource>,
     outputs: Vec<(ObjectId, Geometry)>,
     trim_and_join: bool,
     tolerance: Tolerance,
@@ -87,7 +87,33 @@ pub enum EdgeBlendKind {
     Chamfer(crate::chamfer_edge::ChamferRailType),
     Curvature(crate::blend_edge::BlendRailType),
 }
+
+impl From<EdgeBlendMode> for EdgeBlendKind {
+    fn from(mode: EdgeBlendMode) -> Self {
+        use crate::edge_blend_input::RailType;
+        match mode {
+            EdgeBlendMode::Fillet => Self::Fillet(FilletCorner::Automatic),
+            EdgeBlendMode::BallFillet => Self::Fillet(FilletCorner::Ball),
+            EdgeBlendMode::ChamferRollingBall => Self::Chamfer(RailType::RollingBall),
+            EdgeBlendMode::ChamferBetweenRails => Self::Chamfer(RailType::DistanceBetweenRails),
+            EdgeBlendMode::BlendRollingBall => Self::Curvature(RailType::RollingBall),
+            EdgeBlendMode::BlendBetweenRails => Self::Curvature(RailType::DistanceBetweenRails),
+        }
+    }
+}
+
 impl EdgeBlendKind {
+    fn mode(self) -> EdgeBlendMode {
+        use crate::edge_blend_input::RailType;
+        match self {
+            Self::Fillet(FilletCorner::Automatic) => EdgeBlendMode::Fillet,
+            Self::Fillet(FilletCorner::Ball) => EdgeBlendMode::BallFillet,
+            Self::Chamfer(RailType::RollingBall) => EdgeBlendMode::ChamferRollingBall,
+            Self::Chamfer(RailType::DistanceBetweenRails) => EdgeBlendMode::ChamferBetweenRails,
+            Self::Curvature(RailType::RollingBall) => EdgeBlendMode::BlendRollingBall,
+            Self::Curvature(RailType::DistanceBetweenRails) => EdgeBlendMode::BlendBetweenRails,
+        }
+    }
     fn usage(self) -> &'static str {
         match self {
             Self::Fillet(_) => USAGE,
@@ -104,13 +130,15 @@ impl EdgeBlendKind {
     }
 }
 
+type EdgeBlendSource = (ObjectId, GeometrySnapshot, Vec<(usize, EdgeBlendSizes)>);
+
 /// Read-only input captured from the original edge indices and owned geometry.
 #[derive(Clone, PartialEq)]
 pub struct EdgeBlendPlan {
     kind: EdgeBlendKind,
     trim_and_join: bool,
     tolerance: Tolerance,
-    sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, EdgeBlendSizes)>)>,
+    sources: Vec<EdgeBlendSource>,
 }
 
 impl EdgeBlendSelection {
@@ -179,9 +207,44 @@ impl EdgeBlendSelection {
     pub fn commit(&self, document: &mut Document) -> Result<usize, CommandError> {
         run_command_transaction(document, self.kind.command(), |doc| self.apply(doc))
     }
+    /// Commit a result solved against the original edges of a joined blend.
+    /// The scene used for solving can differ from the live object version.
+    pub fn commit_edit(
+        &self,
+        document: &mut Document,
+        object: ObjectId,
+        live: &GeometrySnapshot,
+    ) -> Result<usize, CommandError> {
+        let [(source_id, source, _)] = self.sources.as_slice() else {
+            return Err(CommandError::Usage(
+                "Edit operates on one edge blend at a time",
+            ));
+        };
+        if *source_id != object
+            || document.tolerance() != self.tolerance
+            || !document.is_object_selectable(object)
+            || !document
+                .object(object)
+                .is_some_and(|o| o.geometry_snapshot().shares_storage_with(live))
+            || !live
+                .edge_blend_recipe()
+                .is_some_and(|recipe| recipe.source.shares_storage_with(source))
+        {
+            return Err(CommandError::Usage(
+                "The edge blend changed. Reopen Edit to continue.",
+            ));
+        }
+        run_command_transaction(document, self.kind.command(), |doc| {
+            if !self.trim_and_join {
+                doc.restore_edge_blend_source(object)?;
+            }
+            self.apply_results(doc)
+        })
+    }
+
     pub(crate) fn apply(&self, document: &mut Document) -> Result<usize, CommandError> {
         if document.tolerance() != self.tolerance
-            || self.sources.iter().any(|(id, snapshot)| {
+            || self.sources.iter().any(|(id, snapshot, _)| {
                 !document.is_object_selectable(*id)
                     || !document
                         .object(*id)
@@ -192,8 +255,25 @@ impl EdgeBlendSelection {
                 "Edge blend source or tolerance changed; select edges again",
             ));
         }
+        self.apply_results(document)
+    }
+
+    fn apply_results(&self, document: &mut Document) -> Result<usize, CommandError> {
         if self.trim_and_join {
-            document.replace_object_geometries(self.outputs.clone())?;
+            document.replace_edge_blend_results(self.sources.iter().zip(&self.outputs).map(
+                |((source_id, source, edges), (output_id, geometry))| {
+                    debug_assert_eq!(source_id, output_id);
+                    (
+                        *source_id,
+                        geometry.clone(),
+                        EdgeBlendRecipe {
+                            mode: self.kind.mode(),
+                            source: source.clone(),
+                            edges: edges.clone(),
+                        },
+                    )
+                },
+            ))?;
             document.select_objects_direct(
                 self.outputs.iter().map(|(id, _)| *id),
                 SelectionMode::Replace,
@@ -357,7 +437,7 @@ impl EdgeBlendPlan {
                         .map(|patch| (id, Geometry::Brep(patch))),
                 );
             }
-            sources.push((id, geometry));
+            sources.push((id, geometry, edges));
         }
         Ok(EdgeBlendSelection {
             kind: self.kind,

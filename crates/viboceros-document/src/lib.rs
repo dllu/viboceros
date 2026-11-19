@@ -22,6 +22,8 @@ mod control_points;
 mod duplicate;
 pub use control_points::{ControlPointId, GripDeletionReport, GripMode};
 mod geometry;
+mod edge_blend;
+pub use edge_blend::{EdgeBlendMode, EdgeBlendRecipe};
 mod geometry_snapshot;
 pub use geometry_snapshot::GeometrySnapshot;
 mod groups;

@@ -1,7 +1,7 @@
 //! Shared immutable geometry for document states and derived-data caches.
 use std::{ops::Deref, sync::Arc};
 
-use crate::Geometry;
+use crate::{EdgeBlendRecipe, Geometry};
 use viboceros_geometry::TriangleMesh;
 
 /// An owned, immutable geometry value with inexpensive cloning.
@@ -10,14 +10,27 @@ use viboceros_geometry::TriangleMesh;
 /// snapshots. There is deliberately no mutable access, even for unique owners.
 /// Kernel-internal memoization does not change the geometric value.
 #[derive(Clone, Debug)]
-pub struct GeometrySnapshot(Arc<Geometry>, Option<Arc<(TriangleMesh, Vec<usize>)>>);
+pub struct GeometrySnapshot(
+    Arc<Geometry>,
+    Option<Arc<(TriangleMesh, Vec<usize>)>>,
+    Option<Arc<EdgeBlendRecipe>>,
+);
 
 impl GeometrySnapshot {
     pub(crate) fn with_archive_render_mesh(
         geometry: Geometry,
         render_mesh: Option<(TriangleMesh, Vec<usize>)>,
     ) -> Self {
-        Self(Arc::new(geometry), render_mesh.map(Arc::new))
+        Self(Arc::new(geometry), render_mesh.map(Arc::new), None)
+    }
+
+    pub(crate) fn with_edge_blend_recipe(mut self, recipe: Arc<EdgeBlendRecipe>) -> Self {
+        self.2 = Some(recipe);
+        self
+    }
+
+    pub fn edge_blend_recipe(&self) -> Option<&EdgeBlendRecipe> {
+        self.2.as_deref()
     }
 
     /// Saved display polygons and the source B-rep face for each polygon.
@@ -38,7 +51,7 @@ impl GeometrySnapshot {
 
 impl From<Geometry> for GeometrySnapshot {
     fn from(geometry: Geometry) -> Self {
-        Self(Arc::new(geometry), None)
+        Self(Arc::new(geometry), None, None)
     }
 }
 
