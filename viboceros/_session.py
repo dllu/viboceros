@@ -313,6 +313,16 @@ class Session:
         )
         return tuple(SurfaceJet(**{name: tuple(value) for name, value in jet.items()}) for jet in records)
 
+    def pullback_brep_edge(
+        self, edge: Component, obj: ObjectLike, *, face: int | None = None,
+        reversed: bool = False, endpoints: tuple[UV, UV] | None = None,
+    ) -> TrimCurve:
+        """Certify an edge on a target support and return its directed UV trim."""
+        return TrimCurve(**self._request(
+            "pullback_brep_edge", edge=edge._ref(), id=object_id(obj), face=face,
+            reversed=reversed, endpoints=endpoints,
+        ))
+
     def viewports(self) -> tuple[Viewport, ...]:
         return tuple(map(Viewport._read, self._request("viewports")))
 
