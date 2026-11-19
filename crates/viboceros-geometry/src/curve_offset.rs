@@ -1225,6 +1225,39 @@ pub(crate) struct OffsetPolylineLayout {
     pub outside_corners: Vec<bool>,
 }
 
+impl OffsetPolylineLayout {
+    pub(crate) fn segment_points(&self, index: usize) -> [Point3; 2] {
+        [
+            self.corners[index].1,
+            self.corners[(index + 1) % self.corners.len()].0,
+        ]
+    }
+
+    pub(crate) fn segment_advances(
+        &self,
+        index: usize,
+        segment: LineSegment,
+    ) -> Result<bool, GeometryError> {
+        let [start, end] = self.segment_points(index);
+        Ok(segment
+            .start()
+            .vector_to(segment.end())?
+            .dot(start.vector_to(end)?)?
+            > 0.)
+    }
+
+    pub(crate) fn validate_segments(&self, source: &Polyline3) -> Result<(), GeometryError> {
+        for (index, segment) in source.segments().enumerate() {
+            if !self.segment_advances(index, segment)? {
+                return Err(GeometryError::Degenerate {
+                    context: "collapsed offset polyline segment",
+                });
+            }
+        }
+        Ok(())
+    }
+}
+
 pub(crate) fn polyline_offset_layout(
     polyline: &Polyline3,
     distance: Real,
@@ -1236,6 +1269,20 @@ pub(crate) fn polyline_offset_layout(
 }
 
 pub(crate) fn polyline_offset_layout_with_trim(
+    polyline: &Polyline3,
+    distance: Real,
+    fallback: UnitVector3,
+    tolerance: Tolerance,
+    corner_style: CurveOffsetCornerStyle,
+    trim: bool,
+) -> Result<OffsetPolylineLayout, GeometryError> {
+    let layout =
+        polyline_offset_corner_layout(polyline, distance, fallback, tolerance, corner_style, trim)?;
+    layout.validate_segments(polyline)?;
+    Ok(layout)
+}
+
+pub(crate) fn polyline_offset_corner_layout(
     polyline: &Polyline3,
     distance: Real,
     fallback: UnitVector3,
@@ -1316,18 +1363,6 @@ pub(crate) fn polyline_offset_layout_with_trim(
         corners.push(corner);
         inside_corners.push(inside);
         outside_corners.push(outside);
-    }
-    for index in 0..segment_count {
-        let start = corners[index].1;
-        let end = corners[(index + 1) % corners.len()].0;
-        let advance = vertices[index]
-            .vector_to(vertices[index + 1])?
-            .dot(start.vector_to(end)?)?;
-        if advance <= 0.0 {
-            return Err(GeometryError::Degenerate {
-                context: "collapsed offset polyline segment",
-            });
-        }
     }
     Ok(OffsetPolylineLayout {
         normal,

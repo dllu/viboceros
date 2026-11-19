@@ -1,6 +1,7 @@
 //! Source-corner identities survive edge assembly and point-only contacts.
 use super::*;
 use std::collections::BTreeMap;
+use std::ops::RangeInclusive;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub(super) enum VertexKey {
@@ -137,4 +138,71 @@ pub(super) fn sew_untrimmed(
     }
     brep.try_identify_vertices(&vertex_pairs, tolerance)?
         .try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)
+}
+
+/// Join consecutive source sections across their common ruling. Several
+/// singular faces can overlap after a lobe collapses, so geometric coincidence
+/// alone cannot decide which boundaries belong together.
+pub(super) fn sew_sections(
+    patches: Vec<Patch>,
+    source_domain: RangeInclusive<Real>,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    let brep = Brep::try_combine(
+        patches.into_iter().map(|patch| patch.brep).collect(),
+        tolerance,
+    )?;
+    let mut sections = brep
+        .faces()
+        .iter()
+        .map(|face| {
+            let vertices = corner_vertices(face)?;
+            let domain = face.surface().domain_v();
+            let ruling = |a: usize, b: usize| -> Result<_, GeometryError> {
+                let [Some(source), Some(offset)] = [vertices[a], vertices[b]] else {
+                    return Err(invalid());
+                };
+                let edge = face
+                    .loops()
+                    .iter()
+                    .flat_map(|loop_| loop_.trims())
+                    .filter_map(|trim| trim.edge())
+                    .find_map(|id| {
+                        let ends = brep.edges()[id].vertices();
+                        if ends == [source, offset] {
+                            Some((id, false))
+                        } else if ends == [offset, source] {
+                            Some((id, true))
+                        } else {
+                            None
+                        }
+                    });
+                Ok((edge, [source, offset].map(|id| brep.vertices()[id].point())))
+            };
+            Ok::<_, GeometryError>((domain, [ruling(0, 1)?, ruling(3, 2)?]))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    sections.sort_unstable_by(|a, b| a.0.start().total_cmp(b.0.start()));
+    let mut pairs = Vec::new();
+    for i in 0..sections.len() {
+        let (domain, [_, end]) = &sections[i];
+        let j = (i + 1) % sections.len();
+        let (next, [start, _]) = &sections[j];
+        let adjacent = if j == 0 {
+            domain.end() == source_domain.end() && next.start() == source_domain.start()
+        } else {
+            domain.end() == next.start()
+        };
+        if adjacent
+            && end
+                .1
+                .into_iter()
+                .zip(start.1)
+                .all(|(a, b)| a.is_near(b, tolerance))
+            && let (Some((after, invert_after)), Some((before, invert_before))) = (end.0, start.0)
+        {
+            pairs.push((after, before, invert_after != invert_before));
+        }
+    }
+    brep.try_join_edge_pairs(&pairs, tolerance.absolute(), tolerance)
 }

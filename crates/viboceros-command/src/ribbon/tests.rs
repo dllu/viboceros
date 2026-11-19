@@ -101,6 +101,101 @@ fn ribbon_trim_preserves_native_strip_geometry_and_incidence() {
 }
 
 #[test]
+fn ribbon_trims_closed_sharp_offsets_and_preserves_native_ruled_sections() {
+    let reference: serde_json::Value = serde_json::from_str(include_str!(
+        "../../../../docs/ribbon-global-trim-reference.json"
+    ))
+    .unwrap();
+    let model = Tolerance::try_new(
+        reference["model_absolute_tolerance"].as_f64().unwrap(),
+        Tolerance::DEFAULT.relative(),
+        Tolerance::DEFAULT.angular(),
+    )
+    .unwrap();
+    for case in reference["cases"].as_array().unwrap() {
+        let name = case["name"].as_str().unwrap();
+        let mut doc = Document::new(model);
+        let registry = CommandRegistry::with_builtins();
+        registry
+            .execute(&mut doc, case["source"].as_str().unwrap())
+            .unwrap();
+        registry.execute(&mut doc, "SelAll").unwrap();
+        doc.clear_history().unwrap();
+        let result = registry.execute(&mut doc, case["ribbon"].as_str().unwrap());
+        let expected = &case["expected"];
+        if expected.is_null() {
+            assert!(result.is_err(), "{name}");
+            assert_eq!(doc.objects().len(), 1, "{name}");
+            assert!(!doc.can_undo(), "{name}");
+            continue;
+        }
+        result.unwrap_or_else(|error| panic!("{name}: {error}"));
+        assert_eq!(doc.objects().len(), 2, "{name}");
+        let brep = doc
+            .objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::Brep(brep) => Some(brep),
+                _ => None,
+            })
+            .unwrap();
+        let faces = expected["faces"].as_array().unwrap();
+        let count = |name: &str| expected[name].as_u64().unwrap() as usize;
+        assert_eq!(
+            (
+                brep.faces().len(),
+                brep.edges().len(),
+                brep.vertices().len()
+            ),
+            (faces.len(), count("edges"), count("vertices")),
+            "{name}"
+        );
+        let area = brep.area(model).unwrap();
+        assert!(
+            (area - expected["area"].as_f64().unwrap()).abs() < 1e-9,
+            "{name} area={area}"
+        );
+        let mut surfaces = brep
+            .faces()
+            .iter()
+            .map(|face| face.surface())
+            .collect::<Vec<_>>();
+        for face in faces {
+            let value = |axis: usize, end: usize| face[0][axis][end].as_f64().unwrap();
+            let expected_corners = face[1]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(json_point)
+                .collect::<Vec<_>>();
+            let matched = surfaces.iter().position(|surface| {
+                let (u, v) = (surface.domain_u(), surface.domain_v());
+                [*u.start(), *u.end(), *v.start(), *v.end()]
+                    .into_iter()
+                    .zip([value(0, 0), value(0, 1), value(1, 0), value(1, 1)])
+                    .all(|(a, b)| (a - b).abs() < 1e-9)
+                    && [
+                        [*u.start(), *v.start()],
+                        [*u.end(), *v.start()],
+                        [*u.end(), *v.end()],
+                        [*u.start(), *v.end()],
+                    ]
+                    .into_iter()
+                    .zip(&expected_corners)
+                    .all(|([u, v], &expected)| {
+                        surface
+                            .evaluate(u, v)
+                            .and_then(|point| point.distance_to(expected))
+                            .is_ok_and(|error| error < 1e-9)
+                    })
+            });
+            let index =
+                matched.unwrap_or_else(|| panic!("{name} missing native ruled section {face}"));
+            surfaces.swap_remove(index);
+        }
+    }
+}
+
+#[test]
 fn ribbon_corner_side_and_width_match_native_picks() {
     let reference: serde_json::Value =
         serde_json::from_str(include_str!("../../../../docs/ribbon-side-reference.json")).unwrap();

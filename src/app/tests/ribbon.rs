@@ -379,6 +379,55 @@ fn ribbon_trim_edits_before_and_after_source_pick_update_the_preview() {
 }
 
 #[test]
+fn ribbon_trim_preview_splits_an_inward_offset_at_a_narrow_neck() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    enter(
+        &mut app,
+        "Polyline 0,0,0 4,0,0 4,1.5,0 8,1.5,0 8,0,0 12,0,0 12,4,0 8,4,0 8,2.5,0 4,2.5,0 4,4,0 0,4,0 0,0,0",
+    );
+    let source = app.document.objects().next().unwrap().id();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Ribbon .75 Trim=No");
+    pick(&mut app, source);
+    let target = point(2., 2., 0.);
+    let edge_count = |app: &mut VibocerosApp| {
+        let deadline = Instant::now() + Duration::from_secs(5);
+        loop {
+            app.update_ribbon_preview(Some(target), &context);
+            if let Some(edges) = app
+                .ribbon_session
+                .as_ref()
+                .unwrap()
+                .preview_curves(&app.document)
+            {
+                return edges.len();
+            }
+            assert!(Instant::now() < deadline, "Ribbon preview did not complete");
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    };
+    assert_eq!(edge_count(&mut app), 44);
+    enter(&mut app, "Trim=Yes");
+    assert_eq!(edge_count(&mut app), 32);
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "w2,2,0");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(result) = app
+        .document
+        .objects()
+        .find(|object| object.id() != source)
+        .unwrap()
+        .geometry()
+    else {
+        panic!("expected a ruled ribbon");
+    };
+    assert_eq!((result.faces().len(), result.edges().len()), (10, 32));
+}
+
+#[test]
 fn ribbon_corner_hover_and_click_use_the_same_side() {
     let mut app = test_app();
     let context = egui::Context::default();

@@ -60,13 +60,18 @@ includes line extensions, off-plane picks, and rounded polyline corners.
 Drafts invalidate when source state changes.
 
 `Trim=Yes` clips adjacent inside corners of ordinary polyline ribbons.
+For a simple closed planar polyline, it keeps the surviving Sharp inward offset
+loops when a narrow passage or lobe collapses. Multiple loops have separate source intervals.
+If a single loop survives, singular ruled faces fill the omitted intervals.
 `Trim=No` preserves the full ruled strips where they overlap. The live preview
-follows the setting. [Rhino 8 trim capture](../ribbon-trim-reference.json)
+follows the setting. [Rhino 8 corner captures](../ribbon-trim-reference.json),
+[closed inward captures](../ribbon-global-trim-reference.json)
 
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
-tolerance, Corner, and Trim. Global self-intersection trimming and history-based
-regeneration remain unfinished. Both-sided Loose polycurves
+tolerance, Corner, and Trim. Global trimming for open, self-crossing or smooth
+sources and non-Sharp corners remains unfinished, along with history-based
+regeneration. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

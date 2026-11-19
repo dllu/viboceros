@@ -2,7 +2,10 @@
 use super::corner::{RibbonCornerStyle, smooth_corner};
 mod assembly;
 mod correspondence;
-use crate::curve_offset::{polyline_offset_corner_arc, polyline_offset_layout_with_trim};
+mod global;
+use crate::curve_offset::{
+    polyline_offset_corner_arc, polyline_offset_corner_layout, polyline_offset_layout_with_trim,
+};
 use crate::{
     Brep, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
     UnitVector3, WeightedPoint3, join_breps,
@@ -22,7 +25,7 @@ const MAX_PATCHES: usize = 4096;
 /// side. Smooth corners use cubic tangent fans. Sharp seam clips can omit
 /// extra fans when both incident strips extend at other corners. Returned
 /// containers can include shells connected only at declared corner vertices.
-/// This does not trim self-intersections or implement command/object policies.
+/// Closed inward Sharp offsets also discard the rails of collapsed regions.
 pub fn try_polyline_ribbon(
     source: &Polyline3,
     distance: Real,
@@ -83,8 +86,9 @@ pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
         .into());
     }
     let mut patches = Vec::new();
+    let mut trimmed = Vec::new();
     for (side, d) in [distance, -distance].into_iter().take(sides).enumerate() {
-        let layout = polyline_offset_layout_with_trim(
+        let layout = polyline_offset_corner_layout(
             source,
             d,
             normal,
@@ -92,6 +96,15 @@ pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
             corner.layout_style(),
             trim,
         )?;
+        if trim
+            && corner == RibbonCornerStyle::Sharp
+            && source.is_closed()
+            && let Some(brep) = global::build(source, &layout, d, tolerance, ruled)?
+        {
+            trimmed.push(brep);
+            continue;
+        }
+        layout.validate_segments(source)?;
         let omit_seam_fans = trim
             && corner == RibbonCornerStyle::Sharp
             && source.is_closed()
@@ -260,11 +273,27 @@ pub fn try_polyline_ribbon_with_trim<E: From<GeometryError>>(
             )?);
         }
     }
-    if trim {
-        Ok(assembly::sew(patches, tolerance)?)
-    } else {
-        Ok(vec![assembly::sew_untrimmed(patches, tolerance)?])
+    if !trim {
+        return Ok(vec![assembly::sew_untrimmed(patches, tolerance)?]);
     }
+    if trimmed.is_empty() {
+        return Ok(assembly::sew(patches, tolerance)?);
+    }
+    if !patches.is_empty() {
+        trimmed.extend(assembly::sew(patches, tolerance)?);
+    }
+    if trimmed.len() == 1 {
+        return Ok(trimmed);
+    }
+    let joined = join_breps(
+        &trimmed.iter().collect::<Vec<_>>(),
+        tolerance.absolute(),
+        tolerance,
+    )?;
+    Ok(vec![Brep::try_combine(
+        joined.into_iter().map(|part| part.brep).collect(),
+        tolerance,
+    )?])
 }
 
 fn constant_with_basis(point: Point3, basis: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
