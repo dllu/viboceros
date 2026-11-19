@@ -59,17 +59,48 @@ fn pick(
 #[test]
 fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projected_base() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
-    for (warped, expected, volume) in [
-        (false, point(3.1276394018095055, 3., 5.), 110.25562442847803),
+    for (warped, rectangle, expected, volume) in [
+        (
+            false,
+            [-2., -2.7, 3.7, 2.7],
+            point(3.1276394018095055, 3., 5.),
+            Some(110.25562442847803),
+        ),
         (
             true,
+            [-2., -2.7, 3.7, 2.7],
             point(3.136774381710049, 3., 5.3996199782888965),
-            113.9527032624614,
+            Some(113.9527032624614),
+        ),
+        (
+            false,
+            [-2., -2.2876659672906228, 3.7, 2.7],
+            point(3.1276394018095064, 3., 5.),
+            Some(110.25562442776386),
+        ),
+        (
+            true,
+            [-2., -2.7, 3.136774381710049, 2.7],
+            point(3.136774381710049, 3., 5.399619978288897),
+            Some(113.9527032637002),
+        ),
+        (
+            false,
+            [-2., -2.2876659672906228, 3.7, 2.7],
+            point(3.1276394018095064, 3., 5.),
+            None,
+        ),
+        (
+            true,
+            [-2., -2.7, 3.136774381710049, 2.7],
+            point(3.136774381710049, 3., 5.399619978288898),
+            None,
         ),
     ] {
-        let support = cutter([-2., -2.7, 3.7, 2.7], warped);
+        let support = cutter(rectangle, warped);
         let (mut doc, source, reference) = scene(tolerance, &support);
         let commands = CommandRegistry::with_builtins();
+        let solid = if volume.is_some() { "Yes" } else { "No" };
         assert_eq!(
             pick(
                 &mut doc,
@@ -79,13 +110,13 @@ fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projec
                 &[
                     "Direction=1,0,6",
                     "DraftAngle=8",
-                    "Solid=Yes",
+                    &format!("Solid={solid}"),
                     "DeleteInput=Yes",
                 ]
             )
-            .unwrap(),
+            .unwrap_or_else(|error| panic!("{warped}, {rectangle:?}: {error}")),
             TaperedBoundaryOutcome::Cut(1),
-            "warped={warped}",
+            "warped={warped}, solid={solid}, {rectangle:?}",
         );
         assert!(doc.object(source).is_none());
         let Geometry::Brep(result) = doc
@@ -96,22 +127,27 @@ fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projec
         else {
             panic!("expected a cut B-rep");
         };
-        assert!(result.is_solid());
-        assert_eq!((result.faces().len(), result.edges().len()), (6, 12));
-        let cap = result.faces().last().unwrap().surface();
-        assert_eq!(cap.domain_u(), support.domain_u());
-        assert_eq!(cap.domain_v(), support.domain_v());
-        assert!(
-            cap.control_points()
-                .iter()
-                .zip(support.control_points())
-                .all(|(a, b)| a.point().is_near(b.point(), tolerance))
-        );
-        let result_volume = result.signed_volume(tolerance).unwrap();
-        assert!(
-            (result_volume - volume).abs() < 1e-4,
-            "{result_volume} vs {volume}"
-        );
+        assert_eq!(result.is_solid(), volume.is_some());
+        assert_eq!(result.edges().len(), 12);
+        if let Some(volume) = volume {
+            assert_eq!(result.faces().len(), 6);
+            let cap = result.faces().last().unwrap().surface();
+            assert_eq!(cap.domain_u(), support.domain_u());
+            assert_eq!(cap.domain_v(), support.domain_v());
+            assert!(
+                cap.control_points()
+                    .iter()
+                    .zip(support.control_points())
+                    .all(|(a, b)| a.point().is_near(b.point(), tolerance))
+            );
+            let result_volume = result.signed_volume(tolerance).unwrap();
+            assert!(
+                (result_volume - volume).abs() < 1e-4,
+                "{result_volume} vs {volume}"
+            );
+        } else {
+            assert_eq!(result.faces().len(), 4);
+        }
         let bounds = Shape::from_brep(result, tolerance)
             .unwrap()
             .tight_bounds()
@@ -124,13 +160,11 @@ fn oblique_boundary_caps_a_contracted_rim_even_when_the_cutter_misses_the_projec
 }
 
 #[test]
-fn oblique_boundary_finishes_cutter_picks_that_miss_the_rim_without_geometry() {
+fn oblique_boundary_keeps_preview_stock_when_the_cutter_just_crosses_the_rim() {
     let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
-    for (warped, solid, bounds) in [
-        (false, "Yes", [0.3, -1.2, 1.8, 1.2]),
-        (true, "No", [0.3, -1.2, 1.8, 1.2]),
-        (false, "Yes", [7., -6., 12., 7.]),
-        (true, "No", [7., -6., 12., 7.]),
+    for (warped, bounds) in [
+        (false, [-2., -2.2875228972462147, 3.7, 2.7]),
+        (true, [-2., -2.7, 3.1366943817100488, 2.7]),
     ] {
         let support = cutter(bounds, warped);
         let (mut doc, source, reference) = scene(tolerance, &support);
@@ -142,7 +176,62 @@ fn oblique_boundary_finishes_cutter_picks_that_miss_the_rim_without_geometry() {
             &support,
             &[
                 "Direction=1,0,6",
-                "DraftAngle=-10",
+                "DraftAngle=8",
+                "Solid=Yes",
+                "DeleteInput=Yes",
+            ],
+        );
+        assert_eq!(
+            outcome.unwrap(),
+            TaperedBoundaryOutcome::Fallback,
+            "{bounds:?}"
+        );
+        assert!(doc.object(source).is_none());
+        let Geometry::Brep(result) = doc
+            .objects()
+            .find(|object| object.id() != reference.object)
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected the open preview stock");
+        };
+        assert_eq!((result.faces().len(), result.edges().len()), (5, 12));
+        assert!(!result.is_solid());
+        let bounds = Shape::from_brep(result, tolerance)
+            .unwrap()
+            .tight_bounds()
+            .unwrap();
+        assert!(
+            bounds
+                .max()
+                .is_near(point(3.2872052075524794, 3., 11.250648447143103), tolerance),
+            "{bounds:?}"
+        );
+    }
+}
+
+#[test]
+fn oblique_boundary_finishes_cutter_picks_that_miss_the_rim_without_geometry() {
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap();
+    for (warped, solid, draft, bounds) in [
+        (false, "Yes", -10, [0.3, -1.2, 1.8, 1.2]),
+        (true, "No", -10, [0.3, -1.2, 1.8, 1.2]),
+        (false, "Yes", -10, [7., -6., 12., 7.]),
+        (true, "No", -10, [7., -6., 12., 7.]),
+        (false, "Yes", 8, [-2., -5., 3.7, -2.2876659672906228]),
+        (true, "Yes", 8, [3.136774381710049, -2.7, 6.5, 2.7]),
+    ] {
+        let support = cutter(bounds, warped);
+        let (mut doc, source, reference) = scene(tolerance, &support);
+        let commands = CommandRegistry::with_builtins();
+        let outcome = pick(
+            &mut doc,
+            &commands,
+            reference,
+            &support,
+            &[
+                "Direction=1,0,6",
+                &format!("DraftAngle={draft}"),
                 &format!("Solid={solid}"),
                 "DeleteInput=Yes",
             ],

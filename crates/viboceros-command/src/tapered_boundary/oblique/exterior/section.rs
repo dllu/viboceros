@@ -1,9 +1,11 @@
 //! Compare the finite cutter with the complete section of its carrier.
 use super::*;
-use viboceros_geometry::BrepLoop;
+use crate::curve_intersections::events;
+use viboceros_geometry::{BrepLoop, CurveCurveIntersectionEvent};
 
 pub(in crate::tapered_boundary::oblique) enum Coverage {
     Complete(Brep),
+    RimContact,
     MissedRim,
     Unresolved,
 }
@@ -41,25 +43,25 @@ pub(in crate::tapered_boundary::oblique) fn recover(
     };
     let cap_index = section.faces().len() - 1;
     let end = &section.faces()[cap_index];
-    let outer = &face.loops()[0];
-    for trim in outer.trims() {
-        let edge = cutter.edges()[trim.edge().ok_or(REJECTED)?].curve();
-        for rim in end.loops().iter().flat_map(|rim| rim.trims()) {
-            let rim = section.edges()[rim.edge().ok_or(REJECTED)?].curve();
-            if !crate::curve_intersections::events(edge, rim, tolerance)?.is_empty() {
-                return Ok(Coverage::Unresolved);
-            }
+    let outline = face.loops()[0]
+        .trims()
+        .iter()
+        .map(|trim| Ok(cutter.edges()[trim.edge().ok_or(REJECTED)?].curve()))
+        .collect::<Result<Vec<_>, CommandError>>()?;
+    let mut covered = false;
+    let mut uncovered = false;
+    for rim in end.loops() {
+        let rim = spans(&section, rim, face, &outline, tolerance)?;
+        if rim.inside && rim.outside {
+            return Ok(Coverage::RimContact);
         }
+        covered |= rim.inside || rim.boundary && !rim.outside;
+        uncovered |= rim.outside;
     }
-    // The rims share a carrier and are disjoint. One point on each rim
-    // determines whether the cutter contains that entire rim.
-    if !contains(face, loop_start(end, &end.loops()[0])?, tolerance)? {
-        for inner in &end.loops()[1..] {
-            if contains(face, loop_start(end, inner)?, tolerance)? {
-                return Ok(Coverage::Unresolved);
-            }
-        }
-        return Ok(Coverage::MissedRim);
+    match (covered, uncovered) {
+        (true, false) => {}
+        (false, true) => return Ok(Coverage::MissedRim),
+        _ => return Ok(Coverage::Unresolved),
     }
 
     if !cap {
@@ -84,10 +86,71 @@ pub(in crate::tapered_boundary::oblique) fn recover(
     Ok(Coverage::Complete(restored))
 }
 
-fn loop_start(face: &BrepFace, rim: &BrepLoop) -> Result<Point3, GeometryError> {
-    let curve = rim.trims()[0].curve();
-    let uv = curve.evaluate(*curve.domain().start())?;
-    face.surface().evaluate(uv.x(), uv.y())
+#[derive(Default)]
+struct RimCoverage {
+    inside: bool,
+    outside: bool,
+    boundary: bool,
+}
+
+fn spans(
+    section: &Brep,
+    rim: &BrepLoop,
+    face: &BrepFace,
+    outline: &[&NurbsCurve],
+    tolerance: Tolerance,
+) -> Result<RimCoverage, CommandError> {
+    let mut coverage = RimCoverage::default();
+    for trim in rim.trims() {
+        let curve = section.edges()[trim.edge().ok_or(REJECTED)?].curve();
+        let domain = curve.domain();
+        let mut limits = vec![*domain.start(), *domain.end()];
+        for edge in outline {
+            for event in events(curve, edge, tolerance)? {
+                match event {
+                    CurveCurveIntersectionEvent::Point(hit) => limits.push(hit.first_parameter()),
+                    CurveCurveIntersectionEvent::Overlap(shared) => {
+                        limits.extend([
+                            shared.start().first_parameter(),
+                            shared.end().first_parameter(),
+                        ]);
+                    }
+                }
+            }
+        }
+        limits.sort_unstable_by(f64::total_cmp);
+        limits.dedup();
+        // With the rim split at its contacts on the shared carrier, the
+        // interior of each interval stays on one side of the cutter's trim.
+        for interval in limits.windows(2) {
+            let point = curve.evaluate(interval[0].midpoint(interval[1]))?;
+            if on_outline(outline, point, tolerance)? {
+                coverage.boundary = true;
+            } else if contains(face, point, tolerance)? {
+                coverage.inside = true;
+            } else {
+                coverage.outside = true;
+            }
+        }
+        if coverage.inside && coverage.outside {
+            break;
+        }
+    }
+    Ok(coverage)
+}
+
+fn on_outline(
+    outline: &[&NurbsCurve],
+    point: Point3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    for edge in outline {
+        let parameter = edge.closest_parameter(point, tolerance)?;
+        if edge.evaluate(parameter)?.is_near(point, tolerance) {
+            return Ok(true);
+        }
+    }
+    Ok(false)
 }
 
 fn contains(face: &BrepFace, point: Point3, tolerance: Tolerance) -> Result<bool, GeometryError> {

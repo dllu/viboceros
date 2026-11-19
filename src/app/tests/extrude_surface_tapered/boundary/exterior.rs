@@ -120,10 +120,11 @@ fn surface_taper_oblique_boundary_completes_a_cut_that_misses_the_rim() {
 }
 
 #[test]
-fn curve_taper_oblique_boundary_viewport_pick_caps_a_contracted_section() {
+fn curve_taper_oblique_boundary_viewport_pick_caps_a_tangent_section() {
     use super::super::super::circle_preview::viewport_click;
 
     let mut app = test_app();
+    app.document = Document::new(Tolerance::try_new(1e-6, 1e-12, 1e-8).unwrap());
     let profile = circle(&app);
     let source = app
         .document
@@ -131,8 +132,8 @@ fn curve_taper_oblique_boundary_viewport_pick_caps_a_contracted_section() {
         .unwrap();
     let support = NurbsSurface::try_bilinear([
         point(-2., -2.7, 4.941136363636363),
-        point(3.7, -2.7, 5.253340909090909),
-        point(3.7, 2.7, 5.5262045454545445),
+        point(3.136774381710049, -2.7, 5.222491505907301),
+        point(3.136774381710049, 2.7, 5.493051037468842),
         point(-2., 2.7, 5.190681818181818),
     ])
     .unwrap();

@@ -115,12 +115,21 @@ pub(super) fn trim(
     let cap = has_holes || !matches!(output, Output::CurveWalls { .. });
     let closed = match clip(sweep, &stock, source, outline, displacement, cap, tolerance) {
         Err(CommandError::SurfaceExtrusionBoundaryRejected) => {
-            if exterior::crosses_rim(&stock, source_plane, outline, displacement, tolerance)? {
-                return rim_contact(stock, output, picked);
-            }
             match exterior::recover(sweep, &stock, source, outline, displacement, cap, tolerance)? {
                 exterior::Coverage::Complete(brep) => brep,
+                exterior::Coverage::RimContact => return rim_contact(stock, output, picked),
                 exterior::Coverage::MissedRim => return Ok(None),
+                exterior::Coverage::Unresolved
+                    if exterior::crosses_rim(
+                        &stock,
+                        source_plane,
+                        outline,
+                        displacement,
+                        tolerance,
+                    )? =>
+                {
+                    return rim_contact(stock, output, picked);
+                }
                 exterior::Coverage::Unresolved => return Err(REJECTED),
             }
         }
@@ -198,8 +207,11 @@ fn clip(
     // The finite cutter's exterior extrudes back toward the source. Any
     // surviving naked edge off its plane signals an uncovered section.
     let tool = boundary_tool(cutter, displacement.scaled(-2.)?, tolerance)?;
-    let clipped = match sweep.trimmed_inside(&tool) {
-        Ok(Some(clipped)) => clipped.to_brep(tolerance)?,
+    let clipped = match sweep
+        .trimmed_inside(&tool)
+        .and_then(|stock| stock.map(|stock| stock.to_brep(tolerance)).transpose())
+    {
+        Ok(Some(clipped)) => clipped,
         Ok(None) | Err(viboceros_smlib::Error::Kernel(_)) => return Err(REJECTED),
         Err(error) => return Err(error.into()),
     };
