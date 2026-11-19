@@ -208,7 +208,6 @@ mod evaluate_uv;
 mod extrude_surface;
 mod extrude_surface_apex;
 mod extrude_surface_path;
-mod extrude_surface_tapered;
 mod extrude_tapered;
 mod face_create;
 mod fillet_corners;
@@ -563,6 +562,7 @@ pub struct VibocerosApp {
     remap_cplane_session: Option<remap_cplane::Session>,
     orient_surface_session: Option<orient_surface::Session>,
     surface_extrusion_sources: Option<extrude_surface::SurfaceExtrusionSources>,
+    tapered_extrusion_session: Option<extrude_tapered::Session>,
     surface_path_prompt: Option<extrude_surface_path::SurfacePathSession>,
     evaluate_uv_session: Option<evaluate_uv::EvaluateUvSession>,
     curve_preview: curve_preview::CurvePreviewCache,
@@ -781,6 +781,7 @@ impl VibocerosApp {
             remap_cplane_session: None,
             orient_surface_session: None,
             surface_extrusion_sources: None,
+            tapered_extrusion_session: None,
             surface_path_prompt: None,
             evaluate_uv_session: None,
             curve_preview: curve_preview::CurvePreviewCache::default(),
@@ -1183,7 +1184,7 @@ impl VibocerosApp {
         if self.start_layer_prompt(&input)
             || self.start_merge_face_input(&input)
             || self.try_start_shell_input(&input)
-            || self.try_start_surface_tapered_input(&input)
+            || self.try_start_tapered_extrusion_input(&input)
             || self.try_start_surface_apex_input(&input)
             || self.try_start_surface_path_input(&input)
             || self.try_start_surface_extrusion_input(&input)

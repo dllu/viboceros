@@ -106,7 +106,7 @@ impl VibocerosApp {
         {
             return true;
         }
-        if self.try_start_surface_tapered_input(input)
+        if self.try_start_tapered_extrusion_input(input)
             || self.try_start_surface_apex_input(input)
             || self.try_start_surface_path_input(input)
             || self.try_start_surface_extrusion_input(input)
@@ -416,16 +416,6 @@ impl VibocerosApp {
                 return false;
             };
             command
-        } else if normalized == "extrudecrvtapered" {
-            let Ok(options) =
-                viboceros_command::extrude_tapered::TaperedExtrusionOptions::parse(&arguments)
-            else {
-                return false;
-            };
-            InteractiveCommand::ExtrudeCurveTapered {
-                base: None,
-                options,
-            }
         } else if normalized == "extrudecrvtopoint" {
             let Some(command) = super::curve_apex::start(&arguments) else {
                 return false;
@@ -1473,9 +1463,7 @@ impl VibocerosApp {
                 | InteractiveCommand::MirrorObject
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
-                | InteractiveCommand::ExtrudeCurveTapered { .. }
                 | InteractiveCommand::ExtrudeSurface { .. }
-                | InteractiveCommand::ExtrudeSurfaceTapered { .. }
                 | InteractiveCommand::ExtrudeSurfaceToPoint { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }

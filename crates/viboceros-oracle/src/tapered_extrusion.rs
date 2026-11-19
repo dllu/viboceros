@@ -16,11 +16,9 @@ pub(super) fn run(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let curve = nurbs_curve_from_definition(&f.curve)?;
-    let displacement = Vector3::try_from(f.displacement)?;
-    let height = displacement.length()?;
-    let [x, y, z] = displacement.normalized_nonzero()?.as_vector().to_array();
+    let [x, y, z] = f.displacement;
     let command = format!(
-        "ExtrudeCrvTapered {height} Direction={x},{y},{z} DraftAngle={} Solid={} Corners={}",
+        "ExtrudeCrvTapered 0,0,0 {x},{y},{z} DraftAngle={} Solid={} Corners={}",
         f.draft_angle,
         if f.solid { "Yes" } else { "No" },
         if f.round_corners { "Round" } else { "Sharp" }
@@ -31,7 +29,7 @@ pub(super) fn run(
         doc.select_objects_direct([id], SelectionMode::Replace)?;
         CommandRegistry::with_builtins().execute(&mut doc, &command)?;
         let mut records = Vec::new();
-        for obj in doc.selected_objects() {
+        for obj in doc.objects().filter(|object| object.id() != id) {
             let Geometry::Brep(brep) = obj.geometry() else {
                 return Err(ProbeError::FixtureInvariant(
                     "tapered result is not a B-rep",

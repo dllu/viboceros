@@ -144,6 +144,10 @@ impl VibocerosApp {
                     .or_else(|| self.polygon_session.as_ref()?.input.anchor())
                     .or_else(|| self.pyramid_session.as_ref()?.input.anchor())
                     .or_else(|| {
+                        self.tapered_distance_constraint()
+                            .map(|constraint| constraint.anchor)
+                    })
+                    .or_else(|| {
                         let input = self.solid_axial_session.as_ref()?.input;
                         (input.kind == viboceros_command::solid_axial::Kind::Tube)
                             .then(|| input.anchor())

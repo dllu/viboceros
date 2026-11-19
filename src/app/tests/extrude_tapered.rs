@@ -15,8 +15,9 @@ fn tapered_source_getter_preserves_inline_options_and_accepts_option_edits() {
         mode: SelectionMode::Replace,
     });
     enter(&mut app, "");
-    let Some(InteractiveCommand::ExtrudeCurveTapered {
-        base: None,
+    let Some(InteractiveCommand::ExtrudeTapered {
+        surface: false,
+        stage: crate::app::extrude_tapered::Stage::Distance,
         options,
     }) = app.active_command
     else {
@@ -26,7 +27,12 @@ fn tapered_source_getter_preserves_inline_options_and_accepts_option_edits() {
     assert!(options.solid);
     let before = format!("{:?}", app.document);
     enter(&mut app, "FlipAngle Corners=Round");
-    let Some(InteractiveCommand::ExtrudeCurveTapered { options, .. }) = app.active_command else {
+    let Some(InteractiveCommand::ExtrudeTapered {
+        surface: false,
+        options,
+        ..
+    }) = app.active_command
+    else {
         panic!()
     };
     assert_eq!(options.draft_angle, -12.);
@@ -34,7 +40,7 @@ fn tapered_source_getter_preserves_inline_options_and_accepts_option_edits() {
     enter(&mut app, "DraftAngle=90");
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::ExtrudeCurveTapered { .. })
+        Some(InteractiveCommand::ExtrudeTapered { surface: false, .. })
     ));
     assert_eq!(format!("{:?}", app.document), before);
     enter(&mut app, "Cancel");
@@ -49,7 +55,7 @@ fn tapered_distance_getter_commits_and_replays_geometry() {
     enter(&mut app, "ExtrudeCrvTapered DraftAngle=10 Solid=Yes");
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::ExtrudeCurveTapered { .. })
+        Some(InteractiveCommand::ExtrudeTapered { surface: false, .. })
     ));
     enter(&mut app, "2");
     assert!(app.active_command.is_none());
@@ -83,17 +89,35 @@ fn tapered_direction_points_use_displacement_and_keep_the_base_after_failed_targ
     enter(&mut app, "SelAll");
     let source = app.document.objects().next().unwrap().clone();
     enter(&mut app, "ExtrudeCrvTapered DraftAngle=10 Solid=Yes");
+    enter(&mut app, "_Direction");
     let base = point(3., 4., 5.);
     assert!(app.accept_drafting_point(base));
     let active = app.active_command;
     assert!(!app.accept_drafting_point(base));
     assert_eq!(app.active_command, active);
     assert_eq!(app.document.object(source.id()), Some(&source));
-    assert!(app.accept_drafting_point(point(3., 4., 7.)));
+    assert!(app.accept_drafting_point(point(3., 4., 8.)));
+    assert!(matches!(
+        app.active_command,
+        Some(InteractiveCommand::ExtrudeTapered {
+            stage: crate::app::extrude_tapered::Stage::Distance,
+            ..
+        })
+    ));
+    assert_eq!(app.document.objects().count(), 1);
+    enter(&mut app, "2");
     assert!(app.active_command.is_none());
-    let Geometry::Brep(b) = app.document.selected_objects().next().unwrap().geometry() else {
+    let Geometry::Brep(b) = app
+        .document
+        .objects()
+        .find(|object| object.id() != source.id())
+        .unwrap()
+        .geometry()
+    else {
         panic!()
     };
     assert!(b.is_solid());
     assert!((b.bounds().max().z() - 2.).abs() < 1e-8);
 }
+
+mod getters;

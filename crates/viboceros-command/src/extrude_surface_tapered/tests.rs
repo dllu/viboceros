@@ -35,7 +35,7 @@ fn surface_taper_options_and_face_selectors_are_strict() {
     assert_eq!(input.faces, SurfaceFaces::Indices(vec![0]));
     assert!(SurfaceTaperedInput::parse(&["DraftAngle=90"]).is_err());
     assert!(SurfaceTaperedInput::parse(&["Face=0", "Faces=All"]).is_err());
-    assert!(SurfaceTaperedInput::default().options.solid);
+    assert!(!SurfaceTaperedInput::default().options.solid);
 }
 #[cfg(not(feature = "native-smlib"))]
 #[test]
@@ -63,11 +63,16 @@ fn surface_taper_curved_base_delete_history_and_explicit_displacement() {
     registry
         .execute(
             &mut doc,
-            "ExtrudeSrfTapered 0,0,0 0,0,2 DraftAngle=10 DeleteInput=Yes",
+            "ExtrudeSrfTapered 0,0,0 0,0,2 DraftAngle=10 Solid=Yes DeleteInput=Yes",
         )
         .unwrap();
     assert!(doc.object(s).is_none());
-    let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
+    let Geometry::Brep(b) = doc
+        .objects()
+        .find(|object| object.id() != s)
+        .unwrap()
+        .geometry()
+    else {
         panic!()
     };
     assert!(b.is_solid());
@@ -163,7 +168,7 @@ fn surface_taper_deleting_a_face_keeps_remainder_groups_and_zero_draft() {
         doc.group(group).unwrap().members().collect::<Vec<_>>(),
         vec![s]
     );
-    assert_eq!(doc.selected_object_count(), 1);
+    assert_eq!(doc.selected_object_count(), 0);
     registry.execute(&mut doc, "Undo").unwrap();
     assert_eq!(doc.object(s), Some(&original));
 }
@@ -190,10 +195,15 @@ fn surface_taper_numeric_direction_uses_the_face_plane_independently_of_cplane()
     registry
         .execute(
             &mut doc,
-            &format!("ExtrudeSrfTapered 2 DraftAngle=10 FaceRefs={s}:0"),
+            &format!("ExtrudeSrfTapered 2 DraftAngle=10 Solid=Yes FaceRefs={s}:0"),
         )
         .unwrap();
-    let Geometry::Brep(b) = doc.selected_objects().next().unwrap().geometry() else {
+    let Geometry::Brep(b) = doc
+        .objects()
+        .find(|object| object.id() != s)
+        .unwrap()
+        .geometry()
+    else {
         panic!()
     };
     assert!(b.is_solid());

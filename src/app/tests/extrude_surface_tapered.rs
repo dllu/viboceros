@@ -41,14 +41,24 @@ fn surface_taper_source_picker_options_flip_and_cancel() {
         mode: SelectionMode::Replace,
     });
     enter(&mut app, "");
-    let Some(InteractiveCommand::ExtrudeSurfaceTapered { options, .. }) = app.active_command else {
+    let Some(InteractiveCommand::ExtrudeTapered {
+        surface: true,
+        options,
+        ..
+    }) = app.active_command
+    else {
         panic!()
     };
     assert_eq!(options.draft_angle, 10.);
     assert!(!options.solid);
     enter(&mut app, "Solid=Yes DeleteInput=Yes FlipAngle");
     let active = app.active_command;
-    let Some(InteractiveCommand::ExtrudeSurfaceTapered { options, .. }) = active else {
+    let Some(InteractiveCommand::ExtrudeTapered {
+        surface: true,
+        options,
+        ..
+    }) = active
+    else {
         panic!()
     };
     assert_eq!(options.draft_angle, -10.);
@@ -113,17 +123,21 @@ fn surface_taper_numeric_and_two_point_input_commit_from_component_sources() {
             preselection: true,
             modifiers: egui::Modifiers::default(),
         });
-        enter(&mut app, "ExtrudeSrfTapered DraftAngle=10 DeleteInput=Yes");
+        enter(
+            &mut app,
+            "ExtrudeSrfTapered DraftAngle=10 Solid=Yes DeleteInput=Yes",
+        );
         assert!(app.object_prompt.is_none());
         if numeric {
             enter(&mut app, "2");
         } else {
+            enter(&mut app, "_SetBasePoint");
             assert!(app.accept_drafting_point(point(10., 20., 30.)));
             assert!(app.accept_drafting_point(point(10., 20., 32.)));
         }
         assert!(app.active_command.is_none());
         assert!(app.document.object(s).is_none());
-        let Geometry::Brep(b) = app.document.selected_objects().next().unwrap().geometry() else {
+        let Geometry::Brep(b) = app.document.objects().next().unwrap().geometry() else {
             panic!()
         };
         assert!(b.is_solid());
@@ -192,10 +206,15 @@ fn surface_taper_failed_direction_can_be_repaired_with_the_same_source_getter() 
     assert_eq!(format!("{:?}", app.document), before);
     assert!(matches!(
         app.active_command,
-        Some(InteractiveCommand::ExtrudeSurfaceTapered { base: None, .. })
+        Some(InteractiveCommand::ExtrudeTapered {
+            surface: true,
+            stage: crate::app::extrude_tapered::Stage::Distance,
+            ..
+        })
     ));
     enter(&mut app, "Direction");
-    enter(&mut app, "Direction=1,0,0");
+    assert!(app.accept_drafting_point(point(10., 20., 30.)));
+    assert!(app.accept_drafting_point(point(13., 20., 30.)));
     enter(&mut app, "2");
     assert!(app.active_command.is_none());
     assert_eq!(app.document.selected_object_count(), 1);

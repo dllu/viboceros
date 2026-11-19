@@ -170,9 +170,9 @@ impl InteractiveCommand {
             Self::Mirror { .. } | Self::MirrorThreePoint { .. } | Self::MirrorObject => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
-            Self::ExtrudeCurveTapered { .. } => "ExtrudeCrvTapered",
+            Self::ExtrudeTapered { surface: false, .. } => "ExtrudeCrvTapered",
             Self::ExtrudeSurface { .. } => "ExtrudeSrf",
-            Self::ExtrudeSurfaceTapered { .. } => "ExtrudeSrfTapered",
+            Self::ExtrudeTapered { surface: true, .. } => "ExtrudeSrfTapered",
             Self::ExtrudeSurfaceToPoint { .. } => "ExtrudeSrfToPoint",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
             Self::Revolve { .. } => "Revolve",
@@ -366,8 +366,6 @@ impl InteractiveCommand {
             | Self::MirrorObject
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
-            | Self::ExtrudeCurveTapered { base: None, .. }
-            | Self::ExtrudeSurfaceTapered { base: None, .. }
             | Self::ExtrudeSurfaceToPoint { .. }
             | Self::ExtrudeCurveToPoint { .. }
             | Self::Revolve {
@@ -398,11 +396,13 @@ impl InteractiveCommand {
             | Self::Array { start, .. }
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }
-            | Self::ExtrudeCurveTapered { base: start, .. }
-            | Self::ExtrudeSurfaceTapered { base: start, .. }
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::ExtrudeTapered { stage, .. } => match stage {
+                extrude_tapered::Stage::DirectionEnd(point) => Some(point),
+                _ => None,
+            },
             Self::ExtrudeSurface { stage, .. } => match stage {
                 extrude_surface::Stage::DirectionEnd { start, .. } => Some(start),
                 _ => None,

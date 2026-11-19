@@ -579,17 +579,14 @@ pub(super) enum InteractiveCommand {
         options: viboceros_command::CurveExtrusionOptions,
         split_available: bool,
     },
-    ExtrudeCurveTapered {
-        base: Option<Point3>,
+    ExtrudeTapered {
+        surface: bool,
+        stage: extrude_tapered::Stage,
         options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
     },
     ExtrudeSurface {
         stage: extrude_surface::Stage,
         options: viboceros_command::extrude_surface::SurfaceExtrusionOptions,
-    },
-    ExtrudeSurfaceTapered {
-        base: Option<Point3>,
-        options: viboceros_command::extrude_tapered::TaperedExtrusionOptions,
     },
     ExtrudeSurfaceToPoint {
         options: viboceros_command::extrude_surface_apex::SurfaceApexOptions,

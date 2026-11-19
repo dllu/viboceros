@@ -1,30 +1,30 @@
 //! Tapered surface extrusion with original face selection and staged admission.
 use super::*;
 use crate::extrude_surface::{
-    Distance, SurfaceExtrusionInput, SurfaceFaces, apply_face_extrusions,
-    parse_face_extrusion_distance,
+    Distance, SurfaceExtrusionInput, SurfaceFaces, apply_staged_products, capture_source_face,
+    parse_face_extrusion_distance, surface_extrusion_targets,
 };
-use crate::extrude_tapered::TaperedExtrusionOptions;
+use crate::extrude_tapered::{
+    TaperedExtrusionOptions, TaperedExtrusionSettings, retain_selected_inputs,
+};
 pub const USAGE: &str = "ExtrudeSrfTapered distance | base target [DraftAngle=degrees] [Solid=Yes|No] [Corners=Sharp|Round] [DeleteInput=Yes|No] [Direction=x,y,z] [FlipAngle] [Face=index|Faces=All|Faces=i,j|FaceRefs=id:index,...]";
-pub(super) struct ExtrudeSurfaceTaperedCommand;
-#[derive(Clone, Debug, PartialEq)]
+pub(super) struct ExtrudeSurfaceTaperedCommand {
+    pub(super) settings: std::sync::Arc<remembered::Remembered<TaperedExtrusionSettings>>,
+}
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct SurfaceTaperedInput {
     pub options: TaperedExtrusionOptions,
     pub faces: SurfaceFaces,
 }
-impl Default for SurfaceTaperedInput {
-    fn default() -> Self {
-        Self {
-            options: TaperedExtrusionOptions {
-                solid: true,
-                ..Default::default()
-            },
-            faces: SurfaceFaces::default(),
-        }
-    }
-}
 impl SurfaceTaperedInput {
     pub fn parse(words: &[&str]) -> Result<Self, CommandError> {
+        Self::parse_with_options(words, TaperedExtrusionOptions::default())
+    }
+
+    pub fn parse_with_options(
+        words: &[&str],
+        options: TaperedExtrusionOptions,
+    ) -> Result<Self, CommandError> {
         let (mut face_words, mut common) = (Vec::new(), Vec::new());
         for word in words {
             if word
@@ -43,7 +43,7 @@ impl SurfaceTaperedInput {
         }
         let mut result = Self {
             faces: SurfaceExtrusionInput::parse(&face_words)?.faces,
-            ..Self::default()
+            options,
         };
         result.options.update(&common).map_err(|e| match e {
             CommandError::Usage(_) => CommandError::Usage(USAGE),
@@ -60,12 +60,10 @@ impl Command for ExtrudeSurfaceTaperedCommand {
         &self,
         args: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        if args.iter().any(|s| {
-            !s.contains('=') && !s.trim_start_matches('_').eq_ignore_ascii_case("FlipAngle")
-        }) {
+        if args.iter().any(|s| !TaperedExtrusionOptions::recognizes(s)) {
             return Ok(None);
         }
-        let input = SurfaceTaperedInput::parse(args)?;
+        let input = SurfaceTaperedInput::parse_with_options(args, self.settings.get().options)?;
         if matches!(input.faces, SurfaceFaces::References(_)) {
             return Ok(None);
         }
@@ -87,72 +85,82 @@ impl Command for ExtrudeSurfaceTaperedCommand {
         args: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
-        let (positional, words): (Vec<_>, Vec<_>) = args.iter().copied().partition(|s| {
-            !s.contains('=') && !s.trim_start_matches('_').eq_ignore_ascii_case("FlipAngle")
-        });
-        let input = SurfaceTaperedInput::parse(&words)?;
+        let (words, positional): (Vec<_>, Vec<_>) = args
+            .iter()
+            .copied()
+            .partition(|s| TaperedExtrusionOptions::recognizes(s));
+        let input = SurfaceTaperedInput::parse_with_options(&words, self.settings.get().options)?;
         let distance =
             parse_face_extrusion_distance(&positional, input.options.direction.is_some(), USAGE)?;
-        let count = apply_face_extrusions(
+        let targets = surface_extrusion_targets(doc, &input.faces)?;
+        let count = targets.len();
+        let tolerance = doc.tolerance();
+        let mut products = Vec::with_capacity(count);
+        for &(id, face) in &targets {
+            let source = capture_source_face(doc, id, face)?;
+            products.push(Geometry::Brep(produce_surface(
+                &source,
+                distance,
+                input.options,
+                context.construction_plane,
+                tolerance,
+            )?));
+        }
+        let selection = doc.selected_object_ids().collect::<Vec<_>>();
+        if !input.options.delete_input {
+            let objects = targets.iter().map(|&(id, _)| id).collect::<BTreeSet<_>>();
+            doc.release_command_selection_on_history_replay(
+                selection.iter().copied().filter(|id| objects.contains(id)),
+            )?;
+        }
+        apply_staged_products(
             doc,
-            &input.faces,
-            input.options.delete_input,
-            |brep, tolerance| {
-                #[cfg(feature = "native-smlib")]
-                {
-                    let origin = brep
-                        .vertices()
-                        .first()
-                        .map(|v| v.point())
-                        .unwrap_or_else(|| brep.bounds().min());
-                    let zero = Point3::try_new(0., 0., 0.)?;
-                    let local = brep.transformed(
-                        AffineTransform3::from_translation(origin.vector_to(zero)?),
-                        tolerance,
-                    )?;
-                    let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
-                    let displacement = match distance {
-                        Distance::Explicit(v) => v,
-                        Distance::Numeric(h) => crate::extrude_surface::face_extrusion_direction(
-                            &shape,
-                            input.options.direction,
-                            context.construction_plane,
-                            tolerance,
-                        )?
-                        .scaled(h)?,
-                    };
-                    let b = shape
-                        .tapered_face(
-                            displacement,
-                            input.options.draft_angle,
-                            input.options.round_corners,
-                            input.options.solid,
-                            tolerance,
-                        )?
-                        .to_brep(tolerance)?
-                        .transformed(
-                            AffineTransform3::from_translation(zero.vector_to(origin)?),
-                            tolerance,
-                        )?;
-                    Ok(Geometry::Brep(b))
-                }
-                #[cfg(not(feature = "native-smlib"))]
-                {
-                    match distance {
-                        Distance::Explicit(v) => {
-                            let _ = v;
-                        }
-                        Distance::Numeric(h) => {
-                            let _ = h;
-                        }
-                    }
-                    let _ = (brep, tolerance, context);
-                    Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel)
-                }
-            },
+            products,
+            targets.into_iter().filter(|_| input.options.delete_input),
         )?;
+        retain_selected_inputs(doc, selection)?;
+        self.settings.set(TaperedExtrusionSettings::after_success(
+            input.options,
+            distance.remembered()?,
+        ));
         Ok(format!("Tapered {count} surface face(s)"))
     }
 }
+/// Construct the same one-face sweep for document edits and interactive previews.
+pub fn produce_surface(
+    brep: &Brep,
+    distance: Distance,
+    options: TaperedExtrusionOptions,
+    cplane: Frame3,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    #[cfg(feature = "native-smlib")]
+    {
+        let (origin, local) = crate::extrude_surface::local_sweep_source(brep, tolerance)?;
+        let shape = viboceros_smlib::Shape::from_brep(&local, tolerance)?;
+        let (displacement, draft) =
+            crate::extrude_tapered::displacement_and_draft(distance, options, || {
+                crate::extrude_surface::face_extrusion_direction(&shape, None, cplane, tolerance)
+            })?;
+        let restore =
+            AffineTransform3::from_translation(Point3::try_new(0., 0., 0.)?.vector_to(origin)?);
+        Ok(shape
+            .tapered_face(
+                displacement,
+                draft,
+                options.round_corners,
+                options.solid,
+                tolerance,
+            )?
+            .to_brep(tolerance)?
+            .transformed(restore, tolerance)?)
+    }
+    #[cfg(not(feature = "native-smlib"))]
+    {
+        let _ = (brep, distance, options, cplane, tolerance);
+        Err(CommandError::SurfaceTaperedExtrusionRequiresNativeKernel)
+    }
+}
+
 #[cfg(test)]
 mod tests;

@@ -4,9 +4,7 @@ use crate::surface_reference::{BoundaryInput, BoundaryRef};
 mod apply;
 #[cfg(feature = "native-smlib")]
 mod boundary;
-pub(super) use apply::{apply_face_extrusion_products, apply_face_extrusions};
-#[cfg(feature = "native-smlib")]
-pub(super) use apply::{apply_staged_products, capture_source_face};
+pub(super) use apply::{apply_face_extrusion_products, apply_staged_products, capture_source_face};
 
 pub const USAGE: &str = "ExtrudeSrf distance | base target | ToBoundary=id[:face] [BothSides=Yes|No] [Solid=Yes|No] [DeleteInput=Yes|No] [SplitAtTangents=Yes|No] [Direction=x,y,z] [Face=index|Faces=All|Faces=i,j] [FaceRefs=id:index,...]";
 pub(super) struct ExtrudeSurfaceCommand {
@@ -390,7 +388,7 @@ pub(super) fn sweep_surface_key(surface: &NurbsSurface) -> u64 {
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum Distance {
+pub enum Distance {
     Numeric(f64),
     Explicit(Vector3),
 }
@@ -433,7 +431,7 @@ pub(super) fn face_extrusion_direction(
         .unwrap_or(cplane.z_axis().as_vector()))
 }
 
-fn oriented_plane_normal(normal: Vector3) -> Result<Vector3, GeometryError> {
+pub(super) fn oriented_plane_normal(normal: Vector3) -> Result<Vector3, GeometryError> {
     let c = normal.to_array();
     let i = (0..3)
         .max_by(|&a, &b| c[a].abs().total_cmp(&c[b].abs()))

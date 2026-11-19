@@ -19,15 +19,13 @@ pub(super) fn run(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let source = f.source.geometry(tolerance)?;
-    let d = Vector3::try_from(f.displacement)?;
-    let h = d.length()?;
-    let [x, y, z] = d.normalized_nonzero()?.as_vector().to_array();
+    let [x, y, z] = f.displacement;
     measure_probe(iterations, || -> Result<Value, ProbeError> {
         let mut doc = Document::new(tolerance);
         let id = doc.add_geometry(source.clone())?;
-        CommandRegistry::with_builtins().execute(&mut doc,&format!("ExtrudeSrfTapered {h} Direction={x},{y},{z} FaceRefs={id}:{} DraftAngle={} Corners={} Solid={}",f.face,f.draft_angle,if f.round_corners{"Round"}else{"Sharp"},if f.solid{"Yes"}else{"No"}))?;
+        CommandRegistry::with_builtins().execute(&mut doc,&format!("ExtrudeSrfTapered 0,0,0 {x},{y},{z} FaceRefs={id}:{} DraftAngle={} Corners={} Solid={}",f.face,f.draft_angle,if f.round_corners{"Round"}else{"Sharp"},if f.solid{"Yes"}else{"No"}))?;
         let mut outputs = Vec::new();
-        for o in doc.selected_objects() {
+        for o in doc.objects().filter(|object| object.id() != id) {
             let Geometry::Brep(b) = o.geometry() else {
                 return Err(ProbeError::FixtureInvariant(
                     "surface taper output is not a B-rep",

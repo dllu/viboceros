@@ -49,6 +49,7 @@ impl VibocerosApp {
         }
         self.remap_cplane_session = None;
         self.surface_extrusion_sources = None;
+        self.tapered_extrusion_session = None;
         self.surface_path_prompt = None;
         self.cancel_shell_prompt(false);
         if self.merge_face_prompt.take().is_some() && announce {

@@ -1,17 +1,6 @@
 //! Stage complete surface extrusion products and remainders before editing.
 use super::*;
 
-pub(crate) fn apply_face_extrusions(
-    doc: &mut Document,
-    faces: &SurfaceFaces,
-    delete_input: bool,
-    mut produce: impl FnMut(&Brep, Tolerance) -> Result<Geometry, CommandError>,
-) -> Result<usize, CommandError> {
-    apply_face_extrusion_products(doc, faces, delete_input, |brep, tolerance| {
-        Ok(vec![produce(brep, tolerance)?])
-    })
-}
-
 /// Stage per-face products and source remainders before admitting one command batch.
 pub(crate) fn apply_face_extrusion_products(
     doc: &mut Document,

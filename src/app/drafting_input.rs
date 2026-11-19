@@ -1744,48 +1744,15 @@ impl VibocerosApp {
                     return false;
                 }
             }
-            InteractiveCommand::ExtrudeCurveTapered {
-                base: None,
+            InteractiveCommand::ExtrudeTapered {
+                surface,
+                stage,
                 options,
             } => {
-                self.active_command = Some(InteractiveCommand::ExtrudeCurveTapered {
-                    base: Some(point),
-                    options,
-                });
-                self.push_log("ExtrudeCrvTapered: pick the direction target".into());
-            }
-            InteractiveCommand::ExtrudeCurveTapered {
-                base: Some(base),
-                mut options,
-            } => {
-                options.direction = None;
-                return self.finish_tapered_extrusion(
-                    &format!("{} {}", format_model_point(base), format_model_point(point)),
-                    options,
-                );
+                return self.accept_tapered_extrusion_point(surface, stage, options, point);
             }
             InteractiveCommand::ExtrudeSurface { stage, options } => {
                 return self.accept_surface_extrusion_point(stage, options, point);
-            }
-            InteractiveCommand::ExtrudeSurfaceTapered {
-                base: None,
-                options,
-            } => {
-                self.active_command = Some(InteractiveCommand::ExtrudeSurfaceTapered {
-                    base: Some(point),
-                    options,
-                });
-                self.push_log("ExtrudeSrfTapered: pick the direction target".into());
-            }
-            InteractiveCommand::ExtrudeSurfaceTapered {
-                base: Some(base),
-                mut options,
-            } => {
-                options.direction = None;
-                return self.finish_tapered_extrusion(
-                    &format!("{} {}", format_model_point(base), format_model_point(point)),
-                    options,
-                );
             }
             InteractiveCommand::ExtrudeSurfaceToPoint { options } => {
                 return self.point_to_surface_apex(point, options);

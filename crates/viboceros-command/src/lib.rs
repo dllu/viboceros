@@ -1054,6 +1054,10 @@ pub struct CommandRegistry {
         std::sync::Arc<remembered::Remembered<extrude_surface_apex::SurfaceApexOptions>>,
     surface_extrusion_settings:
         std::sync::Arc<remembered::Remembered<extrude_surface::SurfaceExtrusionSettings>>,
+    curve_tapered_settings:
+        std::sync::Arc<remembered::Remembered<extrude_tapered::TaperedExtrusionSettings>>,
+    surface_tapered_settings:
+        std::sync::Arc<remembered::Remembered<extrude_tapered::TaperedExtrusionSettings>>,
     surface_path_settings:
         std::sync::Arc<remembered::Remembered<extrude_surface_path::SurfacePathOptions>>,
     use_extrusions: use_extrusions::Preference,
@@ -1133,6 +1137,28 @@ impl CommandRegistry {
 
     pub fn surface_extrusion_settings(&self) -> extrude_surface::SurfaceExtrusionSettings {
         self.surface_extrusion_settings.get()
+    }
+
+    pub fn tapered_extrusion_settings(
+        &self,
+        surface: bool,
+    ) -> extrude_tapered::TaperedExtrusionSettings {
+        if surface {
+            self.surface_tapered_settings.get()
+        } else {
+            self.curve_tapered_settings.get()
+        }
+    }
+
+    pub fn remember_tapered_extrusion_distance(&self, surface: bool, distance: f64) {
+        if distance.is_finite() && distance != 0. {
+            let settings = if surface {
+                &self.surface_tapered_settings
+            } else {
+                &self.curve_tapered_settings
+            };
+            settings.update(|settings| settings.distance = distance);
+        }
     }
 
     pub fn surface_path_settings(&self) -> extrude_surface_path::SurfacePathOptions {
@@ -1642,7 +1668,9 @@ impl CommandRegistry {
             })
             .expect("unique built-in command");
         registry
-            .register(extrude_tapered::ExtrudeTaperedCommand)
+            .register(extrude_tapered::ExtrudeTaperedCommand {
+                settings: registry.curve_tapered_settings.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(extrude_surface::ExtrudeSurfaceCommand {
@@ -1653,7 +1681,9 @@ impl CommandRegistry {
             .register(shell::ShellCommand(registry.shell_options.clone()))
             .expect("unique built-in command");
         registry
-            .register(extrude_surface_tapered::ExtrudeSurfaceTaperedCommand)
+            .register(extrude_surface_tapered::ExtrudeSurfaceTaperedCommand {
+                settings: registry.surface_tapered_settings.clone(),
+            })
             .expect("unique built-in command");
         registry
             .register(extrude_surface_apex::ExtrudeSurfaceToPointCommand {
