@@ -31,7 +31,7 @@ typedef struct {
 typedef struct {
     VbNurbsData surface;
     size_t first_loop, loop_count;
-    int reversed;
+    int reversed, edge_blend_patch;
 } VbFaceData;
 typedef struct {
     size_t vertex_count, edge_count, trim_count, loop_count, face_count;
@@ -53,8 +53,10 @@ class SmFace;
 class SmBSplineSurface;
 class SmBSplineCurve;
 class SmSurface;
+#include <unordered_set>
 #include <vector>
-VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0);
+VbBrep *vb_export_brep(const SmBrep &solid, double approximation = 0,
+                       const std::unordered_set<const SmFace *> *edge_blend_faces = nullptr);
 VbSurfaceData *vb_export_surface(const SmBSplineSurface &surface);
 VbSurfaceData *vb_export_single_surface(const SmBrep &shape, double approximation);
 VbSurfaceData *vb_export_curve(const SmBSplineCurve &curve);

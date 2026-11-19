@@ -26,10 +26,8 @@ pub(super) struct Prompt {
     kind: Kind,
     tolerance: Tolerance,
     awaiting_value: bool,
-    preview: bool,
     adjusting: bool,
-    show_handles: bool,
-    link_handles: bool,
+    toggles: Toggles,
 }
 impl Prompt {
     pub(super) fn name(self) -> &'static str {
@@ -57,17 +55,17 @@ impl Prompt {
                 "Enter edge radius with optional units"
             }
         } else if self.adjusting {
-            "Select a size handle or use AddHandle, CopyHandle, SetAll, LinkHandles or SelectEdges. Enter applies. Esc cancels."
+            "Select a size handle or use AddHandle, CopyHandle, SetAll, LinkHandles, SelectEdges or TrimAndJoin. Enter applies. Esc cancels."
         } else {
             match self.kind {
                 Kind::Fillet(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromCurve, FromTwoPoints, Corner=Automatic|Ball or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius, Corner, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a radius."
                 }
                 Kind::Chamfer(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance=value, FromCurve, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Distance, RailType, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a distance."
                 }
                 Kind::Curvature(_) => {
-                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius=value, FromCurve, FromTwoPoints, RailType or Preview."
+                    "Select edges, or use ChainEdges, FaceEdges or PreviousEdgeSelection. Set Radius, RailType, TrimAndJoin or Preview. Use FromCurve or FromTwoPoints to measure a radius."
                 }
             }
         }
@@ -82,12 +80,14 @@ impl Prompt {
                 rail.token()
             ),
         };
-        let preview = if self.preview { "Yes" } else { "No" };
-        let handles = if self.show_handles { "Yes" } else { "No" };
-        let link = if self.link_handles { "Yes" } else { "No" };
+        let yes_no = |value| if value { "Yes" } else { "No" };
         format!(
-            "{model} Preview={preview} {}={handles} LinkHandles={link}",
-            self.show_option()
+            "{model} TrimAndJoin={} Preview={} {}={} LinkHandles={}",
+            yes_no(self.toggles.trim_and_join),
+            yes_no(self.toggles.preview),
+            self.show_option(),
+            yes_no(self.toggles.show_handles),
+            yes_no(self.toggles.link_handles)
         )
     }
 }
@@ -103,13 +103,30 @@ fn size_measurement(word: &str) -> Option<Measurement> {
     }
 }
 
-fn display_options<'a>(
+#[derive(Clone, Copy, Debug)]
+struct Toggles {
+    preview: bool,
+    show_handles: bool,
+    link_handles: bool,
+    trim_and_join: bool,
+}
+
+impl Default for Toggles {
+    fn default() -> Self {
+        Self {
+            preview: false,
+            show_handles: true,
+            link_handles: false,
+            trim_and_join: true,
+        }
+    }
+}
+
+fn toggle_options<'a>(
     words: impl IntoIterator<Item = &'a str>,
-    mut preview: bool,
-    mut show: bool,
-    mut link: bool,
+    mut toggles: Toggles,
     show_option: &'static str,
-) -> Result<(Vec<&'a str>, bool, bool, bool), &'static str> {
+) -> Result<(Vec<&'a str>, Toggles), &'static str> {
     let mut modeling = Vec::new();
     for word in words {
         let option = word.trim_start_matches('_');
@@ -119,11 +136,13 @@ fn display_options<'a>(
                 (name, Some(value.trim_start_matches('_')))
             });
         let target = if name.eq_ignore_ascii_case("Preview") {
-            &mut preview
+            &mut toggles.preview
         } else if name.eq_ignore_ascii_case(show_option) {
-            &mut show
+            &mut toggles.show_handles
         } else if name.eq_ignore_ascii_case("LinkHandles") {
-            &mut link
+            &mut toggles.link_handles
+        } else if name.eq_ignore_ascii_case("TrimAndJoin") {
+            &mut toggles.trim_and_join
         } else {
             modeling.push(word);
             continue;
@@ -132,10 +151,10 @@ fn display_options<'a>(
             None => !*target,
             Some(v) if v.eq_ignore_ascii_case("Yes") => true,
             Some(v) if v.eq_ignore_ascii_case("No") => false,
-            _ => return Err("expected Yes or No for the display option"),
+            _ => return Err("expected Yes or No for the edge blend option"),
         };
     }
-    Ok((modeling, preview, show, link))
+    Ok((modeling, toggles))
 }
 
 impl VibocerosApp {
@@ -154,15 +173,14 @@ impl VibocerosApp {
         } else {
             "ShowRadius"
         };
-        let (mut words, preview, show_handles, link_handles) =
-            match display_options(words, false, true, false, show_option) {
-                Ok(options) => options,
-                Err(error) => {
-                    self.push_log(format!("Error: {error}"));
-                    self.command_input.clear();
-                    return true;
-                }
-            };
+        let (mut words, toggles) = match toggle_options(words, Toggles::default(), show_option) {
+            Ok(options) => options,
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                self.command_input.clear();
+                return true;
+            }
+        };
         let previous = words
             .iter()
             .position(|word| previous::argument(word).is_some())
@@ -245,10 +263,8 @@ impl VibocerosApp {
             kind,
             tolerance: self.document.tolerance(),
             awaiting_value: false,
-            preview,
             adjusting: false,
-            show_handles,
-            link_handles,
+            toggles,
         };
         self.edge_fillet_prompt = Some(prompt);
         self.command_input.clear();
@@ -363,11 +379,9 @@ impl VibocerosApp {
             return false;
         }
         let input = if set_all { inline_value.trim() } else { input };
-        let (modeling, preview, show_handles, link_handles) = match display_options(
+        let (modeling, toggles) = match toggle_options(
             input.split_whitespace(),
-            prompt.preview,
-            prompt.show_handles,
-            prompt.link_handles,
+            prompt.toggles,
             prompt.show_option(),
         ) {
             Ok(options) => options,
@@ -440,15 +454,13 @@ impl VibocerosApp {
         };
         match result {
             Ok(()) => {
-                prompt.link_handles = link_handles;
+                prompt.toggles = toggles;
                 if edits_size {
                     self.store_edge_blend_size(&mut prompt, default, set_all);
                 }
                 if !words.is_empty() {
                     prompt.awaiting_value = false;
                 }
-                prompt.preview = preview;
-                prompt.show_handles = show_handles;
                 self.edge_fillet_prompt = Some(prompt);
                 self.log_edge_blend_prompt();
             }
@@ -500,6 +512,7 @@ impl VibocerosApp {
                 )
             });
         EdgeBlendPlan::capture_profiles(&self.document, picks, prompt.kind)
+            .map(|plan| plan.with_trim_and_join(prompt.toggles.trim_and_join))
             .map_err(|error| error.to_string())
     }
 
@@ -526,7 +539,11 @@ impl VibocerosApp {
                 self.edge_blend_adjustment = Default::default();
                 self.component_selection.clear();
                 self.edge_blend_preview.clear();
-                self.push_log(format!("{} applied to {n} object(s)", prompt.name()));
+                self.push_log(if prompt.toggles.trim_and_join {
+                    format!("{} applied to {n} object(s)", prompt.name())
+                } else {
+                    format!("{} created {n} surface object(s)", prompt.name())
+                });
             }
             Err(e) => {
                 self.edge_fillet_prompt = Some(prompt);

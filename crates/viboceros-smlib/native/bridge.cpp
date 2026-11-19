@@ -29,6 +29,8 @@
 #include <SmVertex.h>
 #include <SmFilletExecutive.h>
 #include <SmFilletCorner.h>
+#include <SmFilletGeom.h>
+#include <SmFilletSolver.h>
 #include <SmCurveFilletExecutive.h>
 #include <SmOffsetCurve.h>
 #include <SmHCR.h>
@@ -57,6 +59,7 @@ struct VbSolid {
     // correspondence before topology changes; copies and Boolean results have none.
     std::vector<SmEdge *> source_edges;
     std::vector<SmFace *> source_faces;
+    std::unordered_set<const SmFace *> detached_edge_faces;
 };
 struct VbParts {
     std::vector<std::unique_ptr<VbSolid>> values;
@@ -603,7 +606,8 @@ extern "C" int vb_solid_brep(const VbSolid *solid, VbBrep **out, char *error, si
         *out = nullptr;
     return guarded(error, capacity, [&] {
         require(solid && out, "Invalid solid export");
-        *out = vb_export_brep(*solid->value);
+        *out = vb_export_brep(*solid->value, 0., solid->detached_edge_faces.empty()
+            ? nullptr : &solid->detached_edge_faces);
     });
 }
 
@@ -910,7 +914,8 @@ struct BallCornerScope {
 void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
                           double radius, double accuracy, EdgeBlend kind, bool between_rails,
                           bool local_merge = false, const double *sizes = nullptr,
-                          const double *parameters = nullptr, const size_t *offsets = nullptr) {
+                          const double *parameters = nullptr, const size_t *offsets = nullptr,
+                          bool patches_only = false) {
     require(solid && solid->value && indices && count && count <= 100000 && std::isfinite(radius) && radius > 0,
             "Invalid edge blend parameters");
     require(std::isfinite(accuracy) && accuracy > SM_EFF_ZERO,
@@ -973,6 +978,8 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
     vb_validate_boundary_intersections(*solid->value,10*accuracy);
     const auto source_edges = std::exchange(solid->source_edges, {});
     solid->source_faces.clear();
+    // The executive borrows both the source and the constructed patches until destruction.
+    std::unique_ptr<SmBrep> detached;
     SmFilletExecutive executive(context, solid->value.get());
     const auto cross_section = kind == EdgeBlend::Chamfer ? SM_FSG_LINEAR :
         kind == EdgeBlend::Curvature ? SM_FSG_BLEND_CURVE : SM_FSG_CIRCULAR;
@@ -988,6 +995,37 @@ void blend_imported_edges(VbSolid *solid, const size_t *indices, size_t count,
         check(executive.SetFilletParameters(solid->value.get(), edges, cross_section,
               constant_type, radius, nullptr, accuracy, -1.0, -1.0,
               cross_section_tolerance, continuity, 1.0), "configure precise edge fillet");
+    }
+    if (patches_only) {
+        const BallCornerScope corner(kind == EdgeBlend::Ball ? radius : 0.);
+        auto &native_context = const_cast<SmContext &>(context);
+        const SmTemporaryChangeValue<SmBoolean> doing_boolean(native_context.GetDoingBooleanRef(), TRUE);
+        check(executive.CreateFilletCorners(), "create edge blend corners");
+        // CreateFilletBrep trims and stitches the edge and corner faces together
+        // without running the merge into the parent. The caller owns this B-rep.
+        const auto status = executive.CreateFilletBrep();
+        detached.reset(executive.GetFilletBrep());
+        if (status != SM_SUCCESS || executive.GetFilletErrorInfo()->GetErrorCode() != SM_FILERR_OK)
+            throw std::runtime_error(std::string("Could not build edge blend patches: ") +
+                                     executive.GetFilletErrorInfo()->m_cComment);
+        require(detached && detached->GetNumFaces() > 0, "Edge blend produced no patches");
+        const auto &solvers = executive.GetFilletSolvers();
+        for (ULONG i = 0; i < solvers.GetSize(); ++i) {
+            SmTArray<SmFilletGeom *> patches;
+            solvers[i]->GetFilletGeoms(patches);
+            for (ULONG j = 0; j < patches.GetSize(); ++j) {
+                const auto *surface = patches[j]->GetFilletSurface();
+                if (surface) {
+                    const auto *face = SM_CAST_PTR(SmFace, surface->GetOwner());
+                    if (face)
+                        solid->detached_edge_faces.insert(face);
+                }
+            }
+        }
+        check(detached->ShrinkGeometry(), "restrict edge blend patches to their trims");
+        vb_validate_boundary_intersections(*detached, 10 * accuracy, true);
+        solid->value.swap(detached);
+        return;
     }
     executive.SetDoGlobalMerge(kind != EdgeBlend::Curvature && !local_merge ? TRUE : FALSE);
     if (kind == EdgeBlend::Chamfer) {
@@ -1088,15 +1126,19 @@ extern "C" int vb_imported_solid_blend_edge_sizes(VbSolid *solid, const size_t *
                                                   const double *sizes, const double *parameters, const size_t *offsets,
                                                   size_t count, double minimum,
                                                   double accuracy, int profile, int rail_type,
-                                                  int local_merge, char *error, size_t capacity) {
+                                                  int local_merge, int patches_only, char *error, size_t capacity) {
     return guarded(error, capacity, [&] {
-        require(sizes && parameters && offsets && profile >= 0 && profile <= 2 && (rail_type == 0 || rail_type == 1) &&
-                    (local_merge == 0 || (local_merge == 1 && profile == 0)),
+        require(sizes && parameters && offsets && profile >= 0 && profile <= 3 &&
+                    (rail_type == 0 || rail_type == 1) && (patches_only == 0 || patches_only == 1) &&
+                    (local_merge == 0 || (local_merge == 1 && profile == 0 && patches_only == 0)) &&
+                    (profile != 3 || patches_only != 0),
                 "Invalid per-edge blend options");
         const auto kind = profile == 0 ? EdgeBlend::Circular :
-                          profile == 1 ? EdgeBlend::Chamfer : EdgeBlend::Curvature;
-        blend_imported_edges(solid, indices, count, minimum, accuracy, kind, profile != 0 && rail_type == 0,
-                             local_merge != 0, sizes, parameters, offsets);
+                          profile == 1 ? EdgeBlend::Chamfer :
+                          profile == 2 ? EdgeBlend::Curvature : EdgeBlend::Ball;
+        const bool between_rails = (profile == 1 || profile == 2) && rail_type == 0;
+        blend_imported_edges(solid, indices, count, minimum, accuracy, kind, between_rails,
+                             local_merge != 0, sizes, parameters, offsets, patches_only != 0);
     });
 }
 

@@ -140,7 +140,7 @@ int vb_imported_solid_blend_edges(VbSolid *solid, const size_t *indices, size_t 
     double distance, double accuracy, int rail_type, char *error, size_t capacity);
 int vb_imported_solid_blend_edge_sizes(VbSolid *solid, const size_t *indices, const double *sizes,
     const double *parameters, const size_t *offsets, size_t count, double minimum, double accuracy,
-    int profile, int rail_type, int local_merge, char *error, size_t capacity);
+    int profile, int rail_type, int local_merge, int patches_only, char *error, size_t capacity);
 int vb_imported_solid_fillet_edges(VbSolid *solid, const size_t *indices, size_t count,
                                    double radius, double accuracy, int require_ball, int local_merge,
                                    char *error, size_t capacity);

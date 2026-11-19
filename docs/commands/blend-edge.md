@@ -9,6 +9,8 @@ handle. Varying sizes along an edge require `RailType=RollingBall`. Press Enter
 again to apply. Edge preselection,
 viewport picking and [size adjustment](fillet-edge.md), including adding,
 copying and removing handles, work as in `FilletEdge`.
+Use `TrimAndJoin=No` to preview and create separate blend surfaces. The option
+also works with explicit edge indices and `All=Yes`.
 
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, radius or rail update it.
@@ -40,6 +42,6 @@ On a right-angle straight edge the rolling mode has setback `r`; the width mode 
 
 See the [qualification record](../blend-edge-qualification.json) for tested shapes, failures, sanitizer configuration and current limits. Licensed Rhino capture remains pending the recorded [Wine startup failure](../oracle-sspi.md). Shape equality, native getter parity and comparative performance remain unqualified.
 
-Variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, `TrimAndJoin=No`, History editing and native saved defaults remain future work. General corner continuity and curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision; see the qualification record.
+Variable `DistBetweenRails` sizes, `DistFromEdge`, open polysurfaces, History editing and native saved defaults remain future work. SMLib produces a single corner face for the three-edge box fixture. Rhino produces a six-face corner patch. Curved joins beyond the qualified cylinders require broader qualification. Native primitive sources with coarser declared topology zones retain their lower precision. See the qualification record.
 
 References: [Rhino BlendEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/blendedge.htm), [public BlendType](https://mcneel.github.io/rhinocommon-api-docs/api/RhinoCommon/html/T_Rhino_Geometry_BlendType.htm).

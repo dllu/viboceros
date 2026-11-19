@@ -2,7 +2,7 @@
 pub use super::edge_blend_input::RailType as BlendRailType;
 use super::edge_blend_input::{self, Input};
 use super::*;
-pub const USAGE: &str = "BlendEdge [Radius=value] [RailType=RollingBall|DistBetweenRails] [All=Yes|object-id edge-index[,edge-index...] ...]";
+pub const USAGE: &str = "BlendEdge [Radius=value] [RailType=RollingBall|DistBetweenRails] [TrimAndJoin=Yes|No] [All=Yes|object-id edge-index[,edge-index...] ...]";
 pub(super) struct BlendEdgeCommand;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BlendOptions {
@@ -37,15 +37,21 @@ impl Command for BlendEdgeCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let input = parse(args)?;
-        let (size, rail) = (input.size, input.rail);
-        let selection = EdgeBlendSelection::prepare_curvature(
+        let (size, rail, trim_and_join) = (input.size, input.rail, input.trim_and_join);
+        let selection = EdgeBlendPlan::capture(
             doc,
             input.resolve_picks(doc, USAGE)?,
             size,
-            rail,
-        )?;
+            EdgeBlendKind::Curvature(rail),
+        )?
+        .with_trim_and_join(trim_and_join)
+        .solve()?;
         let count = selection.apply(doc)?;
-        Ok(format!("Blended edges on {count} object(s)"))
+        Ok(if trim_and_join {
+            format!("Blended edges on {count} object(s)")
+        } else {
+            format!("Created {count} blend surface object(s)")
+        })
     }
 }
 #[cfg(test)]

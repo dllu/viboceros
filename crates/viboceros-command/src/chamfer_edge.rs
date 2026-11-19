@@ -2,7 +2,7 @@
 pub use super::edge_blend_input::RailType as ChamferRailType;
 use super::edge_blend_input::{self, Input};
 use super::*;
-pub const USAGE: &str = "ChamferEdge [Distance=value] [RailType=RollingBall|DistBetweenRails] [All=Yes|object-id edge-index[,edge-index...] ...]";
+pub const USAGE: &str = "ChamferEdge [Distance=value] [RailType=RollingBall|DistBetweenRails] [TrimAndJoin=Yes|No] [All=Yes|object-id edge-index[,edge-index...] ...]";
 pub(super) struct ChamferEdgeCommand;
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ChamferOptions {
@@ -48,11 +48,21 @@ impl Command for ChamferEdgeCommand {
     }
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let input = parse(args)?;
-        let (size, rail) = (input.size, input.rail);
-        let selection =
-            EdgeBlendSelection::prepare_chamfer(doc, input.resolve_picks(doc, USAGE)?, size, rail)?;
+        let (size, rail, trim_and_join) = (input.size, input.rail, input.trim_and_join);
+        let selection = EdgeBlendPlan::capture(
+            doc,
+            input.resolve_picks(doc, USAGE)?,
+            size,
+            EdgeBlendKind::Chamfer(rail),
+        )?
+        .with_trim_and_join(trim_and_join)
+        .solve()?;
         let count = selection.apply(doc)?;
-        Ok(format!("Chamfered edges on {count} object(s)"))
+        Ok(if trim_and_join {
+            format!("Chamfered edges on {count} object(s)")
+        } else {
+            format!("Created {count} chamfer surface object(s)")
+        })
     }
 }
 #[cfg(test)]

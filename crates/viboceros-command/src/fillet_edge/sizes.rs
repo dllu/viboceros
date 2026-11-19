@@ -10,22 +10,33 @@ pub(super) fn native_rail(rail: ChamferRailType) -> EdgeBlendRailType {
     }
 }
 
+fn native_profile(
+    edges: &[(usize, EdgeBlendSizes)],
+    kind: EdgeBlendKind,
+) -> Result<EdgeBlendProfile, CommandError> {
+    Ok(match kind {
+        EdgeBlendKind::Fillet(FilletCorner::Automatic) => EdgeBlendProfile::Fillet,
+        EdgeBlendKind::Fillet(FilletCorner::Ball) => {
+            let radius = edges[0].1.ends[0];
+            if !edges.iter().all(|(_, values)| values.all_equal_to(radius)) {
+                return Err(CommandError::Usage(
+                    "Corner=Ball requires a common radius on each solid",
+                ));
+            }
+            EdgeBlendProfile::FilletBall
+        }
+        EdgeBlendKind::Chamfer(rail) => EdgeBlendProfile::Chamfer(native_rail(rail)),
+        EdgeBlendKind::Curvature(rail) => EdgeBlendProfile::Curvature(native_rail(rail)),
+    })
+}
+
 pub(super) fn blend_with_sizes(
     brep: &Brep,
     edges: &[(usize, EdgeBlendSizes)],
     kind: EdgeBlendKind,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
-    let profile = match kind {
-        EdgeBlendKind::Fillet(FilletCorner::Automatic) => EdgeBlendProfile::Fillet,
-        EdgeBlendKind::Fillet(FilletCorner::Ball) => {
-            return Err(CommandError::Usage(
-                "Corner=Ball requires a common radius on each solid",
-            ));
-        }
-        EdgeBlendKind::Chamfer(rail) => EdgeBlendProfile::Chamfer(native_rail(rail)),
-        EdgeBlendKind::Curvature(rail) => EdgeBlendProfile::Curvature(native_rail(rail)),
-    };
+    let profile = native_profile(edges, kind)?;
     let (local, to_world) = local_blend_source(brep, tolerance)?;
     let primary = Solid::blend_brep_edge_profiles(&local, edges, profile, tolerance, false);
     let blended = if matches!(profile, EdgeBlendProfile::Fillet) {
@@ -41,6 +52,31 @@ pub(super) fn blend_with_sizes(
     Ok(blended.transformed(to_world, tolerance)?)
 }
 
+pub(super) fn blend_patches(
+    brep: &Brep,
+    edges: &[(usize, EdgeBlendSizes)],
+    kind: EdgeBlendKind,
+    tolerance: Tolerance,
+) -> Result<Vec<Brep>, CommandError> {
+    let profile = native_profile(edges, kind)?;
+    let (local, to_world) = local_blend_source(brep, tolerance)?;
+    let (patches, rail_faces) = Solid::blend_brep_edge_patches(&local, edges, profile, tolerance)?;
+    let patches = patches.transformed(to_world, tolerance)?;
+    let corner_faces = (0..patches.faces().len())
+        .filter(|index| rail_faces.binary_search(index).is_err())
+        .collect::<Vec<_>>();
+    let mut result = if corner_faces.is_empty() {
+        Vec::new()
+    } else {
+        patches
+            .sub_brep(&corner_faces, tolerance)?
+            .into_edge_connected_components(tolerance)?
+    };
+    for face in rail_faces {
+        result.push(patches.sub_brep(&[face], tolerance)?);
+    }
+    Ok(result)
+}
 #[cfg(test)]
 mod tests {
     use super::*;

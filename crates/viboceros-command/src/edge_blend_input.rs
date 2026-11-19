@@ -5,6 +5,27 @@ pub enum RailType {
     DistanceBetweenRails,
     RollingBall,
 }
+
+pub(super) fn trim_and_join<'a>(
+    words: &[&'a str],
+    usage: &'static str,
+) -> Result<(Vec<&'a str>, bool), CommandError> {
+    let mut modeling = Vec::with_capacity(words.len());
+    let mut trim_and_join = None;
+    for &word in words {
+        if let Some((key, value)) = word.trim_start_matches('_').split_once('=')
+            && key.eq_ignore_ascii_case("TrimAndJoin")
+        {
+            let value = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            if trim_and_join.replace(value).is_some() {
+                return Err(CommandError::Usage(usage));
+            }
+        } else {
+            modeling.push(word);
+        }
+    }
+    Ok((modeling, trim_and_join.unwrap_or(true)))
+}
 impl RailType {
     pub fn token(self) -> &'static str {
         match self {
@@ -60,6 +81,7 @@ pub(super) fn update_options(
 pub(super) struct Input {
     pub size: Real,
     pub rail: RailType,
+    pub trim_and_join: bool,
     pub all: bool,
     pub picks: Vec<(ObjectId, usize)>,
 }
@@ -70,6 +92,7 @@ impl Input {
         usage: &'static str,
         default_rail: RailType,
     ) -> Result<Self, CommandError> {
+        let (args, trim_and_join) = trim_and_join(args, usage)?;
         let mut options = Vec::new();
         let mut refs = Vec::new();
         let mut all = None;
@@ -83,10 +106,10 @@ impl Input {
                         return Err(CommandError::Usage(usage));
                     }
                 } else {
-                    options.push(*word);
+                    options.push(word);
                 }
             } else {
-                refs.push(*word);
+                refs.push(word);
             }
         }
         // An odd leading numeric token is the distance; the remaining tokens are id/index pairs.
@@ -111,6 +134,7 @@ impl Input {
         Ok(Self {
             size,
             rail,
+            trim_and_join,
             all: all.unwrap_or(false),
             picks,
         })

@@ -298,6 +298,7 @@ struct FaceData {
     first_loop: usize,
     loop_count: usize,
     reversed: c_int,
+    edge_blend_patch: c_int,
 }
 #[repr(C)]
 struct BrepView {
@@ -719,6 +720,7 @@ fn with_brep_view<T>(
             first_loop,
             loop_count: loops.len() - first_loop,
             reversed: c_int::from(face.is_reversed()),
+            edge_blend_patch: 0,
         });
     }
     let view = BrepView {
@@ -906,6 +908,14 @@ impl Solid {
         brep: &Brep,
         tolerance: Tolerance,
     ) -> Result<(Self, Vec<Vec<usize>>), Error> {
+        Self::from_brep_with_domain_policy(brep, tolerance, false)
+    }
+
+    pub(super) fn from_brep_with_domain_policy(
+        brep: &Brep,
+        tolerance: Tolerance,
+        normalize_domains: bool,
+    ) -> Result<(Self, Vec<Vec<usize>>), Error> {
         if !brep.is_solid() {
             return Err(Error::Kernel(
                 "Import requires a closed manifold B-rep".into(),
@@ -935,7 +945,7 @@ impl Solid {
         let mut pointer = std::ptr::null_mut();
         let mut parents = vec![usize::MAX; parts.len()];
         // Payload arrays remain live through the shared synchronous importer.
-        with_brep_view(brep, false, |view| {
+        with_brep_view(brep, normalize_domains, |view| {
             call(|error, capacity| unsafe {
                 vb_solid_from_brep_plan(
                     view,
@@ -1000,7 +1010,7 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
     ) -> Result<Brep, Error> {
-        self.export_brep(tolerance, approximation, JointClosure::Preserve)
+        self.export_brep(tolerance, approximation, JointClosure::Preserve, None)
     }
 
     /// Request exact UV closure before a caller rescales a private output.
@@ -1010,14 +1020,23 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
     ) -> Result<Brep, Error> {
-        self.export_brep(tolerance, approximation, JointClosure::Roundoff)
+        self.export_brep(tolerance, approximation, JointClosure::Roundoff, None)
     }
 
     pub(super) fn to_brep_with_stitched_uv_joints(
         &self,
         tolerance: Tolerance,
     ) -> Result<Brep, Error> {
-        self.export_brep(tolerance, None, JointClosure::Stitch)
+        self.export_brep(tolerance, None, JointClosure::Stitch, None)
+    }
+
+    pub(super) fn to_brep_with_blend_faces(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<(Brep, Vec<usize>), Error> {
+        let mut faces = Vec::new();
+        let brep = self.export_brep(tolerance, None, JointClosure::Preserve, Some(&mut faces))?;
+        Ok((brep, faces))
     }
 
     fn export_brep(
@@ -1025,6 +1044,7 @@ impl Solid {
         tolerance: Tolerance,
         approximation: Option<f64>,
         joint_closure: JointClosure,
+        blend_faces: Option<&mut Vec<usize>>,
     ) -> Result<Brep, Error> {
         let mut pointer = std::ptr::null_mut();
         call(|error, capacity| unsafe {
@@ -1067,6 +1087,13 @@ impl Solid {
         let trim_data = borrowed(&owner, view.trims, view.trim_count)?;
         let loop_data = borrowed(&owner, view.loops, view.loop_count)?;
         let face_data = borrowed(&owner, view.faces, view.face_count)?;
+        if let Some(blend_faces) = blend_faces {
+            blend_faces.extend(
+                face_data.iter().enumerate().filter_map(|(index, face)| {
+                    (face.edge_blend_patch != 0).then_some(index)
+                }),
+            );
+        }
         let mut uses = vec![Vec::new(); edges.len()];
         for (face_index, face) in face_data.iter().enumerate() {
             for (loop_index, loop_data) in range(loop_data, face.first_loop, face.loop_count)?

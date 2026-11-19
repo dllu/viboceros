@@ -87,7 +87,7 @@ impl Preview {
                     .map_err(|error| error.to_string())
                     .map(|selection| {
                         let curves = selection
-                            .replacements()
+                            .outputs()
                             .iter()
                             .filter_map(|(_, geometry)| match geometry {
                                 Geometry::Brep(brep) => Some(brep.edges()),
@@ -141,7 +141,7 @@ impl VibocerosApp {
             .or_else(|| self.edge_blend_size_hover());
         let plan = self
             .edge_fillet_prompt
-            .filter(|prompt| prompt.preview)
+            .filter(|prompt| prompt.toggles.preview)
             .and_then(|prompt| self.capture_edge_blend(prompt, hover).ok());
         if let Some(error) = self
             .edge_blend_preview

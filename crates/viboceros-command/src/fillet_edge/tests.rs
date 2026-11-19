@@ -82,6 +82,135 @@ mod native {
                 < 1e-7
         );
     }
+
+    #[test]
+    fn trim_and_join_no_adds_only_blend_patches_as_one_undo_step() {
+        for (command, options, setback) in [
+            ("FilletEdge", "", 1.),
+            (
+                "ChamferEdge",
+                "RailType=DistBetweenRails",
+                2_f64.sqrt().recip(),
+            ),
+            ("BlendEdge", "RailType=RollingBall", 1.),
+        ] {
+            let (registry, mut doc, id) = selected_box();
+            registry
+                .execute(&mut doc, "SetObjectName PatchSource")
+                .unwrap();
+            registry.execute(&mut doc, "Group PatchParent").unwrap();
+            let before = doc.object(id).unwrap().clone();
+            let Geometry::Brep(source) = before.geometry() else {
+                panic!("expected a box")
+            };
+            let find = |y, z| {
+                source
+                    .edges()
+                    .iter()
+                    .position(|edge| {
+                        edge.vertices().iter().all(|&vertex| {
+                            let p = source.vertices()[vertex].point();
+                            (p.y(), p.z()) == (y, z)
+                        })
+                    })
+                    .unwrap()
+            };
+            let a = find(0., 0.);
+            let b = find(10., 10.);
+            let count = registry
+                .execute(
+                    &mut doc,
+                    &format!("{command} 1 {id} {a},{b} _TrimAndJoin=_No {options}"),
+                )
+                .unwrap_or_else(|error| panic!("{command}: {error}"));
+            assert!(count.contains("Created 2"), "{count}");
+            assert_eq!(doc.object(id).unwrap(), &before);
+            let patches = doc.objects().filter(|o| o.id() != id).collect::<Vec<_>>();
+            assert_eq!(patches.len(), 2);
+            for object in &patches {
+                assert_eq!(object.attributes(), before.attributes());
+                assert!(object.group_ids().is_empty());
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("expected a patch")
+                };
+                assert_eq!(brep.faces().len(), 1);
+                assert!(!brep.is_solid());
+                let bounds = viboceros_geometry::BoundingBox3::from_points(
+                    brep.vertices().iter().map(|vertex| vertex.point()),
+                )
+                .unwrap();
+                assert!(
+                    (bounds.max().x() - bounds.min().x() - 10.).abs() < 1e-6,
+                    "{command}: {bounds:?}"
+                );
+                assert!(
+                    (bounds.max().y() - bounds.min().y() - setback).abs() < 1e-6,
+                    "{command}: {bounds:?}"
+                );
+                assert!(
+                    (bounds.max().z() - bounds.min().z() - setback).abs() < 1e-6,
+                    "{command}: {bounds:?}"
+                );
+            }
+            assert_eq!(doc.selected_objects().count(), 0);
+            let after = doc.objects().cloned().collect::<Vec<_>>();
+            assert_eq!(doc.undo_label(), Some(command));
+            registry.execute(&mut doc, "Undo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), vec![before]);
+            registry.execute(&mut doc, "Redo").unwrap();
+            assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), after);
+        }
+    }
+
+    #[test]
+    fn detached_box_corner_creates_three_edge_patches_and_a_corner_patch() {
+        let (registry, doc, id) = selected_box();
+        let Geometry::Brep(source) = doc.object(id).unwrap().geometry() else {
+            panic!("expected a box")
+        };
+        let incident = source
+            .edges()
+            .iter()
+            .enumerate()
+            .filter(|(_, edge)| {
+                edge.vertices()
+                    .iter()
+                    .any(|&vertex| source.vertices()[vertex].point().to_array() == [0.; 3])
+            })
+            .map(|(index, _)| (id, index))
+            .collect::<Vec<_>>();
+        for kind in [
+            EdgeBlendKind::Fillet(FilletCorner::Automatic),
+            EdgeBlendKind::Chamfer(crate::chamfer_edge::ChamferRailType::RollingBall),
+        ] {
+            let plan = EdgeBlendPlan::capture(&doc, incident.iter().copied(), 1., kind).unwrap();
+            let staged = plan
+                .with_trim_and_join(false)
+                .solve()
+                .unwrap_or_else(|error| panic!("{kind:?}: {error}"));
+            let mut edges = staged
+                .outputs()
+                .iter()
+                .map(|(_, output)| {
+                    let Geometry::Brep(patch) = output else {
+                        panic!("expected a detached face")
+                    };
+                    assert_eq!(patch.faces().len(), 1, "{kind:?}");
+                    patch.edges().len()
+                })
+                .collect::<Vec<_>>();
+            edges.sort_unstable();
+            assert_eq!(edges, vec![3, 4, 4, 4], "{kind:?}");
+        }
+        assert_eq!(
+            registry
+                .component_selection_prompt("FilletEdge TrimAndJoin=No")
+                .unwrap()
+                .unwrap()
+                .kind,
+            ComponentSelectionKind::BrepEdge
+        );
+    }
     #[test]
     fn failed_later_source_leaves_every_object_and_history_unchanged() {
         let (registry, mut doc, first) = selected_box();

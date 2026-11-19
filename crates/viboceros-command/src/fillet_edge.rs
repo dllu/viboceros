@@ -5,10 +5,10 @@ pub use viboceros_smlib::EdgeBlendSizes;
 mod face_edges;
 pub use face_edges::edge_blend_face_edges;
 mod sizes;
-use sizes::{blend_with_sizes, native_rail};
+use sizes::{blend_patches, blend_with_sizes, native_rail};
 #[cfg(test)]
 mod tests;
-const USAGE: &str = "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes [Corner=Automatic|Ball]";
+const USAGE: &str = "FilletEdge radius object-id edge-index[,edge-index...] ... | FilletEdge Radius=radius All=Yes [Corner=Automatic|Ball] [TrimAndJoin=Yes|No]";
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum FilletCorner {
@@ -74,7 +74,8 @@ fn corner_option(word: &str) -> Option<&str> {
 pub struct EdgeBlendSelection {
     kind: EdgeBlendKind,
     sources: Vec<(ObjectId, GeometrySnapshot)>,
-    replacements: Vec<(ObjectId, Geometry)>,
+    outputs: Vec<(ObjectId, Geometry)>,
+    trim_and_join: bool,
     tolerance: Tolerance,
 }
 
@@ -107,6 +108,7 @@ impl EdgeBlendKind {
 #[derive(Clone, PartialEq)]
 pub struct EdgeBlendPlan {
     kind: EdgeBlendKind,
+    trim_and_join: bool,
     tolerance: Tolerance,
     sources: Vec<(ObjectId, GeometrySnapshot, Vec<(usize, EdgeBlendSizes)>)>,
 }
@@ -162,9 +164,17 @@ impl EdgeBlendSelection {
     ) -> Result<Self, CommandError> {
         EdgeBlendPlan::capture(document, picks, radius, kind)?.solve()
     }
-    /// Model-space geometry produced by this staged operation.
+    /// Replacements to apply when trim and join is enabled.
     pub fn replacements(&self) -> &[(ObjectId, Geometry)] {
-        &self.replacements
+        if self.trim_and_join {
+            &self.outputs
+        } else {
+            &[]
+        }
+    }
+    /// Staged model-space geometry paired with the corresponding input.
+    pub fn outputs(&self) -> &[(ObjectId, Geometry)] {
+        &self.outputs
     }
     pub fn commit(&self, document: &mut Document) -> Result<usize, CommandError> {
         run_command_transaction(document, self.kind.command(), |doc| self.apply(doc))
@@ -182,18 +192,35 @@ impl EdgeBlendSelection {
                 "Edge blend source or tolerance changed; select edges again",
             ));
         }
-        document.replace_object_geometries(self.replacements.clone())?;
-        document.select_objects_direct(
-            self.replacements.iter().map(|(id, _)| *id),
-            SelectionMode::Replace,
-        )?;
-        Ok(self.replacements.len())
+        if self.trim_and_join {
+            document.replace_object_geometries(self.outputs.clone())?;
+            document.select_objects_direct(
+                self.outputs.iter().map(|(id, _)| *id),
+                SelectionMode::Replace,
+            )?;
+        } else {
+            for (source, geometry) in &self.outputs {
+                let parent = document
+                    .object(*source)
+                    .expect("verified edge blend source");
+                document
+                    .add_geometry_with_attributes(geometry.clone(), parent.attributes().clone())?;
+            }
+            document.clear_selection();
+        }
+        Ok(self.outputs.len())
     }
 }
 
 impl EdgeBlendPlan {
+    pub fn with_trim_and_join(mut self, trim_and_join: bool) -> Self {
+        self.trim_and_join = trim_and_join;
+        self
+    }
+
     pub fn matches_except_size(&self, other: &Self) -> bool {
         self.kind == other.kind
+            && self.trim_and_join == other.trim_and_join
             && self.tolerance == other.tolerance
             && self.sources.len() == other.sources.len()
             && self.sources.iter().zip(&other.sources).all(|(a, b)| {
@@ -301,6 +328,7 @@ impl EdgeBlendPlan {
         }
         Ok(Self {
             kind,
+            trim_and_join: true,
             sources,
             tolerance: document.tolerance(),
         })
@@ -308,25 +336,34 @@ impl EdgeBlendPlan {
 
     pub fn solve(self) -> Result<EdgeBlendSelection, CommandError> {
         let mut sources = Vec::with_capacity(self.sources.len());
-        let mut replacements = Vec::with_capacity(self.sources.len());
+        let mut outputs = Vec::with_capacity(self.sources.len());
         for (id, geometry, edges) in self.sources {
             let Geometry::Brep(brep) = &*geometry else {
                 unreachable!("captured an edge blend on a B-rep");
             };
-            let size = edges[0].1.ends[0];
-            let result = if edges.iter().all(|(_, values)| values.all_equal_to(size)) {
-                let indices = edges.iter().map(|edge| edge.0).collect::<Vec<_>>();
-                blend(brep, &indices, size, self.kind, self.tolerance)?
+            if self.trim_and_join {
+                let size = edges[0].1.ends[0];
+                let result = if edges.iter().all(|(_, values)| values.all_equal_to(size)) {
+                    let indices = edges.iter().map(|edge| edge.0).collect::<Vec<_>>();
+                    blend(brep, &indices, size, self.kind, self.tolerance)?
+                } else {
+                    blend_with_sizes(brep, &edges, self.kind, self.tolerance)?
+                };
+                outputs.push((id, Geometry::Brep(result)));
             } else {
-                blend_with_sizes(brep, &edges, self.kind, self.tolerance)?
-            };
-            replacements.push((id, Geometry::Brep(result)));
+                outputs.extend(
+                    blend_patches(brep, &edges, self.kind, self.tolerance)?
+                        .into_iter()
+                        .map(|patch| (id, Geometry::Brep(patch))),
+                );
+            }
             sources.push((id, geometry));
         }
         Ok(EdgeBlendSelection {
             kind: self.kind,
             sources,
-            replacements,
+            outputs,
+            trim_and_join: self.trim_and_join,
             tolerance: self.tolerance,
         })
     }
@@ -424,6 +461,7 @@ impl Command for FilletEdgeCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ComponentSelectionPrompt>, CommandError> {
+        let (arguments, _) = crate::edge_blend_input::trim_and_join(arguments, USAGE)?;
         if arguments
             .iter()
             .filter(|w| corner_option(w).is_none())
@@ -433,7 +471,7 @@ impl Command for FilletEdgeCommand {
             return Ok(None);
         }
         let mut options = FilletOptions::default();
-        options.update(arguments)?;
+        options.update(&arguments)?;
         Ok(Some(ComponentSelectionPrompt {
             command: "FilletEdge",
             kind: ComponentSelectionKind::BrepEdge,
@@ -446,13 +484,14 @@ impl Command for FilletEdgeCommand {
         }))
     }
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (arguments, trim_and_join) = crate::edge_blend_input::trim_and_join(arguments, USAGE)?;
         let mut options = FilletOptions::default();
         let mut positional = Vec::new();
         for word in arguments {
             if let Some(value) = corner_option(word) {
                 options.corner = FilletCorner::parse(value)?;
             } else {
-                positional.push(*word);
+                positional.push(word);
             }
         }
         let arguments = positional.as_slice();
@@ -491,9 +530,20 @@ impl Command for FilletEdgeCommand {
                 }
             }
         }
-        let count =
-            FilletEdgeSelection::prepare_fillet(document, picks, options)?.apply(document)?;
-        Ok(format!("Filleted edges on {count} object(s)"))
+        let count = EdgeBlendPlan::capture(
+            document,
+            picks,
+            options.radius,
+            EdgeBlendKind::Fillet(options.corner),
+        )?
+        .with_trim_and_join(trim_and_join)
+        .solve()?
+        .apply(document)?;
+        Ok(if trim_and_join {
+            format!("Filleted edges on {count} object(s)")
+        } else {
+            format!("Created {count} fillet surface object(s)")
+        })
     }
 }
 fn parse_radius(text: &str) -> Result<Real, CommandError> {

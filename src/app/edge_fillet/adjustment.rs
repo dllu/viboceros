@@ -134,7 +134,7 @@ impl VibocerosApp {
             match &self.edge_blend_adjustment.active {
                 None => set_profile_size(&mut sizes, trial),
                 Some((id, source))
-                    if prompt.link_handles && current(&self.document, id.pick, source) =>
+                    if prompt.toggles.link_handles && current(&self.document, id.pick, source) =>
                 {
                     set_profile_size(&mut sizes, trial);
                 }
@@ -168,7 +168,7 @@ impl VibocerosApp {
                 self.push_log("The edge source changed. Use SelectEdges to pick it again.".into());
                 return;
             }
-            if !prompt.link_handles {
+            if !prompt.toggles.link_handles {
                 let size = std::mem::replace(&mut prompt.radius, default);
                 let mut sizes = self.edge_blend_sizes(*prompt, id.pick, None);
                 id.location.set_size(&mut sizes, size);
@@ -249,7 +249,8 @@ impl VibocerosApp {
     }
 
     pub(in crate::app) fn show_edge_size_handles(&self) -> bool {
-        self.edge_fillet_prompt.is_some_and(|p| p.show_handles)
+        self.edge_fillet_prompt
+            .is_some_and(|p| p.toggles.show_handles)
     }
 
     pub(in crate::app) fn pick_edge_size_handle(&mut self, id: SizeHandleId) -> bool {

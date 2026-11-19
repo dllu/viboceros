@@ -28,6 +28,10 @@ invalid indices and unsupported inputs fail before document replacement.
 Type `Preview` to toggle the pending result's wireframe. `Preview=Yes|No` also
 works when starting the interactive command. The preview updates as picks,
 radius or corner treatment change. Enter applies the matching staged result.
+Use `TrimAndJoin=No` to preview and create separate fillet surfaces while keeping
+the source B-rep intact. New surfaces inherit source object attributes such as
+name, layer and color. The indexed and `All=Yes` forms accept this option too.
+The default is `TrimAndJoin=Yes`.
 Use `FromTwoPoints` to set the radius with two viewport picks or typed
 coordinates. With preview enabled, the second point updates the wireframe.
 `FromCurve` takes the local curvature radius at a picked or typed curve

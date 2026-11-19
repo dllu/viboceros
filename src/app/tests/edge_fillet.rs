@@ -6,6 +6,74 @@ mod chain_edges;
 mod face_edges;
 mod from_curve;
 mod previous;
+
+#[test]
+fn edge_fillet_trim_and_join_switches_the_pending_viewport_result() {
+    use crate::app::tests::circle_preview::viewport_frame;
+    use std::time::{Duration, Instant};
+
+    let mut app = test_app();
+    let pick = box_pick(&mut app);
+    let original = app.document.object(pick.object).unwrap().geometry().clone();
+    app.document.clear_history().unwrap();
+    submit(&mut app, "FilletEdge 1 Preview=Yes TrimAndJoin=Yes");
+    app.accept_component_window(ComponentWindow {
+        picks: vec![pick],
+        modifiers: egui::Modifiers::NONE,
+        preselection: false,
+        crossing: false,
+        inverted: false,
+    });
+    submit(&mut app, "");
+    let context = egui::Context::default();
+    let wait = |app: &mut VibocerosApp, expected_len| {
+        let deadline = Instant::now() + Duration::from_secs(15);
+        loop {
+            let strokes = viewport_frame(app, &context, vec![]);
+            let curves = app.edge_blend_preview.curves();
+            if !strokes.is_empty() && curves.len() == expected_len {
+                return curves.to_vec();
+            }
+            assert!(Instant::now() < deadline, "{:?}", app.command_log);
+            std::thread::sleep(Duration::from_millis(5));
+        }
+    };
+    let plan = viboceros_command::EdgeBlendPlan::capture(
+        &app.document,
+        [(pick.object, pick.index)],
+        1.,
+        viboceros_command::EdgeBlendKind::Fillet(viboceros_command::FilletCorner::Automatic),
+    )
+    .unwrap()
+    .solve()
+    .unwrap();
+    let Geometry::Brep(joined) = &plan.replacements()[0].1 else {
+        panic!("expected a B-rep")
+    };
+    wait(&mut app, joined.edges().len());
+    submit(&mut app, "TrimAndJoin=No");
+    let detached = wait(&mut app, 4);
+    assert!(!app.document.can_undo());
+    assert_eq!(app.document.objects().count(), 1);
+    submit(&mut app, "");
+    assert_eq!(
+        app.document.object(pick.object).unwrap().geometry(),
+        &original
+    );
+    let Geometry::Brep(result) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected detached B-rep");
+    };
+    assert_eq!(
+        detached,
+        result
+            .edges()
+            .iter()
+            .map(|e| e.curve().clone())
+            .collect::<Vec<_>>()
+    );
+    assert_eq!(app.document.undo_label(), Some("FilletEdge"));
+}
+
 fn submit(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();

@@ -17,6 +17,9 @@ as `2mm`. Change `RailType=DistBetweenRails|RollingBall` while selecting. Invali
 options, changed sources and failed geometry preserve the getter for retry.
 Cancel/Esc releases it without geometry changes.
 
+Use `TrimAndJoin=No` to preview and create separate chamfer surfaces. The option
+also works with explicit edge indices and `All=Yes`.
+
 `Preview` toggles a wireframe of the staged result. `Preview=Yes|No` works at
 startup and while picking. Changes to the edge set, distance or rail update it.
 `FromTwoPoints` sets the distance from two picked or typed points and previews
@@ -69,8 +72,7 @@ Licensed Rhino capture remains pending after the recorded
 performance are unqualified.
 
 Variable `DistBetweenRails` distances, `DistFromEdge`, open polysurfaces,
-TrimAndJoin=No, History editing
-and saved native defaults remain future work. General collapsing offsets and
+History editing and saved native defaults remain future work. General collapsing offsets and
 self-intersections require broader qualification.
 
 Reference: [Rhino ChamferEdge](https://docs.mcneel.com/rhino/8/help/en-us/commands/chamferedge.htm)

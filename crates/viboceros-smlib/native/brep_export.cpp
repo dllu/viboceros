@@ -4,6 +4,7 @@
 #include <SmBSplineCurve.h>
 #include <SmBSplineSurface.h>
 #include <SmBrep.h>
+#include <SmCopyBrepMap.h>
 #include <SmEdge.h>
 #include <SmEdgeuse.h>
 #include <SmFace.h>
@@ -221,8 +222,12 @@ VbSurfaceData *vb_export_single_surface(const SmBrep &source, double approximati
     return vb_export_surface(*static_cast<const SmBSplineSurface *>(surface));
 }
 
-VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
-    std::unique_ptr<SmBrep> copy(vb_copy_brep(source));
+VbBrep *vb_export_brep(const SmBrep &source, double approximation,
+                       const std::unordered_set<const SmFace *> *edge_blend_faces) {
+    SmCopyBrepMap original_faces;
+    std::unique_ptr<SmBrep> copy(edge_blend_faces
+        ? new (*source.GetContext()) SmBrep(source, &original_faces, nullptr, TRUE, FALSE)
+        : vb_copy_brep(source));
     if (approximation > 0) {
         require(std::isfinite(approximation), "Invalid export approximation tolerance");
         double achieved = 0;
@@ -267,7 +272,9 @@ VbBrep *vb_export_brep(const SmBrep &source, double approximation) {
         // Loops follow the positive surface side; the face flip follows the void side.
         VbFaceData record{
             result->keep(surface_payload(*static_cast<SmBSplineSurface *>(face->GetSurface()))),
-            result->loops.size(), 0, sheet ? sheet_reversed : !positive->GetRegion()->IsVoid()};
+            result->loops.size(), 0, sheet ? sheet_reversed : !positive->GetRegion()->IsVoid(),
+            edge_blend_faces && edge_blend_faces->count(
+                static_cast<const SmFace *>(original_faces.GetAt(face))) != 0};
         SmTArray<SmLoopuse *> loops;
         positive->GetLoopuses(loops);
         for (ULONG j = 0; j < loops.GetSize(); ++j) {
