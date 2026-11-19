@@ -286,6 +286,23 @@ class Session:
         """Read the tensor-product definition of a surface or B-rep face."""
         return NurbsSurface(**self._request("surface_definition", id=object_id(obj), face=face))
 
+    def edit_brep_face_charts(
+        self, obj: ObjectLike,
+        *edits: tuple[int, NurbsSurface, Sequence[tuple[int, int, TrimCurve]]],
+    ) -> None:
+        """Edit supports and directed trims on an existing B-rep in one undo step.
+
+        Each edit supplies a zero-based face, its new support on the existing
+        UV domain, and trim replacements as (loop index, trim index, curve).
+        Spatial edges, vertices, object ID, and face order are retained. Each
+        edited face must pass boundary validation at the document tolerance.
+        """
+        self._request("edit_brep_face_charts", id=object_id(obj), edits=[
+            dict(face=face, surface=surface._payload(),
+                 trims=[(loop, index, curve._payload()) for loop, index, curve in trims])
+            for face, surface, trims in edits
+        ])
+
     def sew_brep_edges(
         self, *pairs: tuple[Component, Component, bool], anchor: ObjectLike | None = None,
         vertex_distance: float | None = None,
