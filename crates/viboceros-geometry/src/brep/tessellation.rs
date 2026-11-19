@@ -8,6 +8,7 @@ mod conforming;
 mod creases;
 mod curvature;
 mod independent;
+mod metric;
 mod normals;
 pub use normals::BrepDisplayMesh;
 mod sampling;

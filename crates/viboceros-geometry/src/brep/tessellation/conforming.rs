@@ -295,6 +295,8 @@ impl Brep {
             )?;
             let face_triangles = if retain_parameters && sampling.display_edge_samples.is_none() {
                 creases::triangulate(&mut parameters, &lengths, &face.surface, index)?
+            } else if sampling.axis_limit.is_some() {
+                metric::triangulate(&mut parameters, &lengths, &face.surface)?
             } else {
                 trim_region::triangulate(&mut parameters, &lengths, &[])?
             }
