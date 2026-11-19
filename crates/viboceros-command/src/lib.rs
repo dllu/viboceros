@@ -131,10 +131,10 @@ mod curve_options;
 mod interchange;
 pub use interchange::{
     Opened3dmWithViews, Opened3dmWithViewsAndCplanes, export_3dm_with_named_views,
-    export_3dm_with_viewports, export_3dm_with_viewports_and_cplanes, import_3dm_with_named_views,
-    import_3dm_with_views_and_cplanes, open_3dm_with_named_views, open_3dm_with_views,
-    open_3dm_with_views_and_cplanes, parse_3dm_path, save_3dm_with_named_views,
-    save_3dm_with_viewports, save_3dm_with_viewports_and_cplanes,
+    export_3dm_with_options, export_3dm_with_viewports, export_3dm_with_viewports_and_cplanes,
+    import_3dm_with_named_views, import_3dm_with_views_and_cplanes, open_3dm_with_named_views,
+    open_3dm_with_views, open_3dm_with_views_and_cplanes, parse_3dm_export_path, parse_3dm_path,
+    save_3dm_with_named_views, save_3dm_with_viewports, save_3dm_with_viewports_and_cplanes,
 };
 mod curve_interpolation;
 pub use curve_interpolation::command_curve as interpolate_command_curve;

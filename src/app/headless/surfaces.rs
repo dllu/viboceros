@@ -4,7 +4,8 @@ use std::collections::BTreeMap;
 use viboceros_command::ComponentSelectionKind;
 use viboceros_document::{ColorRgb, Geometry, ObjectAttributes};
 use viboceros_geometry::{
-    Brep, NurbsCurve2, NurbsSurface, ParameterSide, Point2, WeightedPoint2, WeightedPoint3,
+    Brep, GeometryError, NurbsCurve2, NurbsSurface, ParameterSide, Point2, WeightedPoint2,
+    WeightedPoint3,
 };
 
 #[derive(Deserialize)]
@@ -180,6 +181,7 @@ pub(super) fn add_patches(
 pub(super) fn sew_edges(
     document: &mut Document,
     pairs: Vec<(ComponentRef, ComponentRef, bool)>,
+    anchor: Option<&str>,
 ) -> Result<Value> {
     if pairs.is_empty() {
         return Err("supply at least one B-rep edge pair".into());
@@ -189,7 +191,7 @@ pub(super) fn sew_edges(
     let mut sources = Vec::new();
     let mut parts = Vec::new();
     let mut edge_count = 0usize;
-    let mut edge_index = |reference: ComponentRef| -> Result<usize> {
+    let pick_edge = |reference: ComponentRef| -> Result<_> {
         let pick = reference.pick(|id| model::revision(document, id))?;
         if pick.kind != ComponentSelectionKind::BrepEdge {
             return Err("sewing requires B-rep edge references".into());
@@ -203,22 +205,56 @@ pub(super) fn sew_edges(
         if pick.index >= brep.edges().len() {
             return Err("B-rep edge index is out of range".into());
         }
-        let offset = *offsets.entry(pick.object).or_insert_with(|| {
-            sources.push(pick.object);
+        Ok((pick, brep))
+    };
+    let picks = pairs
+        .into_iter()
+        .map(|(a, b, reversed)| Ok((pick_edge(a)?, pick_edge(b)?, reversed)))
+        .collect::<Result<Vec<_>>>()?;
+    let mut add_source = |id, brep: &Brep| {
+        *offsets.entry(id).or_insert_with(|| {
+            sources.push(id);
             parts.push(brep.clone());
             let offset = edge_count;
             edge_count += brep.edges().len();
             offset
-        });
-        Ok(offset + pick.index)
+        })
     };
-    let edge_pairs = pairs
-        .into_iter()
-        .map(|(a, b, reversed)| Ok((edge_index(a)?, edge_index(b)?, reversed)))
-        .collect::<Result<Vec<_>>>()?;
+    if let Some(anchor) = anchor {
+        let id = model::object_id(anchor)?;
+        let (_, brep) = picks
+            .iter()
+            .flat_map(|(a, b, _)| [a, b])
+            .find(|(pick, _)| pick.object == id)
+            .ok_or("the orientation anchor must supply at least one paired edge")?;
+        add_source(id, brep);
+    }
+    let edge_pairs = picks
+        .iter()
+        .map(|((a, a_brep), (b, b_brep), reversed)| {
+            (
+                add_source(a.object, a_brep) + a.index,
+                add_source(b.object, b_brep) + b.index,
+                *reversed,
+            )
+        })
+        .collect::<Vec<_>>();
     let attributes = document.object(sources[0]).unwrap().attributes().clone();
     let combined = Brep::try_combine(parts, tolerance)?;
-    let sewn = combined.try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)?;
+    let sewn = combined
+        .try_join_edge_pairs(&edge_pairs, tolerance.absolute(), tolerance)
+        .map_err(|error| -> SessionError {
+            if let GeometryError::UncertifiedBrepEdgePair { pair, .. } = error {
+                let ((a, _), (b, _), _) = picks[pair];
+                format!(
+                    "{error}; input {} edge {}, input {} edge {}",
+                    a.object, a.index, b.object, b.index
+                )
+                .into()
+            } else {
+                error.into()
+            }
+        })?;
     let id = edit_document_transaction(document, "Sew B-rep edges", |document| {
         document.delete_objects(sources)?;
         document.add_geometry_with_attributes(Geometry::Brep(sewn), attributes)

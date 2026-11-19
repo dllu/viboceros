@@ -30,6 +30,23 @@ fn certify(a: &NurbsCurve, b: &NurbsCurve, reversed: bool, limit: Real) -> Optio
 }
 
 #[test]
+fn mixed_basis_certifies_a_degree_eighteen_trim_edge() {
+    let degree = 18;
+    let points = std::array::from_fn::<_, 19, _>(|index| {
+        let x = index as Real;
+        [x, x * (x - 1.), 0.]
+    });
+    let a = curve(
+        &points,
+        &[1.; 19],
+        degree,
+        &[vec![0.; 19], vec![1.; 19]].concat(),
+    );
+    let b = a.try_insert_knot(0.5, 1).unwrap();
+    assert_eq!(certify(&a, &b, false, 0.), Some(0.));
+}
+
+#[test]
 fn different_degrees_knots_and_nonproportional_weights_can_be_exactly_equal() {
     let a = quadratic();
     let elevated = curve(

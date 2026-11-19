@@ -41,7 +41,7 @@ impl Brep {
     ///
     /// Acceptance uses whole-curve bounds in absolute model units. A shared
     /// rational basis permits a fast corresponding-control convex-hull bound.
-    /// Otherwise, positive-basis curves of degree at most 16 are aligned over
+    /// Otherwise, positive-basis curves of degree at most 18 are aligned over
     /// exact normalized knot spans. Rational Bernstein products and at most 16
     /// subdivision levels certify their difference under affine or positive
     /// projective parameter correspondences, including different degrees, knots,
@@ -50,8 +50,9 @@ impl Brep {
     /// Clamped straight edges with exactly collinear, monotone controls also
     /// support different degrees, knots and rational parameter speeds. Their
     /// endpoint distances bound the complete oriented segment loci.
-    /// Other representations of the same locus are rejected, not sampled into
-    /// an approximate match. Source component tolerances do not widen this test.
+    /// A bounded monotone parameter search also handles nonlinear differences
+    /// in traversal speed. Every accepted map has a continuous image bound.
+    /// Source component tolerances do not widen the curve distance test.
     ///
     /// The retained edge curve, all surfaces, UV trims and their domains are
     /// unchanged. Surviving edges/vertices retain source table order. Merged
@@ -126,16 +127,37 @@ impl Brep {
         }
         let bounds = pairs
             .iter()
-            .map(|&(a, b, reversed)| {
-                certificate::whole_curve_bound_with_witnesses(
-                    &self.edges[a].curve,
-                    &self.edges[b].curve,
+            .enumerate()
+            .map(|(pair, &(a, b, reversed))| {
+                let first = &self.edges[a].curve;
+                let second = &self.edges[b].curve;
+                let fast_bound = certificate::whole_curve_bound_with_witnesses(
+                    first,
+                    second,
                     reversed,
                     join_distance,
                     witnesses,
                     |n| budget.charge(n),
-                )?
-                .ok_or_else(|| invalid("edge curves lack a whole-curve join certificate"))
+                )?;
+                let bound = if fast_bound.is_some() {
+                    fast_bound
+                } else {
+                    certificate::nonlinear_curve_bound(
+                        first,
+                        second,
+                        reversed,
+                        join_distance,
+                        budget,
+                    )?
+                };
+                bound.ok_or_else(|| GeometryError::UncertifiedBrepEdgePair {
+                    pair,
+                    first: a,
+                    second: b,
+                    degree_first: first.degree(),
+                    degree_second: second.degree(),
+                    distance: join_distance,
+                })
             })
             .collect::<Result<Vec<_>, _>>()?;
         topology::assemble(self, pairs, &bounds, join_distance, tolerance)

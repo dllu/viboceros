@@ -33,6 +33,50 @@ pub(super) fn whole_curve_bound(
     product::bound(a, b, reversed, limit, false, &mut charge)
 }
 
+/// Try a continuous parameter map before rejecting two independently clocked
+/// trims. The fitting code proposes stations and proves every interval of the
+/// fitted map against the original curves, including across their knots.
+pub(super) fn nonlinear_curve_bound(
+    a: &NurbsCurve,
+    b: &NurbsCurve,
+    reversed: bool,
+    limit: Real,
+    budget: &mut Budget,
+) -> Result<Option<Real>, GeometryError> {
+    if limit == 0. || [a, b].iter().any(|c| c.degree() > 16) {
+        return Ok(None);
+    }
+    for end in [false, true] {
+        if let (Some(x), Some(y)) = (
+            product::endpoint(a, end),
+            product::endpoint(b, end ^ reversed),
+        ) && point_bound(x, y, limit).is_none()
+        {
+            return Ok(None);
+        }
+    }
+    let reversed_curve = reversed.then(|| b.reversed()).transpose()?;
+    let b = reversed_curve.as_ref().unwrap_or(b);
+    // Prefer projecting onto the curve with fewer spans. The opposite clock
+    // can be poorly conditioned near a stationary endpoint.
+    let [source, target] = if a.control_points().len() >= b.control_points().len() {
+        [a, b]
+    } else {
+        [b, a]
+    };
+    for (a, b) in [(source, target), (target, source)] {
+        // The proposal can search at up to 256 stations, followed by bounded
+        // exact image proofs. Charge each candidate to the caller's budget.
+        budget.charge(256 * (a.control_points().len() + b.control_points().len()))?;
+        match crate::curve_fit::g1::deviation_bound(a, b, limit) {
+            Ok(Some(bound)) => return Ok(Some(bound)),
+            Ok(None) | Err(GeometryError::CurveApproximationLimit) => {}
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(None)
+}
+
 fn proportional(a: Real, b: Real, a0: Real, b0: Real) -> bool {
     if (a == a0 && b == b0) || (a == b && a0 == b0) {
         return true;
