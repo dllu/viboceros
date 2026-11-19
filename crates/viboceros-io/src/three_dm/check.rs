@@ -26,10 +26,33 @@ impl GeometryCheck {
 /// Invalid geometry is distinct from an unsupported/unrepresentable native copy.
 /// Instance references need their actual definition UUID; use the separate entry.
 pub fn check_3dm_geometry(geometry: &ThreeDmGeometry) -> GeometryCheck {
+    check_3dm_geometry_with_tolerance(geometry, Tolerance::DEFAULT)
+}
+
+pub fn check_3dm_geometry_with_tolerance(
+    geometry: &ThreeDmGeometry,
+    tolerance: Tolerance,
+) -> GeometryCheck {
     if matches!(geometry, ThreeDmGeometry::InstanceReference { .. }) {
         return GeometryCheck::not_checked("Instance checks require the definition UUID");
     }
-    check(geometry, None)
+    let prepared = match crate::three_dm_curves::prepare(geometry, tolerance) {
+        Ok(prepared) => prepared,
+        Err(error) => return GeometryCheck::not_checked(error.to_string()),
+    };
+    let mut unknown = None;
+    let mut last = None;
+    for part in &prepared {
+        let result = check(part, None);
+        match result.status {
+            GeometryCheckStatus::Invalid => return result,
+            GeometryCheckStatus::NotChecked if unknown.is_none() => unknown = Some(result),
+            _ => last = Some(result),
+        }
+    }
+    unknown.or(last).unwrap_or_else(|| {
+        GeometryCheck::not_checked("3DM preparation produced no geometry to check")
+    })
 }
 
 /// Validate only the reference's UUID and placement, as native IsValid does.

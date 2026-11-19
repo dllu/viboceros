@@ -10,6 +10,13 @@ pub(super) struct SelBadObjectsCommand;
 /// Check the native equivalent of the actual stored geometry. Instance reference
 /// validity checks UUID/placement; catalog integrity belongs to the document.
 pub fn check_geometry(geometry: &Geometry) -> GeometryCheck {
+    check_geometry_with_tolerance(geometry, Tolerance::DEFAULT)
+}
+
+pub(crate) fn check_geometry_with_tolerance(
+    geometry: &Geometry,
+    tolerance: Tolerance,
+) -> GeometryCheck {
     if let Geometry::BlockInstance(instance) = geometry {
         let reference = instance.reference();
         return viboceros_io::check_3dm_instance_reference(
@@ -18,7 +25,7 @@ pub fn check_geometry(geometry: &Geometry) -> GeometryCheck {
         );
     }
     match crate::interchange::geometry_to_3dm(geometry) {
-        Ok(geometry) => viboceros_io::check_3dm_geometry(&geometry),
+        Ok(geometry) => viboceros_io::check_3dm_geometry_with_tolerance(&geometry, tolerance),
         Err(error) => GeometryCheck::not_checked(error.to_string()),
     }
 }
@@ -49,7 +56,7 @@ impl Command for CheckCommand {
         let mut details = String::new();
         let mut omitted = 0;
         for object in doc.selected_objects() {
-            let result = check_geometry(object.geometry());
+            let result = check_geometry_with_tolerance(object.geometry(), doc.tolerance());
             let (index, label) = match result.status {
                 GeometryCheckStatus::Valid => (0, "valid"),
                 GeometryCheckStatus::Invalid => (1, "invalid"),
@@ -93,7 +100,7 @@ impl Command for SelBadObjectsCommand {
         let mut ids = Vec::new();
         let mut skipped = 0;
         for object in doc.selectable_objects() {
-            match check_geometry(object.geometry()).status {
+            match check_geometry_with_tolerance(object.geometry(), doc.tolerance()).status {
                 GeometryCheckStatus::Invalid => ids.push(object.id()),
                 GeometryCheckStatus::NotChecked => skipped += 1,
                 GeometryCheckStatus::Valid => {}

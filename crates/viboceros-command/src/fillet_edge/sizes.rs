@@ -43,7 +43,7 @@ pub(super) fn blend_with_sizes(
         primary.or_else(|error| {
             Solid::blend_brep_edge_profiles(&local, edges, profile, tolerance, true)
                 .ok()
-                .and_then(validate_local_fillet)
+                .and_then(|candidate| validate_local_fillet(candidate, tolerance))
                 .ok_or(error)
         })?
     } else {

@@ -29,7 +29,8 @@ mod check;
 mod mesh_ngon;
 mod render_mesh;
 pub use check::{
-    GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_instance_reference,
+    GeometryCheck, GeometryCheckStatus, check_3dm_geometry, check_3dm_geometry_with_tolerance,
+    check_3dm_instance_reference,
 };
 #[cfg(test)]
 mod nested_codec_tests;
