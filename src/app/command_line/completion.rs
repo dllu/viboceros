@@ -178,7 +178,7 @@ fn completions(commands: &CommandRegistry, input: &str) -> Vec<Completion> {
 }
 
 // The file commands consume the entire remaining string as one path. Only
-// ExportStl's format and ImportStep's native flag precede it; mirror that grammar.
+// Recognized format and export options can precede the filename.
 fn path_argument(input: &str) -> Option<(&str, &str)> {
     let start = input.len() - input.trim_start().len();
     let end = start + input[start..].find(char::is_whitespace)?;
@@ -226,7 +226,10 @@ fn path_argument(input: &str) -> Option<(&str, &str)> {
     let option = command == "exportstl"
         && (first.eq_ignore_ascii_case("ascii") || first.eq_ignore_ascii_case("binary"))
         || matches!(command.as_str(), "importstep" | "importstp")
-            && first.eq_ignore_ascii_case("Native=Yes");
+            && first.eq_ignore_ascii_case("Native=Yes")
+        || command == "export3dm"
+            && (first.eq_ignore_ascii_case("Selected=Yes")
+                || first.eq_ignore_ascii_case("Selected=No"));
     if option {
         // A complete option without a space is still being edited.
         if token_end == rest.len() {

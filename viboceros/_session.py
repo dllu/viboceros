@@ -242,13 +242,19 @@ class Session:
         options = "Native=Yes " if native_step else ""
         return self._file_command(f"Import{form} {options}{path}", track_changes=True)
 
-    def export(self, path: PathLike, *, native_step: bool = False, ascii_stl: bool = False) -> CommandResult:
-        """Export the current model to 3DM, STL, or STEP."""
+    def export(
+        self, path: PathLike, *, native_step: bool = False, ascii_stl: bool = False,
+        selected_only: bool = False,
+    ) -> CommandResult:
+        """Export to 3DM, STL, or STEP. Use selected_only to export the current 3DM selection."""
         path = _path(path)
         form = _FORMATS.get(path.suffix.lower())
-        if form is None or native_step and form != "Step" or ascii_stl and form != "Stl":
+        if (form is None or native_step and form != "Step" or ascii_stl and form != "Stl"
+                or selected_only and form != "3dm"):
             raise ValueError("expected 3DM, STL, or STEP with options matching the file type")
         options = "Native=Yes " if native_step else "Ascii " if ascii_stl else ""
+        if selected_only:
+            options = "Selected=Yes "
         return self._file_command(f"Export{form} {options}{path}", track_changes=False)
 
     def _file_command(self, command: str, *, track_changes: bool) -> CommandResult:
@@ -280,15 +286,18 @@ class Session:
         """Read the tensor-product definition of a surface or B-rep face."""
         return NurbsSurface(**self._request("surface_definition", id=object_id(obj), face=face))
 
-    def sew_brep_edges(self, *pairs: tuple[Component, Component, bool]) -> str:
+    def sew_brep_edges(
+        self, *pairs: tuple[Component, Component, bool], anchor: ObjectLike | None = None,
+    ) -> str:
         """Sew explicit edge pairs and replace their B-reps in one undoable edit.
 
         The boolean is true when the second edge runs opposite the first.
-        The result inherits the attributes of the first referenced object.
+        The result inherits the attributes and orientation of the anchor
+        object, or of the first referenced object when omitted.
         """
         return self._request("sew_brep_edges", pairs=[
             (a._ref(), b._ref(), reversed) for a, b, reversed in pairs
-        ])
+        ], anchor=None if anchor is None else object_id(anchor))
 
     def surface_jets(
         self, obj: ObjectLike, *samples: SurfaceSample | UV, face: int | None = None,

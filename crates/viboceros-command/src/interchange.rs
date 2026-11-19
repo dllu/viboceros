@@ -11,7 +11,9 @@ mod region_tests;
 #[cfg(test)]
 mod tests;
 use std::collections::{BTreeMap, BTreeSet};
-use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectColorSource};
+use viboceros_document::{
+    ColorRgb, Document, Geometry, ObjectAttributes, ObjectColorSource, ObjectId,
+};
 use viboceros_geometry::{GeometryError, Tolerance, TriangleMesh};
 use viboceros_io::{
     StlFormat, ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -316,6 +318,19 @@ pub fn parse_3dm_path(input: &str) -> Result<&str, CommandError> {
         .ok_or(CommandError::Usage("Open3dm/Import3dm/Export3dm path"))
 }
 
+pub fn parse_3dm_export_path(input: &str) -> Result<(&str, bool), CommandError> {
+    let input = input.trim_start();
+    let end = input.find(char::is_whitespace).unwrap_or(input.len());
+    let flag = &input[..end];
+    let selected = flag.eq_ignore_ascii_case("Selected=Yes");
+    let path = if selected || flag.eq_ignore_ascii_case("Selected=No") {
+        &input[end..]
+    } else {
+        input
+    };
+    Ok((parse_3dm_path(path)?, selected))
+}
+
 /// Loads a 3DM as a fresh document. The caller swaps it into the session only
 /// after all geometry and metadata have been decoded successfully.
 pub fn open_3dm_with_named_views(
@@ -525,7 +540,15 @@ pub(super) struct SaveAsThreeDmCommand;
 
 impl Command for ExportThreeDmCommand {
     fn parse_arguments<'a>(&self, input: &'a str) -> Result<Vec<&'a str>, CommandError> {
-        paths::parse(input, false)
+        let (path, selected) = parse_3dm_export_path(input)?;
+        Ok(vec![
+            path,
+            if selected {
+                "Selected=Yes"
+            } else {
+                "Selected=No"
+            },
+        ])
     }
 
     fn name(&self) -> &'static str {
@@ -537,11 +560,10 @@ impl Command for ExportThreeDmCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        if arguments.is_empty() {
-            return Err(CommandError::Usage("Export3dm path"));
-        }
-        let path = arguments.join(" ");
-        export_3dm_with_named_views(document, &path, &[])
+        let [path, selected] = arguments else {
+            return Err(CommandError::Usage("Export3dm [Selected=Yes|No] path"));
+        };
+        export_3dm_with_options(document, path, &[], &[], &[], *selected == "Selected=Yes")
     }
 }
 
@@ -595,7 +617,26 @@ pub fn export_3dm_with_viewports_and_cplanes(
     viewports: &[ThreeDmViewport],
     cplanes: &[ThreeDmNamedCPlane],
 ) -> Result<String, CommandError> {
-    write_document_3dm(document, path, views, viewports, cplanes, false)
+    export_3dm_with_options(document, path, views, viewports, cplanes, false)
+}
+
+pub fn export_3dm_with_options(
+    document: &Document,
+    path: &str,
+    views: &[ThreeDmNamedView],
+    viewports: &[ThreeDmViewport],
+    cplanes: &[ThreeDmNamedCPlane],
+    selected_only: bool,
+) -> Result<String, CommandError> {
+    write_document_3dm(
+        document,
+        path,
+        views,
+        viewports,
+        cplanes,
+        false,
+        selected_only,
+    )
 }
 
 pub fn save_3dm_with_named_views(
@@ -629,7 +670,7 @@ pub fn save_3dm_with_viewports_and_cplanes(
     {
         return Err(CommandError::Usage("SaveAs path.3dm"));
     }
-    write_document_3dm(document, path, views, viewports, cplanes, true)
+    write_document_3dm(document, path, views, viewports, cplanes, true, false)
 }
 
 fn write_document_3dm(
@@ -639,8 +680,18 @@ fn write_document_3dm(
     viewports: &[ThreeDmViewport],
     cplanes: &[ThreeDmNamedCPlane],
     backup: bool,
+    selected_only: bool,
 ) -> Result<String, CommandError> {
-    let mut model = document_3dm_model(document)?;
+    let mut model = if selected_only {
+        if document.selected_object_count() == 0 {
+            return Err(CommandError::Usage(
+                "select objects to export with Export3dm Selected=Yes",
+            ));
+        }
+        build_3dm_model(document, |id| document.is_selected(id))?
+    } else {
+        document_3dm_model(document)?
+    };
     model.named_views = views.to_vec();
     model.viewports = viewports.to_vec();
     model.named_cplanes = cplanes.to_vec();
@@ -666,6 +717,13 @@ fn write_document_3dm(
 }
 
 pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError> {
+    build_3dm_model(document, |_| true)
+}
+
+fn build_3dm_model(
+    document: &Document,
+    include_object: impl Fn(ObjectId) -> bool,
+) -> Result<ThreeDmModel, CommandError> {
     if document.is_block_editing() {
         return Err(CommandError::Usage(
             "finish BlockEdit before saving the document",
@@ -715,6 +773,7 @@ pub(super) fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, Co
         .collect::<BTreeMap<_, _>>();
     let objects = document
         .objects()
+        .filter(|object| include_object(object.id()))
         .map(|object| {
             Ok(ThreeDmObject {
                 id: object.id().uuid(),

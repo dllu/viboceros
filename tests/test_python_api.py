@@ -142,6 +142,18 @@ class PythonApiTests(unittest.TestCase):
         self.assertEqual(model.object(restored).kind, "brep")
         self.assertEqual(model.object(restored).bounds, ((0, 0, 0), (8, 5, 3)))
 
+    def test_export_selected_3dm_leaves_source_unchanged(self):
+        model = self.model
+        first, = model.command("Box", (0, 0, 0), (2, 3, 0), 4).added
+        second, = model.command("Box", (10, 0, 0), (12, 3, 0), 4).added
+        path = self.folder / "selected objects.3dm"
+        model.select(first)
+        model.export(path, selected_only=True)
+        self.assertEqual(model.selection().objects, (first,))
+        self.assertEqual({obj.id for obj in model.objects()}, {first, second})
+        model.open(path)
+        self.assertEqual([obj.id for obj in model.objects()], [first])
+
     def test_exact_surface_patches_and_jets(self):
         model = self.model
         knots = [0, 0, 0, 1, 1, 1]
@@ -208,11 +220,11 @@ class PythonApiTests(unittest.TestCase):
             boundaries.append(seam)
         first, second = boundaries
         reversed = first.points == second.points[::-1]
-        with self.assertRaises(SessionError):
+        with self.assertRaisesRegex(SessionError, rf"pair 0.*{first.object} edge {first.index}.*{second.object} edge {second.index}"):
             model.sew_brep_edges((first, second, not reversed))
         self.assertEqual([obj.id for obj in model.objects()], parts)
         original = [model.surface_definition(identifier) for identifier in parts]
-        joined = model.sew_brep_edges((first, second, reversed))
+        joined = model.sew_brep_edges((second, first, reversed), anchor=parts[0])
         self.assertEqual(model.object(joined).name, "Skin")
         archive = self.folder / "sewn.3dm"
         model.save(archive)

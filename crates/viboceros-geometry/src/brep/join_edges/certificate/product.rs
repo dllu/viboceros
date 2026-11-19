@@ -11,7 +11,9 @@ pub(super) mod restriction;
 mod tests;
 
 type H = [Rational; 4];
-const MAX_DEGREE: usize = 16;
+// A cubic trim on a bicubic surface can lift to degree 18. At this
+// limit both the binomial coefficients and their products fit in u64.
+const MAX_DEGREE: usize = 18;
 const MAX_DEPTH: usize = 16;
 
 pub(super) fn bound(

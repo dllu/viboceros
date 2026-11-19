@@ -419,6 +419,18 @@ pub enum GeometryError {
     #[error("invalid B-rep topology: {context}")]
     InvalidBrepTopology { context: &'static str },
 
+    #[error(
+        "edge curves lack a whole-curve join certificate for pair {pair} (edges {first} and {second}, degrees {degree_first} and {degree_second}, tolerance {distance})"
+    )]
+    UncertifiedBrepEdgePair {
+        pair: usize,
+        first: usize,
+        second: usize,
+        degree_first: usize,
+        degree_second: usize,
+        distance: Real,
+    },
+
     #[error("surface geodesic failed: {context}")]
     InvalidSurfaceGeodesic { context: &'static str },
 

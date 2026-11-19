@@ -85,7 +85,8 @@ knots. Pass `face=` to query the supporting surface of a B-rep face.
 Use `sew_brep_edges((first, second, reversed), ...)` when the mating edges
 are known. Get each edge from `components()`. Set `reversed` to `True` for
 oppositely directed edges. Sewing preserves each face's UV support and
-replaces the input B-reps in one undo step.
+replaces the input B-reps in one undo step. Use `anchor=object_id` to retain
+the orientation and attributes of a specific input body.
 
 ## Files and images
 
@@ -93,6 +94,7 @@ Use `save()` for the current project or `save(path)` for Save As. `open(path)`
 replaces the document with a 3DM project. `import_file(path)` and `export(path)`
 choose 3DM, STL, or STEP by extension. Pass `native_step=True` to use the native
 STEP option on a compatible build, or `ascii_stl=True` to write text STL.
+For 3DM, pass `selected_only=True` to export the current object selection.
 
 `model.screenshot()` writes PNG using the desktop viewport's renderer. Give it a
 viewport name or index, a saved named view, or a standard direction including

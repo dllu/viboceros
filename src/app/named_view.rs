@@ -330,15 +330,16 @@ impl VibocerosApp {
         }
         if name.eq_ignore_ascii_case("Export3dm") {
             return Some((|| {
-                let path = viboceros_command::parse_3dm_path(tail)?;
+                let (path, selected_only) = viboceros_command::parse_3dm_export_path(tail)?;
                 let views = self.three_dm_views()?;
                 let current_views = self.three_dm_viewports()?;
-                let message = viboceros_command::export_3dm_with_viewports_and_cplanes(
+                let message = viboceros_command::export_3dm_with_options(
                     &self.document,
                     path,
                     &views,
                     &current_views,
                     &self.three_dm_named_cplanes(),
+                    selected_only,
                 )?;
                 Ok(format!("{message}; exported {} named view(s)", views.len()))
             })());
