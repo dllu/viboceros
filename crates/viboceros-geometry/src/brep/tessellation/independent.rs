@@ -66,10 +66,52 @@ impl Brep {
             )
         });
         if spans.saturating_mul(4) > DISPLAY_GRID_VERTEX_TARGET && !self.has_positional_break() {
-            let sampling = Sampling::uniform(resolution.min(2))
-                .with_axis_limit(dense_grid_axis_limit(self.faces.len()));
+            let limit = dense_grid_axis_limit(self.faces.len());
+            let grids = self
+                .faces
+                .iter()
+                .map(|face| {
+                    // Trim loops with many authored spans already have boundary
+                    // detail. Retain the requested resolution on simpler faces,
+                    // where a long circular span can otherwise become one chord.
+                    let spans = face
+                        .loops
+                        .iter()
+                        .flat_map(|boundary| &boundary.trims)
+                        .map(|trim| trim.curve.spans().count())
+                        .sum::<usize>();
+                    let samples = resolution
+                        .div_ceil(spans.div_ceil(24).max(1))
+                        .max(resolution.min(2));
+                    [samples; 2]
+                })
+                .collect::<Vec<_>>();
             return self
-                .tessellate_sampling(sampling, false, true, tolerance, false, true)
+                .tessellate_sampling(
+                    Sampling::per_face(&grids).with_axis_limit(limit),
+                    false,
+                    true,
+                    tolerance,
+                    false,
+                    true,
+                )
+                .or_else(|error| match error {
+                    GeometryError::TooManyMeshVertices
+                    | GeometryError::MeshSubdivisionLimit
+                    | GeometryError::UnsupportedBrepTrimTessellation { .. }
+                        if resolution > 2 =>
+                    {
+                        self.tessellate_sampling(
+                            Sampling::uniform(2).with_axis_limit(limit),
+                            false,
+                            true,
+                            tolerance,
+                            false,
+                            true,
+                        )
+                    }
+                    _ => Err(error),
+                })
                 .map(|(mesh, sources, _)| (mesh, sources));
         }
         while resolution > 1
