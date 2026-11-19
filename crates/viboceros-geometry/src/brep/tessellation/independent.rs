@@ -285,7 +285,17 @@ impl Brep {
         if vertices.is_none_or(|n| n > 1_048_576) {
             if !self.has_positional_break() {
                 return self
-                    .tessellate_conforming_sampling(sparse_sampling(), tolerance, false)
+                    .tessellate_conforming_sampling(
+                        sparse_sampling().with_polygon_density(density),
+                        tolerance,
+                        false,
+                    )
+                    .or_else(|error| match error {
+                        GeometryError::MeshSubdivisionLimit if density > 0. => {
+                            self.tessellate_conforming_sampling(sparse_sampling(), tolerance, false)
+                        }
+                        _ => Err(error),
+                    })
                     .map(|(mesh, _, _)| mesh.culled_unused_vertices().0);
             }
             return Err(GeometryError::MeshSubdivisionLimit);
