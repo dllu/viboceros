@@ -402,3 +402,55 @@ fn irregular_trimmed_holes_retain_analytic_normals_and_uv_provenance() {
         }
     }
 }
+
+#[test]
+fn trimmed_face_display_retries_when_knot_grid_exceeds_the_vertex_budget() {
+    use crate::{Circle3, PointMorph};
+
+    struct Bend;
+    impl PointMorph for Bend {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            Point3::try_new(p.x(), p.y(), p.z() + p.x().powi(2))
+        }
+    }
+
+    let tolerance = Tolerance::try_new(1e-6, 1e-12, 1e-10).unwrap();
+    let circle = |r| {
+        Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            r,
+            Vector3::try_new(0., 0., 1.)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let planar = Brep::try_planar_face_with_holes(&circle(1.), &[circle(0.3)], tolerance).unwrap();
+    let mut source = Bend.morph_brep(&planar, tolerance).unwrap();
+    let face = &mut source.faces[0];
+    let u = face.surface.domain_u();
+    let v = face.surface.domain_v();
+    for station in 1..48 {
+        let t = Real::from(station) / 48.0;
+        let uk = u.start() + t * (u.end() - u.start());
+        let vk = v.start() + t * (v.end() - v.start());
+        face.surface = face
+            .surface
+            .try_insert_knot_u(uk, 1)
+            .unwrap()
+            .try_insert_knot_v(vk, 1)
+            .unwrap();
+    }
+
+    assert!(matches!(
+        source.tessellate(8, tolerance),
+        Err(GeometryError::TooManyMeshVertices)
+    ));
+    let (mesh, faces) = source.display_mesh_with_face_sources(8, tolerance).unwrap();
+    assert_eq!(mesh, source.tessellate(4, tolerance).unwrap());
+    assert_eq!(faces, vec![0; mesh.face_count()]);
+}

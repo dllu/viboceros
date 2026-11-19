@@ -38,7 +38,23 @@ impl Brep {
 
     /// Display mesh and its source B-rep face for every stored mesh face.
     /// The mapping survives the conforming seam fallback used by `display_mesh`.
+    /// Dense trimmed faces retry at lower sampling resolutions when a mesh
+    /// vertex budget would otherwise prevent display.
     pub fn display_mesh_with_face_sources(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<(TriangleMesh, Vec<usize>), GeometryError> {
+        let mut resolution = samples_per_span;
+        loop {
+            match self.display_mesh_at_resolution(resolution, tolerance) {
+                Err(GeometryError::TooManyMeshVertices) if resolution > 1 => resolution /= 2,
+                result => return result,
+            }
+        }
+    }
+
+    fn display_mesh_at_resolution(
         &self,
         samples_per_span: usize,
         tolerance: Tolerance,
