@@ -5,6 +5,7 @@ use viboceros_geometry::{Brep, NurbsCurve};
 struct Request {
     revision: u64,
     tolerance: Tolerance,
+    provisional: Option<(End, Point3)>,
 }
 
 #[derive(Debug)]
@@ -26,10 +27,22 @@ impl Preview {
         self.worker.clear_result();
     }
 
-    fn request(&self, tolerance: Tolerance) -> Request {
+    pub(super) fn clear_wires(&mut self) {
+        self.worker.clear_result();
+    }
+
+    pub(super) fn accept_point(&mut self, end: End, point: Point3, tolerance: Tolerance) {
+        let previous = self.request(tolerance, Some((end, point)));
+        self.revision = self.revision.wrapping_add(1);
+        self.worker
+            .retain_as(&previous, self.request(tolerance, None));
+    }
+
+    fn request(&self, tolerance: Tolerance, provisional: Option<(End, Point3)>) -> Request {
         Request {
             revision: self.revision,
             tolerance,
+            provisional,
         }
     }
 }
@@ -45,26 +58,40 @@ impl Session {
 }
 
 impl VibocerosApp {
-    pub(in crate::app) fn update_sweep_two_rail_preview(&mut self, context: &egui::Context) {
-        if !self
-            .sweep_two_rails
-            .as_ref()
-            .is_some_and(|session| session.section_count() >= 2)
-        {
+    pub(in crate::app) fn update_sweep_two_rail_preview(
+        &mut self,
+        point: Option<Point3>,
+        context: &egui::Context,
+    ) {
+        let Some(session) = &self.sweep_two_rails else {
+            return;
+        };
+        if session.section_count() == 0 {
             return;
         }
+        let provisional = session.picking.zip(point);
+        let mut ends = session.state.ends;
+        if let Some((end, point)) = provisional {
+            end.set(&mut ends, point);
+        }
+        let ready = (session.picking.is_none() || provisional.is_some()) && session.ready(ends);
         if !self.validate_sweep_two_rails() {
             context.request_repaint();
             return;
         }
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = session.preview.request(tolerance);
+        let request = session.preview.request(tolerance, provisional);
         let fit = session.state.fit;
         session.preview.worker.update(
-            Some(request),
+            ready.then_some(request),
             context,
-            |previous, current| previous == current,
+            |previous, current| {
+                previous.revision == current.revision
+                    && previous.tolerance == current.tolerance
+                    && previous.provisional.map(|(end, _)| end)
+                        == current.provisional.map(|(end, _)| end)
+            },
             |_| {
                 let ids = session
                     .state
@@ -76,7 +103,12 @@ impl VibocerosApp {
                 move || {
                     Some(
                         source
-                            .and_then(|source| source.build(fit, tolerance))
+                            .and_then(|source| {
+                                if provisional.is_some() {
+                                    source.validate_point_ends(ends, tolerance)?;
+                                }
+                                source.build(fit, ends, tolerance)
+                            })
                             .map(|brep| {
                                 let wires = draft_worker::wireframe(&brep, tolerance);
                                 Draft { brep, wires }
@@ -87,6 +119,7 @@ impl VibocerosApp {
             },
         );
         if session.state.review
+            && session.picking.is_none()
             && session.preview.reported != Some(request)
             && let Some(Err(error)) = session.preview.worker.latest()
         {
@@ -102,12 +135,12 @@ impl VibocerosApp {
         }
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = session.preview.request(tolerance);
+        let request = session.preview.request(tolerance, None);
         let result = if let Some(draft) = session.preview.worker.take(&request) {
             draft.map(|draft| draft.brep)
         } else {
             Source::capture(&self.document, &session.ids(), &session.options)
-                .and_then(|source| source.build(session.state.fit, tolerance))
+                .and_then(|source| source.build(session.state.fit, session.state.ends, tolerance))
                 .map_err(|error| error.to_string())
         };
         let brep = match result {

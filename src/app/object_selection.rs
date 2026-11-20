@@ -2188,6 +2188,7 @@ impl VibocerosApp {
         self.length_units_pending = false;
         self.clear_sweep_input();
         self.sweep_two_rails = None;
+        self.finish_sweep_two_rail_point_getter();
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {

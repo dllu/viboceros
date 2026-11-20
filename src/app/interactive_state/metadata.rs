@@ -9,6 +9,7 @@ impl InteractiveCommand {
             Self::FaceCreate { .. } => "3DFace",
             Self::LoftPoint => "Loft",
             Self::SweepPoint => "Sweep1",
+            Self::SweepTwoRailPoint => "Sweep2",
             Self::RemapCPlane => "RemapCPlane",
             Self::PolylineOnMesh { .. } => "PolylineOnMesh",
             Self::InterpolateCurveOnSurface { .. } => "InterpCrvOnSrf",
@@ -204,7 +205,7 @@ impl InteractiveCommand {
             | Self::Pipe { anchor: base, .. }
             | Self::SubDCylinder { anchor: base }
             | Self::RectanglePrimitive { anchor: base, .. } => base,
-            Self::LoftPoint | Self::SweepPoint | Self::RemapCPlane => None,
+            Self::LoftPoint | Self::SweepPoint | Self::SweepTwoRailPoint | Self::RemapCPlane => None,
             Self::ProjectDirection { start }
             | Self::SurfaceFlow { start }
             | Self::Flow { start } => start,

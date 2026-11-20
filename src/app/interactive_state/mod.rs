@@ -96,6 +96,7 @@ pub(super) enum InteractiveCommand {
     DraftPullCurve,
     LoftPoint,
     SweepPoint,
+    SweepTwoRailPoint,
     FaceCreate {
         anchor: Option<Point3>,
     },

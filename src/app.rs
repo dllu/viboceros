@@ -1025,7 +1025,10 @@ impl VibocerosApp {
         {
             return;
         }
-        if self.continue_sweep_point_option(&input) || self.continue_loft_point_option(&input) {
+        if self.continue_sweep_point_option(&input)
+            || self.continue_loft_point_option(&input)
+            || self.continue_sweep_two_rail_point_option(&input)
+        {
             return;
         }
         if self.curve_line.is_some() && self.try_continue_curve_line(&input) {

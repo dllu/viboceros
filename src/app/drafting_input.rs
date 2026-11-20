@@ -50,6 +50,9 @@ impl VibocerosApp {
         if let Some(accepted) = self.accept_sweep_point(point) {
             return accepted;
         }
+        if let Some(accepted) = self.accept_sweep_two_rail_point(point) {
+            return accepted;
+        }
         if let Some(accepted) = self.accept_loft_point(point) {
             return accepted;
         }
@@ -223,6 +226,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::LoftPoint
             | InteractiveCommand::SweepPoint
+            | InteractiveCommand::SweepTwoRailPoint
             | InteractiveCommand::RemapCPlane
             | InteractiveCommand::OrientPoints { .. }
             | InteractiveCommand::OrientCurveToEdge

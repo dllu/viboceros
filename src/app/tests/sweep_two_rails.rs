@@ -198,3 +198,151 @@ fn changed_named_sweep_two_rail_cancels_review_and_restores_selection() {
     assert_eq!(app.document.selected_object_count(), 0);
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
+
+#[test]
+fn sweep_two_rail_end_point_tracks_the_resolved_cursor_and_snap() {
+    let mut app = test_app();
+    app.grid_snap = false;
+    let tolerance = Tolerance::try_new(0.35, 1e-12, 1e-10).unwrap();
+    app.document = Document::new(tolerance);
+    for line in ["Line -2,0,0 0,0,5", "Line 0,0,5 2,0,0", "Line -2,0,0 2,0,0"] {
+        enter(&mut app, line);
+    }
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    let pole = point(0., 0., 5.);
+    app.document.add_geometry(Geometry::Point(pole)).unwrap();
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2");
+    for id in ids {
+        enter(&mut app, &id.to_string());
+    }
+    enter(&mut app, "Point");
+    assert_eq!(
+        app.command_hint(),
+        "Pick the end point where both rails meet. Esc cancels"
+    );
+    enter(&mut app, "w0,0,7");
+    assert_eq!(
+        app.active_command,
+        Some(InteractiveCommand::SweepTwoRailPoint)
+    );
+    assert_eq!(app.document.undo_label(), None);
+    assert!(
+        app.command_log
+            .iter()
+            .any(|line| line.contains("point ends must lie on both rails"))
+    );
+
+    enter(&mut app, "NoSnap");
+    viewport_frame(&mut app, &context, vec![]);
+    let free_pixel = screen_point(&app, point(-0.2, 0., 5.));
+    viewport_frame(
+        &mut app,
+        &context,
+        vec![egui::Event::PointerMoved(free_pixel)],
+    );
+    let free = wait_for_draft(&mut app, &context);
+    viewport_frame(&mut app, &context, vec![egui::Event::PointerGone]);
+    assert!(
+        app.sweep_two_rails
+            .as_ref()
+            .unwrap()
+            .preview_wires()
+            .is_empty()
+    );
+
+    enter(&mut app, "Undo");
+    assert!(app.active_command.is_none());
+    enter(&mut app, "Point");
+    enter(&mut app, "Point"); // The ordinary one-shot object snap inside the getter.
+    assert!(app.snaps.model_override.is_some());
+    let pixel = screen_point(&app, point(0.1, 0., 5.));
+    viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(pixel)]);
+    let snapped = wait_for_draft(&mut app, &context);
+    assert_ne!(free, snapped);
+    let endpoints = |wires: &[NurbsCurve]| {
+        wires
+            .iter()
+            .flat_map(|curve| {
+                let domain = curve.domain();
+                [*domain.start(), *domain.end()].map(|parameter| curve.evaluate(parameter).unwrap())
+            })
+            .collect::<Vec<_>>()
+    };
+    let free_ends = endpoints(&free);
+    assert!(
+        free_ends
+            .iter()
+            .any(|&at| screen_point(&app, at).distance(free_pixel) < 0.1),
+        "{free_ends:?}"
+    );
+    assert!(endpoints(&snapped).contains(&pole));
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    viewport_click(&mut app, &context, pixel);
+    assert!(app.snaps.model_override.is_none());
+    assert!(app.active_command.is_none());
+    assert_eq!(app.viewport_object_filter(), None);
+    assert_eq!(
+        app.sweep_two_rails.as_ref().unwrap().preview_wires(),
+        snapped
+    );
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    assert_eq!(brep.wireframe_curves(1, tolerance).unwrap(), snapped);
+    assert!(brep.vertices().iter().any(|vertex| vertex.point() == pole));
+    assert_eq!(app.document.undo_label(), Some("Sweep2"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn sweep_two_rail_start_point_at_a_crossing_accepts_typed_world_input() {
+    let mut app = test_app();
+    for line in [
+        "Line 2,0,-5 -2,0,5",
+        "Line -2,0,-5 2,0,5",
+        "Line -2,0,5 2,0,5",
+    ] {
+        enter(&mut app, line);
+    }
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Sweep2");
+    for id in &ids[..2] {
+        enter(&mut app, &id.to_string());
+    }
+    enter(&mut app, "Point");
+    enter(&mut app, ".xy");
+    enter(&mut app, "w0,0,6");
+    enter(&mut app, "w0,0,0mm");
+    assert!(app.active_command.is_none());
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, &ids[2].to_string());
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().count(), 3);
+    enter(&mut app, "");
+    assert!(app.command_line_idle());
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    assert!(
+        brep.vertices()
+            .iter()
+            .any(|vertex| vertex.point() == point(0., 0., 0.))
+    );
+}

@@ -3,9 +3,10 @@ use super::*;
 
 use std::borrow::Cow;
 use viboceros_document::GeometrySnapshot;
+use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] (select two rails first, then at least two cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
 pub const MAX_SECTIONS: usize = 32;
 
 mod options;
@@ -35,7 +36,7 @@ impl Command for SweepTwoRailsCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let options = Options::parse(args)?;
         let source = Source::capture(doc, &selected_ids(doc)?, &options)?;
-        let brep = source.build(options.fit, doc.tolerance())?;
+        let brep = source.build(options.fit, options.ends, doc.tolerance())?;
         let message = result_message(source.sections.len(), brep.faces().len());
         doc.add_geometry(Geometry::Brep(brep))?;
         Ok(message)
@@ -80,7 +81,7 @@ impl Source {
             .take(MAX_SECTIONS + 1)
             .map(capture)
             .collect::<Result<Vec<_>, _>>()?;
-        if !(2..=MAX_SECTIONS).contains(&sections.len()) {
+        if sections.len() > MAX_SECTIONS {
             return Err(CommandError::Usage(USAGE));
         }
         Ok(Self {
@@ -89,17 +90,38 @@ impl Source {
         })
     }
 
-    pub fn build(&self, fit: SectionFit, tolerance: Tolerance) -> Result<Brep, CommandError> {
-        let convert = |source: &GeometrySnapshot| {
-            source
-                .nurbs_curve_representation()?
-                .ok_or(CommandError::Usage(USAGE))
-        };
-        let rails = [convert(&self.rails[0])?, convert(&self.rails[1])?];
+    fn curve(source: &GeometrySnapshot) -> Result<NurbsCurve, CommandError> {
+        source
+            .nurbs_curve_representation()?
+            .ok_or(CommandError::Usage(USAGE))
+    }
+
+    pub fn validate_point_ends(
+        &self,
+        ends: SweepEndPoints,
+        tolerance: Tolerance,
+    ) -> Result<(), CommandError> {
+        for rail in &self.rails {
+            viboceros_smlib::two_rail_point_stations(&Self::curve(rail)?, ends, tolerance)?;
+        }
+        Ok(())
+    }
+
+    pub fn build(
+        &self,
+        fit: SectionFit,
+        ends: SweepEndPoints,
+        tolerance: Tolerance,
+    ) -> Result<Brep, CommandError> {
+        let row_count = self.sections.len() + point_count(ends);
+        if self.sections.is_empty() || !(2..=MAX_SECTIONS).contains(&row_count) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let rails = [Self::curve(&self.rails[0])?, Self::curve(&self.rails[1])?];
         let sections = self
             .sections
             .iter()
-            .map(convert)
+            .map(Self::curve)
             .collect::<Result<Vec<_>, _>>()?;
         let fitted = match fit {
             SectionFit::Unchanged => Cow::Borrowed(sections.as_slice()),
@@ -123,8 +145,9 @@ impl Source {
                 viboceros_geometry::try_prepare_refitted_loft_sections(&sections, distance)?,
             ),
         };
-        let surface =
-            viboceros_smlib::two_rail_sweep_surface(&rails[0], &rails[1], &fitted, tolerance)?;
+        let surface = viboceros_smlib::two_rail_sweep_surface_with_point_ends(
+            &rails[0], &rails[1], &fitted, ends, tolerance,
+        )?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
         if (u.len() + 1).saturating_mul(v.len() + 1) > 4096 {
             return Err(CommandError::Usage("Sweep2 output exceeds 4096 faces"));
@@ -133,5 +156,12 @@ impl Source {
     }
 }
 
+pub fn point_count(ends: SweepEndPoints) -> usize {
+    [ends.start, ends.end].into_iter().flatten().count()
+}
+
 #[cfg(test)]
 mod tests;
+
+#[cfg(test)]
+mod point_tests;

@@ -36,6 +36,24 @@ impl<K: PartialEq, T: Send + 'static> Worker<K, T> {
         self.result = None;
     }
 
+    pub(super) fn retain_as(&mut self, previous: &K, accepted: K)
+    where
+        K: Clone,
+    {
+        if let Some((request, _)) = &mut self.job
+            && request == previous
+        {
+            *request = accepted.clone();
+        }
+        if let Some((request, _)) = &mut self.result
+            && request == previous
+        {
+            *request = accepted;
+        } else {
+            self.clear_result();
+        }
+    }
+
     pub(super) fn take(&mut self, request: &K) -> Option<T> {
         if self
             .result

@@ -35,12 +35,14 @@ impl SectionFit {
 pub struct Options {
     names: Option<[String; 2]>,
     pub fit: SectionFit,
+    pub ends: SweepEndPoints,
 }
 
 impl Options {
     pub fn parse(args: &[&str]) -> Result<Self, CommandError> {
         let mut names = [None, None];
         let mut fit = None;
+        let mut ends = SweepEndPoints::default();
         for arg in args {
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if let Some(index) = ["Rail1Name", "Rail2Name"]
@@ -48,6 +50,18 @@ impl Options {
                 .position(|name| option_name_eq(key, name))
             {
                 if value.is_empty() || names[index].replace(value.to_owned()).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if option_name_eq(key, "StartPoint") || option_name_eq(key, "EndPoint") {
+                let slot = if option_name_eq(key, "StartPoint") {
+                    &mut ends.start
+                } else {
+                    &mut ends.end
+                };
+                if slot
+                    .replace(parse_single_option_point(value, USAGE)?)
+                    .is_some()
+                {
                     return Err(CommandError::Usage(USAGE));
                 }
             } else if fit.replace(SectionFit::parse(key, value)?).is_some() {
@@ -62,6 +76,7 @@ impl Options {
         Ok(Self {
             names,
             fit: fit.unwrap_or_default(),
+            ends,
         })
     }
 

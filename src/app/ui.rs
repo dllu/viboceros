@@ -2074,7 +2074,7 @@ impl VibocerosApp {
         self.update_loft_pole_preview(apex_hover, ui.ctx());
         if edge_handle_input {
             self.update_sweep_preview(apex_hover, ui.ctx());
-            self.update_sweep_two_rail_preview(ui.ctx());
+            self.update_sweep_two_rail_preview(apex_hover, ui.ctx());
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());

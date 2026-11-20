@@ -32,6 +32,7 @@ impl InteractiveCommand {
                 "Draft pull direction: select a curve or surface edge (Esc cancels)"
             }
             Self::SweepPoint => "Sweep1: pick the point end (Esc cancels)",
+            Self::SweepTwoRailPoint => "Sweep2: pick the point end (Esc cancels)",
             Self::LoftPoint => "Loft: pick the point end (Esc cancels)",
             Self::RemapCPlane => {
                 "RemapCPlane: click a target viewport, or choose CPlane or View (Esc cancels)"

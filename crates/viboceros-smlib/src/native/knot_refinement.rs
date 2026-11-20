@@ -129,7 +129,7 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
-fn clamp_curve(source: &NurbsCurve) -> Result<NurbsCurve, Error> {
+pub(super) fn clamp_curve(source: &NurbsCurve) -> Result<NurbsCurve, Error> {
     let domain = source.domain();
     let target = source.degree() + 1;
     let result = insert_curve_knot(source, *domain.start(), target)?;

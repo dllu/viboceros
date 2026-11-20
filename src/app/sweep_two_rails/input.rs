@@ -13,19 +13,23 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
         } else if name.eq_ignore_ascii_case("Undo") {
             let session = self.sweep_two_rails.as_mut().unwrap();
-            if session.value.take().is_none()
+            if session.picking.take().is_some() {
+                self.finish_sweep_two_rail_point_getter();
+            } else if session.value.take().is_none()
                 && let Some(state) = session.undo.pop()
             {
                 session.state = state;
                 self.sync_sweep_two_rail_picks();
             }
             self.log_sweep_two_rails();
+        } else if session.picking.is_some() {
+            return false;
         } else if let Some(option) = session.value {
             self.set_sweep_two_rail_fit(option, input);
         } else if input.is_empty() || name.eq_ignore_ascii_case("Enter") {
             if session.state.review {
                 self.commit_sweep_two_rails();
-            } else if session.section_count() < 2 {
+            } else if !session.ready(session.state.ends) {
                 self.log_sweep_two_rails();
             } else {
                 let session = self.sweep_two_rails.as_mut().unwrap();
@@ -34,7 +38,11 @@ impl VibocerosApp {
                 self.log_sweep_two_rails();
             }
         } else if let Some((option, value)) = name.split_once('=') {
-            self.set_sweep_two_rail_fit(option, value);
+            if let Some(end) = End::from_name(option) {
+                self.set_sweep_two_rail_point_argument(end, name);
+            } else {
+                self.set_sweep_two_rail_fit(option, value);
+            }
         } else if let Some(option) = ["Simplify", "Rebuild", "Refit"]
             .into_iter()
             .find(|option| option.eq_ignore_ascii_case(name))

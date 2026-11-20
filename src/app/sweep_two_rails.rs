@@ -1,11 +1,14 @@
 //! Ordered rail and profile picks followed by a review of the exact surface.
 use super::{object_selection::PendingObjectCommand, *};
 use std::collections::BTreeSet;
-use viboceros_command::sweep_two_rails::{MAX_SECTIONS, Options, SectionFit, Source};
+use viboceros_command::sweep_two_rails::{MAX_SECTIONS, Options, SectionFit, Source, point_count};
 use viboceros_document::GeometrySnapshot;
+use viboceros_geometry::SweepEndPoints;
 
 mod input;
+mod points;
 mod preview;
+use points::End;
 
 #[derive(Clone, Debug)]
 struct Pick {
@@ -37,6 +40,7 @@ impl Pick {
 struct State {
     picks: Vec<Pick>,
     fit: SectionFit,
+    ends: SweepEndPoints,
     rebuild: usize,
     refit: f64,
     review: bool,
@@ -49,12 +53,13 @@ pub(super) struct Session {
     state: State,
     undo: Vec<State>,
     value: Option<&'static str>,
+    picking: Option<End>,
     preview: preview::Preview,
 }
 
 impl Session {
     pub(super) fn selecting(&self) -> bool {
-        !self.state.review && self.value.is_none()
+        !self.state.review && self.value.is_none() && self.picking.is_none()
     }
 
     fn rail_count(&self) -> usize {
@@ -72,22 +77,29 @@ impl Session {
             }
     }
 
+    fn ready(&self, ends: SweepEndPoints) -> bool {
+        self.section_count() > 0 && self.section_count() + point_count(ends) >= 2
+    }
+
     fn ids(&self) -> Vec<ObjectId> {
         self.state.picks.iter().map(|pick| pick.id).collect()
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(end) = self.picking {
+            return end.prompt();
+        }
         match self.value {
             Some("Simplify") => "Choose None, Rebuild or Refit",
             Some("Rebuild") => "Enter the cross-section control point count",
             Some("Refit") => "Enter the cross-section refit tolerance",
             _ if self.state.review => {
-                "Simplify / Rebuild / Refit / Undo. Enter creates the sweep, Esc cancels"
+                "Simplify / Rebuild / Refit / StartPoint / EndPoint / Undo. Enter creates the sweep"
             }
             _ => match self.rail_count() {
                 0 => "Select the first rail",
                 1 => "Select the second rail or use Undo",
-                _ => "Select cross sections in order. Enter reviews the sweep, Esc cancels",
+                _ => "Select cross sections in order or choose Point. Enter reviews the sweep",
             },
         }
     }
@@ -145,6 +157,7 @@ impl VibocerosApp {
             state: State {
                 picks,
                 fit: options.fit,
+                ends: options.ends,
                 rebuild: match options.fit {
                     SectionFit::Rebuild(count) => count,
                     _ => 5,
@@ -159,20 +172,21 @@ impl VibocerosApp {
             named_rails,
             undo: Vec::new(),
             value: None,
+            picking: None,
             preview: Default::default(),
         };
-        if session.section_count() >= 2 && (!arguments.is_empty() || command.contains('-')) {
+        if session.ready(session.state.ends) && (!arguments.is_empty() || command.contains('-')) {
             // Preserve direct scripted invocations with complete preselection.
             self.execute_command(input);
             return true;
         }
-        if session.section_count() > MAX_SECTIONS {
+        if session.section_count() + point_count(session.state.ends) > MAX_SECTIONS {
             self.push_log(format!(
                 "Sweep2 accepts at most {MAX_SECTIONS} cross sections"
             ));
             return true;
         }
-        if session.section_count() >= 2 {
+        if session.ready(session.state.ends) {
             session.undo.push(session.state.clone());
             session.state.review = true;
         }
@@ -203,7 +217,8 @@ impl VibocerosApp {
         else {
             return;
         };
-        let limit = MAX_SECTIONS + if session.named_rails.is_some() { 0 } else { 2 };
+        let limit = MAX_SECTIONS - point_count(session.state.ends)
+            + if session.named_rails.is_some() { 0 } else { 2 };
         let mut next = session.state.picks.clone();
         let removable = if mode == SelectionMode::Toggle {
             next.len()

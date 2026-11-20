@@ -107,7 +107,7 @@ mod shape;
 mod silhouette;
 mod surface_extrusion;
 mod two_rail_sweep;
-pub use two_rail_sweep::two_rail_sweep_surface;
+pub use two_rail_sweep::{two_rail_point_stations, two_rail_sweep_surface, two_rail_sweep_surface_with_point_ends};
 mod network_surface;
 pub use network_surface::{
     FittedGordonNetwork, GordonCurveFamilyFit, GordonCurveFitClock, GordonCurveFitInput,
