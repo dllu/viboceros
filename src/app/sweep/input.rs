@@ -96,7 +96,9 @@ impl VibocerosApp {
         let p = self.sweep_session.as_mut().unwrap();
         p.undo.push(p.state.clone());
         change.apply(&mut p.state.options);
-        if matches!(change, DraftChange::Pole(End::Finish, _)) && p.state.stage.seams().is_none() {
+        if matches!(change, DraftChange::Pole(End::Finish, _))
+            && matches!(p.state.stage, ProfileStage::Selecting)
+        {
             p.state.stage = ProfileStage::PointEndPicked;
         }
         p.picking = None;
@@ -184,6 +186,8 @@ impl VibocerosApp {
                 }
             } else if option == "ShapeBlending" {
                 "Sweep1 shape blending options are Local and Global".into()
+            } else if option == "Simplify" {
+                "Choose None or Rebuild for the cross sections".into()
             } else if option == "Closed" {
                 if !p.can_close() && p.state.options.closed != Some(true) {
                     self.push_log(

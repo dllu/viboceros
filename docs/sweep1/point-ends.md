@@ -25,8 +25,9 @@ The viewport picker accepts these coordinate options and interactive point picks
 
 Start `Sweep1`, select the rail, and enter `Point` before selecting profiles to
 pick a start pole. After selecting profiles, `Point` picks the end pole. Explicit
-`StartPoint` and `EndPoint` choose either end directly. Enter creates the surface;
-Escape cancels. Append `Point` to the initial command to open the getter with
+`StartPoint` and `EndPoint` choose either end directly. Accept the profiles and
+point ends to review the draft, then press Enter to create the surface. Escape
+cancels. Append `Point` to the initial command to open the getter with
 preselected curves. A named rail also permits a start pole before profile picks.
 
 Point getters use ordinary snaps, coordinate filters, units, relative coordinates,

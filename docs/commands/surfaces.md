@@ -124,9 +124,11 @@ the rail and select only profiles. `Point` picks a
 changes to profiles, options, and the pole under the cursor.
 See [automatic placement](../sweep1-placement.md) for interval and direction choices.
 
-After selecting closed profiles, drag the seam markers or use `Flip`,
-`Automatic`, `Natural`, and `SnapToKnots`. Enter opens a review of the
-draft. Adjust the sweep options there and press Enter again to create the surface.
+Press Enter after selecting the profiles. For closed profiles, drag the seam
+markers or use `Flip`, `Automatic`, `Natural`, and `SnapToKnots`, then press
+Enter to review the draft. In review, adjust the frame, shape blending, rail
+refitting, or cross-section rebuilding. Press Enter to create the surface or
+use Undo to revise the current input.
 On a closed rail with two or more profiles, `Closed=Yes` wraps the sweep from
 the last profile back to the first. The review preview reflects the change.
 

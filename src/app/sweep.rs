@@ -104,6 +104,7 @@ pub(super) struct Session {
     value: Option<&'static str>,
     seam_id_pending: bool,
     preview: preview::Preview,
+    review_open_profiles: bool,
     pub(super) chain_auto: bool,
 }
 impl Session {
@@ -153,13 +154,13 @@ impl Session {
                 && self.state.options.parameters.is_some()
                 && !self.awaiting_rail() =>
             {
-                "Select profiles in parameter order, then the rail. RailEdge / Undo. Enter sweeps"
+                "Select profiles in parameter order, then the rail. RailEdge / Undo. Press Enter to continue"
             }
             _ if self.awaiting_rail() => {
                 "Select a rail curve or surface edge. ChainEdges / RailId / RailEdge"
             }
             _ => {
-                "Select profiles in order. Point / StartPoint / EndPoint / RefitRail / Style / SetAxis / Undo. Enter sweeps"
+                "Select profiles in order, then press Enter. Point / StartPoint / EndPoint / RefitRail / Style / SetAxis / Undo"
             }
         }
     }
@@ -212,6 +213,10 @@ impl Session {
     }
 }
 impl VibocerosApp {
+    pub(super) fn review_open_sweep_profiles(&self, command: &str) -> bool {
+        !command.contains('-') && !self.command_file.is_dispatching()
+    }
+
     pub(super) fn should_review_preselected_sweep(&self) -> bool {
         let mut curves = self
             .document
@@ -272,6 +277,10 @@ impl VibocerosApp {
             value: None,
             seam_id_pending: false,
             preview: Default::default(),
+            review_open_profiles: input
+                .split_whitespace()
+                .next()
+                .is_some_and(|command| self.review_open_sweep_profiles(command)),
             chain_auto: true,
         });
     }

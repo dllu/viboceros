@@ -97,6 +97,8 @@ fn sweep_roadlike_axis_uses_the_snapped_cursor_and_commits_the_draft() {
         enter(&mut app, &id.to_string());
     }
     let initial = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
     enter(&mut app, "Style");
     enter(&mut app, "_Roadlike");
     assert!(app.command_hint().contains("axis base point"));
@@ -166,6 +168,7 @@ fn sweep_roadlike_axis_uses_the_snapped_cursor_and_commits_the_draft() {
 fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
     for (command, profile_command, getter, height, rail_first) in [
         ("Sweep1", "Line 0,0,2.5 2,0,2.5", "StartPoint", 0., true),
+        ("Sweep1", "Line 0,0,2.5 2,0,2.5", "EndPoint", 5., true),
         (
             "Sweep1 Parameters=2.5 FrameStyle=Roadlike Axis=0,1,0",
             "Circle 0,0,2.5 2",
@@ -188,7 +191,18 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
             enter(&mut app, &id.to_string());
         }
         let initial = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
-        enter(&mut app, "Rebuild=7");
+        let closed = profile_command.starts_with("Circle");
+        if !closed {
+            enter(&mut app, "");
+            assert!(app.command_hint().starts_with("Review the sweep"));
+            enter(&mut app, "Undo");
+            assert!(app.command_hint().starts_with("Select profiles"));
+            assert_eq!(app.document.selected_object_count(), 2);
+            enter(&mut app, "");
+        }
+        enter(&mut app, "Simplify");
+        assert!(app.command_log.back().unwrap().contains("None or Rebuild"));
+        enter(&mut app, "Rebuild");
         wait_for_wires(&mut app, &context, |wires| {
             !wires.is_empty() && wires != initial
         });
@@ -215,13 +229,14 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
         viewport_click(&mut app, &context, pixel);
         assert!(app.snaps.model_override.is_none());
         wait_for_wires(&mut app, &context, |wires| wires == hovered);
-        enter(&mut app, "");
-        if profile_command.starts_with("Circle") {
+        if closed {
+            enter(&mut app, "");
             assert!(app.command_hint().starts_with("Drag seam points"));
             enter(&mut app, "");
-            wait_for_wires(&mut app, &context, |wires| wires == hovered);
-            enter(&mut app, "");
         }
+        assert!(app.command_hint().starts_with("Review the sweep"));
+        wait_for_wires(&mut app, &context, |wires| wires == hovered);
+        enter(&mut app, "");
 
         let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
             panic!("expected Sweep1 B-rep: {:?}", app.command_log);
@@ -432,6 +447,8 @@ fn sweep_one_surface_edge_pick_previews_the_selected_frame_style() {
     );
     enter(&mut app, &profile.to_string());
     let freeform = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
     enter(&mut app, "Style");
     assert!(app.command_log.back().unwrap().contains("AlignWithSurface"));
     enter(&mut app, "AlignWithSurface");
@@ -500,6 +517,8 @@ fn sweep_one_rail_chain_preserves_connected_direction_and_keeps_sources() {
     enter(&mut app, &ids[2].to_string());
     let preview = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
     assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
     enter(&mut app, "");
     let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
         panic!("expected Sweep1 B-rep");

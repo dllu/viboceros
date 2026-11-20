@@ -28,6 +28,9 @@ fn sweep_picker_accepts_ordered_sections_and_restores_sources_with_one_undo() {
         assert!(app.object_prompt.is_some());
         app.select_prompt_objects(ids.clone(), SelectionMode::Replace);
         enter(&mut app, "");
+        assert!(app.command_hint().starts_with("Review the sweep"));
+        assert_eq!(app.document.objects().count(), 3);
+        enter(&mut app, "");
         assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
         assert_eq!(app.document.objects().count(), 4);
         assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), ids);
@@ -67,6 +70,52 @@ fn sweep_picker_retains_inline_rail_and_frame_options() {
     assert!(app.object_prompt.is_some());
     app.select_prompt_objects([ids[1], ids[2]], SelectionMode::Replace);
     enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
+    enter(&mut app, "");
     assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().count(), 4);
+}
+
+#[test]
+fn sweep_open_preselection_reviews_and_dashed_command_runs_directly() {
+    let (mut app, ids) = setup();
+    app.restore_curve_selection(ids.clone());
+    app.document.clear_history().unwrap();
+    enter(&mut app, "_Sweep1");
+    assert!(app.command_hint().starts_with("Review the sweep"));
+    assert_eq!(app.document.objects().count(), 3);
+    enter(&mut app, "Cancel");
+    assert!(app.command_line_idle());
+    assert_eq!(app.document.selected_object_ids().collect::<Vec<_>>(), ids);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "_-Sweep1");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    assert_eq!(app.document.objects().count(), 4);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+}
+
+#[test]
+fn sweep_command_file_accepts_an_open_profile_with_one_enter() {
+    let (mut app, ids) = setup();
+    let directory = tempfile::tempdir().unwrap();
+    let path = directory.path().join("sweep.txt");
+    std::fs::write(&path, format!("Sweep1 {} {} _Enter\n", ids[0], ids[1])).unwrap();
+    enter(
+        &mut app,
+        &format!("-ReadCommandFile \"{}\"", path.display()),
+    );
+    for _ in 0..16 {
+        if !app.drain_command_file() {
+            break;
+        }
+    }
+    assert_eq!(
+        app.command_file.last_result(),
+        Some(true),
+        "{:?}",
+        app.command_log
+    );
+    assert!(app.command_line_idle());
     assert_eq!(app.document.objects().count(), 4);
 }

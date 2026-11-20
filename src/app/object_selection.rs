@@ -219,7 +219,7 @@ impl PendingObjectCommand {
                         .any(|option| name.eq_ignore_ascii_case(option))
                 })
             }) {
-                return "Select profiles in order; Point/StartPoint/EndPoint/Undo; Enter sweeps along the specified rail, Esc cancels";
+                return "Select profiles in order, then press Enter. Point / StartPoint / EndPoint / Undo. Esc cancels";
             }
             if self.command_override.as_ref().is_some_and(|input| {
                 input.split_whitespace().any(|word| {
@@ -230,9 +230,9 @@ impl PendingObjectCommand {
                         .eq_ignore_ascii_case("Parameters")
                 })
             }) {
-                return "Select profiles in parameter order, then the rail last; Point/StartPoint/EndPoint/Undo; Enter sweeps, Esc cancels";
+                return "Select profiles in parameter order, then the rail. Press Enter to continue. Point / StartPoint / EndPoint / Undo. Esc cancels";
             }
-            return "Select the rail first, then profiles in order (or only profiles for a named rail); Point/StartPoint/EndPoint/Undo; Enter sweeps, Esc cancels";
+            return "Select the rail first, then profiles in order. Press Enter to continue. Point / StartPoint / EndPoint / Undo. Esc cancels";
         }
         if self.description.command == "Divide" {
             return if self.phase == ObjectPromptPhase::Selecting {
@@ -1057,7 +1057,8 @@ impl VibocerosApp {
             && description.command == "Sweep1"
             && words.len() == 1
             && !words[0].contains('-')
-            && self.should_review_preselected_sweep();
+            && (self.review_open_sweep_profiles(words[0])
+                || self.should_review_preselected_sweep());
         if preselected && !preselected_sweep_review {
             if matches!(
                 description.command,

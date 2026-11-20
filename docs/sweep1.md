@@ -31,6 +31,11 @@ rail from connected curves and edges. See
 [automatic placement](sweep1-placement.md) for direction, interval choices and
 qualification limits.
 
+Press Enter after selecting open profiles to review the live draft. Bare
+`Sweep1` with an open rail and profiles already selected opens review immediately.
+Adjust options such as `Style`, `ShapeBlending`, `RefitRail`, and `Simplify`,
+then press Enter to create the sweep.
+
 For closed profiles, Enter opens the seam editor. Drag the markers, or use
 `SelID id` followed by a point or `Parameter=value`. `Flip` reverses a chosen
 profile, `Automatic` aligns successive seams, and `Natural` restores their

@@ -71,7 +71,9 @@ impl VibocerosApp {
                 Ok((sources, can_close))
             });
         match result {
-            Ok((sources, can_close)) if can_close || !sources.is_empty() => {
+            Ok((sources, can_close))
+                if session.review_open_profiles || can_close || !sources.is_empty() =>
+            {
                 session.undo.push(session.state.clone());
                 session.state.stage = if sources.is_empty() {
                     ProfileStage::Review
