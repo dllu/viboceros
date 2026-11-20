@@ -5,6 +5,7 @@ import json
 import math
 import os
 from pathlib import Path
+import subprocess
 from unittest import TestCase, mock
 
 from .client import OracleClient, OracleProtocolError
@@ -124,3 +125,6 @@ class MaelstromCircleTests(TestCase):
         self.assertEqual(data["native_rotated_cplane_recipes"], 3)
         for path, expected in data["sha256"].items():
             self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)
+        for identity, expected in data["git_sha256"].items():
+            original = subprocess.check_output(["git", "show", identity], cwd=ROOT)
+            self.assertEqual(hashlib.sha256(original).hexdigest(), expected, identity)

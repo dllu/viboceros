@@ -32,12 +32,14 @@
     "The four coordinate-angle recipes also retain the document Circle PointAtStart to check that the analytic frame preserves the curve seam. Earlier captures predate this additional response field.",
     "Three Circle2Point public command captures on rotated CPlanes retain 17 samples each; the geometry regression also replays six earlier native Circle2Point curves."
   ],
+  "git_sha256": {
+    "b617bfcc740ac98fce6bf9fb3025c9f3915532d2:tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "b617bfcc740ac98fce6bf9fb3025c9f3915532d2:tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
+  },
   "sha256": {
     "tools/rhino_oracle/maelstrom_circle_probe.py": "6afecab79901389deb2009d2542143eb9dbf694973dd04142f1ca57aa2ab481c",
     "tools/rhino_oracle/number_token.py": "0c6a39191fc755699b161930557e096bb2cf79c9fc50f34e5da68897eb8192c7",
     "tools/rhino_oracle/join_probe.py": "cac9f86cb7b66784df3c058593b01d62c677892f82188b20de6e28c57daa3ec4",
-    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
-    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
     "tools/rhino_oracle/fixtures/maelstrom_circle.json": "ef7a95415faf19ad50f5020f13bd200983e1ae29ccb4f172ae3f41a4b74bb84d",
     "tools/rhino_oracle/fixtures/maelstrom_circle_cross.json": "d37ebced55984416dfe8d9c69295050259e8e17d8f0d12afbb3905e3b7d0254f",
     "tools/rhino_oracle/fixtures/maelstrom_circle_memory.json": "915772caf2616e62e241fe899da0e0a38d9f31d33be0ab0a288fc6fa26679f58",
