@@ -36,6 +36,7 @@ pub struct Options {
     names: Option<[String; 2]>,
     pub fit: SectionFit,
     pub ends: SweepEndPoints,
+    pub maintain_height: bool,
 }
 
 impl Options {
@@ -43,6 +44,7 @@ impl Options {
         let mut names = [None, None];
         let mut fit = None;
         let mut ends = SweepEndPoints::default();
+        let mut maintain_height = None;
         for arg in args {
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if let Some(index) = ["Rail1Name", "Rail2Name"]
@@ -64,6 +66,13 @@ impl Options {
                 {
                     return Err(CommandError::Usage(USAGE));
                 }
+            } else if option_name_eq(key, "MaintainHeight") {
+                if maintain_height
+                    .replace(Self::parse_height(value)?)
+                    .is_some()
+                {
+                    return Err(CommandError::Usage(USAGE));
+                }
             } else if fit.replace(SectionFit::parse(key, value)?).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -77,7 +86,12 @@ impl Options {
             names,
             fit: fit.unwrap_or_default(),
             ends,
+            maintain_height: maintain_height.unwrap_or_default(),
         })
+    }
+
+    pub fn parse_height(value: &str) -> Result<bool, CommandError> {
+        parse_yes_no(value).ok_or(CommandError::Usage("MaintainHeight=Yes|No"))
     }
 
     pub fn explicit_rails(&self, doc: &Document) -> Result<Option<[ObjectId; 2]>, CommandError> {

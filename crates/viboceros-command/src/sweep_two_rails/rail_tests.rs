@@ -48,7 +48,12 @@ fn sweep_two_rail_chains_match_collinear_and_kinked_rhino_fixtures() {
         });
         let source = Source::with_rails(&doc, rails, &sections).unwrap();
         let brep = source
-            .build(SectionFit::Unchanged, SweepEndPoints::default(), tolerance)
+            .build(
+                SectionFit::Unchanged,
+                SweepEndPoints::default(),
+                false,
+                tolerance,
+            )
             .unwrap();
         assert_eq!(brep.faces().len(), face_count);
         assert_eq!(brep.edges().len(), if bend == 0. { 4 } else { 7 });

@@ -52,6 +52,7 @@ struct State {
     picks: Vec<Pick>,
     fit: SectionFit,
     ends: SweepEndPoints,
+    maintain_height: bool,
     rebuild: usize,
     refit: f64,
     review: bool,
@@ -94,10 +95,8 @@ impl Session {
         self.state.picks.len()
     }
 
-    fn ready(&self, ends: SweepEndPoints) -> bool {
-        self.rail_count() == 2
-            && self.section_count() > 0
-            && self.section_count() + point_count(ends) >= 2
+    fn ready(&self) -> bool {
+        self.rail_count() == 2 && self.section_count() > 0
     }
 
     fn profile_ids(&self) -> Vec<ObjectId> {
@@ -126,8 +125,9 @@ impl Session {
             Some("Simplify") => "Choose None, Rebuild or Refit",
             Some("Rebuild") => "Enter the cross-section control point count",
             Some("Refit") => "Enter the cross-section refit tolerance",
+            Some("MaintainHeight") => "Maintain height? Choose Yes or No",
             _ if self.state.review => {
-                "Simplify / Rebuild / Refit / StartPoint / EndPoint / Undo. Enter creates the sweep"
+                "Simplify / Rebuild / Refit / MaintainHeight / StartPoint / EndPoint / Undo. Enter creates the sweep"
             }
             _ => match self.rail_count() {
                 0 => "Select the first rail or choose ChainEdges",
@@ -198,6 +198,7 @@ impl VibocerosApp {
                 picks,
                 fit: options.fit,
                 ends: options.ends,
+                maintain_height: options.maintain_height,
                 rebuild: match options.fit {
                     SectionFit::Rebuild(count) => count,
                     _ => 5,
@@ -216,10 +217,7 @@ impl VibocerosApp {
             picking: None,
             preview: Default::default(),
         };
-        if session.ready(session.state.ends)
-            && chain.is_none()
-            && (!arguments.is_empty() || command.contains('-'))
-        {
+        if session.ready() && chain.is_none() && (!arguments.is_empty() || command.contains('-')) {
             // Preserve direct scripted invocations with complete preselection.
             self.execute_command(input);
             return true;
@@ -230,7 +228,7 @@ impl VibocerosApp {
             ));
             return true;
         }
-        if session.ready(session.state.ends) {
+        if session.ready() {
             session.undo.push(session.state.clone());
             session.state.review = true;
         }
@@ -397,8 +395,13 @@ impl VibocerosApp {
             SectionFit::Rebuild(count) => format!("Rebuild={count}"),
             SectionFit::Refit(distance) => format!("Refit={distance}"),
         };
+        let height = if session.state.maintain_height {
+            "Yes"
+        } else {
+            "No"
+        };
         self.push_log(if session.state.review && session.value.is_none() {
-            format!("Sweep2: {hint}. {fit}")
+            format!("Sweep2: {hint}. {fit}. MaintainHeight={height}")
         } else {
             format!("Sweep2: {hint}")
         });

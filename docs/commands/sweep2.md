@@ -1,7 +1,7 @@
 # Sweep2
 
 `Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance]`
-`[StartPoint=x,y,z] [EndPoint=x,y,z]`
+`[MaintainHeight=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
 
 Pick the first rail, the second rail, and then the cross-section curves.
 As soon as the inputs define a valid surface, Sweep2 draws a wire
@@ -32,6 +32,13 @@ model units. Sweep2 remembers both values while you switch modes. The wire
 preview updates to reflect each accepted value. Choose `Simplify=None` to
 keep the original section curves. The source objects stay intact in every mode.
 
+One profile is enough to preview and create a sweep. If it meets both rails
+at interior stations, the sweep starts there and follows the first rail's
+direction. Choose `MaintainHeight=Yes` in review to scale the profile's
+height independently of rail width. The height is measured across the rail
+pair, perpendicular to the width and average sweep direction. Watch the
+preview while changing the option, or use local `Undo` to restore it.
+
 For example, in a new document:
 
 ```text
@@ -52,23 +59,19 @@ is reversed automatically when necessary to align the section contacts.
 
 The solver requires open polynomial rails and open polynomial sections. Rebuild
 can also prepare polynomial sections from rational profile curves. Section
-endpoints must contact both rails. Without point ends, the first and last
-sections must contact the ends of the complete rails. Interior sections must
-meet both rails at matching normalized rail parameters. The total section
-count must exceed the maximum rail degree. Closed sweeps, rational rails,
-single profiles and partial rails without point ends, independent station
-parameterizations, height options, rail refitting, slash guides and
-surface-edge continuity remain unsupported. Failures leave the document
-and history unchanged.
+endpoints must contact both rails. With multiple sections, the terminal
+sections must span the rails and interior sections must meet them at matching
+normalized parameters. The default native skin requires more sections than
+the maximum rail degree. Closed sweeps, rational rails, independent station
+parameterizations for multiple sections, rail refitting, slash guides and
+surface-edge continuity remain unsupported. Failures leave the document and
+history unchanged.
 
-Construction delegates to usd-brep's `SmBSplineSurface::CreateSkinnedSurface`
-with both rail constraints and interpolated cross sections. Native curve
-compatibility works on private copies. An independent continuous deviation
+Construction uses either usd-brep's rail-constrained skin or a transported
+profile in a shared rail basis. An independent continuous deviation
 certificate checks each retained rail interval and cross section against the
-resulting surface in the original world coordinates before it reaches the
-document. An inconclusive certificate rejects the result. This certificate
-does not establish surface injectivity or arbitrary interior-shape parity with
-Rhino. Kinks in an accepted tensor are split into connected B-rep faces.
+surface in world coordinates. An inconclusive certificate rejects the result.
+Kinks in an accepted tensor are split into connected B-rep faces.
 
 Limits are 32 sections, degree 16, 128 controls per input curve and 1,024 total
 input controls. A conservative compatibility control-net limit and the shared
@@ -89,6 +92,10 @@ Rhino 8.32 command captures match the complete straight-rail arch image
 with a start or end point, including at an interior rail crossing. With
 multiple shaped profiles, Rhino's blending between sections can differ from
 the constrained skin used here.
+
+Tapered straight-rail captures cover one, two, and three profiles with
+`MaintainHeight`, including a single interior profile. On curved or skew
+rails the local transport can differ from Rhino's interior shape.
 
 Validation and raw reference observations are retained in the
 [qualification record](../sweep2-qualification.json). The public SDK reference

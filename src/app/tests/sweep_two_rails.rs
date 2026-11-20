@@ -113,6 +113,64 @@ fn wait_for_draft(app: &mut VibocerosApp, context: &egui::Context) -> Vec<NurbsC
 }
 
 #[test]
+fn sweep_two_rail_single_profile_height_updates_preview_and_local_undo() {
+    let mut app = test_app();
+    for input in ["Line 0,0,0 0,0,6", "Line 2,0,0 6,0,6"] {
+        enter(&mut app, input);
+    }
+    let arch = NurbsCurve::try_new(
+        2,
+        vec![point(0., 0., 0.), point(1., 0.8, 0.), point(2., 0., 0.)],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let profile = app
+        .document
+        .add_geometry(Geometry::NurbsCurve(arch))
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2");
+    viewport_frame(&mut app, &context, vec![]);
+    for rail in [point(0., 0., 2.5), point(4., 0., 3.)] {
+        let pixel = screen_point(&app, rail);
+        viewport_click(&mut app, &context, pixel);
+    }
+    enter(&mut app, &profile.to_string());
+    let scaled = wait_for_draft(&mut app, &context);
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("MaintainHeight"));
+    enter(&mut app, "MaintainHeight");
+    assert_eq!(app.command_hint(), "Maintain height? Choose Yes or No");
+    enter(&mut app, "Invalid");
+    assert_eq!(wait_for_draft(&mut app, &context), scaled);
+    enter(&mut app, "_Yes");
+    let maintained = wait_for_draft(&mut app, &context);
+    assert_ne!(scaled, maintained);
+    enter(&mut app, "Undo");
+    assert_eq!(wait_for_draft(&mut app, &context), scaled);
+    enter(&mut app, "MaintainHeight=Yes");
+    assert_eq!(wait_for_draft(&mut app, &context), maintained);
+    assert_eq!(app.document.undo_label(), None);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    assert_eq!(
+        brep.wireframe_curves(1, app.document.tolerance()).unwrap(),
+        maintained
+    );
+    assert_eq!(app.document.undo_label(), Some("Sweep2"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
 fn sweep_two_rail_review_updates_wires_and_commits_the_displayed_brep() {
     let mut app = test_app();
     let ids = sources(&mut app);

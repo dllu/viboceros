@@ -20,6 +20,7 @@ pub use interpolation::{
 use interpolation::{
     solve_cubic_system, solve_interpolation, solve_rebuild_interpolation, solve_with_fixed_rows,
 };
+pub(super) use interpolation::solve_uniform_system;
 pub use loft::{
     fit_sweep_model_surface, loft_surface, loft_surface_rebuilt, loft_surface_refitted,
     loft_surface_refitted_with_angle, loft_surface_with_end_points, loft_surface_with_matched_ends,

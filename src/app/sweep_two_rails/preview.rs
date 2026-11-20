@@ -74,11 +74,12 @@ impl VibocerosApp {
         if let Some((end, point)) = provisional {
             end.set(&mut ends, point);
         }
-        let ready = (session.picking.is_none() || provisional.is_some()) && session.ready(ends);
+        let ready = session.picking.is_none() || provisional.is_some();
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
         let request = session.preview.request(tolerance, provisional);
         let fit = session.state.fit;
+        let maintain_height = session.state.maintain_height;
         session.preview.worker.update(
             ready.then_some(request),
             context,
@@ -97,7 +98,7 @@ impl VibocerosApp {
                                 if provisional.is_some() {
                                     source.validate_point_ends(ends, tolerance)?;
                                 }
-                                source.build(fit, ends, tolerance)
+                                source.build(fit, ends, maintain_height, tolerance)
                             })
                             .map(|brep| {
                                 let wires = draft_worker::wireframe(&brep, tolerance);
@@ -132,7 +133,14 @@ impl VibocerosApp {
             session
                 .state
                 .capture(&self.document)
-                .and_then(|source| source.build(session.state.fit, session.state.ends, tolerance))
+                .and_then(|source| {
+                    source.build(
+                        session.state.fit,
+                        session.state.ends,
+                        session.state.maintain_height,
+                        tolerance,
+                    )
+                })
                 .map_err(|error| error.to_string())
         };
         let brep = match result {

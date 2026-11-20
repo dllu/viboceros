@@ -25,11 +25,11 @@ impl VibocerosApp {
         } else if session.picking.is_some() {
             return false;
         } else if let Some(option) = session.value {
-            self.set_sweep_two_rail_fit(option, input);
+            self.set_sweep_two_rail_option(option, input);
         } else if input.is_empty() || name.eq_ignore_ascii_case("Enter") {
             if session.state.review {
                 self.commit_sweep_two_rails();
-            } else if !session.ready(session.state.ends) {
+            } else if !session.ready() {
                 self.log_sweep_two_rails();
             } else {
                 let session = self.sweep_two_rails.as_mut().unwrap();
@@ -47,9 +47,9 @@ impl VibocerosApp {
             if let Some(end) = End::from_name(option) {
                 self.set_sweep_two_rail_point_argument(end, name);
             } else {
-                self.set_sweep_two_rail_fit(option, value);
+                self.set_sweep_two_rail_option(option, value);
             }
-        } else if let Some(option) = ["Simplify", "Rebuild", "Refit"]
+        } else if let Some(option) = ["Simplify", "Rebuild", "Refit", "MaintainHeight"]
             .into_iter()
             .find(|option| option.eq_ignore_ascii_case(name))
         {
@@ -77,6 +77,26 @@ impl VibocerosApp {
         }
         self.command_input.clear();
         true
+    }
+
+    fn set_sweep_two_rail_option(&mut self, option: &str, value: &str) {
+        if !option.eq_ignore_ascii_case("MaintainHeight") {
+            self.set_sweep_two_rail_fit(option, value);
+            return;
+        }
+        match Options::parse_height(value) {
+            Ok(height) => {
+                let session = self.sweep_two_rails.as_mut().unwrap();
+                session.value = None;
+                if height != session.state.maintain_height {
+                    session.undo.push(session.state.clone());
+                    session.state.maintain_height = height;
+                    session.preview.invalidate();
+                }
+                self.log_sweep_two_rails();
+            }
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
     }
 
     fn set_sweep_two_rail_fit(&mut self, option: &str, value: &str) {

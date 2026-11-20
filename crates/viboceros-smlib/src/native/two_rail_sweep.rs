@@ -2,6 +2,14 @@
 use super::*;
 use viboceros_geometry::{AffineTransform3, NurbsCurve2, Point2, SweepEndPoints};
 
+mod transport;
+
+struct Section {
+    stations: [f64; 2],
+    curve: NurbsCurve,
+    original: NurbsCurve,
+}
+
 unsafe extern "C" {
     fn vb_curves_two_rail_sweep(
         first: *const NativeCurve,
@@ -56,12 +64,10 @@ fn contact(rail: &NurbsCurve, point: Point3, tolerance: Tolerance) -> Result<Opt
     Ok((rail.evaluate(t)?.distance_to(point)? <= tolerance.absolute()).then_some(t))
 }
 
-/// Construct an open two-rail sweep from 2–32 open polynomial sections.
-/// Section endpoints must contact both rails at matching normalized parameters;
-/// first/last sections must span the complete rails. Directions and section
-/// order are inferred. Every returned rail and section image has a continuous
-/// deviation certificate within the requested absolute tolerance.
-/// This does not certify injectivity or general Rhino interior-shape parity.
+/// Construct an open two-rail sweep from 1–32 open polynomial sections.
+/// With multiple sections, contacts must pair matching normalized stations
+/// and cover both ends. The resulting rails and profiles are certified within
+/// the absolute tolerance, including when a single profile trims the rails.
 pub fn two_rail_sweep_surface(
     first: &NurbsCurve,
     second: &NurbsCurve,
@@ -87,10 +93,23 @@ pub fn two_rail_sweep_surface_with_point_ends(
     ends: SweepEndPoints,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
+    two_rail_sweep_surface_with_options(first, second, sections, ends, false, tolerance)
+}
+
+/// Sweep an open profile along two rails, optionally decoupling profile height
+/// from rail width. Interpolate supplied profiles and retain both rail images.
+pub fn two_rail_sweep_surface_with_options(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    sections: &[NurbsCurve],
+    ends: SweepEndPoints,
+    maintain_height: bool,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, Error> {
     let point_count = usize::from(ends.start.is_some()) + usize::from(ends.end.is_some());
     let row_count = sections.len().saturating_add(point_count);
     if sections.is_empty()
-        || !(2..=32).contains(&row_count)
+        || row_count > 32
         || first.control_points().len()
             + second.control_points().len()
             + sections
@@ -101,16 +120,11 @@ pub fn two_rail_sweep_surface_with_point_ends(
             > 1024
     {
         return Err(unsupported(
-            "requires a real profile, 2–32 total sections including point ends, and at most 1024 total controls",
+            "requires 1–32 total sections including a real profile, and at most 1024 total controls",
         ));
     }
-    let (first, certificate_first) = prepare_rail(first, sections, ends, tolerance)?;
+    let (mut first, mut certificate_first) = prepare_rail(first, sections, ends, tolerance)?;
     let (mut second, mut certificate_second) = prepare_rail(second, sections, ends, tolerance)?;
-    if first.degree().max(second.degree()) >= row_count {
-        return Err(unsupported(
-            "requires at least maximum rail degree plus one sections",
-        ));
-    }
     let origin = first.evaluate(0.)?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
@@ -140,62 +154,79 @@ pub fn two_rail_sweep_surface_with_point_ends(
         } else {
             section.clone()
         };
-        rows.push((*a, *b, curve, original));
+        rows.push(Section {
+            stations: [*a, *b],
+            curve,
+            original,
+        });
     }
     for (parameter, point) in [(0., ends.start), (1., ends.end)] {
         if let Some(point) = point {
             let curve = NurbsCurve::try_new(1, vec![point; 2], vec![0., 0., 1., 1.])?;
-            rows.push((parameter, parameter, curve.clone(), curve));
+            rows.push(Section {
+                stations: [parameter; 2],
+                curve: curve.clone(),
+                original: curve,
+            });
         }
     }
-    rows.sort_by(|a, b| a.0.total_cmp(&b.0));
-    if rows[0].0 != 0. || rows.last().unwrap().0 != 1. {
+    rows.sort_by(|a, b| a.stations[0].total_cmp(&b.stations[0]));
+    let single = rows.len() == 1;
+    let [a, b] = rows[0].stations;
+    let reverse_second = if single {
+        match (a, b) {
+            (0., 0.) | (1., 1.) => false,
+            (0., 1.) | (1., 0.) => true,
+            _ => first.derivative_at(a)?.dot(second.derivative_at(b)?)? < 0.,
+        }
+    } else {
+        ends.is_empty() && b == 1. && rows.last().unwrap().stations[1] == 0.
+    };
+    if reverse_second {
+        second = second.reversed()?.try_reparameterized(0. ..=1.)?;
+        certificate_second = certificate_second.reversed()?;
+        for row in &mut rows {
+            row.stations[1] = 1. - row.stations[1];
+        }
+    }
+    if single {
+        let [a, b] = rows[0].stations;
+        let toward_start = a == 1. || b == 1.;
+        (first, certificate_first) = trim_single_rail(first, certificate_first, a, toward_start)?;
+        (second, certificate_second) =
+            trim_single_rail(second, certificate_second, b, toward_start)?;
+        rows[0].stations = [f64::from(toward_start); 2];
+    } else if rows[0].stations[0] != 0. || rows.last().unwrap().stations[0] != 1. {
         return Err(unsupported(
             "first and last sections must contact the rail ends",
         ));
     }
-    if ends.is_empty() && rows[0].1 == 1. && rows.last().unwrap().1 == 0. {
-        second = second.reversed()?;
-        certificate_second = certificate_second.reversed()?;
-        for row in &mut rows {
-            row.1 = 1. - row.1;
-        }
-    }
-    if rows.iter().any(|r| (r.0 - r.1).abs() > 1e-10)
-        || rows.windows(2).any(|r| r[1].0 - r[0].0 <= 1e-10)
+    if rows
+        .iter()
+        .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10)
+        || rows
+            .windows(2)
+            .any(|r| r[1].stations[0] - r[0].stations[0] <= 1e-10)
     {
         return Err(unsupported(
             "requires distinct sections at matching normalized rail parameters",
         ));
     }
-    let world = std::iter::once(&first)
-        .chain(std::iter::once(&second))
-        .chain(rows.iter().map(|r| &r.2))
-        .collect::<Vec<_>>();
-    let native = world
+    let rails = [first.transformed(to_local)?, second.transformed(to_local)?];
+    for row in &mut rows {
+        row.curve = row.curve.transformed(to_local)?;
+    }
+    let affine_rails = rails
         .iter()
-        .map(|c| KernelCurve::from_nurbs_for_modeling(&c.transformed(to_local)?))
-        .collect::<Result<Vec<_>, Error>>()?;
-    let handles = native[2..]
-        .iter()
-        .map(|c| c.handle.as_ptr().cast_const())
-        .collect::<Vec<_>>();
-    let parameters = rows.iter().map(|r| r.0).collect::<Vec<_>>();
-    let mut pointer = std::ptr::null_mut();
-    call(|error, capacity| unsafe {
-        vb_curves_two_rail_sweep(
-            native[0].handle.as_ptr(),
-            native[1].handle.as_ptr(),
-            handles.as_ptr(),
-            handles.len(),
-            parameters.as_ptr(),
-            &mut pointer,
-            error,
-            capacity,
-        )
-    })?;
-    let mut surface = brep::surface_from_native(pointer)?
-        .transformed(AffineTransform3::from_translation(zero.vector_to(origin)?))?;
+        .all(|rail| rail.degree() == 1 && rail.control_points().len() == 2);
+    let interior_profiles = ends.is_empty() && rows.len() > 2;
+    let surface = if maintain_height || single || (affine_rails && interior_profiles) {
+        transport::sweep([&rails[0], &rails[1]], &rows, maintain_height)?
+    } else {
+        skin([&rails[0], &rails[1]], &rows)?
+    };
+    let mut surface =
+        surface.transformed(AffineTransform3::from_translation(zero.vector_to(origin)?))?;
     if !ends.is_empty() && surface.degree_u() < 3 {
         surface = super::change_surface_degree(&surface, 3, surface.degree_v(), false)?;
     }
@@ -208,9 +239,9 @@ pub fn two_rail_sweep_surface_with_point_ends(
         (&certificate_first, [[u[0], v[0]], [u[1], v[0]]]),
         (&certificate_second, [[u[0], v[1]], [u[1], v[1]]]),
     ];
-    for (t, _, _, curve) in &rows {
-        let s = u[0] + t * (u[1] - u[0]);
-        constraints.push((curve, [[s, v[0]], [s, v[1]]]));
+    for row in &rows {
+        let s = u[0] + row.stations[0] * (u[1] - u[0]);
+        constraints.push((&row.original, [[s, v[0]], [s, v[1]]]));
     }
     for (curve, endpoints) in constraints {
         let domain = curve.domain();
@@ -233,6 +264,58 @@ pub fn two_rail_sweep_surface_with_point_ends(
         }
     }
     Ok(surface)
+}
+
+fn trim_single_rail(
+    prepared: NurbsCurve,
+    original: NurbsCurve,
+    station: f64,
+    toward_start: bool,
+) -> Result<(NurbsCurve, NurbsCurve), Error> {
+    if station == f64::from(toward_start) {
+        return Ok((prepared, original));
+    }
+    let domain = original.domain();
+    let contact = domain.start() + station * (domain.end() - domain.start());
+    let interval = if toward_start {
+        *domain.start()..=contact
+    } else {
+        contact..=*domain.end()
+    };
+    let original = super::trim_curve(&original, interval)?;
+    Ok((original.try_reparameterized(0. ..=1.)?, original))
+}
+
+fn skin(rails: [&NurbsCurve; 2], rows: &[Section]) -> Result<NurbsSurface, Error> {
+    if rails.iter().any(|rail| rail.degree() >= rows.len()) {
+        return Err(unsupported(
+            "requires at least maximum rail degree plus one sections",
+        ));
+    }
+    let native = rails
+        .into_iter()
+        .chain(rows.iter().map(|row| &row.curve))
+        .map(KernelCurve::from_nurbs_for_modeling)
+        .collect::<Result<Vec<_>, Error>>()?;
+    let handles = native[2..]
+        .iter()
+        .map(|c| c.handle.as_ptr().cast_const())
+        .collect::<Vec<_>>();
+    let parameters = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
+    let mut pointer = std::ptr::null_mut();
+    call(|error, capacity| unsafe {
+        vb_curves_two_rail_sweep(
+            native[0].handle.as_ptr(),
+            native[1].handle.as_ptr(),
+            handles.as_ptr(),
+            handles.len(),
+            parameters.as_ptr(),
+            &mut pointer,
+            error,
+            capacity,
+        )
+    })?;
+    brep::surface_from_native(pointer)
 }
 
 fn exact_pole_rows(

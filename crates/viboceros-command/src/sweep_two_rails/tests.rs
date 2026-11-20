@@ -38,6 +38,8 @@ fn sweep_two_rail_arguments_and_selection_failures_preserve_document_and_redo() 
         "Sweep2 Rebuild=129",
         "Sweep2 Refit=NaN",
         "Sweep2 Rebuild=5 Refit=0.01",
+        "Sweep2 MaintainHeight=Maybe",
+        "Sweep2 MaintainHeight=Yes MaintainHeight=No",
     ] {
         assert!(r.execute(&mut d, args).is_err(), "{args}");
         assert_eq!(format!("{d:?}"), before);
@@ -50,6 +52,97 @@ fn sweep_two_rail_arguments_and_selection_failures_preserve_document_and_redo() 
         ObjectSelectionWorkflow::OptionsDuringSelection
     );
     assert!(r.command_names().contains(&"Sweep2"));
+}
+
+#[test]
+fn sweep_two_rail_height_matches_native_tapered_arches() {
+    let registry = CommandRegistry::with_builtins();
+    // Rhino 8.32 -Sweep2 captures. The middle profile alone retains the
+    // second half of the rails. All of these output tensors have one face.
+    for (profiles, maintain, area, heights) in [
+        (&[(0., 0.8)][..], false, 26.937939236782057, [0.6, 0.8, 1.]),
+        (&[(0., 0.8)][..], true, 24.793555945765071, [0.4; 3]),
+        (
+            &[(0.5, 0.8)][..],
+            false,
+            15.492558738252047,
+            [0.45, 0.5, 0.55],
+        ),
+        (&[(0.5, 0.8)][..], true, 15.299734691756731, [0.4; 3]),
+        (
+            &[(0., 0.8), (1., 1.2)][..],
+            true,
+            25.177959211423175,
+            [0.43125, 0.5, 0.56875],
+        ),
+        (
+            &[(0., 0.8), (0.5, 2.), (1., 1.)][..],
+            false,
+            26.808254702885652,
+            [0.675, 1., 5. / 6.],
+        ),
+        (
+            &[(0., 0.8), (0.5, 2.), (1., 1.)][..],
+            true,
+            26.691353542756822,
+            [0.7, 1., 0.75],
+        ),
+    ] {
+        let mut doc = Document::default();
+        let tolerance = doc.tolerance();
+        let mut ids = [
+            (p(0., 0., 0.), p(0., 0., 6.)),
+            (p(6., 0., 6.), p(2., 0., 0.)),
+        ]
+        .into_iter()
+        .map(|(a, b)| {
+            doc.add_geometry(Geometry::Line(
+                LineSegment::try_new(a, b, tolerance).unwrap(),
+            ))
+            .unwrap()
+        })
+        .collect::<Vec<_>>();
+        for &(t, height) in profiles {
+            let z = 6. * t;
+            let width = 2. + 4. * t;
+            let arch = NurbsCurve::try_new(
+                2,
+                vec![p(0., 0., z), p(width / 2., height, z), p(width, 0., z)],
+                vec![0., 0., 0., 1., 1., 1.],
+            )
+            .unwrap();
+            ids.push(doc.add_geometry(Geometry::NurbsCurve(arch)).unwrap());
+        }
+        doc.select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        let height = if maintain { "_Yes" } else { "_No" };
+        registry
+            .execute(&mut doc, &format!("Sweep2 MaintainHeight={height}"))
+            .unwrap();
+        let Geometry::Brep(brep) = doc.objects().last().unwrap().geometry() else {
+            panic!("Expected a Sweep2 B-rep");
+        };
+        assert_eq!(brep.faces().len(), 1);
+        let surface = brep.faces()[0].surface();
+        let start = profiles[0].0;
+        for (u, height) in [0.25, 0.5, 0.75].into_iter().zip(heights) {
+            let station = start + u * (1. - start);
+            for v in [0.25, 0.5, 0.75] {
+                let expected = p(
+                    (2. + 4. * station) * v,
+                    4. * v * (1. - v) * height,
+                    6. * station,
+                );
+                let actual = surface.evaluate(u, v).unwrap();
+                assert!(
+                    actual.distance_to(expected).unwrap() < 1e-8,
+                    "{actual:?} != {expected:?}"
+                );
+            }
+        }
+        let actual_area = brep.area(tolerance).unwrap();
+        assert!((actual_area - area).abs() < 1e-5, "{actual_area} != {area}");
+    }
 }
 
 #[test]

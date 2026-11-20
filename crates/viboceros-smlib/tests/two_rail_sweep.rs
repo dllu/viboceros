@@ -1,7 +1,7 @@
 use viboceros_geometry::{
     AffineTransform3, NurbsCurve, NurbsSurface, Point3, Tolerance, Vector3, WeightedPoint3,
 };
-use viboceros_smlib::two_rail_sweep_surface;
+use viboceros_smlib::{two_rail_sweep_surface, two_rail_sweep_surface_with_options};
 
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
@@ -80,12 +80,49 @@ fn native_two_rail_sweep_orients_and_orders_independent_curve_domains() {
     let s = two_rail_sweep_surface(&rails[0], &rails[1], &sections, Tolerance::DEFAULT).unwrap();
     check(&s, 1., Vector3::try_new(0., 0., 0.).unwrap());
 }
+
+#[test]
+fn native_two_rail_sweep_transports_one_arch_along_curved_and_skew_rails() {
+    let profile = curve(vec![p(0., 0., 0.), p(1., 0.8, 0.), p(2., 0., 0.)]);
+    let curved = [
+        curve(vec![p(0., 0., 0.), p(1., 0., 3.), p(0., 0., 6.)]),
+        curve(vec![p(2., 0., 0.), p(3., 0., 3.), p(6., 0., 6.)]),
+    ];
+    for maintain in [false, true] {
+        let surface = two_rail_sweep_surface_with_options(
+            &curved[0],
+            &curved[1],
+            std::slice::from_ref(&profile),
+            Default::default(),
+            maintain,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for i in 0..=8 {
+            let u = f64::from(i) / 8.;
+            // Rhino 8.32 kept constant height with MaintainHeight enabled
+            // and scaled by the quadratic rail width otherwise.
+            let height = if maintain { 0.4 } else { 0.4 + 0.8 * u * u };
+            let actual = surface.evaluate(u, 0.5).unwrap();
+            assert!(actual.distance_to(p(1. + 2. * u, height, 6. * u)).unwrap() < 1e-8);
+        }
+    }
+    let skew = [
+        curve(vec![p(0., 0., 0.), p(0., 0., 6.)]),
+        curve(vec![p(2., 0., 0.), p(4., 2., 6.)]),
+    ];
+    let surface =
+        two_rail_sweep_surface(&skew[0], &skew[1], &[profile], Tolerance::DEFAULT).unwrap();
+    assert_eq!([surface.degree_u(), surface.degree_v()], [1, 2]);
+    let middle_control = surface.control_point(1, 1).unwrap().point();
+    let expected = p(1.2032920118407415, 2.5934159763185169, 6.1621169578302464);
+    assert!(middle_control.distance_to(expected).unwrap() < 1e-8);
+}
 #[test]
 fn native_two_rail_sweep_declines_unmatched_missing_duplicate_and_disconnected_sections() {
     let (rails, sections) = inputs(0.);
     for invalid in [
         vec![],
-        vec![sections[0].clone()],
         vec![sections[0].clone(), sections[0].clone()],
         vec![
             sections[0].clone(),

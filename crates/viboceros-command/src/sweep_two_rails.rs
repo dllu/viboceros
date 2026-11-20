@@ -6,7 +6,7 @@ use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
 pub const MAX_SECTIONS: usize = 32;
 
 mod options;
@@ -39,7 +39,12 @@ impl Command for SweepTwoRailsCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let options = Options::parse(args)?;
         let source = Source::capture(doc, &selected_ids(doc)?, &options)?;
-        let brep = source.build(options.fit, options.ends, doc.tolerance())?;
+        let brep = source.build(
+            options.fit,
+            options.ends,
+            options.maintain_height,
+            doc.tolerance(),
+        )?;
         let message = result_message(source.sections.len(), brep.faces().len());
         doc.add_geometry(Geometry::Brep(brep))?;
         Ok(message)
@@ -133,10 +138,11 @@ impl Source {
         &self,
         fit: SectionFit,
         ends: SweepEndPoints,
+        maintain_height: bool,
         tolerance: Tolerance,
     ) -> Result<Brep, CommandError> {
         let row_count = self.sections.len() + point_count(ends);
-        if self.sections.is_empty() || !(2..=MAX_SECTIONS).contains(&row_count) {
+        if self.sections.is_empty() || row_count > MAX_SECTIONS {
             return Err(CommandError::Usage(USAGE));
         }
         let rails = [self.rails[0].curve(), self.rails[1].curve()];
@@ -167,8 +173,13 @@ impl Source {
                 viboceros_geometry::try_prepare_refitted_loft_sections(&sections, distance)?,
             ),
         };
-        let surface = viboceros_smlib::two_rail_sweep_surface_with_point_ends(
-            rails[0], rails[1], &fitted, ends, tolerance,
+        let surface = viboceros_smlib::two_rail_sweep_surface_with_options(
+            rails[0],
+            rails[1],
+            &fitted,
+            ends,
+            maintain_height,
+            tolerance,
         )?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
         if (u.len() + 1).saturating_mul(v.len() + 1) > 4096 {
