@@ -1,6 +1,17 @@
 use super::*;
 
 #[test]
+fn sweep_trimmed_preview_keeps_both_pieces_at_staggered_creases() {
+    assert_failed_trim_review(
+        [
+            "Polyline 0,0,0 0,1,1 0,2,2.5",
+            "Polyline 5,5,0 4.2,5,1.35 3.4,5,2.5",
+        ],
+        (4, 12),
+    );
+}
+
+#[test]
 fn sweep_trimmed_preview_joins_intersection_spans_across_a_profile_crease() {
     let mut app = test_app();
     for input in [

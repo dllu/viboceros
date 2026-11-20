@@ -14,8 +14,8 @@ pub(super) fn find<E: From<GeometryError>>(
     let [first, second] = surfaces;
     let v = first.domain_v();
     let degree = first.degree_v();
-    if first.knots_v() == second.knots_v() && degree == second.degree_v() {
-        let cuts = std::iter::once(*v.start())
+    let cuts = if first.knots_v() == second.knots_v() && degree == second.degree_v() {
+        std::iter::once(*v.start())
             .chain(
                 first
                     .knots_v()
@@ -24,18 +24,69 @@ pub(super) fn find<E: From<GeometryError>>(
                     .map(|g| g[0]),
             )
             .chain([*v.end()])
-            .collect::<Vec<_>>();
-        if cuts.len() > 2
-            && let Some(trace) = section_trace(surfaces, &cuts, tolerance, intersect)?
-        {
-            return Ok(Some(trace));
+            .collect::<Vec<_>>()
+    } else {
+        Vec::new()
+    };
+    if cuts.len() > 2
+        && let Some(trace) = section_trace(surfaces, &cuts, tolerance, intersect)?
+    {
+        return Ok(Some(trace));
+    }
+    let trace = complete_trace(surfaces, intersect(first, second, tolerance)?, tolerance)?;
+    if cuts.len() > 2
+        && let Some(pair) = &trace
+        && !creases_match(surfaces, pair, tolerance)?
+    {
+        return Ok(None);
+    }
+    Ok(trace)
+}
+
+// A whole-support intersection can pass the two profile creases at
+// different points. A trimmed Sweep1 keeps the extended pieces in that case
+// even when the intersection forms a continuous transverse graph.
+fn creases_match(
+    surfaces: [&NurbsSurface; 2],
+    [first, second]: &[strip::Cut; 2],
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let [_, mut creases] = surfaces[0].sampled_kink_parameters(tolerance.angular())?;
+    let [_, other] = surfaces[1].sampled_kink_parameters(tolerance.angular())?;
+    creases.extend(other);
+    creases.sort_by(Real::total_cmp);
+    creases.dedup();
+    for v in creases {
+        for trailing in [false, true] {
+            let a = crossing_parameter(&first.uv, v, trailing)?;
+            let b = crossing_parameter(&second.uv, v, trailing)?;
+            let spatial = &first.spatial;
+            if spatial
+                .evaluate(spatial.parameter_at(a)?)?
+                .distance_to(spatial.evaluate(spatial.parameter_at(b)?)?)?
+                > tolerance.absolute()
+            {
+                return Ok(false);
+            }
         }
     }
-    Ok(complete_trace(
-        surfaces,
-        intersect(first, second, tolerance)?,
-        tolerance,
-    )?)
+    Ok(true)
+}
+
+fn crossing_parameter(uv: &NurbsCurve2, v: Real, trailing: bool) -> Result<Real, GeometryError> {
+    // The accepted positive-weight trims have monotone V control ordinates.
+    // Retain both limits when a segment lies along the crease.
+    let [mut start, mut end]: [Real; 2] = [0., 1.];
+    for _ in 0..Real::MANTISSA_DIGITS {
+        let middle = start.midpoint(end);
+        let y = uv.evaluate(uv.parameter_at(middle)?)?.y();
+        if y < v || (trailing && y == v) {
+            start = middle;
+        } else {
+            end = middle;
+        }
+    }
+    Ok(start.midpoint(end))
 }
 
 /// Intersect each common section span separately so the solver reaches the

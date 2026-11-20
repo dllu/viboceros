@@ -1,6 +1,7 @@
 use super::*;
 
 mod segmented;
+mod staggered;
 
 const LIMIT: Real = 1e-7;
 

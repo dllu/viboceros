@@ -399,12 +399,12 @@ fn sweep_miter_review_updates_an_inferred_corner_when_blending_changes() {
 
 #[test]
 fn sweep_miter_review_keeps_both_failed_trim_pieces_in_one_undo_step() {
+    assert_failed_trim_review(["Line 0,0,0 0,1.5,1", "Line 5,5,0 3.5,5,2"], (2, 7));
+}
+
+fn assert_failed_trim_review(profiles: [&str; 2], topology: (usize, usize)) {
     let mut app = test_app();
-    for input in [
-        "Polyline 0,0,0 5,0,0 5,5,0",
-        "Line 0,0,0 0,1.5,1",
-        "Line 5,5,0 3.5,5,2",
-    ] {
+    for input in ["Polyline 0,0,0 5,0,0 5,5,0", profiles[0], profiles[1]] {
         enter(&mut app, input);
     }
     app.document.clear_history().unwrap();
@@ -416,13 +416,14 @@ fn sweep_miter_review_keeps_both_failed_trim_pieces_in_one_undo_step() {
         enter(&mut app, &source.id().to_string());
     }
     enter(&mut app, "");
-    let trimmed = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    let wait = Duration::from_secs(20);
+    let trimmed = wait_for_wires_with_timeout(&mut app, &context, wait, |wires| !wires.is_empty());
     enter(&mut app, "UntrimmedMiters=Yes");
     wait_for_wires(&mut app, &context, |wires| {
         !wires.is_empty() && wires != trimmed
     });
     enter(&mut app, "Undo");
-    wait_for_wires(&mut app, &context, |wires| wires == trimmed);
+    wait_for_wires_with_timeout(&mut app, &context, wait, |wires| wires == trimmed);
     assert_eq!(app.document.undo_label(), None);
     enter(&mut app, "");
     let outputs = app
@@ -436,7 +437,7 @@ fn sweep_miter_review_keeps_both_failed_trim_pieces_in_one_undo_step() {
         let Geometry::Brep(brep) = output.geometry() else {
             panic!("expected two extended pieces: {:?}", app.command_log);
         };
-        assert_eq!((brep.faces().len(), brep.edges().len()), (2, 7));
+        assert_eq!((brep.faces().len(), brep.edges().len()), topology);
         wires.extend(brep.wireframe_curves(1, tolerance).unwrap());
     }
     assert_eq!(wires.len(), trimmed.len());
