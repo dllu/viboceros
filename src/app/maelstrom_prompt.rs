@@ -17,6 +17,7 @@ pub(super) struct MaelstromSession {
     placed: Option<viboceros_command::maelstrom::MaelstromOptions>,
     context: Option<viboceros_command::CommandContext>,
     circle_getter: Option<CircleInput>,
+    around_guide: Option<(ObjectId, Option<usize>)>,
     fit_input: Option<fit_points::Input>,
     fit_picks: Option<MaelstromFitPicks>,
     preview_cursor: Option<crate::viewport::MaelstromCursor>,
@@ -55,6 +56,9 @@ impl MaelstromSession {
 
 impl VibocerosApp {
     pub(super) fn maelstrom_preview(&self) -> Option<crate::viewport::MaelstromPreview<'_>> {
+        if self.circle_around_session.is_some() {
+            return None;
+        }
         self.maelstrom_session.as_ref()?.preview(
             self.active_command,
             self.viewports[self.active_viewport].construction_plane(),
@@ -116,6 +120,14 @@ impl VibocerosApp {
         self.push_maelstrom_prompt();
         true
     }
+    pub(super) fn accept_maelstrom_around(
+        &mut self,
+        circle: CircleDefinition,
+        guide: Option<(ObjectId, Option<usize>)>,
+    ) -> bool {
+        self.maelstrom_session.as_mut().unwrap().around_guide = guide;
+        self.accept_maelstrom_circle(circle)
+    }
     fn continue_maelstrom_circle_result(
         &mut self,
         getter: CircleInput,
@@ -161,6 +173,7 @@ impl VibocerosApp {
                 CircleInput::new(self.viewports[self.active_viewport].construction_plane())
                     .with_size_mode(CircleSizeMode::Diameter)
             }),
+            around_guide: None,
             fit_input: None,
             fit_picks: None,
             preview_cursor: None,
@@ -173,6 +186,9 @@ impl VibocerosApp {
         let Some(session) = self.maelstrom_session.take() else {
             return false;
         };
+        if session.around_guide.is_some() {
+            self.document.clear_selection();
+        }
         if session.fit_input.is_some()
             || session.fit_picks.as_ref().is_some_and(|picks| {
                 picks.has_temporary_picks() && session.placed.is_none_or(|placement| placement.copy)
@@ -202,12 +218,26 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
             return true;
         }
+        if word.eq_ignore_ascii_case("Undo") {
+            self.push_log("Finish Maelstrom before using Undo".into());
+            self.command_input.clear();
+            return true;
+        }
+        if self.circle_around_session.is_some() {
+            return false;
+        }
         if center.is_none()
             && initial.is_none()
             && session.circle_getter.is_none_or(CircleInput::at_start)
-            && word.eq_ignore_ascii_case("FitPoints")
         {
-            return self.begin_maelstrom_fit(options);
+            if word.eq_ignore_ascii_case("FitPoints") {
+                return self.begin_maelstrom_fit(options);
+            }
+            if word.eq_ignore_ascii_case("AroundCurve") {
+                self.start_maelstrom_around(options);
+                self.command_input.clear();
+                return true;
+            }
         }
         if initial.is_none() {
             let (option, value) = input
@@ -254,11 +284,6 @@ impl VibocerosApp {
                     self.push_log(format!("Error: {e}"));
                 }
             }
-            self.command_input.clear();
-            return true;
-        }
-        if word.eq_ignore_ascii_case("Undo") {
-            self.push_log("Finish Maelstrom before using Undo".into());
             self.command_input.clear();
             return true;
         }
@@ -557,6 +582,15 @@ impl VibocerosApp {
         );
         self.push_log(format!("> {input}"));
         let session = self.maelstrom_session.as_mut().unwrap();
+        // Exclude the guide highlight from history if the guide is also a target.
+        let highlighted_guide = session.around_guide.and_then(|(guide, edge)| {
+            (edge.is_none() && self.document.is_selected(guide)).then_some(guide)
+        });
+        if let Some(guide) = highlighted_guide {
+            let _ = self
+                .document
+                .select_objects_direct([guide], SelectionMode::Remove);
+        }
         let result = if let Some(picks) = &session.fit_picks {
             self.commands.execute_maelstrom_fit_placement(
                 &mut self.document,
@@ -577,8 +611,12 @@ impl VibocerosApp {
             Ok(message) => {
                 session.placed = Some(options);
                 session.preview_cursor = None;
+                let explicit_guide = session.around_guide.is_some();
                 self.push_log(message);
                 if options.copy {
+                    if explicit_guide {
+                        let _ = self.document.set_transient_selection(highlighted_guide);
+                    }
                     self.push_log("Maelstrom: enter another coil angle; Enter finishes, Esc keeps accepted copies".into());
                 } else {
                     self.cancel_interactive_command(false);
@@ -586,6 +624,11 @@ impl VibocerosApp {
                 true
             }
             Err(e) => {
+                if let Some(guide) = highlighted_guide {
+                    let _ = self
+                        .document
+                        .select_objects_direct([guide], SelectionMode::Add);
+                }
                 self.push_log(format!("Error: {e}"));
                 false
             }

@@ -2,6 +2,7 @@ use super::*;
 use serde_json::Value;
 use viboceros_command::maelstrom::{MaelstromOptions, MaelstromRadius};
 
+mod around_curve;
 mod fit_points;
 
 fn type_value(app: &mut VibocerosApp, value: &Value) {

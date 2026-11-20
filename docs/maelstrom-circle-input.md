@@ -19,6 +19,7 @@ drafting plane and deformation. Pending picks and guides create no Undo entry.
 | `2Point` | Pick diameter endpoints. The normal follows the CPlane as closely as possible, with deterministic plane axes. |
 | `3Point` | Pick three points on the circle; their order sets its normal and the first point sets its seam. |
 | `3Point`, two picks, `Radius` | Enter a radius, then pick the center direction; a radius point measures from the first picked point. |
+| `AroundCurve` | Use the single eligible selected curve or pick a guide. The center projects onto the guide, and its directed tangent defines the circle normal. |
 
 Radius/Diameter mode is remembered independently for Maelstrom. It also controls
 the numeric **second radius or diameter** prompt. Circumference and Area are
@@ -35,6 +36,13 @@ The getter supports typed world/CPlane coordinates, relative inputs and the
 shared drafting path. Orientation size picks use the chosen plane for mouse
 projection. Completed pending circle definitions supply the preview guide.
 Invalid picks retain their current getter without inserting geometry.
+
+AroundCurve uses the shared curve and edge picker. First-size point inputs
+project onto the tangent-normal plane. Radius, Diameter, Circumference, Area
+and ProjectOsnap are available there. Reversing the guide reverses the signed
+coil. An explicitly picked guide leaves the original deformation targets
+intact as a set. Temporary highlights clear when the command returns, and
+repeated Copy placements use the original targets in one Undo entry.
 
 ## Evidence and scope
 
@@ -63,7 +71,13 @@ native commands, point selection/history behavior and 250 deformation maps.
 The interactive getter replays their selection and history. Eleven sampled
 deformations still differ because the solver chooses the opposite normal.
 
-Tangent, AroundCurve, transparent measurement commands, ProjectOsnap
+The [AroundCurve workflow tests](../src/app/tests/maelstrom/around_curve.rs)
+replay Rhino 8.32 point witnesses for projected centers and size picks, both
+directions of line and arc guides, and numeric and picked angle seams. They
+also cover size conversions, preselection, viewport edge picks, returned
+selection and repeated copies.
+
+Tangent, transparent measurement commands, ProjectOsnap
 behavior on actual snapped picks and native guide pixels for these construction
 modes remain to verify. The two ProjectOsnap recipes establish only that typed
 world points produce the same circle. Pending three-point construction aids,

@@ -93,10 +93,15 @@ turn at zero degrees. Explicit numeric angles retain the supplied number.
 [Live previews](../maelstrom-preview.md) show both black circle guides and
 cached deformation wires. The [first-circle getter](../maelstrom-circle-input.md)
 supports Radius/Diameter, Circumference, Area, Vertical, Orientation, 2Point,
-3Point, three-point Radius construction, and FitPoints. The remembered
+3Point, three-point Radius construction, AroundCurve, and FitPoints. The remembered
 Radius/Diameter mode controls numeric second-size input. Circumference and
 Area are temporary conversions. Pending Circle definitions create no model
 object.
+
+Choose `AroundCurve` to use the guide tangent as the circle normal. If exactly
+one selected target is a curve, Maelstrom uses it as the guide. Otherwise,
+pick a guide or enter its ID with `SelID`. Pick or type the center, then set the
+first size. The circle previews in the plane perpendicular to the guide.
 
 Choose `FitPoints` at the center prompt. Three or more preselected point
 targets supply the fit immediately. Otherwise, select fitting points or

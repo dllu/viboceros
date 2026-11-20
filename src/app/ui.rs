@@ -997,12 +997,16 @@ impl VibocerosApp {
                 self.viewports[self.active_viewport].construction_plane(),
             )
         });
-        let maelstrom_preview = self.maelstrom_session.as_ref().and_then(|s| {
-            s.preview(
-                self.active_command,
-                self.viewports[self.active_viewport].construction_plane(),
-            )
-        });
+        let maelstrom_preview = self
+            .maelstrom_session
+            .as_ref()
+            .filter(|_| self.circle_around_session.is_none())
+            .and_then(|s| {
+                s.preview(
+                    self.active_command,
+                    self.viewports[self.active_viewport].construction_plane(),
+                )
+            });
         let surface_session = self
             .orient_surface_session
             .as_ref()

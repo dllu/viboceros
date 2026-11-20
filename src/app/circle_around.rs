@@ -4,6 +4,7 @@ use viboceros_command::{
     circle_around_input::{Input, Preferences},
     circle_input::CircleSizeMode as Mode,
     curve_reference::{CapturedCurve, perpendicular_frame},
+    maelstrom::MaelstromOptions,
     pyramid::Kind as PyramidKind,
     solid_axial::Kind as AxialKind,
     torus_input::Kind as TorusKind,
@@ -11,6 +12,7 @@ use viboceros_command::{
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Owner {
     Circle,
+    Maelstrom(MaelstromOptions),
     Sphere(sphere::Output),
     SubDSphere,
     Torus(TorusKind),
@@ -22,6 +24,7 @@ impl Owner {
     fn name(self) -> &'static str {
         match self {
             Self::Circle => "Circle",
+            Self::Maelstrom(_) => "Maelstrom",
             Self::Sphere(output) => output.name(),
             Self::SubDSphere => "SubDSphere",
             Self::Torus(kind) => kind.name(),
@@ -48,7 +51,7 @@ impl Session {
     pub(super) fn snap_projection_plane(&self) -> Option<Frame3> {
         let input = self.input?;
         let projects_snaps = match self.owner {
-            Owner::Circle | Owner::SolidAxial(_) => true,
+            Owner::Circle | Owner::Maelstrom(_) | Owner::SolidAxial(_) => true,
             Owner::Pyramid(_) => false,
             Owner::Torus(kind) => kind.projects_base_snaps(),
             _ => false,
@@ -78,13 +81,17 @@ impl VibocerosApp {
             .is_some_and(|s| s.curve.is_none())
     }
     pub(super) fn release_circle_around_picks(&mut self) {
-        if let Some(id) = self
-            .circle_around_session
-            .as_ref()
-            .and_then(Session::postselected_object)
+        if let Some(session) = &self.circle_around_session
+            && let Some(id) = session.postselected_object()
             && self.document.is_selected(id)
         {
-            let _ = self.document.select_object(id, SelectionMode::Remove);
+            if matches!(session.owner, Owner::Maelstrom(_)) {
+                let _ = self
+                    .document
+                    .select_objects_direct([id], SelectionMode::Remove);
+            } else {
+                let _ = self.document.select_object(id, SelectionMode::Remove);
+            }
         }
     }
     pub(super) fn start_circle_around(&mut self) {
@@ -95,6 +102,9 @@ impl VibocerosApp {
         output: Option<viboceros_command::circle_deform_input::Output>,
     ) {
         self.start_circle_around_for(Owner::Circle, output);
+    }
+    pub(super) fn start_maelstrom_around(&mut self, options: MaelstromOptions) {
+        self.start_circle_around_for(Owner::Maelstrom(options), None);
     }
     pub(super) fn start_subd_sphere_around(&mut self) {
         self.start_circle_around_for(Owner::SubDSphere, None);
@@ -127,6 +137,12 @@ impl VibocerosApp {
         }
         let mut preferences = if owner == Owner::Circle {
             self.commands.circle_preferences()
+        } else if matches!(owner, Owner::Maelstrom(_)) {
+            Preferences {
+                radius: self.commands.maelstrom_radius_default(),
+                diameter: self.commands.maelstrom_uses_diameter(),
+                ..Default::default()
+            }
         } else if let Owner::Sphere(output) = owner {
             output.size_preferences(&self.commands).into()
         } else if let Owner::SolidAxial(kind) = owner {
@@ -158,7 +174,14 @@ impl VibocerosApp {
             preferences,
             mode: preferences.mode(),
         });
-        let selected = self.document.selected_object_ids().collect::<Vec<_>>();
+        let maelstrom = matches!(owner, Owner::Maelstrom(_));
+        let selected = self
+            .document
+            .selected_objects()
+            .filter(|object| !maelstrom || object.geometry().curve_ref().is_some())
+            .take(2)
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
         if let [id] = selected.as_slice()
             && self
                 .document
@@ -166,6 +189,8 @@ impl VibocerosApp {
                 .is_some_and(|o| o.geometry().curve_ref().is_some())
         {
             self.pick_circle_around_curve(Some(*id), None);
+        } else if maelstrom {
+            self.document.clear_selection();
         }
         self.circle_around_prompt();
     }
@@ -226,6 +251,12 @@ impl VibocerosApp {
         };
         self.active_command = Some(match s.owner {
             Owner::Circle => InteractiveCommand::CircleAround { center },
+            Owner::Maelstrom(options) => InteractiveCommand::Maelstrom {
+                center,
+                initial: None,
+                target: None,
+                options,
+            },
             Owner::Sphere(output) => InteractiveCommand::SphereGuide {
                 anchor: center,
                 output,
@@ -279,9 +310,13 @@ impl VibocerosApp {
                         .select_guide();
                 }
                 if edge.is_none() {
-                    self.document
-                        .select_object(id, SelectionMode::Add)
-                        .expect("selectable Circle guide");
+                    if matches!(s.owner, Owner::Maelstrom(_)) {
+                        self.document
+                            .select_objects_direct([id], SelectionMode::Add)
+                    } else {
+                        self.document.select_object(id, SelectionMode::Add)
+                    }
+                    .expect("selectable Circle guide");
                 }
                 self.component_selection.clear_choices();
                 self.circle_around_prompt();
@@ -346,6 +381,9 @@ impl VibocerosApp {
             s.curve = None;
             s.input = None;
             s.postselected = false;
+            if matches!(s.owner, Owner::Maelstrom(_)) {
+                self.document.clear_selection();
+            }
             self.point_filter = None;
             self.point_constraint = None;
             self.component_selection.clear_choices();
@@ -388,6 +426,22 @@ impl VibocerosApp {
     fn commit_circle_around(&mut self, circle: viboceros_geometry::Circle3) -> bool {
         let s = self.circle_around_session.as_ref().unwrap();
         let curve = s.curve.as_ref().unwrap();
+        if matches!(s.owner, Owner::Maelstrom(_)) {
+            let result = viboceros_command::circle_input::CircleDefinition::from_circle(circle);
+            return match result {
+                Ok(definition) => {
+                    let edge = curve.source().1;
+                    let guide =
+                        (s.postselected || edge.is_some()).then(|| (curve.object_id(), edge));
+                    self.circle_around_session = None;
+                    self.accept_maelstrom_around(definition, guide)
+                }
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    false
+                }
+            };
+        }
         if matches!(s.owner, Owner::SolidAxial(_)) {
             let release = s
                 .postselected
@@ -496,7 +550,12 @@ impl VibocerosApp {
                             let release = s.postselected_object();
                             return Some(self.accept_pyramid_guide(frame, release));
                         }
-                        let mut input = Input::new(frame, s.preferences, self.document.tolerance());
+                        let tolerance = if matches!(s.owner, Owner::Maelstrom(_)) {
+                            Tolerance::NUMERICAL_VALIDATION
+                        } else {
+                            self.document.tolerance()
+                        };
+                        let mut input = Input::new(frame, s.preferences, tolerance);
                         input.option(s.mode.label());
                         s.input = Some(input);
                         self.circle_around_prompt();
@@ -570,9 +629,14 @@ impl VibocerosApp {
                 [key, id] if key.eq_ignore_ascii_case("SelID") => {
                     id.parse().ok().map(|id| (id, None))
                 }
+                [key] if key.eq_ignore_ascii_case("SelID") => {
+                    self.push_log("Enter the guide curve object ID".into());
+                    self.command_input.clear();
+                    return true;
+                }
                 [one] => one.parse().ok().map(|id| (id, None)).or_else(|| {
                     let (k, v) = one.split_once('=')?;
-                    if k.eq_ignore_ascii_case("Curve") {
+                    if k.eq_ignore_ascii_case("Curve") || k.eq_ignore_ascii_case("SelID") {
                         v.parse().ok().map(|id| (id, None))
                     } else if k.eq_ignore_ascii_case("Edge") {
                         viboceros_command::curve_reference::parse_edge(v)
@@ -585,6 +649,14 @@ impl VibocerosApp {
             };
             if let Some((id, edge)) = reference {
                 self.pick_circle_around_curve(Some(id), edge);
+                self.command_input.clear();
+                return true;
+            }
+            if words
+                .first()
+                .is_some_and(|name| name.eq_ignore_ascii_case("SelID"))
+            {
+                self.push_log("Enter a valid guide curve object ID".into());
                 self.command_input.clear();
                 return true;
             }
@@ -617,6 +689,10 @@ impl VibocerosApp {
                 s.mode = mode;
                 if matches!(mode, Mode::Radius | Mode::Diameter) {
                     s.preferences.diameter = mode == Mode::Diameter;
+                    if matches!(owner, Owner::Maelstrom(_)) {
+                        self.commands
+                            .remember_maelstrom_diameter(s.preferences.diameter);
+                    }
                 }
                 self.point_filter = None;
                 self.point_constraint = None;
