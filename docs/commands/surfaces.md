@@ -98,7 +98,8 @@ including a single closed profile with two poles.
 Run `Loft` with preselected profiles or pick curves and surface edges at the
 prompt. `Edge=object,index` selects a specific surface edge during the command.
 Pick open profiles near corresponding ends or use `Point` to pick a pole with
-snapping.
+snapping. Once a profile is selected, the viewport previews the taper as you
+move the pole.
 For closed profiles, drag the seam markers or use `Flip`, `Automatic`,
 `Natural`, and `SnapToKnots`. Enter opens the options preview. Change the style,
 simplification, closure, or tangent splitting while previewing the result.

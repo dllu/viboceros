@@ -25,10 +25,12 @@ In the application, enter `Loft`, then select curves in order. Choose `Point`
 before selecting curves to pick a start pole, or after selecting them to pick an
 end pole. `StartPoint` and `EndPoint` explicitly choose an end. Point getters use
 the usual object snaps, coordinate filters, units, relative coordinates, and
-construction plane. Enter creates the result; `Undo` revises a pick or option,
-and Escape cancels and restores the initial selection without consuming model
-undo/redo. `Type`, `Closed`, and `SplitAtTangents` accept values at the prompt;
-`Natural` retains seams. A fully specified numeric command with enough selected
+construction plane. Once a profile is selected, the viewport previews the taper
+at the resolved cursor position. Closed profiles still offer seam adjustment
+before final review. Enter accepts the final preview. `Undo` revises a pick or
+option, and Escape cancels and restores the initial selection without consuming
+model undo/redo. `Type`, `Closed`, and `SplitAtTangents` accept values at the
+prompt. `Natural` retains seams. A fully specified numeric command with enough selected
 profiles still executes immediately. Native interactive Point replay in the
 oracle worker remains unsupported.
 

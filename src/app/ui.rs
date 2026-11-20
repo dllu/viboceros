@@ -2060,6 +2060,7 @@ impl VibocerosApp {
         if self.update_surface_apex_hover(apex_hover) {
             ui.ctx().request_repaint();
         }
+        self.update_loft_pole_preview(apex_hover, ui.ctx());
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());
         self.update_curve_extend_preview(apex_hover, ui.ctx());

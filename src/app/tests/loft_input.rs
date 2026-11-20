@@ -71,6 +71,100 @@ fn picked_loft_poles_share_snapping_and_commit_one_undo_step() {
 }
 
 #[test]
+fn moving_a_loft_pole_previews_the_snapped_geometry_before_acceptance() {
+    use super::circle_preview::{screen_point, viewport_click, viewport_frame};
+    use std::time::{Duration, Instant};
+
+    for (command, option, closed, direction) in [
+        ("Loft", "StartPoint", false, -1.),
+        ("Loft", "EndPoint", true, 1.),
+        ("Loft Type=Straight", "EndPoint", false, 1.),
+    ] {
+        let mut app = test_app();
+        let id = if closed {
+            circle(&mut app)
+        } else {
+            app.commands
+                .execute(&mut app.document, "Line -2,0,1 2,0,1")
+                .unwrap();
+            app.document.objects().last().unwrap().id()
+        };
+        let snapped = point(1.5, 0., direction * 6.);
+        app.document.add_geometry(Geometry::Point(snapped)).unwrap();
+        app.document.clear_history().unwrap();
+        app.viewports[0] = Viewport::new(ViewKind::Front);
+        app.maximized_viewport = Some(0);
+        let context = egui::Context::default();
+        enter(&mut app, command);
+        pick(&mut app, id);
+        enter(&mut app, option);
+
+        let wait_for_pole = |app: &mut VibocerosApp, cursor: Point3, expected: Point3| {
+            viewport_frame(app, &context, vec![]);
+            let pixel = screen_point(app, cursor);
+            viewport_frame(app, &context, vec![egui::Event::PointerMoved(pixel)]);
+            let deadline = Instant::now() + Duration::from_secs(5);
+            loop {
+                viewport_frame(app, &context, vec![]);
+                let wires = app.loft_prompt.as_ref().unwrap().preview_wires();
+                if wires.iter().any(|curve| {
+                    let domain = curve.domain();
+                    [*domain.start(), *domain.end()]
+                        .into_iter()
+                        .any(|parameter| {
+                            curve
+                                .evaluate(parameter)
+                                .is_ok_and(|p| p.distance_to(expected).unwrap() < 1e-5)
+                        })
+                }) {
+                    return (pixel, wires.to_vec());
+                }
+                assert!(
+                    Instant::now() < deadline,
+                    "pole preview did not reach {expected:?}"
+                );
+                std::thread::sleep(Duration::from_millis(5));
+            }
+        };
+        let free = point(-1., 0., direction * 4.);
+        let (_, initial) = wait_for_pole(&mut app, free, free);
+        viewport_frame(&mut app, &context, vec![egui::Event::PointerGone]);
+        assert!(app.loft_prompt.as_ref().unwrap().preview_wires().is_empty());
+        enter(&mut app, "Undo");
+        assert!(app.active_command.is_none());
+        assert!(app.loft_prompt.as_ref().unwrap().selecting());
+        enter(&mut app, option);
+
+        enter(&mut app, "Point");
+        let nearby = snapped
+            .translated(viboceros_geometry::Vector3::try_new(0.1, 0., 0.).unwrap())
+            .unwrap();
+        let (pixel, hovered) = wait_for_pole(&mut app, nearby, snapped);
+        assert_ne!(hovered, initial);
+        assert_eq!(app.document.objects().count(), 2);
+        assert_eq!(app.document.undo_label(), None);
+        assert!(app.snaps.model_override.is_some());
+        viewport_click(&mut app, &context, pixel);
+        assert!(app.snaps.model_override.is_none());
+        assert!(app.active_command.is_none());
+        if command == "Loft" {
+            enter(&mut app, ""); // Begin review for an open start or accept the closed seam.
+            assert_eq!(app.loft_prompt.as_ref().unwrap().preview_wires(), hovered);
+        }
+        enter(&mut app, "");
+        let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+            panic!("Loft B-rep");
+        };
+        assert!(brep.vertices().iter().any(|v| v.point() == snapped));
+        assert_eq!(
+            brep.wireframe_curves(1, app.document.tolerance()).unwrap(),
+            hovered
+        );
+        assert_eq!(app.document.undo_label(), Some("Loft"));
+    }
+}
+
+#[test]
 fn ordered_curve_picks_ignore_groups_and_regions_filter_noncurves() {
     let mut app = test_app();
     for line in [

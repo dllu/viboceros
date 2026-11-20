@@ -11,6 +11,11 @@ pub(super) struct Profiles {
     oriented: bool,
 }
 
+pub(super) enum Sections {
+    Closed(Seams),
+    Open(Profiles),
+}
+
 #[derive(Debug)]
 pub(super) struct Draft {
     brep: Brep,
@@ -28,7 +33,17 @@ pub(super) struct Review {
 }
 
 impl Profiles {
-    fn build(
+    pub(super) fn capture_supports(
+        &self,
+        document: &Document,
+    ) -> [Option<loft::TangentSupport>; 2] {
+        [self.sources.first(), self.sources.last()].map(|source| {
+            let (id, edge) = section_key(source?);
+            loft::TangentSupport::capture(document, id, edge?, None).ok()
+        })
+    }
+
+    pub(super) fn build(
         &self,
         options: Options,
         crease: bool,
@@ -45,13 +60,29 @@ impl Profiles {
             tolerance,
             [supports[0].as_ref(), supports[1].as_ref()],
         )?;
+        Ok(Draft::new(brep, tolerance))
+    }
+}
+
+impl Draft {
+    pub(super) fn new(brep: Brep, tolerance: Tolerance) -> Self {
         let wires = brep.wireframe_curves(1, tolerance).unwrap_or_else(|_| {
             brep.edges()
                 .iter()
                 .map(|edge| edge.curve().clone())
                 .collect()
         });
-        Ok(Draft { brep, wires })
+        Self { brep, wires }
+    }
+}
+
+impl Seams {
+    pub(super) fn aligned_profiles(&self, tolerance: Tolerance) -> Result<Profiles, CommandError> {
+        Ok(Profiles {
+            sources: self.editor.sources().cloned().collect(),
+            curves: self.editor.profiles(tolerance)?,
+            oriented: self.oriented,
+        })
     }
 }
 
@@ -112,103 +143,88 @@ impl VibocerosApp {
         changed
     }
 
-    pub(super) fn begin_loft_sections(&mut self) {
-        let Some(prompt) = &self.loft_prompt else {
-            return;
-        };
+    pub(super) fn prepare_loft_sections(&self) -> Result<Sections, CommandError> {
+        let prompt = self.loft_prompt.as_ref().unwrap();
         let tolerance = self.document.tolerance();
-        let prepared = (|| {
-            let curves = prompt
-                .state
-                .sources
-                .iter()
-                .map(|section| section.source.curve().clone())
-                .collect::<Vec<_>>();
-            let closed = curves
-                .iter()
-                .map(NurbsCurve::is_closed)
-                .collect::<Result<Vec<_>, _>>()?;
-            if closed.iter().any(|closed| *closed) && closed.iter().any(|closed| !*closed) {
-                return Err(CommandError::Usage(
-                    "Select either open or closed Loft sections",
-                ));
-            }
-            let (automatic_order, oriented) = Brep::loft_profile_order(&curves, tolerance)?;
-            // Edge matches refer to the first and last picked profiles.
-            let order = if prompt.edge_highlights().next().is_some() {
-                (0..curves.len()).collect()
-            } else {
-                automatic_order
-            };
-            let sources = order
-                .iter()
-                .map(|&index| prompt.state.sources[index].source.clone())
-                .collect::<Vec<_>>();
-            if closed.iter().all(|closed| *closed) {
-                let editor = Editor::from_sources(
-                    sources,
-                    tolerance,
-                    self.loft_snap_to_knots,
-                    prompt.state.options.natural_seams,
-                );
-                return Ok((Some(Seams { editor, oriented }), None));
-            }
-            let mut curves = order
-                .iter()
-                .map(|&index| {
-                    let curve = &curves[index];
-                    if prompt.state.sources[index].reversed == Some(true) {
-                        curve.reversed()
-                    } else {
-                        Ok(curve.clone())
-                    }
-                })
-                .collect::<Result<Vec<_>, _>>()?;
-            let fixed = order
-                .iter()
-                .map(|&index| prompt.state.sources[index].reversed.is_some())
-                .collect::<Vec<_>>();
-            Brep::align_loft_open_profiles(&mut curves, &fixed)?;
-            Ok((
-                None,
-                Some(Profiles {
-                    sources,
-                    curves,
-                    oriented,
-                }),
-            ))
-        })();
-        match prepared {
-            Ok((Some(seams), _)) => {
+        let curves = prompt
+            .state
+            .sources
+            .iter()
+            .map(|section| section.source.curve().clone())
+            .collect::<Vec<_>>();
+        let closed = curves
+            .iter()
+            .map(NurbsCurve::is_closed)
+            .collect::<Result<Vec<_>, _>>()?;
+        if closed.iter().any(|closed| *closed) && closed.iter().any(|closed| !*closed) {
+            return Err(CommandError::Usage(
+                "Select either open or closed Loft sections",
+            ));
+        }
+        let (automatic_order, oriented) = Brep::loft_profile_order(&curves, tolerance)?;
+        // Edge matches refer to the first and last picked profiles.
+        let order = if prompt.edge_highlights().next().is_some() {
+            (0..curves.len()).collect()
+        } else {
+            automatic_order
+        };
+        let sources = order
+            .iter()
+            .map(|&index| prompt.state.sources[index].source.clone())
+            .collect::<Vec<_>>();
+        if closed.iter().all(|closed| *closed) {
+            let editor = Editor::from_sources(
+                sources,
+                tolerance,
+                self.loft_snap_to_knots,
+                prompt.state.options.natural_seams,
+            );
+            return Ok(Sections::Closed(Seams { editor, oriented }));
+        }
+        let mut curves = order
+            .iter()
+            .map(|&index| {
+                let curve = &curves[index];
+                if prompt.state.sources[index].reversed == Some(true) {
+                    curve.reversed()
+                } else {
+                    Ok(curve.clone())
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let fixed = order
+            .iter()
+            .map(|&index| prompt.state.sources[index].reversed.is_some())
+            .collect::<Vec<_>>();
+        Brep::align_loft_open_profiles(&mut curves, &fixed)?;
+        Ok(Sections::Open(Profiles {
+            sources,
+            curves,
+            oriented,
+        }))
+    }
+
+    pub(super) fn begin_loft_sections(&mut self) {
+        match self.prepare_loft_sections() {
+            Ok(Sections::Closed(seams)) => {
                 self.loft_prompt.as_mut().unwrap().seams = Some(seams);
                 self.log_loft();
             }
-            Ok((_, Some(profiles))) => self.begin_loft_preview(profiles),
-            Ok(_) => unreachable!("Loft sections produce an editor or preview"),
+            Ok(Sections::Open(profiles)) => self.begin_loft_preview(profiles),
             Err(error) => self.push_log(format!("Unable to prepare Loft sections: {error}")),
         }
     }
 
     pub(super) fn accept_loft_seams(&mut self) {
         let seams = self.loft_prompt.as_ref().unwrap().seams.as_ref().unwrap();
-        match seams.editor.profiles(self.document.tolerance()) {
-            Ok(curves) => {
-                let sources = seams.editor.sources().cloned().collect();
-                self.begin_loft_preview(Profiles {
-                    curves,
-                    sources,
-                    oriented: seams.oriented,
-                });
-            }
+        match seams.aligned_profiles(self.document.tolerance()) {
+            Ok(profiles) => self.begin_loft_preview(profiles),
             Err(error) => self.push_log(format!("Unable to prepare Loft seams: {error}")),
         }
     }
 
     fn begin_loft_preview(&mut self, profiles: Profiles) {
-        let supports = [profiles.sources.first(), profiles.sources.last()].map(|source| {
-            let (id, edge) = section_key(source?);
-            loft::TangentSupport::capture(&self.document, id, edge?, None).ok()
-        });
+        let supports = profiles.capture_supports(&self.document);
         let prompt = self.loft_prompt.as_mut().unwrap();
         let draft = profiles.build(
             prompt.state.options,

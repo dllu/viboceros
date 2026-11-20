@@ -7,6 +7,7 @@ use super::curve_seam::Editor;
 use crate::viewport::curve_seam::{Event, Marker};
 
 mod input;
+mod pole_preview;
 mod preview;
 mod selection;
 mod simplification;
@@ -50,6 +51,7 @@ pub(super) struct Prompt {
     before: Vec<ObjectId>,
     undo: Vec<State>,
     picking: Option<End>,
+    pole_preview: Option<pole_preview::Preview>,
     value: Option<&'static str>,
     scripted: bool,
     seams: Option<Seams>,
@@ -123,6 +125,9 @@ impl Prompt {
     }
 
     pub(super) fn preview_wires(&self) -> &[viboceros_geometry::NurbsCurve] {
+        if let Some(preview) = &self.pole_preview {
+            return preview.wires();
+        }
         self.review
             .as_ref()
             .and_then(|review| review.draft.as_ref().ok())
@@ -201,6 +206,7 @@ impl VibocerosApp {
             before,
             undo: vec![],
             picking: None,
+            pole_preview: None,
             value: None,
             scripted,
             seams: None,

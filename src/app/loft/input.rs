@@ -2,6 +2,21 @@ use super::*;
 use viboceros_command::curve_reference::parse_edge;
 use viboceros_drafting::PointInput;
 
+impl End {
+    pub(super) fn set_point(self, options: &mut Options, point: Point3) {
+        match self {
+            Self::Start => {
+                options.ends.start = Some(point);
+                options.match_tangents[0] = false;
+            }
+            Self::Finish => {
+                options.ends.end = Some(point);
+                options.match_tangents[1] = false;
+            }
+        }
+    }
+}
+
 impl VibocerosApp {
     /// Selection's Point option takes precedence over the Point snap override.
     pub(in crate::app) fn continue_loft_point_option(&mut self, input: &str) -> bool {
@@ -55,25 +70,23 @@ impl VibocerosApp {
         p.value = None;
         self.active_command = Some(InteractiveCommand::LoftPoint);
         self.drafting_plane = Some(self.viewports[self.active_viewport].construction_plane());
+        self.begin_loft_pole_preview(end);
         self.log_loft();
     }
 
     pub(in crate::app) fn accept_loft_point(&mut self, point: Point3) -> Option<bool> {
-        let p = self.loft_prompt.as_mut()?;
-        let end = p.picking?;
+        let end = self.loft_prompt.as_ref()?.picking?;
+        if !self.validate_loft() {
+            return Some(false);
+        }
+        let p = self.loft_prompt.as_mut().unwrap();
         p.undo.push(p.state.clone());
-        match end {
-            End::Start => {
-                p.state.options.ends.start = Some(point);
-                p.state.options.match_tangents[0] = false;
-            }
-            End::Finish => {
-                p.state.options.ends.end = Some(point);
-                p.state.options.match_tangents[1] = false;
-                p.state.finished_profiles = true;
-            }
+        end.set_point(&mut p.state.options, point);
+        if matches!(end, End::Finish) {
+            p.state.finished_profiles = true;
         }
         p.picking = None;
+        p.pole_preview = None;
         self.active_command = None;
         self.drafting_plane = None;
         if matches!(end, End::Finish) && !p.uses_script() {
@@ -242,6 +255,7 @@ impl VibocerosApp {
 
     fn undo_loft_input(&mut self) {
         let p = self.loft_prompt.as_mut().unwrap();
+        p.pole_preview = None;
         if p.picking.take().is_none() && p.value.take().is_none() {
             if let Some(review) = &mut p.review {
                 if review.aligning {
