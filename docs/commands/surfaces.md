@@ -143,6 +143,10 @@ extensions at the rail stations. The wire preview shows those shared edges.
 Natural faces currently require
 a perpendicular profile and compatible frames across each corner.
 
+For an open Local sweep on straight rail segments, place a cross section at
+each rail corner. The preview shows the shared profile at each joint in both
+miter modes. You can add sections between corners or use a point end.
+
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,
 and section rebuilding options for the application session. Cancel discards
 draft edits in normal review. A scripted `-Sweep1` retains accepted settings
@@ -167,9 +171,10 @@ are retained; one unselected B-rep is added on the current layer with atomic und
 Use `Style` then `Roadlike`, or `SetAxis`, to pick the axis with a live preview.
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular
-rail with one profile. General closed-rail holonomy correction, miters,
-general branch/seam choices, and complete Rhino multi-section blending remain
-unimplemented. Automatic placement follows the qualified interval and direction
+rail with one profile. General closed-rail holonomy correction, curved rail
+miters, multi-profile miters with Global blending or missing corner profiles,
+and general branch and seam choices remain unimplemented.
+Automatic placement follows the qualified interval and direction
 policy linked above.
 
 ## Face and isocurve extraction

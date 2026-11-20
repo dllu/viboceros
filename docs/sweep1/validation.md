@@ -146,12 +146,22 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
   --absolute-epsilon 1e-6 --relative-epsilon 1e-12
 ```
 
+## Profiled Local miters
+
+On a headless Rhino 8.32 run, four open line profiles along a two-leg rail
+produced two cubic faces with a common boundary at the corner profile. The
+regression checks the complete control nets within `2e-5` model units in the
+common chart. Separate checks cover circular profiles and point-ended faces.
+Rhino produced different intermediate geometry with Global blending. Its
+trimmed point-ended result also includes zero-length edges at the poles.
+
 ## Remaining work and performance
 
-General closed-rail holonomy correction, curved and multi-profile rail miters,
-complete unrefitted multi-profile compatibility,
-automatic branch/seam alignment and remaining
-Rhino section-refit options are not implemented. Section rebuilding now has
+General closed-rail holonomy correction, curved rail miters, multi-profile
+miters with Global blending or missing corner profiles, full-loop profiled
+polygonal rails, complete unrefitted multi-profile compatibility, automatic
+branch and seam alignment, and further Rhino section-refit options remain open.
+Section rebuilding now has
 [separate complete-image checks](rebuilding.md). These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
 unfinished: short release timings for the spatial refitter are tracked separately

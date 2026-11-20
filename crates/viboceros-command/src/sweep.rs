@@ -379,6 +379,15 @@ impl Source {
         } else {
             SweepBlend::Local
         };
+        if !closed
+            && !options.surface_aligned
+            && let Some(brep) = viboceros_smlib::sweep_profile_miters(
+                rail, &sections, ends, style, blend, tolerance,
+            )
+            .map_err(knot_refinement::native_geometry_error)?
+        {
+            return Ok((brep, sections.len()));
+        }
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
         if options.surface_aligned {
             let [support] = self.rail.supports() else {
@@ -435,6 +444,8 @@ mod automatic_tests;
 mod closed_tests;
 #[cfg(test)]
 mod curved_tests;
+#[cfg(test)]
+mod miter_tests;
 #[cfg(test)]
 mod point_tests;
 #[cfg(test)]

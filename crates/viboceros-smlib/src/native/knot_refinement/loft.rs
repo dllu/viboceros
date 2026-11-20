@@ -1,5 +1,8 @@
 //! Native Loft and Sweep section preparation.
 use super::*;
+use viboceros_geometry::{
+    Brep, CurveRef, Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection,
+};
 
 /// Rebuild real sweep profiles with native basis evaluation and interpolation.
 pub fn rebuild_sweep_sections(
@@ -122,8 +125,30 @@ pub fn fit_sweep_model_surface(sweep: &viboceros_geometry::Sweep1) -> Result<Nur
     with_sweep_operations(|operations| sweep.fit_model_surface_with_operations(operations))
 }
 
+/// Build and sew Local sweep panels that share authored profiles at rail corners.
+pub fn sweep_profile_miters(
+    rail: CurveRef<'_>,
+    sections: &[SweepSection],
+    ends: SweepEndPoints,
+    style: SweepFrameStyle,
+    blend: SweepBlend,
+    tolerance: Tolerance,
+) -> Result<Option<Brep>, Error> {
+    Sweep1::try_profile_miters_with(
+        rail,
+        sections,
+        ends,
+        style,
+        blend,
+        tolerance,
+        &mut prepare_sweep_sections,
+        &mut |sweep| sweep_surface(sweep, true),
+    )
+}
+
 pub fn refit_closed_sweep(sweep: &viboceros_geometry::Sweep1) -> Result<NurbsSurface, Error> {
-    sweep.refit_closed_with_solver(&mut |input, shift| solve_interpolation(input, None, Some(shift)))
+    sweep
+        .refit_closed_with_solver(&mut |input, shift| solve_interpolation(input, None, Some(shift)))
 }
 
 fn with_sweep_operations(

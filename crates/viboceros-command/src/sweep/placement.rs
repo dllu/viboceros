@@ -1,5 +1,6 @@
 //! Automatic stations retain section order; reversing the rail changes traversal.
 use super::*;
+use viboceros_geometry::Plane;
 
 pub(super) fn sections(
     source: CurveRef<'_>,
@@ -55,7 +56,27 @@ pub(super) fn profile_contacts(
     tolerance: Tolerance,
 ) -> Result<Vec<SweepSection>, CommandError> {
     let mut sections = Vec::with_capacity(profiles.len());
+    let nodes = if rail.degree() == 1
+        && rail.control_points().iter().all(|c| c.weight() > 0.)
+        && !rail
+            .full_multiplicity_kink_parameters(tolerance)?
+            .is_empty()
+    {
+        std::iter::once(*rail.domain().start())
+            .chain(rail.spans().map(|(_, end)| end))
+            .map(|t| Ok((t, rail.evaluate(t)?)))
+            .collect::<Result<Vec<_>, GeometryError>>()?
+    } else {
+        vec![]
+    };
     for curve in profiles {
+        if !nodes.is_empty()
+            && curve.is_closed()?
+            && let Some(parameter) = enclosed_rail_node(&curve, &nodes, tolerance)?
+        {
+            sections.push(SweepSection { parameter, curve });
+            continue;
+        }
         let minimum = {
             let seed = viboceros_smlib::curve_minimum_distance(
                 CurveRef::NurbsCurve(rail),
@@ -81,6 +102,66 @@ pub(super) fn profile_contacts(
         sections.push(SweepSection { parameter, curve });
     }
     Ok(sections)
+}
+
+// A closed section can enclose a corner or endpoint. Use its station when
+// the rail crosses the section's plane only at that vertex.
+fn enclosed_rail_node(
+    curve: &NurbsCurve,
+    nodes: &[(Real, Point3)],
+    tolerance: Tolerance,
+) -> Result<Option<Real>, GeometryError> {
+    if curve
+        .control_points()
+        .iter()
+        .any(|control| control.weight() <= 0.)
+    {
+        return Ok(None);
+    }
+    let bounds = curve.control_point_bounds();
+    let min = bounds.min().to_array();
+    let max = bounds.max().to_array();
+    let slack = tolerance.absolute();
+    if !nodes.iter().any(|&(_, p)| {
+        p.to_array()
+            .into_iter()
+            .enumerate()
+            .all(|(i, x)| min[i] - slack <= x && x <= max[i] + slack)
+    }) {
+        return Ok(None);
+    }
+    let face = match Brep::try_planar_face(curve, tolerance) {
+        Ok(face) => face,
+        Err(GeometryError::InvalidPlanarFaceBoundary) => return Ok(None),
+        Err(error) => return Err(error),
+    };
+    let surface = face.faces()[0].surface();
+    let frame = surface.frame_at(
+        *surface.domain_u().start(),
+        *surface.domain_v().start(),
+        tolerance,
+    )?;
+    let plane = Plane::new(frame.origin(), frame.z_axis());
+    let mut previous: Real = 0.;
+    let mut hit = None;
+    for &(t, point) in nodes {
+        let distance = plane.signed_distance_to(point)?;
+        if distance.abs() <= slack {
+            if hit.replace((t, point)).is_some() {
+                return Ok(None);
+            }
+        } else if previous.abs() > slack && previous.signum() != distance.signum() {
+            return Ok(None);
+        }
+        previous = distance;
+    }
+    if let Some((t, point)) = hit
+        && let Some((_, u, v)) = face.closest_face_parameters(point, tolerance)?
+        && surface.evaluate(u, v)?.distance_to(point)? <= slack
+    {
+        return Ok(Some(t));
+    }
+    Ok(None)
 }
 
 pub(super) fn full_rail_anchor(

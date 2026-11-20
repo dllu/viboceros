@@ -82,7 +82,7 @@ produces a native one-face solid.
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
 | `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
-| `UntrimmedMiters=Yes\|No` | Choose natural or trimmed faces at straight-segment corners with one profile. Trimmed miters split extension faces at the original rail stations and split shared miter edges at profile knots. The review updates the wire preview. |
+| `UntrimmedMiters=Yes\|No` | Choose natural or trimmed faces at straight-segment corners with one profile. Trimmed miters split extension faces at the original rail stations and split shared miter edges at profile knots. With Local blending and a profile at every active corner of an open sweep, the profiles define the shared boundaries in both modes. The review shows the resulting wires. |
 | `Closed=Yes` | Sweep the full circuit of a closed rail. Open profiles at rail knots retain the rational basis, with faces split at fully multiple knots. Closed profiles, explicit refitting, and profiles between knots use a periodic cubic arc-length surface. |
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
@@ -110,7 +110,7 @@ Native builds reuse usd-brep/SMLib for section preparation and interpolation.
 
 The [validation guide](sweep1/validation.md) keeps current complete-image checks,
 the certified spatial gap, historical oracle comparisons, and performance limits
-together. Closed-rail holonomy, miters on curved or multi-profile sweeps,
-general branch/seam choices, and complete Rhino multi-profile blending remain
-unfinished. If an extension cut cannot be resolved at model tolerance, the
+together. Closed-rail holonomy, curved rail miters, multi-profile miters with
+Global blending or missing corner profiles, and general branch and seam
+choices remain unfinished. If an extension cut cannot be resolved at model tolerance, the
 sweep retains its valid trimmed face without that partition.
