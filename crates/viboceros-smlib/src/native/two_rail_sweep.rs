@@ -2,6 +2,8 @@
 use super::*;
 use viboceros_geometry::{AffineTransform3, NurbsCurve2, Point2, SweepEndPoints};
 
+mod matching;
+pub use matching::{TwoRailEdgeSupport, TwoRailSweepMatching};
 mod placement;
 mod refit;
 mod transport;
@@ -95,7 +97,7 @@ pub fn two_rail_slash_paths(
     tolerance: Tolerance,
 ) -> Result<[NurbsCurve; 2], Error> {
     options.refit_rails = true;
-    let placement = prepare_placement(first, second, sections, options, tolerance)?;
+    let placement = prepare_placement(first, second, sections, options, false, tolerance)?;
     Ok(placement.rails.map(|rail| rail.curve))
 }
 
@@ -107,6 +109,39 @@ pub fn two_rail_sweep_surface_with_options(
     options: TwoRailSweepOptions<'_>,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
+    sweep(first, second, sections, options, None, tolerance)
+}
+
+/// Adjust one or both supporting-face derivative strips while retaining rail positions.
+pub fn two_rail_sweep_surface_matched(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    sections: &[NurbsCurve],
+    options: TwoRailSweepOptions<'_>,
+    matching: TwoRailSweepMatching<'_>,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, Error> {
+    sweep(first, second, sections, options, Some(matching), tolerance)
+}
+
+fn sweep(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    sections: &[NurbsCurve],
+    mut options: TwoRailSweepOptions<'_>,
+    mut matching: Option<TwoRailSweepMatching<'_>>,
+    tolerance: Tolerance,
+) -> Result<NurbsSurface, Error> {
+    if matching.is_some() {
+        for section in sections {
+            if section.is_closed()? || section.is_rational() {
+                return Err(unsupported(
+                    "surface-edge continuity uses open polynomial cross sections",
+                ));
+            }
+        }
+        options.refit_rails |= !first.is_closed()? && (first.is_rational() || second.is_rational());
+    }
     let Placement {
         rails: prepared,
         mut rows,
@@ -117,7 +152,14 @@ pub fn two_rail_sweep_surface_with_options(
         closed_rails,
         closed_loop,
         closed_profiles,
-    } = prepare_placement(first, second, sections, options, tolerance)?;
+    } = prepare_placement(
+        first,
+        second,
+        sections,
+        options,
+        matching.is_some(),
+        tolerance,
+    )?;
     let TwoRailSweepOptions {
         ends,
         maintain_height,
@@ -135,9 +177,15 @@ pub fn two_rail_sweep_surface_with_options(
         .all(|rail| rail.degree() == 1 && rail.control_points().len() == 2);
     let interior_profiles = ends.is_empty() && rows.len() > 2;
     let rails = [&rails[0], &rails[1]];
-    let transported = closed_rails || closed_profiles;
+    let transported = closed_rails || closed_profiles || matching.is_some();
     let exact = if transported && !refit_rails {
-        transport::sweep_on_rail_basis(rails, &rows, maintain_height, closed_profiles)?
+        transport::sweep_on_rail_basis(
+            rails,
+            &rows,
+            maintain_height,
+            closed_profiles,
+            matching.is_some(),
+        )?
     } else {
         None
     };
@@ -162,9 +210,27 @@ pub fn two_rail_sweep_surface_with_options(
         };
         (surface, row_stations(), None)
     };
-    let mut surface = surface.transformed(AffineTransform3::from_translation(
-        Vector3::try_from(origin.to_array())?,
-    ))?;
+    let world_offset = Vector3::try_from(origin.to_array())?;
+    if closed_loop && let Some(matching) = &mut matching {
+        matching.adjust_ends[1] = matching.adjust_ends[0];
+    }
+    let active_matching = matching.and_then(|matching| {
+        let orders = matching.orders(surface.degree_v(), surface.control_point_count_v());
+        (orders != [0; 2]).then_some((matching, orders))
+    });
+    let surface = if let Some((matching, orders)) = active_matching {
+        matching::apply(
+            surface,
+            matching,
+            orders,
+            &stations,
+            world_offset,
+            tolerance,
+        )?
+    } else {
+        surface
+    };
+    let mut surface = surface.transformed(AffineTransform3::from_translation(world_offset))?;
     if !ends.is_empty() && surface.degree_u() < 3 {
         surface = super::change_surface_degree(&surface, 3, surface.degree_v(), false)?;
     }
@@ -199,6 +265,15 @@ pub fn two_rail_sweep_surface_with_options(
         }
     }
     for (row, station) in rows.iter().zip(stations) {
+        if active_matching.is_some_and(|(matching, _)| matching.adjusts(station))
+            && row
+                .original
+                .control_points()
+                .iter()
+                .any(|control| control.point() != row.original.control_points()[0].point())
+        {
+            continue;
+        }
         let s = u[0] + station * (u[1] - u[0]);
         constraints.push((&row.original, [[s, v[0]], [s, v[1]]]));
     }

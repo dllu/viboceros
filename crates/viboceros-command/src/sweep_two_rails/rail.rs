@@ -1,5 +1,6 @@
 //! A rail may borrow one curve or own a private assembly of accepted chain pieces.
 use super::*;
+use crate::surface_edge_reference::Edge;
 use crate::{chain_selection::Target, curve_reference::CapturedCurve};
 use std::sync::Arc;
 use viboceros_geometry::{CurveJoinOptions, CurveJoinStyle, join_curves_with_endpoint_filter};
@@ -7,13 +8,69 @@ use viboceros_geometry::{CurveJoinOptions, CurveJoinStyle, join_curves_with_endp
 #[derive(Clone, Debug)]
 pub struct Rail {
     pieces: Arc<[CapturedCurve]>,
+    supports: Arc<[Edge]>,
     joined: Option<Arc<NurbsCurve>>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct RailReference {
+    pub target: Target,
+    pub face: Option<usize>,
+}
+
+impl RailReference {
+    pub fn parse_edge(value: &str) -> Result<Self, CommandError> {
+        let invalid = || {
+            CommandError::Usage(
+                "Use an edge reference of the form object-id,edge-index[,face-index]",
+            )
+        };
+        let mut parts = value.split(',');
+        let object = parts
+            .next()
+            .and_then(|value| value.parse().ok())
+            .ok_or_else(invalid)?;
+        let edge = parts
+            .next()
+            .and_then(|value| value.parse().ok())
+            .ok_or_else(invalid)?;
+        let face = parts
+            .next()
+            .map(|value| value.parse().map_err(|_| invalid()))
+            .transpose()?;
+        if parts.next().is_some() {
+            return Err(invalid());
+        }
+        Ok(Self {
+            target: Target::Edge(object, edge),
+            face,
+        })
+    }
 }
 
 impl Rail {
     pub fn capture(document: &Document, target: Target) -> Result<Self, CommandError> {
+        Self::capture_reference(document, RailReference { target, face: None })
+    }
+
+    pub fn capture_reference(
+        document: &Document,
+        reference: RailReference,
+    ) -> Result<Self, CommandError> {
+        let support = match reference.target {
+            Target::Edge(object, index) if reference.face.is_some() => {
+                Some(Edge::capture(document, object, index, reference.face)?)
+            }
+            Target::Edge(object, index) => Edge::capture(document, object, index, None).ok(),
+            Target::Curve(_) => None,
+        };
+        let piece = match &support {
+            Some(support) => support.guide.clone(),
+            None => capture_piece(document, reference.target)?,
+        };
         Ok(Self {
-            pieces: vec![capture_piece(document, target)?].into(),
+            pieces: vec![piece].into(),
+            supports: support.into_iter().collect::<Vec<_>>().into(),
             joined: None,
         })
     }
@@ -63,8 +120,17 @@ impl Rail {
             ));
         };
         let curve = rail.curve().as_ref().to_nurbs()?;
+        let supports = path
+            .iter()
+            .map(|(target, _)| match *target {
+                Target::Edge(object, index) => Edge::capture(document, object, index, None).ok(),
+                Target::Curve(_) => None,
+            })
+            .collect::<Option<Vec<_>>>()
+            .unwrap_or_default();
         Ok(Self {
             pieces: pieces.into(),
+            supports: supports.into(),
             joined: Some(Arc::new(curve)),
         })
     }
@@ -85,6 +151,14 @@ impl Rail {
 
     pub fn is_closed(&self) -> bool {
         self.curve().is_closed().is_ok_and(|closed| closed)
+    }
+
+    pub(super) fn supports(&self) -> &[Edge] {
+        &self.supports
+    }
+
+    pub fn has_surface_support(&self) -> bool {
+        !self.supports.is_empty()
     }
 
     pub(super) fn curve(&self) -> &NurbsCurve {

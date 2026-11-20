@@ -4,14 +4,17 @@ use super::{object_selection::PendingObjectCommand, *};
 use std::collections::BTreeSet;
 use viboceros_command::chain_selection::Target;
 use viboceros_command::sweep_two_rails::{
-    MAX_SECTIONS, MAX_SLASHES, Options, Rail, SectionFit, ShapeOptions, Source, point_count,
+    MAX_SECTIONS, MAX_SLASHES, Options, Rail, RailReference, SectionFit, ShapeOptions, Source,
+    point_count,
 };
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
+mod continuity;
 mod input;
 mod points;
 mod preview;
+mod rail_picks;
 mod seams;
 mod slashes;
 use points::End;
@@ -27,6 +30,7 @@ fn chain_option(word: &str) -> bool {
 struct Pick {
     id: ObjectId,
     geometry: GeometrySnapshot,
+    polynomial: bool,
 }
 
 impl Pick {
@@ -36,6 +40,10 @@ impl Pick {
             Self {
                 id,
                 geometry: object.geometry_snapshot().clone(),
+                polynomial: object
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .is_ok_and(|curve| curve.is_some_and(|curve| !curve.is_rational())),
             }
         })
     }
@@ -64,7 +72,7 @@ struct State {
 #[derive(Debug)]
 pub(super) struct Session {
     options: Options,
-    named_rails: Option<[ObjectId; 2]>,
+    explicit_rails: Option<[RailReference; 2]>,
     pub(super) chain_auto: bool,
     state: State,
     undo: Vec<State>,
@@ -126,7 +134,7 @@ impl Session {
     fn ids(&self) -> Vec<ObjectId> {
         self.rail_targets()
             .filter_map(|target| match target {
-                Target::Curve(id) if self.named_rails.is_none() => Some(id),
+                Target::Curve(id) if self.explicit_rails.is_none() => Some(id),
                 _ => None,
             })
             .chain(self.state.picks.iter().map(|pick| pick.id))
@@ -153,6 +161,23 @@ impl Session {
             Some("MaintainHeight") => "Maintain height? Choose Yes or No",
             Some("RefitRails") => "Refit rails? Choose Yes or No",
             Some("Closed") => "Close the sweep? Choose Yes or No",
+            Some("EdgeContinuity") => "Choose EdgeContinuityA or EdgeContinuityB",
+            Some("EdgeContinuityA" | "EdgeContinuityB") => {
+                "Choose Position, Tangency, or Curvature"
+            }
+            Some("PreserveEnds") => "Choose StartShape or EndShape",
+            Some("StartShape" | "EndShape") => {
+                "Apply edge continuity at this end? Choose Yes or No"
+            }
+            _ if self.can_match_edges() && self.can_close() => {
+                "EdgeContinuity / PreserveEnds / Closed / Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / Undo. Enter creates the sweep"
+            }
+            _ if self.can_match_edges() && self.closed_rails() => {
+                "EdgeContinuity / PreserveEnds / Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / Undo. Enter creates the sweep"
+            }
+            _ if self.can_match_edges() => {
+                "EdgeContinuity / PreserveEnds / Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / StartPoint / EndPoint / Undo. Enter creates the sweep"
+            }
             _ if self.can_close() => {
                 "Closed / Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / Undo. Enter creates the sweep"
             }
@@ -194,7 +219,7 @@ impl VibocerosApp {
             }
         };
         self.cancel_interactive_command(false);
-        let named_rails = match options.explicit_rails(&self.document) {
+        let explicit_rails = match options.explicit_rails(&self.document) {
             Ok(rails) => rails,
             Err(error) => {
                 self.push_log(format!("Error: {error}"));
@@ -205,21 +230,27 @@ impl VibocerosApp {
         let mut picks = before
             .iter()
             .copied()
-            .filter(|id| named_rails.is_none_or(|rails| !rails.contains(id)))
+            .filter(|id| {
+                explicit_rails
+                    .is_none_or(|rails| rails.iter().all(|rail| rail.target.object() != *id))
+            })
             .filter_map(|id| Pick::new(&self.document, id))
             .collect::<Vec<_>>();
-        let rail_ids = named_rails.map_or_else(
+        let rail_refs = explicit_rails.map_or_else(
             || {
                 picks
                     .drain(..picks.len().min(2))
-                    .map(|pick| pick.id)
+                    .map(|pick| RailReference {
+                        target: Target::Curve(pick.id),
+                        face: None,
+                    })
                     .collect::<Vec<_>>()
             },
             |rails| rails.to_vec(),
         );
-        let rails = match rail_ids
+        let rails = match rail_refs
             .into_iter()
-            .map(|id| Rail::capture(&self.document, Target::Curve(id)))
+            .map(|reference| Rail::capture_reference(&self.document, reference))
             .collect::<Result<Vec<_>, _>>()
         {
             Ok(rails) => rails,
@@ -246,7 +277,7 @@ impl VibocerosApp {
                 review: false,
             },
             options,
-            named_rails,
+            explicit_rails,
             chain_auto: true,
             undo: Vec::new(),
             value: None,
@@ -319,7 +350,7 @@ impl VibocerosApp {
                 .position(|rail| rail.targets().any(|piece| piece == target))
             {
                 if matches!(mode, SelectionMode::Remove | SelectionMode::Toggle)
-                    && session.named_rails.is_none()
+                    && session.explicit_rails.is_none()
                     && next.rails[index].targets().count() == 1
                 {
                     next.rails.remove(index);
@@ -443,6 +474,17 @@ impl VibocerosApp {
                 message.push_str(&format!(". Closed={}", choice(session.state.shape.closed)));
             }
         }
+        if session.can_match_edges()
+            && (session.value.is_none()
+                || matches!(session.value, Some("EdgeContinuity" | "PreserveEnds")))
+        {
+            let edge = session.state.shape.edge;
+            let [a, b] = edge.continuity;
+            let [start, end] = edge.adjust_ends.map(choice);
+            message.push_str(&format!(
+                ". EdgeContinuityA={a:?}. EdgeContinuityB={b:?}. StartShape={start}. EndShape={end}"
+            ));
+        }
         self.push_log(message);
     }
 
@@ -453,7 +495,7 @@ impl VibocerosApp {
         let current = session
             .options
             .explicit_rails(&self.document)
-            .is_ok_and(|rails| rails == session.named_rails)
+            .is_ok_and(|rails| rails == session.explicit_rails)
             && session
                 .state
                 .rails

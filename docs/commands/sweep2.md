@@ -1,6 +1,7 @@
 # Sweep2
 
-`Sweep2 [Rail1Name=name Rail2Name=name] [Natural|Automatic] [Rebuild=point-count|Refit=tolerance]`
+`Sweep2 [Rail1Name=name|Rail1Edge=id,index[,face]] [Rail2Name=name|Rail2Edge=id,index[,face]]`
+`[Natural|Automatic] [Rebuild=point-count|Refit=tolerance]`
 `[MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
 `[Slash=x,y,z/x,y,z ...]`
 
@@ -19,6 +20,23 @@ growth. With `AutoChain=No`, pick segments individually or double-click to
 grow the chain. `Next`, `All`, and `Undo` edit the chain before Enter accepts
 it. Accepting the first chain opens the second rail picker. The sweep uses
 private joined rails and leaves their pieces intact.
+
+Pick a surface edge directly when selecting either rail. You can also type
+`Edge=id,index` and add the face index for an edge shared by two faces.
+In review, choose `EdgeContinuity`, then `EdgeContinuityA` or
+`EdgeContinuityB` to set Position, Tangency, or Curvature for that rail.
+The preview updates after each choice. Matching uses open polynomial
+profiles and a supporting face for each matched edge. The two rails may use
+different continuity modes. When the profiles have too few independent
+handles for the requested combination, the sweep uses the transported profiles.
+
+`PreserveEnds` opens `StartShape` and `EndShape`. In Rhino's command-line
+workflow, `Yes` applies continuity at that end and `No` keeps the selected
+terminal profile. The same `EdgeContinuityA=`, `EdgeContinuityB=`,
+`StartShape=`, and `EndShape=` options work directly in scripts.
+Viboceros follows the explicit `StartShape` setting in either rail order.
+Rhino kept the authored start with that setting enabled in several reversed-rail
+captures.
 
 With converging rails, choose `Point` before the first profile or after the
 last profile. `StartPoint` and `EndPoint` name either end directly. Click or
@@ -84,7 +102,8 @@ SelAll
 _-Sweep2
 ```
 
-For named rails, supply both names and select just the cross sections. An
+For explicit rails, supply both rail references and select just the cross
+sections. Either reference can name a curve or identify a surface edge. An
 explicit option or `_-Sweep2` runs directly with complete preselection. Rail
 names must be unique, and the rails must be visible and unlocked. Names are
 case-insensitive and currently cannot contain whitespace in this command.
@@ -105,8 +124,10 @@ history unchanged.
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
 certificate checks the cross sections and, with open profiles, both retained
-rail boundaries against the surface in world coordinates. An inconclusive
-certificate rejects the result.
+rail boundaries against the surface in world coordinates. With edge
+continuity, it checks the preserved cross sections and the two retained rail
+boundaries. Tangent and curvature constraints are applied at the longitudinal
+interpolation sites. An inconclusive deviation certificate rejects the result.
 Kinks in an accepted tensor are split into connected B-rep faces.
 Exact rational sweeps with closed rails and open profiles also split at
 full-multiplicity rail knots.
@@ -135,6 +156,10 @@ Closed-profile captures cover circular tubes, tapers, asymmetric guides,
 square profiles and point ends. Smooth profiles form a joined seam in the
 transverse direction. Closing the sweep along the rails can join the other
 direction as well.
+
+Surface-edge captures cover both rail sides, their different continuity
+modes, and start and end shape choices. They include skewed profiles, varying
+support faces and refitted rails.
 
 Rhino 8.32 command captures match the complete straight-rail arch image
 with a start or end point, including at an interior rail crossing. With

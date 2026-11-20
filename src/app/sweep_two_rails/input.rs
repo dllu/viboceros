@@ -5,10 +5,21 @@ impl VibocerosApp {
         if self.plane_prompt.is_some() {
             return false;
         }
+        let name = input.trim_start_matches(['_', '-']);
+        if self
+            .sweep_two_rails
+            .as_ref()
+            .is_some_and(|session| session.picking.is_none() && session.slash_picker.is_none())
+            && !name.eq_ignore_ascii_case("Cancel")
+            && !name.eq_ignore_ascii_case("Undo")
+            && self.continue_sweep_two_rail_edge_options(name)
+        {
+            self.command_input.clear();
+            return true;
+        }
         let Some(session) = &self.sweep_two_rails else {
             return false;
         };
-        let name = input.trim_start_matches(['_', '-']);
         if session.slash_picker.is_some() {
             return self.continue_sweep_two_rail_slashes(name);
         }
@@ -50,6 +61,8 @@ impl VibocerosApp {
                 self.set_sweep_two_rail_point_argument(end, name);
             } else if option.eq_ignore_ascii_case("Slash") {
                 self.set_sweep_two_rail_slash_argument(value);
+            } else if option.eq_ignore_ascii_case("Edge") {
+                self.select_sweep_two_rail_edge_argument(value);
             } else {
                 self.set_sweep_two_rail_option(option, value);
             }

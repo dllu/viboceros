@@ -108,8 +108,10 @@ mod silhouette;
 mod surface_extrusion;
 mod two_rail_sweep;
 pub use two_rail_sweep::{
-    MAX_TWO_RAIL_SLASHES, TwoRailSweepOptions, two_rail_point_stations, two_rail_slash_paths,
-    two_rail_sweep_surface, two_rail_sweep_surface_with_options, two_rail_sweep_surface_with_point_ends,
+    MAX_TWO_RAIL_SLASHES, TwoRailEdgeSupport, TwoRailSweepMatching, TwoRailSweepOptions,
+    two_rail_point_stations, two_rail_slash_paths, two_rail_sweep_surface,
+    two_rail_sweep_surface_matched, two_rail_sweep_surface_with_options,
+    two_rail_sweep_surface_with_point_ends,
 };
 mod network_surface;
 pub use network_surface::{

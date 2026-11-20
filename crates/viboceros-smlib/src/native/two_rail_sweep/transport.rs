@@ -362,13 +362,14 @@ pub(super) fn sweep_on_rail_basis(
     rows: &[Section],
     maintain_height: bool,
     closed_profiles: bool,
+    match_edges: bool,
 ) -> Result<Option<NurbsSurface>, Error> {
     let mut strip = ruled_surface(rails[0], rails[1])?;
-    if (closed_profiles || !strip.is_rational()) && strip.degree_v() < 3 {
+    if (closed_profiles || match_edges || !strip.is_rational()) && strip.degree_v() < 3 {
         strip = change_surface_degree(&strip, 1, 3, false)?;
     }
     let stations = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
-    if closed_profiles && !strip.is_rational() && stations.len() > 2 {
+    if (closed_profiles || match_edges) && !strip.is_rational() && stations.len() > 2 {
         strip = blend_basis(strip, &stations)?;
     }
     let degree = strip.degree_v();

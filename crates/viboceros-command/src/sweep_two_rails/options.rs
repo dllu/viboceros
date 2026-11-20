@@ -1,4 +1,40 @@
 use super::*;
+use viboceros_geometry::SurfaceBlendContinuity;
+
+pub const EDGE_CONTINUITY_NAMES: [&str; 2] = ["EdgeContinuityA", "EdgeContinuityB"];
+pub const EDGE_END_NAMES: [&str; 2] = ["StartShape", "EndShape"];
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct EdgeOptions {
+    pub continuity: [SurfaceBlendContinuity; 2],
+    pub adjust_ends: [bool; 2],
+}
+
+impl Default for EdgeOptions {
+    fn default() -> Self {
+        Self {
+            continuity: [SurfaceBlendContinuity::Position; 2],
+            adjust_ends: [true; 2],
+        }
+    }
+}
+
+impl EdgeOptions {
+    pub fn parse_mode(value: &str) -> Result<SurfaceBlendContinuity, CommandError> {
+        match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+            "position" => Ok(SurfaceBlendContinuity::Position),
+            "tangency" => Ok(SurfaceBlendContinuity::Tangency),
+            "curvature" => Ok(SurfaceBlendContinuity::Curvature),
+            _ => Err(CommandError::Usage(
+                "Choose Position, Tangency, or Curvature",
+            )),
+        }
+    }
+
+    pub fn active(self) -> bool {
+        self.continuity.iter().any(|mode| mode.order() > 0)
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub enum SectionFit {
@@ -33,10 +69,16 @@ impl SectionFit {
 
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Options {
-    names: Option<[String; 2]>,
+    rails: Option<[RailInput; 2]>,
     pub natural_seams: bool,
     pub shape: ShapeOptions,
     pub slashes: Vec<[Point3; 2]>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+enum RailInput {
+    Name(String),
+    Edge(RailReference),
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -46,17 +88,20 @@ pub struct ShapeOptions {
     pub maintain_height: bool,
     pub refit_rails: bool,
     pub closed: bool,
+    pub edge: EdgeOptions,
 }
 
 impl Options {
     pub fn parse(args: &[&str]) -> Result<Self, CommandError> {
-        let mut names = [None, None];
+        let mut rails = [None, None];
         let mut fit = None;
         let mut ends = SweepEndPoints::default();
         let mut maintain_height = None;
         let mut refit_rails = None;
         let mut closed = None;
         let mut natural_seams = None;
+        let mut edge_modes = [None; 2];
+        let mut edge_ends = [None; 2];
         let mut slashes = Vec::new();
         for arg in args {
             if option_name_eq(arg, "Natural") || option_name_eq(arg, "Automatic") {
@@ -73,7 +118,21 @@ impl Options {
                 .iter()
                 .position(|name| option_name_eq(key, name))
             {
-                if value.is_empty() || names[index].replace(value.to_owned()).is_some() {
+                if value.is_empty()
+                    || rails[index]
+                        .replace(RailInput::Name(value.to_owned()))
+                        .is_some()
+                {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if let Some(index) = ["Rail1Edge", "Rail2Edge"]
+                .iter()
+                .position(|name| option_name_eq(key, name))
+            {
+                if rails[index]
+                    .replace(RailInput::Edge(RailReference::parse_edge(value)?))
+                    .is_some()
+                {
                     return Err(CommandError::Usage(USAGE));
                 }
             } else if option_name_eq(key, "StartPoint") || option_name_eq(key, "EndPoint") {
@@ -103,6 +162,23 @@ impl Options {
                 if closed.replace(Self::parse_toggle(value)?).is_some() {
                     return Err(CommandError::Usage(USAGE));
                 }
+            } else if let Some(axis) = EDGE_CONTINUITY_NAMES
+                .iter()
+                .position(|name| option_name_eq(key, name))
+            {
+                if edge_modes[axis]
+                    .replace(EdgeOptions::parse_mode(value)?)
+                    .is_some()
+                {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if let Some(end) = EDGE_END_NAMES
+                .iter()
+                .position(|name| option_name_eq(key, name))
+            {
+                if edge_ends[end].replace(Self::parse_toggle(value)?).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
             } else if option_name_eq(key, "Slash") {
                 if slashes.len() == MAX_SLASHES {
                     return Err(CommandError::Usage(SLASH_USAGE));
@@ -112,13 +188,13 @@ impl Options {
                 return Err(CommandError::Usage(USAGE));
             }
         }
-        let names = match names {
+        let rails = match rails {
             [None, None] => None,
             [Some(a), Some(b)] => Some([a, b]),
             _ => return Err(CommandError::Usage(USAGE)),
         };
         Ok(Self {
-            names,
+            rails,
             natural_seams: natural_seams.unwrap_or_default(),
             slashes,
             shape: ShapeOptions {
@@ -127,6 +203,11 @@ impl Options {
                 maintain_height: maintain_height.unwrap_or_default(),
                 refit_rails: refit_rails.unwrap_or_default(),
                 closed: closed.unwrap_or_default(),
+                edge: EdgeOptions {
+                    continuity: edge_modes
+                        .map(|mode| mode.unwrap_or(SurfaceBlendContinuity::Position)),
+                    adjust_ends: edge_ends.map(|end| end.unwrap_or(true)),
+                },
             },
         })
     }
@@ -145,14 +226,28 @@ impl Options {
         ])
     }
 
-    pub fn explicit_rails(&self, doc: &Document) -> Result<Option<[ObjectId; 2]>, CommandError> {
-        let Some([first, second]) = &self.names else {
+    pub fn explicit_rails(
+        &self,
+        doc: &Document,
+    ) -> Result<Option<[RailReference; 2]>, CommandError> {
+        let Some([first, second]) = &self.rails else {
             return Ok(None);
         };
-        let lookup =
-            |name: &str| extrude_along_curve::resolve_curve_along_curve_path(doc, &[], Some(name));
+        let lookup = |input: &RailInput| -> Result<RailReference, CommandError> {
+            match input {
+                RailInput::Name(name) => Ok(RailReference {
+                    target: Target::Curve(extrude_along_curve::resolve_curve_along_curve_path(
+                        doc,
+                        &[],
+                        Some(name),
+                    )?),
+                    face: None,
+                }),
+                RailInput::Edge(reference) => Ok(*reference),
+            }
+        };
         let rails = [lookup(first)?, lookup(second)?];
-        if rails[0] == rails[1] {
+        if rails[0].target == rails[1].target {
             return Err(CommandError::Usage(USAGE));
         }
         Ok(Some(rails))

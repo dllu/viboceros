@@ -63,6 +63,7 @@ pub(super) fn prepare_placement(
     second: &NurbsCurve,
     sections: &[NurbsCurve],
     options: TwoRailSweepOptions<'_>,
+    respect_profile_order: bool,
     tolerance: Tolerance,
 ) -> Result<Placement, Error> {
     let ends = options.ends;
@@ -175,7 +176,12 @@ pub(super) fn prepare_placement(
         )
     } else {
         (
-            retain_sections(&mut prepared, &mut rows, ends.is_empty())?,
+            retain_sections(
+                &mut prepared,
+                &mut rows,
+                ends.is_empty(),
+                respect_profile_order,
+            )?,
             false,
         )
     };
@@ -251,6 +257,7 @@ fn retain_sections(
     rails: &mut [PreparedRail; 2],
     rows: &mut [Section],
     orient_rails: bool,
+    respect_profile_order: bool,
 ) -> Result<bool, Error> {
     if let [row] = rows {
         let [a, b] = row.stations;
@@ -280,9 +287,11 @@ fn retain_sections(
     let a = rows[0].stations;
     let b = rows.last().unwrap().stations;
     let on_ends = (0..2).all(|i| a[i].min(b[i]) == 0. && a[i].max(b[i]) == 1.);
-    if orient_rails && !on_ends && rows.windows(2).all(|r| r[0].stations[0] > r[1].stations[0]) {
-        // For a deliberately reversed set of partial profiles, begin the
-        // shortened sweep at the first profile picked.
+    if orient_rails
+        && (!on_ends || respect_profile_order)
+        && rows.windows(2).all(|r| r[0].stations[0] > r[1].stations[0])
+    {
+        // The shortened sweep and the matching end options follow pick order.
         rails[0].reverse(rows, 0)?;
     }
     rows.sort_by(|a, b| a.stations[0].total_cmp(&b.stations[0]));

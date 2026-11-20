@@ -5,7 +5,12 @@ use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Natural|Automatic] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
+const USAGE: &str = concat!(
+    "Sweep2 [Rail1Name=name|Rail1Edge=id,index[,face]] [Rail2Name=name|Rail2Edge=id,index[,face]] ",
+    "[Natural|Automatic] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] ",
+    "[EdgeContinuityA=Position|Tangency|Curvature] [EdgeContinuityB=Position|Tangency|Curvature] [StartShape=Yes|No] [EndShape=Yes|No] ",
+    "[StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)"
+);
 const SLASH_USAGE: &str = "Sweep2 accepts up to 32 options of the form Slash=x,y,z/x,y,z";
 pub const MAX_SECTIONS: usize = 32;
 pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
@@ -13,8 +18,10 @@ pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
 mod options;
 mod rail;
 use crate::chain_selection::Target;
-pub use options::{Options, SectionFit, ShapeOptions};
-pub use rail::Rail;
+pub use options::{
+    EDGE_CONTINUITY_NAMES, EDGE_END_NAMES, EdgeOptions, Options, SectionFit, ShapeOptions,
+};
+pub use rail::{Rail, RailReference};
 pub(super) struct SweepTwoRailsCommand;
 
 impl Command for SweepTwoRailsCommand {
@@ -66,15 +73,18 @@ impl Source {
     ) -> Result<Self, CommandError> {
         let rails = match options.explicit_rails(doc)? {
             Some(rails) => rails,
-            None if selected.len() >= 2 => [selected[0], selected[1]],
+            None if selected.len() >= 2 => [selected[0], selected[1]].map(|id| RailReference {
+                target: Target::Curve(id),
+                face: None,
+            }),
             None => return Err(CommandError::Usage(USAGE)),
         };
-        if rails[0] == rails[1] {
+        if rails[0].target == rails[1].target {
             return Err(CommandError::Usage(USAGE));
         }
         let rails = [
-            Rail::capture(doc, Target::Curve(rails[0]))?,
-            Rail::capture(doc, Target::Curve(rails[1]))?,
+            Rail::capture_reference(doc, rails[0])?,
+            Rail::capture_reference(doc, rails[1])?,
         ];
         let source = Self::with_rails(doc, rails, selected)?;
         if options.natural_seams {
@@ -108,10 +118,14 @@ impl Source {
         {
             return Err(CommandError::Usage("Sweep2: select distinct rail pieces"));
         }
+        let rail_owners = rail_targets
+            .iter()
+            .map(|target| target.object())
+            .collect::<std::collections::BTreeSet<_>>();
         let sections = sections
             .iter()
             .copied()
-            .filter(|id| !rail_targets.contains(&Target::Curve(*id)))
+            .filter(|id| !rail_owners.contains(id))
             .take(MAX_SECTIONS + 1)
             .map(|id| {
                 doc.object(id)
@@ -233,13 +247,7 @@ impl Source {
             return Err(CommandError::Usage(USAGE));
         }
         let sections = self.fitted_profiles(shape.fit, tolerance)?;
-        let surface = viboceros_smlib::two_rail_sweep_surface_with_options(
-            self.rails[0].curve(),
-            self.rails[1].curve(),
-            &sections,
-            shape.native(slashes),
-            tolerance,
-        )?;
+        let surface = self.swept_surface(&sections, shape, slashes, tolerance)?;
         let [mut u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
         if surface.is_rational()
             && !sections[0].is_closed()?
@@ -267,6 +275,52 @@ impl Source {
         }
         Ok(Brep::try_surface_grid(&surface, &u, &v, tolerance)?)
     }
+
+    fn swept_surface(
+        &self,
+        sections: &[NurbsCurve],
+        shape: ShapeOptions,
+        slashes: &[[Point3; 2]],
+        tolerance: Tolerance,
+    ) -> Result<NurbsSurface, CommandError> {
+        let [first, second] = self.rails.each_ref().map(Rail::curve);
+        if !shape.edge.active() {
+            return Ok(viboceros_smlib::two_rail_sweep_surface_with_options(
+                first,
+                second,
+                sections,
+                shape.native(slashes),
+                tolerance,
+            )?);
+        }
+        if !self.rails.iter().any(Rail::has_surface_support) {
+            return Err(CommandError::Usage(
+                "Sweep2 edge continuity needs a surface-edge rail with a supporting face",
+            ));
+        }
+        let supports = self.rails.each_ref().map(|rail| {
+            rail.supports()
+                .iter()
+                .map(|edge| viboceros_smlib::TwoRailEdgeSupport {
+                    guide: edge.guide.curve(),
+                    surface: edge.target.surface.as_ref(),
+                })
+                .collect::<Vec<_>>()
+        });
+        let matching = viboceros_smlib::TwoRailSweepMatching {
+            supports: supports.each_ref().map(Vec::as_slice),
+            continuity: shape.edge.continuity,
+            adjust_ends: shape.edge.adjust_ends,
+        };
+        Ok(viboceros_smlib::two_rail_sweep_surface_matched(
+            first,
+            second,
+            sections,
+            shape.native(slashes),
+            matching,
+            tolerance,
+        )?)
+    }
 }
 
 fn profile_closure(profiles: &[NurbsCurve]) -> Result<Option<bool>, CommandError> {
@@ -290,6 +344,9 @@ pub fn point_count(ends: SweepEndPoints) -> usize {
 
 #[cfg(test)]
 mod closed_tests;
+
+#[cfg(test)]
+mod edge_tests;
 
 #[cfg(test)]
 mod profile_loop_tests;
