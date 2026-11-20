@@ -3,6 +3,7 @@ use super::*;
 use crate::{ArcLengthSampler, spline_collocation::Axis};
 
 mod tilt;
+pub(super) mod trimmed;
 
 struct Profile {
     section: SweepSection,
@@ -167,6 +168,7 @@ impl Model {
     pub(super) fn fit<E: From<GeometryError>>(
         &self,
         operations: &mut SweepSurfaceOperations<'_, E>,
+        untrimmed: bool,
     ) -> Result<Vec<NurbsSurface>, E> {
         let width = self.profiles[0].outgoing.len();
         let mut panels = Vec::with_capacity(self.legs.len());
@@ -196,9 +198,9 @@ impl Model {
             let mut samples = axis
                 .stations
                 .iter()
-                .map(|s| self.sample(leg, s.parameter, interior))
+                .map(|s| self.sample(leg, s.parameter, interior, untrimmed))
                 .collect::<Result<Vec<_>, _>>()?;
-            if let Some(previous) = shared.take() {
+            if untrimmed && let Some(previous) = shared.take() {
                 if !matching_sections(&previous, &samples[0], self.tolerance)? {
                     return Err(invalid(
                         "the rail frames yield different cross sections at the miter",
@@ -207,7 +209,9 @@ impl Model {
                 }
                 samples[0] = previous;
             }
-            shared = samples.last().cloned();
+            if untrimmed {
+                shared = samples.last().cloned();
+            }
             let weights = vec![1.; samples.len()];
             let panel = basis::interpolate_sections(axis, &samples, &weights, operations)?;
             weights::require_positive_denominator(&panel)?;
@@ -229,6 +233,7 @@ impl Model {
         leg: &Leg,
         s: Real,
         interior: &[Profile],
+        untrimmed: bool,
     ) -> Result<NurbsCurve, GeometryError> {
         let next = self.profiles.partition_point(|p| p.distance < s);
         let pinned = self
@@ -264,9 +269,12 @@ impl Model {
             .first()
             .zip(interior.last())
             .map(|(a, b)| [a.distance, b.distance]);
-        let normal = leg
-            .warping
-            .normal(tangent, s, [lo, hi], authored_interval)?;
+        let normal = if untrimmed {
+            leg.warping
+                .normal(tangent, s, [lo, hi], authored_interval)?
+        } else {
+            tangent
+        };
         let divisor = tangent.dot(normal)?;
         if divisor <= 64. * Real::EPSILON {
             return Err(invalid("inferred miter plane is parallel to a rail leg"));

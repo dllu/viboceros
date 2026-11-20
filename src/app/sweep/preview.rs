@@ -183,17 +183,14 @@ impl VibocerosApp {
                 return;
             }
         };
-        let faces = brep.faces().len();
         match edit_document_transaction(&mut self.document, "Sweep1", |document| {
-            document.add_geometry(Geometry::Brep(brep))
+            viboceros_command::sweep::add_result(document, brep, sections)
         }) {
-            Ok(_) => {
+            Ok(message) => {
                 self.remember_sweep_options(&options);
                 self.sweep_session = None;
                 self.object_prompt = None;
-                self.push_log(format!(
-                    "Swept {sections} sections into one BRep with {faces} faces"
-                ));
+                self.push_log(message);
             }
             Err(error) => {
                 self.command_file.fail_dispatch();

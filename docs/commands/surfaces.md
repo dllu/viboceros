@@ -149,6 +149,9 @@ miter modes. You can add sections between corners or use a point end.
 Turn on `UntrimmedMiters` to infer missing corner sections with varying
 profiles. If two profiles bracket the corners on an open sweep, switching
 between Local and Global blending updates the inferred sections in the preview.
+Trimmed mode extends adjacent surfaces and joins them along a complete
+intersection. When a miter cannot be joined, the preview shows the extended
+pieces and Enter adds them together in one undo step.
 
 A Local sweep around a polygonal loop previews the final leg when `Closed`
 is enabled. When every corner has a profile and the corner seam profile is
@@ -181,8 +184,7 @@ See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular
 rail with one profile. General closed-rail holonomy correction, curved rail
 miters, Global blending on polygonal rails with three or more profiles or an
-authored corner, trimmed miters across varying profiles without a corner
-section, and general branch and seam choices remain unimplemented.
+authored corner, and general branch and seam choices remain unimplemented.
 Automatic placement follows the qualified interval and direction
 policy linked above.
 

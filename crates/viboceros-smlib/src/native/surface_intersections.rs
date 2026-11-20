@@ -194,6 +194,21 @@ fn propose(
     Ok(Some(output))
 }
 
+// Sweep needs the paired witnesses when it trims each support at the common
+// edge. The strip construction certifies them against the original surfaces.
+pub(super) fn sweep_miter_intersections(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionProposal>, Error> {
+    match propose(first, second, tolerance, tolerance.absolute() * 0.25) {
+        Ok(events) => Ok(events.unwrap_or_default()),
+        // A failed kernel solve leaves the two extended sweep pieces.
+        Err(Error::Kernel(_)) => Ok(Vec::new()),
+        Err(error) => Err(error),
+    }
+}
+
 /// Preserve measured analytic definitions; general curved pairs enter the
 /// native producer when the portable analytic dispatcher has no implementation.
 pub fn modeling_surface_intersection_events(

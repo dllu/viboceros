@@ -1,6 +1,6 @@
 //! Local section blending across straight rail segments with authored corner profiles.
 use super::*;
-use crate::Brep;
+use crate::{Brep, SurfaceSurfaceIntersectionProposal};
 
 mod inferred;
 mod seam;
@@ -24,6 +24,11 @@ impl Sweep1 {
         tolerance: Tolerance,
         prepare: &mut impl FnMut(&[NurbsCurve], usize, GeometryError) -> Result<Vec<NurbsCurve>, E>,
         operations: &mut SweepSurfaceOperations<'_, E>,
+        intersect: &mut impl FnMut(
+            &NurbsSurface,
+            &NurbsSurface,
+            Tolerance,
+        ) -> Result<Vec<SurfaceSurfaceIntersectionProposal>, E>,
     ) -> Result<Option<Brep>, E> {
         let SweepProfileMiterOptions {
             ends,
@@ -157,7 +162,7 @@ impl Sweep1 {
                 tolerance,
             )?;
             if untrimmed {
-                return Ok(Some(join_panels(&model.fit(operations)?, tolerance)?));
+                return Ok(Some(join_panels(&model.fit(operations, true)?, tolerance)?));
             }
             if !closed
                 && ends.is_empty()
@@ -172,10 +177,9 @@ impl Sweep1 {
                     tolerance,
                 )?);
             }
-            return Err(invalid(
-                "use UntrimmedMiters=Yes when varying profiles span a rail corner",
-            )
-            .into());
+            let panels = model.fit(operations, false)?;
+            return inferred::trimmed::sew(panels, &hinges, seam.is_some(), tolerance, intersect)
+                .map(Some);
         }
         let mut panels = Vec::with_capacity(kinks.len() + 3);
         let mut first = 0;

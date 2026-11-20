@@ -85,10 +85,30 @@ impl Command for SweepCommand {
         let options = Options::parse(arguments)?;
         let source = Source::capture(document, &selected_ids(document)?, &options)?;
         let (brep, section_count) = source.build(&options, document.tolerance())?;
-        let count = brep.faces().len();
-        document.add_geometry(Geometry::Brep(brep))?;
+        Ok(add_result(document, brep, section_count)?)
+    }
+}
+
+/// Add each connected sweep component within the caller's command transaction.
+pub fn add_result(
+    document: &mut Document,
+    brep: Brep,
+    sections: usize,
+) -> Result<String, DocumentError> {
+    let faces = brep.faces().len();
+    let parts = brep.into_edge_connected_components(document.tolerance())?;
+    let count = parts.len();
+    // Rhino emits the separate pieces from the end of the rail back to the start.
+    for part in parts.into_iter().rev() {
+        document.add_geometry(Geometry::Brep(part))?;
+    }
+    if count == 1 {
         Ok(format!(
-            "Swept {section_count} sections into one BRep with {count} faces"
+            "Swept {sections} sections into one BRep with {faces} faces"
+        ))
+    } else {
+        Ok(format!(
+            "Swept {sections} sections into {count} separate BReps with {faces} faces. Some miters could not be joined."
         ))
     }
 }

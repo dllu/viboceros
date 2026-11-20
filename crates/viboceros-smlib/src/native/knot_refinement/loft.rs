@@ -138,6 +138,7 @@ pub fn sweep_profile_miters(
             tolerance,
             &mut prepare_sweep_sections,
             operations,
+            &mut super::super::surface_intersections::sweep_miter_intersections,
         )
     })
 }

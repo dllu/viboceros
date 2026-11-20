@@ -391,3 +391,120 @@ fn sweep_miters_infer_a_rational_miter_between_circular_profiles() {
     }
     assert!((brep.area(document.tolerance()).unwrap() - 78.6891927).abs() < 3e-4);
 }
+
+#[test]
+fn sweep_miters_trim_a_varying_width_and_keep_extended_components_when_the_cut_is_partial() {
+    for (tip, areas, topology, seam_tip) in [
+        (
+            "2,5,1",
+            &[19.39848929][..],
+            (2, 7, 6),
+            Some(point(2.37938393, 1.71435433, 1.)),
+        ),
+        ("8,5,1", &[19.82641659][..], (4, 11, 8), None),
+        ("3.5,5,2", &[16.93826831, 15.45398343][..], (2, 7, 6), None),
+    ] {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Polyline 0,0,0 5,0,0 5,5,0".to_owned(),
+            "Line 0,0,0 0,1.5,1".to_owned(),
+            format!("Line 5,5,0 {tip}"),
+        ] {
+            registry.execute(&mut document, &command).unwrap();
+        }
+        let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        document.clear_history().unwrap();
+        let sources = document.objects().cloned().collect::<Vec<_>>();
+        let message = registry
+            .execute(&mut document, "Sweep1 UntrimmedMiters=No")
+            .unwrap();
+        let parts = document.objects().skip(sources.len()).collect::<Vec<_>>();
+        assert_eq!(parts.len(), areas.len(), "{tip} {message}");
+        for (object, &expected) in parts.iter().zip(areas) {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("expected a Sweep1 BRep");
+            };
+            assert_eq!(
+                (
+                    brep.faces().len(),
+                    brep.edges().len(),
+                    brep.vertices().len()
+                ),
+                topology,
+                "{tip}"
+            );
+            if let Some(seam_tip) = seam_tip {
+                assert!(
+                    brep.edges()
+                        .iter()
+                        .zip(brep.edge_use_counts())
+                        .any(|(edge, uses)| {
+                            if uses != 2 {
+                                return false;
+                            }
+                            let curve = edge.curve();
+                            let domain = curve.domain();
+                            [*domain.start(), *domain.end()].into_iter().any(|t| {
+                                curve.evaluate(t).unwrap().distance_to(seam_tip).unwrap() < 3e-5
+                            })
+                        })
+                );
+            }
+            assert_eq!(brep.edge_connected_face_components().len(), 1);
+            let actual = brep.area(document.tolerance()).unwrap();
+            assert!(
+                (actual - expected).abs() < 2e-4,
+                "{tip} {actual} != {expected}"
+            );
+        }
+        assert_eq!(document.undo_label(), Some("Sweep1"));
+        document.undo().unwrap();
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), sources);
+    }
+}
+
+#[test]
+fn sweep_miters_trim_an_inferred_corner_and_sew_the_polygonal_seam() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in [
+        "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0",
+        "Line 0,0,0 0,1,1",
+        "Line 5,0,0 4,1,1",
+        "Line 0,5,0 1,4,1",
+    ] {
+        registry.execute(&mut document, command).unwrap();
+    }
+    let ids = document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    let message = registry
+        .execute(&mut document, "Sweep1 Closed=Yes UntrimmedMiters=No")
+        .unwrap();
+    let outputs = document
+        .objects()
+        .filter_map(|object| match object.geometry() {
+            Geometry::Brep(brep) => Some(brep),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(outputs.len(), 1, "{message}");
+    let brep = outputs[0];
+    assert_eq!(
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len()
+        ),
+        (4, 12, 8)
+    );
+    assert!((brep.area(document.tolerance()).unwrap() - 22.6274191).abs() < 2e-4);
+}

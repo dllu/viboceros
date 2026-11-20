@@ -159,9 +159,13 @@ When profiles bracket a polygonal rail corner, Rhino's untrimmed sweep
 interpolates the cross section by arc length and tilts the section plane toward
 the miter bisector. The regression checks planar and spatial miters, mixed
 authored and inferred corners, profiles inside a rail leg, and live switching
-between Local and Global for two profiles. Trimmed mode leaves separate
-extended pieces in the tapered fixtures and joins matching profiles in the
-constant-width fixture.
+between Local and Global for two profiles.
+
+In the trimmed fixtures, changing width produces a joined miter, including
+the case with faces extending outside the rail corner. Changing height can
+leave two extended BReps. The fixture checks the component areas, topology,
+and a shared-edge endpoint against Rhino. In review, switching back to the
+trimmed draft restores the same extended pieces that Enter commits.
 
 On polygonal loops with a profile at each corner, Rhino rotates the return
 profile using the transported rail frame. The planar and spatial fixtures
@@ -174,9 +178,9 @@ length also changed with the neighboring profile radii.
 ## Remaining work and performance
 
 General closed-rail holonomy correction, curved rail miters, Global miters
-with three or more profiles or an authored corner, trimmed miters across
-varying profiles without a corner section, trimmed loops with a closed seam
-profile, complete unrefitted multi-profile compatibility, automatic
+with three or more profiles or an authored corner, trimmed loops with a
+closed seam profile and authored corner sections, general intersection
+selection for complex miters, complete unrefitted multi-profile compatibility, automatic
 branch and seam alignment, and further Rhino section-refit options remain open.
 Section rebuilding now has
 [separate complete-image checks](rebuilding.md). These are explicit limits,
