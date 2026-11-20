@@ -201,6 +201,7 @@ mod distance;
 mod distribute;
 mod domain;
 mod draft_angle_analysis;
+mod draft_worker;
 mod drafting_controls;
 mod drafting_input;
 mod edge_analysis;

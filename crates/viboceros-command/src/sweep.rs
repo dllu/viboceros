@@ -1,4 +1,5 @@
 use super::*;
+use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
 const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
@@ -75,9 +76,79 @@ impl Command for SweepCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = Options::parse(arguments)?;
+        let source = Source::capture(document, &selected_ids(document)?, &options)?;
+        let (brep, section_count) = source.build(&options, document.tolerance())?;
+        let count = brep.faces().len();
+        document.add_geometry(Geometry::Brep(brep))?;
+        Ok(format!(
+            "Swept {section_count} sections into one BRep with {count} faces"
+        ))
+    }
+}
+
+/// Capture the ordered inputs once so drafting and command execution can use
+/// the same sweep construction without preview edits to the document.
+#[derive(Debug)]
+pub struct Source {
+    rail: GeometrySnapshot,
+    profiles: Vec<GeometrySnapshot>,
+}
+
+impl Source {
+    pub fn capture(
+        document: &Document,
+        selected: &[ObjectId],
+        options: &Options,
+    ) -> Result<Self, CommandError> {
+        let first = *selected.first().ok_or(CommandError::NoObjectsSelected)?;
+        let rail_id = if let Some(id) = options.explicit_rail(document)? {
+            id
+        } else if options.parameters.is_some() {
+            extrude_along_curve::resolve_curve_along_curve_path(document, selected, None)?
+        } else {
+            first
+        };
+        if !document.is_object_selectable(rail_id) {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let rail = document
+            .object(rail_id)
+            .filter(|object| object.geometry().curve_ref().is_some())
+            .ok_or(CommandError::Usage(USAGE))?;
+        let profiles = selected
+            .iter()
+            .copied()
+            .filter(|id| *id != rail_id)
+            .map(|id| {
+                document
+                    .object(id)
+                    .filter(|object| object.geometry().curve_ref().is_some())
+                    .map(|object| object.geometry_snapshot().clone())
+                    .ok_or(CommandError::Usage(USAGE))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if profiles.is_empty()
+            || options
+                .parameters
+                .as_ref()
+                .is_some_and(|p| profiles.len() != p.len())
+        {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(Self {
+            rail: rail.geometry_snapshot().clone(),
+            profiles,
+        })
+    }
+
+    /// Produce the exact sweep and the number of real profiles used.
+    pub fn build(
+        &self,
+        options: &Options,
+        tolerance: Tolerance,
+    ) -> Result<(Brep, usize), CommandError> {
         let Options {
-            rail_name,
-            rail_id,
             parameters,
             roadlike,
             axis,
@@ -85,62 +156,37 @@ impl Command for SweepCommand {
             refit,
             rebuild_point_count,
             ends,
-        } = Options::parse(arguments)?;
-        let rail_name = rail_name.as_deref();
-        let selected = selected_ids(document)?;
-        let rail_id = if let Some(id) = rail_id {
-            id
-        } else if rail_name.is_some() || parameters.is_some() {
-            extrude_along_curve::resolve_curve_along_curve_path(document, &selected, rail_name)?
-        } else {
-            selected[0]
-        };
-        if !document.is_object_selectable(rail_id) {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let rail = document
-            .object(rail_id)
-            .unwrap()
-            .geometry()
-            .curve_ref()
-            .ok_or(CommandError::Usage(USAGE))?;
-        let profiles = selected
-            .into_iter()
-            .filter(|id| *id != rail_id)
-            .collect::<Vec<_>>();
-        if profiles.is_empty()
-            || parameters
-                .as_ref()
-                .is_some_and(|p| profiles.len() != p.len())
-        {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let curves = profiles
+            ..
+        } = options;
+        let ends = *ends;
+        let rail = self.rail.curve_ref().expect("captured Sweep1 rail");
+        let curves = self
+            .profiles
             .iter()
-            .map(|id| {
-                let curve = document
-                    .object(*id)
-                    .unwrap()
-                    .geometry()
+            .map(|profile| {
+                let curve = profile
                     .nurbs_curve_representation()?
                     .ok_or(CommandError::Usage(USAGE))?;
                 Ok(curve)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
         let (automatic_rail, sections) = if let Some(parameters) = parameters {
+            if parameters.len() != curves.len() {
+                return Err(CommandError::Usage(USAGE));
+            }
             (
                 None,
                 curves
                     .into_iter()
-                    .zip(parameters)
+                    .zip(parameters.iter().copied())
                     .map(|(curve, parameter)| SweepSection { parameter, curve })
                     .collect(),
             )
         } else {
             let (rail, sections) = if ends.is_empty() {
-                placement::sections(rail, curves, document.tolerance())?
+                placement::sections(rail, curves, tolerance)?
             } else {
-                placement::sections_with_point_ends(rail, curves, document.tolerance())?
+                placement::sections_with_point_ends(rail, curves, tolerance)?
             };
             (Some(rail), sections)
         };
@@ -162,15 +208,15 @@ impl Command for SweepCommand {
         });
         let style = if roadlike.unwrap_or(false) {
             match axis {
-                Some(axis) => SweepFrameStyle::Roadlike(axis),
-                None => SweepFrameStyle::roadlike_default(rail, document.tolerance())?,
+                Some(axis) => SweepFrameStyle::Roadlike(*axis),
+                None => SweepFrameStyle::roadlike_default(rail, tolerance)?,
             }
         } else {
             SweepFrameStyle::Freeform
         };
         let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
-        let sections = if rebuild_point_count > 1 {
-            rebuild_sections(&sections, rebuild_point_count, document.tolerance())?
+        let sections = if *rebuild_point_count > 1 {
+            rebuild_sections(&sections, *rebuild_point_count, tolerance)?
         } else {
             sections
         };
@@ -179,8 +225,7 @@ impl Command for SweepCommand {
         } else {
             SweepBlend::Local
         };
-        let mut sweep =
-            model_with_point_ends(rail, &sections, ends, style, blend, document.tolerance())?;
+        let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
         if full_rail_anchor {
             sweep = sweep.try_on_full_rail()?;
         }
@@ -188,14 +233,9 @@ impl Command for SweepCommand {
             &sweep,
             refit.unwrap_or(false) || automatic_partial || !ends.is_empty(),
         )?;
-        let [u, v] = surface.sampled_kink_parameters(document.tolerance().angular())?;
-        let brep = Brep::try_surface_grid(&surface, &u, &v, document.tolerance())?;
-        let count = brep.faces().len();
-        document.add_geometry(Geometry::Brep(brep))?;
-        Ok(format!(
-            "Swept {} sections into one BRep with {count} faces",
-            sections.len()
-        ))
+        let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        let brep = Brep::try_surface_grid(&surface, &u, &v, tolerance)?;
+        Ok((brep, sections.len()))
     }
 }
 

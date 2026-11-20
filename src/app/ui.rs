@@ -1429,6 +1429,13 @@ impl VibocerosApp {
             .filter(|session| edge_handle_input && !session.selecting())
             .map(|session| &session.editor);
         let loft = self.loft_prompt.as_ref().filter(|_| edge_handle_input);
+        let surface_draft_wires = if edge_handle_input {
+            loft.map(loft::Prompt::preview_wires)
+                .or_else(|| self.sweep_session.as_ref().map(sweep::Session::preview_wires))
+                .unwrap_or(&[])
+        } else {
+            &[]
+        };
         let seam_markers = curve_seam_editor.map(curve_seam::Editor::markers)
             .or_else(|| loft.map(loft::Prompt::seam_markers));
         let surface_seam = self.surface_seam_session.as_ref()
@@ -1903,7 +1910,7 @@ impl VibocerosApp {
                                 curve_seam_editor.map(|editor| editor.overlay(markers, index))
                                     .or_else(|| loft?.seam_overlay(markers, index))
                             }),
-                            loft_wires: loft.map_or(&[], loft::Prompt::preview_wires),
+                            surface_draft_wires,
                             surface_seam,
                             current_end_marker,
                             end_marker_color,
@@ -2064,6 +2071,9 @@ impl VibocerosApp {
             ui.ctx().request_repaint();
         }
         self.update_loft_pole_preview(apex_hover, ui.ctx());
+        if edge_handle_input {
+            self.update_sweep_preview(apex_hover, ui.ctx());
+        }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());
         self.update_curve_extend_preview(apex_hover, ui.ctx());

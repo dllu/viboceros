@@ -1,6 +1,16 @@
-//! Keep at most one Loft preview solve in flight per interactive stage.
+//! Keep at most one preview solve in flight per interactive stage.
 use super::egui;
 use std::sync::mpsc;
+use viboceros_geometry::{Brep, NurbsCurve, Tolerance};
+
+pub(super) fn wireframe(brep: &Brep, tolerance: Tolerance) -> Vec<NurbsCurve> {
+    brep.wireframe_curves(1, tolerance).unwrap_or_else(|_| {
+        brep.edges()
+            .iter()
+            .map(|edge| edge.curve().clone())
+            .collect()
+    })
+}
 
 #[derive(Debug)]
 pub(super) struct Worker<K, T> {
@@ -20,6 +30,10 @@ impl<K, T> Default for Worker<K, T> {
 impl<K: PartialEq, T: Send + 'static> Worker<K, T> {
     pub(super) fn latest(&self) -> Option<&T> {
         self.result.as_ref()?.1.as_ref()
+    }
+
+    pub(super) fn clear_result(&mut self) {
+        self.result = None;
     }
 
     pub(super) fn take(&mut self, request: &K) -> Option<T> {
@@ -90,7 +104,7 @@ impl<K: PartialEq, T: Send + 'static> Worker<K, T> {
         let worker_context = context.clone();
         let (send, receive) = mpsc::channel();
         if std::thread::Builder::new()
-            .name("loft-preview".into())
+            .name("surface-preview".into())
             .spawn(move || {
                 if send.send(solve()).is_ok() {
                     worker_context.request_repaint();

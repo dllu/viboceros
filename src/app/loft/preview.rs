@@ -76,12 +76,7 @@ impl Profiles {
 
 impl Draft {
     pub(super) fn new(brep: Brep, tolerance: Tolerance) -> Self {
-        let wires = brep.wireframe_curves(1, tolerance).unwrap_or_else(|_| {
-            brep.edges()
-                .iter()
-                .map(|edge| edge.curve().clone())
-                .collect()
-        });
+        let wires = draft_worker::wireframe(&brep, tolerance);
         Self { brep, wires }
     }
 }

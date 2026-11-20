@@ -5,14 +5,23 @@ use viboceros_command::sweep::Options;
 use viboceros_document::GeometrySnapshot;
 
 mod input;
+mod preview;
 mod selection;
 #[cfg(test)]
 mod tests;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum End {
     Start,
     Finish,
+}
+impl End {
+    fn set_point(self, options: &mut Options, point: Point3) {
+        match self {
+            Self::Start => options.ends.start = Some(point),
+            Self::Finish => options.ends.end = Some(point),
+        }
+    }
 }
 #[derive(Clone, Debug)]
 struct State {
@@ -21,12 +30,13 @@ struct State {
     rail: Option<(ObjectId, GeometrySnapshot)>,
     finished: bool,
 }
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub(super) struct Session {
     state: State,
     undo: Vec<State>,
     picking: Option<End>,
     value: Option<&'static str>,
+    preview: preview::Preview,
 }
 impl Session {
     pub(super) fn selecting(&self) -> bool {
@@ -86,6 +96,7 @@ impl VibocerosApp {
             undo: vec![],
             picking: None,
             value: None,
+            preview: Default::default(),
         });
     }
     fn sweep_reference(&self, options: &Options) -> Option<(ObjectId, GeometrySnapshot)> {
@@ -135,7 +146,8 @@ impl VibocerosApp {
         }
     }
     fn sync_sweep_selection(&mut self) {
-        let p = self.sweep_session.as_ref().unwrap();
+        let p = self.sweep_session.as_mut().unwrap();
+        p.preview.invalidate();
         let ids = p.state.sources.iter().map(|(id, _)| *id).collect();
         let text = format!("Sweep1 {}", p.state.options.arguments());
         self.object_prompt.as_mut().unwrap().command_override = Some(text);
@@ -147,6 +159,21 @@ impl VibocerosApp {
             self.push_log("Select a rail and at least one Sweep1 profile".into());
             return;
         }
+        if !self.validate_sweep_sources() {
+            return;
+        }
+        self.sync_sweep_selection();
+        let session = self.sweep_session.take().unwrap();
+        let pending = self.object_prompt.take().unwrap();
+        if !self.try_execute_command(&format!("Sweep1 {}", session.state.options.arguments())) {
+            self.sweep_session = Some(session);
+            self.object_prompt = Some(pending);
+            self.log_sweep_input();
+        }
+    }
+
+    fn validate_sweep_sources(&mut self) -> bool {
+        let p = self.sweep_session.as_ref().unwrap();
         let valid = p
             .state
             .sources
@@ -165,16 +192,9 @@ impl VibocerosApp {
         if !valid || !same_reference {
             self.cancel_object_prompt(false);
             self.push_log("Sweep1 sources changed; select them again".into());
-            return;
+            return false;
         }
-        self.sync_sweep_selection();
-        let session = self.sweep_session.take().unwrap();
-        let pending = self.object_prompt.take().unwrap();
-        if !self.try_execute_command(&format!("Sweep1 {}", session.state.options.arguments())) {
-            self.sweep_session = Some(session);
-            self.object_prompt = Some(pending);
-            self.log_sweep_input();
-        }
+        true
     }
     pub(super) fn clear_sweep_input(&mut self) {
         self.sweep_session = None;

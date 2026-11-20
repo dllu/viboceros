@@ -49,6 +49,7 @@ impl VibocerosApp {
         }
         let p = self.sweep_session.as_mut().unwrap();
         p.picking = Some(if start { End::Start } else { End::Finish });
+        p.preview.clear_wires();
         p.value = None;
         self.active_command = Some(InteractiveCommand::SweepPoint);
         self.drafting_plane = Some(self.viewports[self.active_viewport].construction_plane());
@@ -62,15 +63,15 @@ impl VibocerosApp {
         );
     }
     pub(in crate::app) fn accept_sweep_point(&mut self, point: Point3) -> Option<bool> {
-        let p = self.sweep_session.as_mut()?;
-        let end = p.picking?;
+        let end = self.sweep_session.as_ref()?.picking?;
+        if !self.validate_sweep_sources() {
+            return Some(false);
+        }
+        let p = self.sweep_session.as_mut().unwrap();
         p.undo.push(p.state.clone());
-        match end {
-            End::Start => p.state.options.ends.start = Some(point),
-            End::Finish => {
-                p.state.options.ends.end = Some(point);
-                p.state.finished = true;
-            }
+        end.set_point(&mut p.state.options, point);
+        if end == End::Finish {
+            p.state.finished = true;
         }
         p.picking = None;
         self.active_command = None;

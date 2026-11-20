@@ -6,7 +6,6 @@ use viboceros_geometry::LoftStyle;
 use super::curve_seam::Editor;
 use crate::viewport::curve_seam::{Event, Marker};
 
-mod draft_worker;
 mod input;
 mod pole_preview;
 mod preview;

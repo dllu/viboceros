@@ -30,11 +30,13 @@ Escape cancels. Append `Point` to the initial command to open the getter with
 preselected curves. A named rail also permits a start pole before profile picks.
 
 Point getters use ordinary snaps, coordinate filters, units, relative coordinates,
-and transparent CPlane changes. Local `Undo` revises a pick, point end, or option
-without consuming model undo/redo. Options such as `RefitRail` and `Parameters`
-accept either a following value or `name=value`. Invalid options and failed
-construction keep the picker editable. Changed or unavailable sources cancel
-before construction. Temporary curve picks preserve `SelPrev` and ignore groups.
+and transparent CPlane changes. With a rail and profile selected, the wire
+preview shows the provisional point end at the resolved cursor. Local `Undo`
+revises a pick, point end, or option without consuming model undo/redo. Options
+such as `RefitRail` and `Parameters` accept a following value or `name=value`.
+Invalid options and failed construction keep the picker editable. Changed or
+unavailable sources cancel the command. Temporary picks preserve `SelPrev` and
+ignore groups.
 
 [Interactive validation](picking-validation.json) records the picker, history, and
 portable/native regression checks.

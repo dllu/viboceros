@@ -119,7 +119,9 @@ the endpoint-weight normalization policy for rational profiles.
 `Sweep1` places profiles automatically: select the rail first, then profiles in
 traversal order, or specify `RailName=name` or `RailId=id` and select only profiles.
 Starting the command before selection opens the curve picker. `Point` picks a
-[start or end pole](../sweep1/point-ends.md) with snapping. See
+[start or end pole](../sweep1/point-ends.md) with snapping. The viewport previews
+the sweep as you change profiles or options, and follows the resolved cursor
+while you place a pole. See
 [automatic placement](../sweep1-placement.md) for interval and direction choices.
 
 Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous

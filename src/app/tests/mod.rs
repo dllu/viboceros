@@ -321,6 +321,7 @@ mod surface_interpolation;
 mod surface_interpolation_plane;
 mod surface_interpolation_plane_native;
 mod surface_point_grid;
+mod sweep_preview;
 mod sweep_two_rails;
 mod taper;
 mod transform_copy;

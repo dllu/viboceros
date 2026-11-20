@@ -394,7 +394,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) curve_seams: Option<curve_seam::Overlay<'a>>,
-    pub(crate) loft_wires: &'a [NurbsCurve],
+    pub(crate) surface_draft_wires: &'a [NurbsCurve],
     pub(crate) surface_seam: Option<surface_seam::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
@@ -590,7 +590,7 @@ impl Default for ViewportInput<'_> {
             face_packs: None,
             direction: None,
             curve_seams: None,
-            loft_wires: &[],
+            surface_draft_wires: &[],
             surface_seam: None,
             surface_apex: None,
             surface_extrusion: None,
@@ -2715,9 +2715,9 @@ impl Viewport {
                 None,
             );
         }
-        if !input.loft_wires.is_empty() {
+        if !input.surface_draft_wires.is_empty() {
             let mut projected = ProjectedPrimitives::default();
-            for curve in input.loft_wires {
+            for curve in input.surface_draft_wires {
                 self.add_projected_nurbs_curve(&mut projected, rect, curve);
             }
             let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
