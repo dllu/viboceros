@@ -61,6 +61,7 @@ impl VibocerosApp {
         self.validate_curve_connect();
         self.validate_curve_extend();
         self.validate_curve_match();
+        self.validate_curve_seams();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
@@ -116,6 +117,7 @@ impl VibocerosApp {
             && self.curve_connect_session.is_none()
             && self.curve_extend_session.is_none()
             && self.curve_match_session.is_none()
+            && self.curve_seam_session.is_none()
             && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
@@ -1417,6 +1419,11 @@ impl VibocerosApp {
         };
         let edge_blend_handle_mode = self.edge_handle_mode(&edge_placement_curves);
         let show_edge_blend_handles = self.show_edge_size_handles();
+        let curve_seam_session = self
+            .curve_seam_session
+            .as_ref()
+            .filter(|s| edge_handle_input && !s.selecting());
+        let seam_markers = curve_seam_session.map(curve_seam::Session::markers);
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1882,6 +1889,9 @@ impl VibocerosApp {
                             edge_parameters,
                             edge_distance_parameters,
                             end_markers: &end_markers,
+                            curve_seams: curve_seam_session
+                                .zip(seam_markers.as_deref())
+                                .map(|(session, markers)| session.overlay(markers, index)),
                             current_end_marker,
                             end_marker_color,
                             surface_corners: &tween_corner_controls,
@@ -1894,6 +1904,14 @@ impl VibocerosApp {
             }
             ui.advance_cursor_after_rect(available);
         });
+        if let Some((viewport, event)) = viewport_outputs
+            .iter()
+            .enumerate()
+            .find_map(|(viewport, output)| output.curve_seam_event.map(|event| (viewport, event)))
+            && self.apply_curve_seam_event(viewport, event)
+        {
+            ui.ctx().request_repaint();
+        }
         let parametric_menu_consumed = self.show_reparameterize_menu(ui, &viewport_outputs);
         let menu_action = self.show_selection_menu(ui);
         let mut menu_consumed = parametric_menu_consumed || menu_action.is_some();

@@ -546,6 +546,11 @@ impl VibocerosApp {
                 .selecting()
                 .then_some(ObjectSelectionFilter::Parametric);
         }
+        if self.curve_seam_session.is_some() && self.plane_prompt.is_none() {
+            return self
+                .selecting_curve_seams()
+                .then_some(ObjectSelectionFilter::ClosedCurves);
+        }
         if self.picking_curve_extend_boundaries() {
             return Some(ObjectSelectionFilter::Any);
         }

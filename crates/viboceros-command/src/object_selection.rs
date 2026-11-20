@@ -25,6 +25,7 @@ pub enum ObjectSelectionFilter {
     MeshPatchSources,
     MeshPatchHoles,
     LineCurves,
+    ClosedCurves,
     ClosedPolylines,
     Smooth,
     PolygonCount,
@@ -86,7 +87,7 @@ impl ObjectSelectionFilter {
                 geometry.curve_ref().is_some()
                     || matches!(geometry, Geometry::Point(_) | Geometry::PointCloud(_))
             }
-            Self::MeshPatchHoles => geometry
+            Self::ClosedCurves | Self::MeshPatchHoles => geometry
                 .curve_ref()
                 .is_some_and(|c| c.is_closed().unwrap_or(false)),
             Self::DeviationSources => !matches!(geometry, Geometry::BlockInstance(_)),

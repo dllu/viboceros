@@ -1,45 +1,6 @@
 use super::*;
 
 #[test]
-fn interactive_curve_seam_uses_one_location_pick_on_the_selected_closed_curve() {
-    let mut app = test_app();
-    app.execute_command("Circle 0,0 5");
-    let source = app.document.objects().next().unwrap().id();
-    app.document
-        .select_object(source, viboceros_document::SelectionMode::Replace)
-        .unwrap();
-
-    assert!(app.try_start_interactive_command("CrvSeam"));
-    assert_eq!(app.active_command, Some(InteractiveCommand::CrvSeam));
-    assert!(
-        app.command_log
-            .back()
-            .unwrap()
-            .contains("selected closed curve")
-    );
-    app.accept_drafting_point(point(0.0, 5.0, 0.0));
-
-    assert_eq!(app.active_command, None);
-    let Geometry::Circle(relocated) = app.document.object(source).unwrap().geometry() else {
-        panic!("seam relocation must retain the analytic circle")
-    };
-    assert!(
-        relocated
-            .evaluate(*relocated.domain().start())
-            .unwrap()
-            .is_near(point(0.0, 5.0, 0.0), app.document.tolerance(),)
-    );
-    assert!(app.document.is_selected(source));
-    assert_eq!(app.document.undo_label(), Some("CrvSeam"));
-    assert!(!app.try_start_interactive_command("CrvSeam Parameter=1"));
-
-    app.document.clear_selection();
-    assert!(app.try_start_interactive_command("CrvSeam"));
-    assert_eq!(app.active_command, None);
-    assert!(app.command_log.back().unwrap().contains("no objects"));
-}
-
-#[test]
 fn interactive_surface_seam_uses_one_location_pick_and_direction_options() {
     let mut app = test_app();
     app.execute_command("Sphere 0,0,0 5");

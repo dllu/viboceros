@@ -82,6 +82,7 @@ mod curve_completion;
 mod curve_connect;
 mod curve_extend;
 mod curve_match;
+mod curve_seam;
 mod curve_deviation;
 mod curve_input;
 mod curve_offset;

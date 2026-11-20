@@ -20,6 +20,7 @@ impl VibocerosApp {
         }
         if self.start_curve_connect(input)
             || self.start_curve_match(input)
+            || self.start_curve_seam(input)
             || self.start_curve_chamfer(input)
             || self.start_curve_fillet(input)
         {
@@ -1251,7 +1252,6 @@ impl VibocerosApp {
                     start: None,
                     clockwise: true,
                 },
-                "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
                 "trim" => InteractiveCommand::TrimCurve,
                 "move" | "m" => InteractiveCommand::Move { start: None },
@@ -1488,7 +1488,6 @@ impl VibocerosApp {
                 | InteractiveCommand::DupMeshEdge { .. }
                 | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
-                | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::Extend { .. }
                 | InteractiveCommand::ExtendSrf { .. }

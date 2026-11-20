@@ -27,7 +27,8 @@ fn nurbs_seam(curve: &NurbsCurve, parameter: Real) -> Result<NurbsCurve, Command
         .map_err(knot_refinement::native_geometry_error)
 }
 
-pub(super) fn seam(curve: &Curve3, parameter: Real) -> Result<Curve3, CommandError> {
+/// Relocate a closed seam through the command kernel without changing the document.
+pub fn seam(curve: &Curve3, parameter: Real) -> Result<Curve3, CommandError> {
     curve.try_change_closed_seam_with_nurbs(parameter, &mut nurbs_seam, &mut trim)
 }
 

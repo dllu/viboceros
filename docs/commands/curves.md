@@ -312,16 +312,22 @@ Straight curves and already-closed objects remain unchanged. `Tolerance=0`
 forces eligible endpoint edits and completes an arc's supporting circle while
 retaining its original parameter interval. See [closure rules and limits](../curve-editing.md).
 
-`CrvSeam point` relocates exactly one selected closed curve's start/end seam to
-the closest curve location; omit the point to pick that location in a viewport,
-or use `CrvSeam Parameter=value` for a native parameter. Circles, closed arcs,
-polylines, and polycurves retain their native representations; ellipses use their
-parameter-equivalent NURBS form. Finite parameters outside the old interval wrap
-around the closed curve. Shape and parameter-span length are preserved, and
-the output domain starts at the chosen parameter. Smooth periodic seams remain
-periodic and gain a control point when required, while an existing
-multiple-knot seam becomes Rhino's equivalent clamped form. Rational geometry,
-object identity, attributes, groups, selection, and undo are preserved.
+Run `CrvSeam` on one or more closed curves, or select them when prompted.
+Drag a seam marker to move it along its curve. The arrows show the traversal
+direction and the line connects the seam positions in selection order.
+`Flip` reverses the seam you pick. `Automatic` aligns the seams and directions,
+and `Natural` restores the original settings. `SnapToKnots=Yes` restricts NURBS
+seam placement to existing knots during drags and automatic alignment. Press
+Enter to apply all changes together, or Esc to cancel.
+
+For a single preselected curve, `CrvSeam point` uses the closest curve location
+and `CrvSeam Parameter=value` uses a native parameter. Finite parameters outside
+the original domain wrap around the curve. Circles, closed arcs, polylines, and
+polycurves retain their native representations, and ellipses use an equivalent
+NURBS curve. Relocation preserves the shape and domain span and starts the
+domain at the requested parameter. Smooth periodic seams remain periodic and
+gain a control point when required. An existing multiple-knot seam becomes
+Rhino's equivalent clamped form.
 
 ## Extension
 

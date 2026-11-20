@@ -139,7 +139,6 @@ impl InteractiveCommand {
             Self::DupMeshEdge { .. } => "DupMeshEdge",
             Self::DupMeshHoleBoundary => "DupMeshHoleBoundary",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
-            Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
             Self::Extend { .. } => "Extend",
             Self::ExtendSrf { .. } => "ExtendSrf",
@@ -322,7 +321,6 @@ impl InteractiveCommand {
             | Self::DupMeshEdge { .. }
             | Self::DupMeshHoleBoundary
             | Self::ExtractIsocurve { .. }
-            | Self::CrvSeam
             | Self::SrfSeam { .. }
             | Self::Extend { .. }
             | Self::ExtendSrf { .. }

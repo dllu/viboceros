@@ -185,7 +185,7 @@ mod curve_connections;
 mod curve_segments;
 mod extension_backend;
 mod surface_segments;
-pub use curve_segments::directed as prepare_directed_subcurve;
+pub use curve_segments::{directed as prepare_directed_subcurve, seam as prepare_curve_seam};
 mod extrude_curve;
 pub mod extrude_surface;
 pub mod extrude_surface_apex;

@@ -160,7 +160,8 @@ pub(crate) fn shifted_parameter(
     Ok(result)
 }
 
-pub(crate) fn wrapped_parameter(
+/// Map a parameter to an equivalent location inside a closed curve’s domain.
+pub fn wrapped_parameter(
     parameter: Real,
     domain: &RangeInclusive<Real>,
 ) -> Result<Real, GeometryError> {
