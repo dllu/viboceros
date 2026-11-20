@@ -2,16 +2,17 @@
 use super::*;
 use crate::viewport::curve_seam::{Drag, Event, Marker, Overlay};
 use std::collections::BTreeSet;
+use std::sync::Arc;
 use viboceros_command::curve_reference::CapturedCurve;
 use viboceros_command::{CommandError, ObjectSelectionFilter, prepare_curve_seam};
 use viboceros_geometry::{Curve3, CurveRef, NurbsCurve, Real, wrap_closed_curve_parameter};
 
 mod input;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Seam {
     source: CapturedCurve,
-    knots: Vec<(Real, Point3)>,
+    knots: Arc<[(Real, Point3)]>,
     parameter: Real,
     reversed: bool,
 }
@@ -20,7 +21,7 @@ impl Seam {
     fn from_source(source: CapturedCurve) -> Self {
         let curve = source.curve_ref();
         let domain = curve.domain();
-        let knots = match curve {
+        let knots: Vec<_> = match curve {
             CurveRef::NurbsCurve(_) | CurveRef::Ellipse(_) => source
                 .curve()
                 .knots()
@@ -37,7 +38,7 @@ impl Seam {
         };
         Self {
             source,
-            knots,
+            knots: knots.into(),
             parameter: *domain.start(),
             reversed: false,
         }
@@ -119,7 +120,7 @@ impl Seam {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 struct Move {
     viewport: usize,
     index: usize,
@@ -127,7 +128,7 @@ struct Move {
     parameter: Real,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub(super) struct Editor {
     seams: Vec<Seam>,
     moving: Option<Move>,
@@ -203,6 +204,12 @@ impl Editor {
 
     pub(super) fn sources(&self) -> impl Iterator<Item = &CapturedCurve> {
         self.seams.iter().map(|seam| &seam.source)
+    }
+
+    pub(super) fn placements(&self) -> impl Iterator<Item = (Real, bool)> + '_ {
+        self.seams
+            .iter()
+            .map(|seam| (seam.parameter, seam.reversed))
     }
 
     pub(super) fn profiles(&self, tolerance: Tolerance) -> Result<Vec<NurbsCurve>, CommandError> {

@@ -6,9 +6,11 @@ use viboceros_geometry::LoftStyle;
 use super::curve_seam::Editor;
 use crate::viewport::curve_seam::{Event, Marker};
 
+mod draft_worker;
 mod input;
 mod pole_preview;
 mod preview;
+mod seam_preview;
 mod selection;
 mod simplification;
 
@@ -43,6 +45,8 @@ struct State {
 struct Seams {
     editor: Editor,
     oriented: bool,
+    supports: std::sync::Arc<[Option<viboceros_command::loft::TangentSupport>; 2]>,
+    preview: draft_worker::Worker<seam_preview::Request, (preview::Profiles, preview::Draft)>,
 }
 
 #[derive(Debug)]
@@ -128,10 +132,13 @@ impl Prompt {
         if let Some(preview) = &self.pole_preview {
             return preview.wires();
         }
-        self.review
-            .as_ref()
-            .and_then(|review| review.draft.as_ref().ok())
-            .map_or(&[], |draft| draft.wires.as_slice())
+        if let Some(review) = &self.review {
+            return review
+                .draft
+                .as_ref()
+                .map_or(&[], |draft| draft.wires.as_slice());
+        }
+        self.seams.as_ref().map_or(&[], Seams::wires)
     }
 
     fn required(&self) -> usize {

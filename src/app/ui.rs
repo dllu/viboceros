@@ -1925,6 +1925,9 @@ impl VibocerosApp {
         {
             ui.ctx().request_repaint();
         }
+        if edge_handle_input {
+            self.update_loft_seam_preview(ui.ctx());
+        }
         let surface_seam_contact = viewport_outputs
             .iter()
             .filter_map(|output| output.surface_seam_contact)

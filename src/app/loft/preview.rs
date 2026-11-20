@@ -1,6 +1,7 @@
 //! A completed draft is displayed and then moved into the document on acceptance.
 use super::*;
 use crate::viewport::curve_seam::Overlay;
+use std::sync::Arc;
 use viboceros_command::loft;
 use viboceros_geometry::{Brep, CurveRef, LoftProfiles, NurbsCurve};
 
@@ -25,7 +26,7 @@ pub(super) struct Draft {
 #[derive(Debug)]
 pub(super) struct Review {
     profiles: Profiles,
-    supports: [Option<loft::TangentSupport>; 2],
+    supports: Arc<[Option<loft::TangentSupport>; 2]>,
     pub(super) draft: Result<Draft, CommandError>,
     pub(super) aligning: bool,
     pub(super) undo: Vec<(Options, SimplificationValues)>,
@@ -36,10 +37,19 @@ impl Profiles {
     pub(super) fn capture_supports(
         &self,
         document: &Document,
-    ) -> [Option<loft::TangentSupport>; 2] {
-        [self.sources.first(), self.sources.last()].map(|source| {
-            let (id, edge) = section_key(source?);
-            loft::TangentSupport::capture(document, id, edge?, None).ok()
+    ) -> Arc<[Option<loft::TangentSupport>; 2]> {
+        capture_supports(document, [self.sources.first(), self.sources.last()])
+    }
+
+    pub(super) fn from_seams(
+        editor: &Editor,
+        oriented: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, CommandError> {
+        Ok(Self {
+            sources: editor.sources().cloned().collect(),
+            curves: editor.profiles(tolerance)?,
+            oriented,
         })
     }
 
@@ -78,12 +88,18 @@ impl Draft {
 
 impl Seams {
     pub(super) fn aligned_profiles(&self, tolerance: Tolerance) -> Result<Profiles, CommandError> {
-        Ok(Profiles {
-            sources: self.editor.sources().cloned().collect(),
-            curves: self.editor.profiles(tolerance)?,
-            oriented: self.oriented,
-        })
+        Profiles::from_seams(&self.editor, self.oriented, tolerance)
     }
+}
+
+fn capture_supports(
+    document: &Document,
+    sources: [Option<&CapturedCurve>; 2],
+) -> Arc<[Option<loft::TangentSupport>; 2]> {
+    Arc::new(sources.map(|source| {
+        let (id, edge) = section_key(source?);
+        loft::TangentSupport::capture(document, id, edge?, None).ok()
+    }))
 }
 
 impl Review {
@@ -173,13 +189,19 @@ impl VibocerosApp {
             .map(|&index| prompt.state.sources[index].source.clone())
             .collect::<Vec<_>>();
         if closed.iter().all(|closed| *closed) {
+            let supports = capture_supports(&self.document, [sources.first(), sources.last()]);
             let editor = Editor::from_sources(
                 sources,
                 tolerance,
                 self.loft_snap_to_knots,
                 prompt.state.options.natural_seams,
             );
-            return Ok(Sections::Closed(Seams { editor, oriented }));
+            return Ok(Sections::Closed(Seams {
+                editor,
+                oriented,
+                supports,
+                preview: Default::default(),
+            }));
         }
         let mut curves = order
             .iter()
@@ -210,27 +232,50 @@ impl VibocerosApp {
                 self.loft_prompt.as_mut().unwrap().seams = Some(seams);
                 self.log_loft();
             }
-            Ok(Sections::Open(profiles)) => self.begin_loft_preview(profiles),
+            Ok(Sections::Open(profiles)) => {
+                let supports = profiles.capture_supports(&self.document);
+                self.begin_loft_preview(profiles, supports, None);
+            }
             Err(error) => self.push_log(format!("Unable to prepare Loft sections: {error}")),
         }
     }
 
     pub(super) fn accept_loft_seams(&mut self) {
-        let seams = self.loft_prompt.as_ref().unwrap().seams.as_ref().unwrap();
-        match seams.aligned_profiles(self.document.tolerance()) {
-            Ok(profiles) => self.begin_loft_preview(profiles),
+        let prompt = self.loft_prompt.as_mut().unwrap();
+        let seams = prompt.seams.as_mut().unwrap();
+        let supports = seams.supports.clone();
+        let prepared = if let Some((profiles, draft)) =
+            seams.take_preview(prompt.state.options, self.commands.crease_splitting())
+        {
+            Ok((profiles, Some(draft)))
+        } else {
+            seams
+                .aligned_profiles(self.document.tolerance())
+                .map(|profiles| (profiles, None))
+        };
+        match prepared {
+            Ok((profiles, draft)) => self.begin_loft_preview(profiles, supports, draft),
             Err(error) => self.push_log(format!("Unable to prepare Loft seams: {error}")),
         }
     }
 
-    fn begin_loft_preview(&mut self, profiles: Profiles) {
-        let supports = profiles.capture_supports(&self.document);
+    fn begin_loft_preview(
+        &mut self,
+        profiles: Profiles,
+        supports: Arc<[Option<loft::TangentSupport>; 2]>,
+        preview: Option<Draft>,
+    ) {
         let prompt = self.loft_prompt.as_mut().unwrap();
-        let draft = profiles.build(
-            prompt.state.options,
-            self.commands.crease_splitting(),
-            self.document.tolerance(),
-            &supports,
+        let draft = preview.map_or_else(
+            || {
+                profiles.build(
+                    prompt.state.options,
+                    self.commands.crease_splitting(),
+                    self.document.tolerance(),
+                    &supports,
+                )
+            },
+            Ok,
         );
         prompt.review = Some(Review {
             profiles,

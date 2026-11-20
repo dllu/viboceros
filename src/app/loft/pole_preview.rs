@@ -1,16 +1,17 @@
 //! Solve the current pole without blocking viewport input or editing the model.
 use super::{
+    draft_worker::Worker,
     preview::{Draft, Profiles, Sections},
     *,
 };
-use std::sync::{Arc, mpsc};
+use std::sync::Arc;
 use viboceros_command::loft;
 use viboceros_geometry::{LoftProfiles, NurbsCurve};
 
 #[derive(Debug)]
 enum Source {
     Automatic(Vec<NurbsCurve>),
-    Aligned(Profiles, Box<[Option<loft::TangentSupport>; 2]>),
+    Aligned(Profiles, Arc<[Option<loft::TangentSupport>; 2]>),
 }
 
 impl Source {
@@ -44,69 +45,32 @@ pub(super) struct Preview {
     options: Options,
     end: End,
     tolerance: Tolerance,
-    job: Option<(Request, mpsc::Receiver<Vec<NurbsCurve>>)>,
-    result: Option<(Request, Vec<NurbsCurve>)>,
+    worker: Worker<Request, Vec<NurbsCurve>>,
 }
 
 impl Preview {
     pub(super) fn wires(&self) -> &[NurbsCurve] {
-        self.result
-            .as_ref()
-            .map_or(&[], |(_, wires)| wires.as_slice())
+        self.worker.latest().map_or(&[], Vec::as_slice)
     }
 
     fn update(&mut self, request: Option<Request>, context: &egui::Context) {
-        if self.result.as_ref().is_some_and(|(previous, _)| {
-            !request.is_some_and(|current| current.crease == previous.crease)
-        }) {
-            self.result = None;
-            context.request_repaint();
-        }
-        if let Some((pending, receiver)) = &self.job {
-            let wires = match receiver.try_recv() {
-                Ok(wires) => wires,
-                Err(mpsc::TryRecvError::Disconnected) => Vec::new(),
-                Err(mpsc::TryRecvError::Empty) => return,
-            };
-            if request.is_some_and(|current| current.crease == pending.crease) {
-                // Publish completed positions during motion and coalesce any
-                // intervening input into the next solve.
-                self.result = Some((*pending, wires));
-                context.request_repaint();
-            }
-            self.job = None;
-        }
-        let Some(request) = request else { return };
-        if self
-            .result
-            .as_ref()
-            .is_some_and(|(previous, _)| *previous == request)
-        {
-            return;
-        }
-        let mut options = self.options;
-        self.end.set_point(&mut options, request.point);
-        let source = self.source.clone();
-        let tolerance = self.tolerance;
-        let worker_context = context.clone();
-        let (send, receive) = mpsc::channel();
-        if std::thread::Builder::new()
-            .name("loft-pole-preview".into())
-            .spawn(move || {
-                let wires = source
-                    .build(options, request.crease, tolerance)
-                    .map_or_else(|_| Vec::new(), |draft| draft.wires);
-                if send.send(wires).is_ok() {
-                    worker_context.request_repaint();
+        self.worker.update(
+            request,
+            context,
+            |previous, current| previous.crease == current.crease,
+            |&request| {
+                let mut options = self.options;
+                self.end.set_point(&mut options, request.point);
+                let source = self.source.clone();
+                let tolerance = self.tolerance;
+                move || {
+                    source
+                        .build(options, request.crease, tolerance)
+                        .ok()
+                        .map(|draft| draft.wires)
                 }
-            })
-            .is_ok()
-        {
-            self.job = Some((request, receive));
-        } else {
-            self.result = Some((request, Vec::new()));
-            context.request_repaint();
-        }
+            },
+        );
     }
 }
 
@@ -128,12 +92,16 @@ impl VibocerosApp {
                         .collect(),
                 ));
             }
-            let profiles = match self.prepare_loft_sections().ok()? {
-                Sections::Open(profiles) => profiles,
-                Sections::Closed(seams) => seams.aligned_profiles(tolerance).ok()?,
+            let (profiles, supports) = match self.prepare_loft_sections().ok()? {
+                Sections::Open(profiles) => {
+                    let supports = profiles.capture_supports(&self.document);
+                    (profiles, supports)
+                }
+                Sections::Closed(seams) => {
+                    (seams.aligned_profiles(tolerance).ok()?, seams.supports)
+                }
             };
-            let supports = profiles.capture_supports(&self.document);
-            Some(Source::Aligned(profiles, Box::new(supports)))
+            Some(Source::Aligned(profiles, supports))
         })();
         let options = prompt.state.options;
         self.loft_prompt.as_mut().unwrap().pole_preview = source.map(|source| Preview {
@@ -141,8 +109,7 @@ impl VibocerosApp {
             options,
             end,
             tolerance,
-            job: None,
-            result: None,
+            worker: Worker::default(),
         });
     }
 

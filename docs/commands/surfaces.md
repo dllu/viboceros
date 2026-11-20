@@ -101,8 +101,9 @@ Pick open profiles near corresponding ends or use `Point` to pick a pole with
 snapping. Once a profile is selected, the viewport previews the taper as you
 move the pole.
 For closed profiles, drag the seam markers or use `Flip`, `Automatic`,
-`Natural`, and `SnapToKnots`. Enter opens the options preview. Change the style,
-simplification, closure, or tangent splitting while previewing the result.
+`Natural`, and `SnapToKnots`. The wire preview follows seam edits. Enter opens
+the options preview, where you can change the style, simplification, closure,
+or tangent splitting.
 When a boundary edge is the first or last profile, use
 `MatchStartTangent=Yes` or `MatchEndTangent=Yes` to follow its supporting face.
 Pick the profiles in traversal order when including surface edges.
