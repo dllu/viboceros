@@ -280,6 +280,8 @@ impl VibocerosApp {
             p.hint()
         } else if let Some(p) = &self.sweep_session {
             p.hint()
+        } else if let Some(p) = self.chain_prompt.as_ref().filter(|p| p.sweep_rail()) {
+            p.hint()
         } else if let Some(p) = &self.sweep_two_rails {
             p.hint()
         } else if let Some(p) = &self.loft_prompt {
@@ -387,7 +389,9 @@ impl VibocerosApp {
                         "SetView"
                     } else if self.length_units_pending {
                         "Length units"
-                    } else if self.picking_edge_blend_chain() {
+                    } else if self.picking_edge_blend_chain()
+                        || self.chain_prompt.as_ref().is_some_and(|p| p.sweep_rail())
+                    {
                         "ChainEdges"
                     } else if self.chain_prompt.is_some() {
                         "SelChain"

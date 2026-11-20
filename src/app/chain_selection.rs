@@ -3,6 +3,7 @@ use super::edge_fillet::edit as edge_edit;
 use super::*;
 use viboceros_command::chain_selection::{Session, Target, parse_options};
 mod edge_blend;
+mod sweep_rail;
 pub(super) const HINT: &str = "Select connected curves or surface edges; Undo / Next / All / ChainContinuity / Direction / GapTolerance / AngleTolerance; Enter accepts, Esc restores selection";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -10,6 +11,7 @@ enum Purpose {
     Select,
     Measure,
     EdgeBlend,
+    SweepRail,
 }
 
 #[derive(Debug)]
@@ -19,6 +21,7 @@ pub(super) struct Prompt {
     preview: Vec<Target>,
     pending: Option<String>,
     defer_apply: bool,
+    auto_chain: bool,
     purpose: Purpose,
 }
 impl Prompt {
@@ -29,6 +32,7 @@ impl Prompt {
             preview: Vec::new(),
             pending: None,
             defer_apply: false,
+            auto_chain: true,
             purpose,
         }
     }
@@ -38,6 +42,26 @@ impl Prompt {
     fn measuring(&self) -> bool {
         self.purpose == Purpose::Measure
     }
+    pub(in crate::app) fn sweep_rail(&self) -> bool {
+        self.purpose == Purpose::SweepRail
+    }
+
+    fn read_only(&self) -> bool {
+        self.measuring() || self.sweep_rail()
+    }
+
+    fn refresh_preview(&mut self) {
+        self.preview = if self.sweep_rail() {
+            self.session
+                .targets()
+                .into_iter()
+                .chain(self.session.preview())
+                .collect()
+        } else {
+            self.session.preview()
+        };
+    }
+
     fn document<'a>(
         &self,
         edit: &'a Option<edge_edit::Edit>,
@@ -65,6 +89,8 @@ impl Prompt {
     pub(super) fn hint(&self) -> &'static str {
         if self.session.choosing_branch() {
             "Select a branch to follow, or Enter to confirm the preview; Esc cancels"
+        } else if self.sweep_rail() {
+            "Pick rail segments. AutoChain / ChainContinuity / Direction / GapTolerance / AngleTolerance / Next / All / Undo. Enter accepts the rail"
         } else if self.edge_blend() {
             "Pick connected edges. Options include ChainContinuity, Direction, GapTolerance, AngleTolerance, Undo, Next and All. Enter keeps the chain."
         } else {
@@ -145,6 +171,10 @@ impl VibocerosApp {
         true
     }
     pub(super) fn pick_chain(&mut self, picks: Vec<Target>) {
+        self.pick_chain_click(picks, false);
+    }
+
+    pub(super) fn pick_chain_click(&mut self, mut picks: Vec<Target>, double_click: bool) {
         let Some(p) = &mut self.chain_prompt else {
             return;
         };
@@ -154,6 +184,9 @@ impl VibocerosApp {
         {
             self.validate_chain();
             return;
+        }
+        if p.sweep_rail() {
+            picks.retain(|&target| p.session.contains(target));
         }
         if picks.len() != 1 {
             p.choices = picks;
@@ -180,8 +213,19 @@ impl VibocerosApp {
             return;
         }
         let document = p.document_mut(&mut self.edge_blend_edit, &mut self.document);
-        let result = p.session.pick_input(document, picks[0]).and_then(|()| {
-            if p.measuring() {
+        let target = picks[0];
+        let result = if p.sweep_rail()
+            && double_click
+            && !p.auto_chain
+            && p.session.targets().contains(&target)
+        {
+            p.session.extend(document, false)
+        } else {
+            p.session
+                .pick_input_with_growth(document, target, p.auto_chain || double_click)
+        };
+        let result = result.and_then(|()| {
+            if p.read_only() {
                 Ok(())
             } else {
                 p.session
@@ -191,7 +235,7 @@ impl VibocerosApp {
         if result.is_ok() {
             p.defer_apply = false;
         }
-        p.preview = p.session.preview();
+        p.refresh_preview();
         p.choices.clear();
         if let Err(e) = result {
             self.push_log(format!("Error: {e}"));
@@ -220,6 +264,20 @@ impl VibocerosApp {
             return;
         };
         let accept = accept && p.session.has_seed();
+        if p.sweep_rail() {
+            self.command_input.clear();
+            if accept && p.session.current(&self.document) {
+                if !self.accept_sweep_two_rail_chain(
+                    &p.session.ordered_targets(),
+                    p.session.options().gap_tolerance,
+                ) {
+                    self.chain_prompt = Some(p);
+                }
+            } else if self.sweep_two_rails.is_some() {
+                self.log_sweep_two_rails();
+            }
+            return;
+        }
         if p.measuring() {
             if accept && p.session.current(&self.document) {
                 self.add_nested_length_targets(p.session.targets(), SelectionMode::Add, true);
@@ -280,6 +338,9 @@ impl VibocerosApp {
         }
     }
     pub(super) fn continue_chain(&mut self, input: &str) -> bool {
+        if self.continue_sweep_rail_chain(input) {
+            return true;
+        }
         let Some(p) = &mut self.chain_prompt else {
             return false;
         };
@@ -306,8 +367,8 @@ impl VibocerosApp {
             match p.session.enter(document) {
                 Ok(true) => self.finish_chain(true),
                 Ok(false) => {
-                    p.preview = p.session.preview();
-                    let result = if p.measuring() || p.defer_apply {
+                    p.refresh_preview();
+                    let result = if p.read_only() || p.defer_apply {
                         Ok(())
                     } else {
                         p.session
@@ -333,7 +394,7 @@ impl VibocerosApp {
             }
             return true;
         }
-        if p.edge_blend() && input.eq_ignore_ascii_case("Undo") {
+        if (p.edge_blend() || p.sweep_rail()) && input.eq_ignore_ascii_case("Undo") {
             p.session.discard_proposal();
         }
         if p.session.choosing_branch() {
@@ -349,7 +410,7 @@ impl VibocerosApp {
                 p.session.extend(&self.document, false)
             } else if p.measuring() && input.eq_ignore_ascii_case("Undo") {
                 p.session.undo(&self.document)
-            } else if p.edge_blend() {
+            } else if p.edge_blend() || p.sweep_rail() {
                 Err(viboceros_command::CommandError::Usage(
                     "Select a branch to follow, or Enter to confirm the proposal",
                 ))
@@ -374,7 +435,7 @@ impl VibocerosApp {
             if let Some(p) = &mut self.chain_prompt
                 && p.measuring()
             {
-                p.preview = p.session.preview();
+                p.refresh_preview();
             }
             self.command_input.clear();
             return true;
@@ -415,7 +476,7 @@ impl VibocerosApp {
                 .and_then(|o| p.session.set_options(o))
         };
         let result = result.and_then(|()| {
-            if p.measuring() {
+            if p.read_only() {
                 Ok(())
             } else {
                 p.session
@@ -425,7 +486,7 @@ impl VibocerosApp {
         if result.is_ok() {
             p.defer_apply = false;
         }
-        p.preview = p.session.preview();
+        p.refresh_preview();
         self.commands
             .remember_chain_selection_options(p.session.options())
             .expect("validated chain options");

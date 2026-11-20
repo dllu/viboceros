@@ -8,7 +8,11 @@ impl Session {
         next: ChainContinuation,
         journal: &mut Vec<UndoFrame>,
     ) -> Result<(), CommandError> {
-        journal.push(UndoFrame::new(state, next.index));
+        journal.push(UndoFrame::new(
+            state,
+            next.index,
+            Some((side, next.reversed)),
+        ));
         state.selected.insert(next.index);
         state.fronts[side] = Some((next.index, !next.reversed));
         if let Some(other) = state.fronts[1 - side]

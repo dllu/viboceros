@@ -2187,6 +2187,9 @@ impl VibocerosApp {
         self.length_choices = None;
         self.length_units_pending = false;
         self.clear_sweep_input();
+        if self.chain_prompt.as_ref().is_some_and(|p| p.sweep_rail()) {
+            self.chain_prompt = None;
+        }
         self.sweep_two_rails = None;
         self.finish_sweep_two_rail_point_getter();
         self.rebuild_preview = None;

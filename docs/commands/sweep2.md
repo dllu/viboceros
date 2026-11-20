@@ -10,6 +10,14 @@ bare `Sweep2` command opens review directly. Enter commits the preview and
 Escape cancels. Local `Undo` steps back through settings, review, and picks.
 Finishing creates one B-rep in one model undo step.
 
+Choose `ChainEdges` while selecting a rail to build it from connected curves
+or B-rep edges. The picker highlights the chain as it grows. Use `AutoChain`,
+`ChainContinuity`, `Direction`, `GapTolerance`, or `AngleTolerance` to control
+growth. With `AutoChain=No`, pick segments individually or double-click to
+grow the chain. `Next`, `All`, and `Undo` edit the chain before Enter accepts
+it. Accepting the first chain opens the second rail picker. The sweep uses
+private joined rails and leaves their pieces intact.
+
 With converging rails, choose `Point` before the first profile or after the
 last profile. `StartPoint` and `EndPoint` name either end directly. Click or
 type a point within model tolerance of both rails. If the rails cross away
@@ -72,6 +80,10 @@ constant/changing arches, bent rails, reversed directions, independent domains
 and a remote origin. All 160 world-space queries agree within `1e-6` model
 units; areas agree within `1e-5` square model units. The largest point difference
 is `9.31e-7` at the remote origin. These are finite fixture comparisons.
+
+Rhino 8.32 `ChainEdges` captures give one face for collinear pieces and two
+joined faces for kinked pieces. The chained Sweep2 fixtures match the captured
+face and edge counts and areas within `1e-8` square model units.
 
 Rhino 8.32 command captures match the complete straight-rail arch image
 with a start or end point, including at an interior rail crossing. With

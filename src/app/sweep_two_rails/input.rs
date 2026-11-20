@@ -37,6 +37,12 @@ impl VibocerosApp {
                 session.state.review = true;
                 self.log_sweep_two_rails();
             }
+        } else if let Some(word) = name
+            .split_whitespace()
+            .next()
+            .filter(|word| chain_option(word))
+        {
+            self.start_sweep_two_rail_chain(name[word.len()..].trim());
         } else if let Some((option, value)) = name.split_once('=') {
             if let Some(end) = End::from_name(option) {
                 self.set_sweep_two_rail_point_argument(end, name);

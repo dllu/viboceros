@@ -28,7 +28,10 @@ fn sweep_two_rail_picker_filters_and_cancels_without_model_edits() {
         .unwrap();
     let before = app.document.objects().cloned().collect::<Vec<_>>();
     enter(&mut app, "Sweep2");
-    assert_eq!(app.command_hint(), "Select the first rail");
+    assert_eq!(
+        app.command_hint(),
+        "Select the first rail or choose ChainEdges"
+    );
     assert_eq!(
         app.viewport_object_filter(),
         Some(viboceros_command::ObjectSelectionFilter::Curves)
@@ -42,7 +45,10 @@ fn sweep_two_rail_picker_filters_and_cancels_without_model_edits() {
         object_id: Some(ids[0]),
         mode: SelectionMode::Replace,
     });
-    assert_eq!(app.command_hint(), "Select the second rail or use Undo");
+    assert_eq!(
+        app.command_hint(),
+        "Select the second rail or choose ChainEdges or Undo"
+    );
     enter(&mut app, "");
     assert!(app.sweep_two_rails.is_some());
     enter(&mut app, "Cancel");
@@ -346,3 +352,5 @@ fn sweep_two_rail_start_point_at_a_crossing_accepts_typed_world_input() {
             .any(|vertex| vertex.point() == point(0., 0., 0.))
     );
 }
+
+mod rail_chains;

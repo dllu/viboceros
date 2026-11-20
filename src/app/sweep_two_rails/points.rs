@@ -120,7 +120,9 @@ impl VibocerosApp {
             return false;
         }
         let tolerance = self.document.tolerance();
-        let result = Source::capture(&self.document, &session.ids(), &session.options)
+        let result = session
+            .state
+            .capture(&self.document)
             .and_then(|source| source.validate_point_ends(ends, tolerance));
         if let Err(error) = result {
             self.push_log(format!("Sweep2: {error}"));

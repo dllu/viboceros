@@ -66,7 +66,7 @@ impl VibocerosApp {
         let Some(session) = &self.sweep_two_rails else {
             return;
         };
-        if session.section_count() == 0 {
+        if session.rail_count() < 2 || session.section_count() == 0 {
             return;
         }
         let provisional = session.picking.zip(point);
@@ -75,10 +75,6 @@ impl VibocerosApp {
             end.set(&mut ends, point);
         }
         let ready = (session.picking.is_none() || provisional.is_some()) && session.ready(ends);
-        if !self.validate_sweep_two_rails() {
-            context.request_repaint();
-            return;
-        }
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
         let request = session.preview.request(tolerance, provisional);
@@ -93,13 +89,7 @@ impl VibocerosApp {
                         == current.provisional.map(|(end, _)| end)
             },
             |_| {
-                let ids = session
-                    .state
-                    .picks
-                    .iter()
-                    .map(|pick| pick.id)
-                    .collect::<Vec<_>>();
-                let source = Source::capture(&self.document, &ids, &session.options);
+                let source = session.state.capture(&self.document);
                 move || {
                     Some(
                         source
@@ -139,7 +129,9 @@ impl VibocerosApp {
         let result = if let Some(draft) = session.preview.worker.take(&request) {
             draft.map(|draft| draft.brep)
         } else {
-            Source::capture(&self.document, &session.ids(), &session.options)
+            session
+                .state
+                .capture(&self.document)
                 .and_then(|source| source.build(session.state.fit, session.state.ends, tolerance))
                 .map_err(|error| error.to_string())
         };

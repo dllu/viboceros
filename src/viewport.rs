@@ -782,6 +782,7 @@ pub struct ViewportOutput {
     pub face_hit_point: Option<Point3>,
     pub parametric_click: Option<Vec<ParametricPick>>,
     pub chain_click: Option<Vec<viboceros_command::chain_selection::Target>>,
+    pub chain_double_click: bool,
     pub length_mode: Option<SelectionMode>,
     pub(crate) length_direct: bool,
     pub component_click: Option<ComponentClick>,
@@ -3843,6 +3844,8 @@ impl Viewport {
             face_click,
             face_hit_point,
             parametric_click,
+            chain_double_click: chain_click.is_some()
+                && response.double_clicked_by(PointerButton::Primary),
             chain_click,
             length_mode: input.length_pick.then_some(selection_mode(modifiers)),
             length_direct: modifiers.command && modifiers.shift,

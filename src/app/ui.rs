@@ -74,6 +74,7 @@ impl VibocerosApp {
         self.validate_offset_surface();
         self.validate_curve_boolean();
         self.validate_chain();
+        self.validate_sweep_two_rails();
         self.validate_length_choices();
         self.validate_edge_pattern();
         self.validate_select_uv();
@@ -1405,6 +1406,20 @@ impl VibocerosApp {
         let edge_blend_double_click = self.edge_fillet_prompt.is_some()
             && !self.picking_edge_blend_chain()
             && component_pick == Some(crate::viewport::ComponentPickFilter::Edges);
+        let mut sweep_rail_highlights = self.sweep_two_rails
+            .as_ref()
+            .into_iter()
+            .flat_map(|session| session.rail_targets())
+            .filter(|target| matches!(target, viboceros_command::chain_selection::Target::Edge(..)))
+            .collect::<Vec<_>>();
+        let chain_highlights = self.chain_prompt.as_ref()
+            .map_or(length_highlights.as_slice(), |p| p.highlights());
+        let chain_highlights = if model_input_active && !sweep_rail_highlights.is_empty() {
+            sweep_rail_highlights.extend_from_slice(chain_highlights);
+            sweep_rail_highlights.as_slice()
+        } else {
+            chain_highlights
+        };
         let chain_pick =
             self.chain_prompt.is_some() && !self.picking_edge_blend_chain() && model_input_active;
         let edge_handle_input = model_input_active
@@ -1884,10 +1899,7 @@ impl VibocerosApp {
                             chain_pick,
                             length_pick,
                             nested_length_guides: &nested_length_guides,
-                            chain_highlights: self
-                                .chain_prompt
-                                .as_ref()
-                                .map_or_else(|| length_highlights.as_slice(), |p| p.highlights()),
+                            chain_highlights,
                             point_deviation: deviation_view.as_ref(),
                             curve_deviation: curve_deviation_view.as_ref(),
                             edge_analysis: edge_analysis_view.as_ref(),

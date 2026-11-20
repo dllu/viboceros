@@ -1,6 +1,6 @@
 //! Source-safe mixed curve and B-rep edge chains, outside model history.
 use super::*;
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{
     ChainContinuation, ChainContinuity, ChainDirection, CurveChainIndex, CurveChainOptions,
@@ -30,13 +30,15 @@ struct State {
 #[derive(Clone, Debug)]
 struct UndoFrame {
     added: usize,
+    placement: Option<(usize, bool)>,
     fronts: [Option<(usize, bool)>; 2],
     preferred: Option<u8>,
 }
 impl UndoFrame {
-    fn new(before: &State, added: usize) -> Self {
+    fn new(before: &State, added: usize, placement: Option<(usize, bool)>) -> Self {
         Self {
             added,
+            placement,
             fronts: before.fronts,
             preferred: before.preferred,
         }
@@ -87,13 +89,13 @@ impl Session {
         selection: &component_selection::ComponentSelection,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, Some(selection), options, Scope::Mixed)
+        Self::with_selection(doc, Some(selection), options, Scope::Mixed, &[])
     }
     pub fn new_for_measurement(
         doc: &Document,
         options: CurveChainOptions,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, None, options, Scope::Mixed)
+        Self::with_selection(doc, None, options, Scope::Mixed, &[])
     }
     pub fn new_for_edge_blend(
         doc: &Document,
@@ -108,18 +110,30 @@ impl Session {
         options: CurveChainOptions,
         owner: Option<ObjectId>,
     ) -> Result<Self, CommandError> {
-        Self::with_selection(doc, Some(selection), options, Scope::EdgeBlend(owner))
+        Self::with_selection(doc, Some(selection), options, Scope::EdgeBlend(owner), &[])
     }
+    /// Build a chain picker that only returns geometry and never changes
+    /// document or component selection. Existing rail pieces are excluded.
+    pub fn new_for_rail(
+        doc: &Document,
+        options: CurveChainOptions,
+        excluded: &[Target],
+    ) -> Result<Self, CommandError> {
+        Self::with_selection(doc, None, options, Scope::Mixed, excluded)
+    }
+
     fn with_selection(
         doc: &Document,
         selection: Option<&component_selection::ComponentSelection>,
         options: CurveChainOptions,
         scope: Scope,
+        excluded: &[Target],
     ) -> Result<Self, CommandError> {
         options.validate()?;
         let mut sources = BTreeMap::new();
         let mut curves = Vec::new();
         let mut targets = Vec::new();
+        let excluded = excluded.iter().copied().collect::<BTreeSet<_>>();
         let mut classes = Vec::new();
         for object in doc.selectable_objects() {
             let geo = object.geometry();
@@ -129,6 +143,9 @@ impl Session {
             }
             sources.insert(id, object.geometry_snapshot().clone());
             if let Some(curve) = geo.curve_ref() {
+                if excluded.contains(&Target::Curve(id)) {
+                    continue;
+                }
                 curves.push(curve.to_owned());
                 targets.push(Target::Curve(id));
                 classes.push(0);
@@ -149,7 +166,9 @@ impl Session {
                     None
                 };
                 for (i, edge) in brep.edges().iter().enumerate() {
-                    if joined.as_ref().is_some_and(|shared| !shared[i]) {
+                    if excluded.contains(&Target::Edge(id, i))
+                        || joined.as_ref().is_some_and(|shared| !shared[i])
+                    {
                         continue;
                     }
                     curves.push(viboceros_geometry::Curve3::NurbsCurve(edge.curve().clone()));
@@ -227,6 +246,21 @@ impl Session {
             .map(|&i| self.targets[i])
             .collect()
     }
+    /// Accepted pieces in traversal order. The boolean reverses the piece
+    /// relative to its stored direction. The seed retains its direction.
+    pub fn ordered_targets(&self) -> Vec<(Target, bool)> {
+        let mut path = VecDeque::with_capacity(self.undo.len());
+        for item in &self.undo {
+            let target = self.targets[item.added];
+            match item.placement {
+                Some((0, reversed)) => path.push_front((target, !reversed)),
+                Some((_, reversed)) => path.push_back((target, reversed)),
+                None => path.push_back((target, false)),
+            }
+        }
+        path.into()
+    }
+
     fn validate(&self, doc: &Document) -> Result<(), CommandError> {
         if self.current(doc) {
             Ok(())
@@ -242,15 +276,33 @@ impl Session {
     }
     /// Native object getters ignore whole curves already selected at startup.
     pub fn pick_input(&mut self, doc: &Document, target: Target) -> Result<(), CommandError> {
+        self.pick_input_with_growth(doc, target, true)
+    }
+
+    pub fn pick_input_with_growth(
+        &mut self,
+        doc: &Document,
+        target: Target,
+        auto_chain: bool,
+    ) -> Result<(), CommandError> {
         self.validate(doc)?;
         if let Target::Curve(id) = target
             && self.baseline_whole.contains(&id)
         {
             return Ok(());
         }
-        self.pick(doc, target)
+        self.pick_segment(doc, target, auto_chain)
     }
     pub fn pick(&mut self, doc: &Document, target: Target) -> Result<(), CommandError> {
+        self.pick_segment(doc, target, true)
+    }
+
+    fn pick_segment(
+        &mut self,
+        doc: &Document,
+        target: Target,
+        auto_chain: bool,
+    ) -> Result<(), CommandError> {
         self.validate(doc)?;
         let &seed = self
             .lookup
@@ -261,8 +313,9 @@ impl Session {
         }
         let before = self.state.clone();
         let mut state = before.clone();
-        let mut journal = vec![UndoFrame::new(&before, seed)];
+        let mut journal = Vec::new();
         if state.selected.is_empty() {
+            journal.push(UndoFrame::new(&before, seed, None));
             state.selected.insert(seed);
             state.preferred = Some(self.classes[seed]);
             state.fronts = [Some((seed, false)), Some((seed, true))];
@@ -280,6 +333,7 @@ impl Session {
                         .into_iter()
                         .find(|c| c.index == seed)
                 {
+                    journal.push(UndoFrame::new(&state, seed, Some((side, next.reversed))));
                     state.selected.insert(seed);
                     state.fronts[side] = Some((seed, !next.reversed));
                     attached = true;
@@ -292,7 +346,7 @@ impl Session {
                 ));
             }
         }
-        let pending = if self.pending.as_ref().is_some_and(|pending| pending.one) {
+        let pending = if !auto_chain || self.pending.as_ref().is_some_and(|pending| pending.one) {
             None
         } else {
             self.grow(&mut state, false, &mut journal, true)?

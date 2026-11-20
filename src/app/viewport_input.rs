@@ -48,7 +48,7 @@ impl VibocerosApp {
         }
         if let Some(picks) = output.chain_click.take() {
             if self.chain_prompt.is_some() {
-                self.pick_chain(picks);
+                self.pick_chain_click(picks, output.chain_double_click);
             } else if self.nested_length_wants_source() {
                 self.pick_nested_length(
                     picks,
