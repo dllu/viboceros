@@ -33,11 +33,13 @@
     "tools/rhino_oracle/merge_edges_probe.py": "bba1af4067174d46ab84d67518e2497635b881cb79bc3fb815350baad8a540d1",
     "tools/rhino_oracle/circle_fit_diagnostics.py": "d9a96ebaa40ec476e86b3dee76322dc5ddfdf77b6ef458f8fd7a9207868dfde6",
     "tools/rhino_oracle/circle_fit_probe.py": "7d18cf663487a288c1fb59d7d30de32831226e90f32454133048ab0458576529",
-    "tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
-    "tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef",
     "tools/rhino_oracle/fixtures/maelstrom_fit_points.json": "c92ad6563ca3fbe4e22e33aeba709daf1ee618563662eccb2c534d7818632a5f",
     "tools/rhino_oracle/observations/maelstrom_fit_points.json": "b5118ad6808d411e9f84e953a6127be070b70d56e5b165ddb0e39c1638f327df",
     "tools/rhino_oracle/fixtures/maelstrom_fit_points_driving_diagnostic.json": "bba4d0a7534d2a88990c8d648206edffb33afdd5eb6f21ef6cdd4d3cbfeb8008",
     "tools/rhino_oracle/observations/maelstrom_fit_points_driving_diagnostic.json": "e4a85dc79b6a982ee88392773355e4c3ea404a2ad9eb903de985c85f2ef245ca"
+  },
+  "git_sha256": {
+    "62de31165f2a816f358ccc1c462c918c4a60fcfa:tools/rhino_oracle/run_headless.sh": "d56154350c8acd8a3844b8f452b7224d84ab1cab45c408c08ae8419c651bf06d",
+    "62de31165f2a816f358ccc1c462c918c4a60fcfa:tools/rhino_oracle/i3-headless.conf": "b4d5299a909bf32369cd60976eedde91583f78a822def225b7d0b87cf63bd3ef"
   }
 }

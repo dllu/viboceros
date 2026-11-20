@@ -4,6 +4,7 @@ import json
 import math
 import os
 from pathlib import Path
+import subprocess
 from unittest import TestCase, mock
 
 from .client import OracleClient, OracleError, OracleProtocolError
@@ -145,3 +146,6 @@ class MaelstromFitPointsTests(TestCase):
         self.assertEqual(record["initial_driving_diagnostics"], 14)
         for path, expected in record["sha256"].items():
             self.assertEqual(hashlib.sha256((ROOT / path).read_bytes()).hexdigest(), expected, path)
+        for identity, expected in record["git_sha256"].items():
+            original = subprocess.check_output(["git", "show", identity], cwd=ROOT)
+            self.assertEqual(hashlib.sha256(original).hexdigest(), expected, identity)
