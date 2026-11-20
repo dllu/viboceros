@@ -96,13 +96,16 @@ fn maelstrom_around_curve_replays_native_size_modes_and_signed_coil_picks() {
         enter(&mut app, "_-SelID");
         enter(&mut app, &guide.to_string());
         enter(&mut app, "w2,3,1");
-        assert_eq!(app.drafting_plane.unwrap().origin(), point(2., 0., 0.));
-        enter(&mut app, first);
-        assert_eq!(
-            app.maelstrom_preview().unwrap().initial,
-            Some(MaelstromRadius::Number(2.)),
+        let center = app.drafting_plane.unwrap().origin();
+        assert!(
+            center.distance_to(point(2., 0., 0.)).unwrap() < 1e-10,
             "{label}"
         );
+        enter(&mut app, first);
+        let Some(MaelstromRadius::Number(radius)) = app.maelstrom_preview().unwrap().initial else {
+            panic!("{label}: expected an accepted first radius");
+        };
+        assert!((radius - 2.).abs() < 1e-10, "{label}");
         enter(&mut app, "Copy=No");
         enter(&mut app, second);
         enter(&mut app, angle);
