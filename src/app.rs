@@ -233,6 +233,7 @@ mod selection_input;
 mod shortcuts;
 mod sidebar;
 mod sweep;
+mod sweep_two_rails;
 mod ui;
 mod viewport_input;
 use interactive_state::{
@@ -465,6 +466,7 @@ pub struct VibocerosApp {
     loft_options: viboceros_command::loft::Options,
     loft_simplification: loft::SimplificationValues,
     sweep_session: Option<sweep::Session>,
+    sweep_two_rails: Option<sweep_two_rails::Session>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
     curve_fillet_session: Option<curve_fillet::Session>,
@@ -701,6 +703,7 @@ impl VibocerosApp {
             loft_options: Default::default(),
             loft_simplification: Default::default(),
             sweep_session: None,
+            sweep_two_rails: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
             curve_fillet_session: None,
@@ -1259,6 +1262,7 @@ impl VibocerosApp {
             || self.start_fillet_surface(&input)
             || self.start_loft(&input)
             || self.start_sweep_point_input(&input)
+            || self.start_sweep_two_rails(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)
             || self.start_boolean_two(&input)

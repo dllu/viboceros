@@ -1,4 +1,8 @@
+use super::circle_preview::{screen_point, viewport_click, viewport_frame};
 use super::*;
+use std::time::{Duration, Instant};
+use viboceros_geometry::NurbsCurve;
+
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
     app.run_command();
@@ -24,6 +28,7 @@ fn sweep_two_rail_picker_filters_and_cancels_without_model_edits() {
         .unwrap();
     let before = app.document.objects().cloned().collect::<Vec<_>>();
     enter(&mut app, "Sweep2");
+    assert_eq!(app.command_hint(), "Select the first rail");
     assert_eq!(
         app.viewport_object_filter(),
         Some(viboceros_command::ObjectSelectionFilter::Curves)
@@ -37,13 +42,16 @@ fn sweep_two_rail_picker_filters_and_cancels_without_model_edits() {
         object_id: Some(ids[0]),
         mode: SelectionMode::Replace,
     });
+    assert_eq!(app.command_hint(), "Select the second rail or use Undo");
+    enter(&mut app, "");
+    assert!(app.sweep_two_rails.is_some());
     enter(&mut app, "Cancel");
     assert!(app.object_prompt.is_none());
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
 #[test]
 fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
-    for pre in [false, true] {
+    for (pre, command) in [(false, "Sweep2"), (true, "Sweep2"), (true, "_-Sweep2")] {
         let mut app = test_app();
         let ids = sources(&mut app);
         let before = app.document.objects().cloned().collect::<Vec<_>>();
@@ -52,7 +60,7 @@ fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
                 .select_objects_direct(ids.clone(), SelectionMode::Replace)
                 .unwrap();
         }
-        enter(&mut app, "Sweep2");
+        enter(&mut app, command);
         if !pre {
             for id in &ids {
                 app.apply_selection_click(SelectionClick {
@@ -60,6 +68,12 @@ fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
                     mode: SelectionMode::Add,
                 });
             }
+            enter(&mut app, "");
+        }
+        if command == "Sweep2" {
+            assert!(app.sweep_two_rails.is_some());
+            assert_eq!(app.document.objects().count(), 4);
+            assert_eq!(app.viewport_object_filter(), None);
             enter(&mut app, "");
         }
         assert!(app.object_prompt.is_none(), "{:?}", app.command_log);
@@ -77,4 +91,110 @@ fn sweep_two_rail_preselection_and_clicked_input_commit_one_undoable_result() {
         enter(&mut app, "Redo");
         assert_eq!(app.document.object(result.id()), Some(&result));
     }
+}
+
+fn wait_for_draft(app: &mut VibocerosApp, context: &egui::Context) -> Vec<NurbsCurve> {
+    let deadline = Instant::now() + Duration::from_secs(8);
+    loop {
+        let strokes = viewport_frame(app, context, vec![]);
+        let wires = app.sweep_two_rails.as_ref().unwrap().preview_wires();
+        if !wires.is_empty() && !strokes.is_empty() {
+            return wires.to_vec();
+        }
+        assert!(Instant::now() < deadline, "{:?}", app.command_log);
+        std::thread::sleep(Duration::from_millis(5));
+    }
+}
+
+#[test]
+fn sweep_two_rail_review_updates_wires_and_commits_the_displayed_brep() {
+    let mut app = test_app();
+    let ids = sources(&mut app);
+    app.document.clear_history().unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2");
+    // Pick both rails in reverse creation order, followed by the two profiles.
+    let order = [ids[1], ids[0], ids[3], ids[2]];
+    enter(&mut app, &order[0].to_string());
+    viewport_frame(&mut app, &context, vec![]);
+    let rail_pixel = screen_point(&app, point(0., 0., 2.5));
+    viewport_click(&mut app, &context, rail_pixel);
+    enter(&mut app, &order[2].to_string());
+    let profile_pixel = screen_point(&app, point(1., 0., 5.));
+    viewport_click(&mut app, &context, profile_pixel);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        order
+    );
+    assert!(app.command_hint().starts_with("Select cross sections"));
+    let unchanged = wait_for_draft(&mut app, &context);
+    enter(&mut app, "");
+    assert_eq!(wait_for_draft(&mut app, &context), unchanged);
+    enter(&mut app, "Simplify");
+    enter(&mut app, "Rebuild");
+    let default_rebuild = wait_for_draft(&mut app, &context);
+    assert_ne!(default_rebuild, unchanged);
+    enter(&mut app, "Rebuild");
+    enter(&mut app, "NaN");
+    assert_eq!(wait_for_draft(&mut app, &context), default_rebuild);
+    enter(&mut app, "7");
+    let rebuilt = wait_for_draft(&mut app, &context);
+    assert_ne!(rebuilt, default_rebuild);
+    enter(&mut app, "Refit");
+    enter(&mut app, "0.001");
+    let refitted = wait_for_draft(&mut app, &context);
+    assert_ne!(refitted, rebuilt);
+    enter(&mut app, "Simplify=Rebuild");
+    assert_eq!(wait_for_draft(&mut app, &context), rebuilt);
+    enter(&mut app, "Undo");
+    assert_eq!(wait_for_draft(&mut app, &context), refitted);
+    enter(&mut app, "Undo");
+    assert_eq!(wait_for_draft(&mut app, &context), rebuilt);
+    assert_eq!(app.document.undo_label(), None);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "");
+    assert!(app.command_line_idle());
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    assert_eq!(
+        brep.wireframe_curves(1, app.document.tolerance()).unwrap(),
+        rebuilt
+    );
+    assert_eq!(app.document.undo_label(), Some("Sweep2"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
+fn changed_named_sweep_two_rail_cancels_review_and_restores_selection() {
+    let mut app = test_app();
+    let ids = sources(&mut app);
+    app.document
+        .set_object_names([
+            (ids[0], Some("Left".into())),
+            (ids[1], Some("Right".into())),
+        ])
+        .unwrap();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2 Rail1Name=Left Rail2Name=Right");
+    assert!(app.command_hint().starts_with("Select cross sections"));
+    app.select_prompt_objects([ids[0], ids[3], ids[2]], SelectionMode::Add);
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        [ids[3], ids[2]]
+    );
+    enter(&mut app, "");
+    wait_for_draft(&mut app, &context);
+    app.document
+        .set_object_names([(ids[1], Some("Moved".into()))])
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    viewport_frame(&mut app, &context, vec![]);
+    assert!(app.command_line_idle());
+    assert_eq!(app.document.selected_object_count(), 0);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }

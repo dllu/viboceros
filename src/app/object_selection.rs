@@ -658,6 +658,9 @@ impl VibocerosApp {
         if let Some(p) = &self.sweep_session {
             return p.selecting().then_some(ObjectSelectionFilter::Curves);
         }
+        if let Some(p) = &self.sweep_two_rails {
+            return p.selecting().then_some(ObjectSelectionFilter::Curves);
+        }
         if let Some(p) = &self.loft_prompt {
             return p.selecting().then_some(ObjectSelectionFilter::Curves);
         }
@@ -1268,6 +1271,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.sweep_two_rails.is_some() {
+            return self.continue_sweep_two_rails(input);
+        }
         if self.continue_curve_offset(input) {
             return true;
         }
@@ -2181,6 +2187,7 @@ impl VibocerosApp {
         self.length_choices = None;
         self.length_units_pending = false;
         self.clear_sweep_input();
+        self.sweep_two_rails = None;
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
@@ -2251,7 +2258,7 @@ impl VibocerosApp {
             if let Some(selection_before) = pending.selection_before {
                 if matches!(
                     pending.description.command,
-                    "Sweep1" | "Dir" | "FilletCorners"
+                    "Sweep1" | "Sweep2" | "Dir" | "FilletCorners"
                 ) {
                     self.restore_curve_selection(selection_before);
                 } else if let Err(error) = self
@@ -2296,6 +2303,10 @@ impl VibocerosApp {
     ) {
         if self.sweep_session.is_some() {
             self.select_sweep_objects(ids, mode);
+            return;
+        }
+        if self.sweep_two_rails.is_some() {
+            self.select_sweep_two_rail_curves(ids, mode);
             return;
         }
         if self.curve_boolean_prompt.is_some() {

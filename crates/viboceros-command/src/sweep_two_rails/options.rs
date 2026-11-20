@@ -1,0 +1,80 @@
+use super::*;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub enum SectionFit {
+    #[default]
+    Unchanged,
+    Rebuild(usize),
+    Refit(Real),
+}
+
+impl SectionFit {
+    pub fn parse(key: &str, value: &str) -> Result<Self, CommandError> {
+        match key
+            .trim_start_matches(['_', '-'])
+            .to_ascii_lowercase()
+            .as_str()
+        {
+            "rebuild" | "rebuildcount" => match value.parse::<usize>() {
+                Ok(0) => Ok(Self::Unchanged),
+                Ok(count @ 2..=128) => Ok(Self::Rebuild(count)),
+                _ => Err(CommandError::Usage(USAGE)),
+            },
+            "refit" | "refittolerance" => match parse_finite_real(value)? {
+                0. => Ok(Self::Unchanged),
+                distance if distance > 0. => Ok(Self::Refit(distance)),
+                _ => Err(CommandError::Usage(USAGE)),
+            },
+            "simplify" if option_name_eq(value, "None") => Ok(Self::Unchanged),
+            _ => Err(CommandError::Usage(USAGE)),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Options {
+    names: Option<[String; 2]>,
+    pub fit: SectionFit,
+}
+
+impl Options {
+    pub fn parse(args: &[&str]) -> Result<Self, CommandError> {
+        let mut names = [None, None];
+        let mut fit = None;
+        for arg in args {
+            let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+            if let Some(index) = ["Rail1Name", "Rail2Name"]
+                .iter()
+                .position(|name| option_name_eq(key, name))
+            {
+                if value.is_empty() || names[index].replace(value.to_owned()).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if fit.replace(SectionFit::parse(key, value)?).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+        }
+        let names = match names {
+            [None, None] => None,
+            [Some(a), Some(b)] => Some([a, b]),
+            _ => return Err(CommandError::Usage(USAGE)),
+        };
+        Ok(Self {
+            names,
+            fit: fit.unwrap_or_default(),
+        })
+    }
+
+    pub fn explicit_rails(&self, doc: &Document) -> Result<Option<[ObjectId; 2]>, CommandError> {
+        let Some([first, second]) = &self.names else {
+            return Ok(None);
+        };
+        let lookup =
+            |name: &str| extrude_along_curve::resolve_curve_along_curve_path(doc, &[], Some(name));
+        let rails = [lookup(first)?, lookup(second)?];
+        if rails[0] == rails[1] {
+            return Err(CommandError::Usage(USAGE));
+        }
+        Ok(Some(rails))
+    }
+}

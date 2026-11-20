@@ -1432,6 +1432,7 @@ impl VibocerosApp {
         let surface_draft_wires = if edge_handle_input {
             loft.map(loft::Prompt::preview_wires)
                 .or_else(|| self.sweep_session.as_ref().map(sweep::Session::preview_wires))
+                .or_else(|| self.sweep_two_rails.as_ref().map(sweep_two_rails::Session::preview_wires))
                 .unwrap_or(&[])
         } else {
             &[]
@@ -2073,6 +2074,7 @@ impl VibocerosApp {
         self.update_loft_pole_preview(apex_hover, ui.ctx());
         if edge_handle_input {
             self.update_sweep_preview(apex_hover, ui.ctx());
+            self.update_sweep_two_rail_preview(ui.ctx());
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());

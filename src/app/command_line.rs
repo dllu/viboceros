@@ -280,6 +280,8 @@ impl VibocerosApp {
             p.hint()
         } else if let Some(p) = &self.sweep_session {
             p.hint()
+        } else if let Some(p) = &self.sweep_two_rails {
+            p.hint()
         } else if let Some(p) = &self.loft_prompt {
             p.hint()
         } else if let Some(p) = &self.tween_surfaces_prompt {
