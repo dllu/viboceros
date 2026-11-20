@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftStyle};
+use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftProfiles, LoftStyle};
 
 pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z] [Rebuild=0..512|Refit=tolerance]";
 
@@ -15,7 +15,6 @@ impl Command for LoftCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let input = Options::parse(arguments)?;
-        let ends = input.ends;
         let selected = selected_ids(document)?;
         let profiles = selected
             .iter()
@@ -28,34 +27,12 @@ impl Command for LoftCommand {
                     .ok_or(CommandError::LoftRequiresCurves)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let options = LoftOptions {
-            crease_splitting: self.0.get().0,
-            split_at_tangents: input.split_at_tangents,
-            natural_seams: input.natural_seams,
-        };
-        let brep = if ends.is_empty() {
-            Brep::try_loft_with_surface_options(
-                &profiles,
-                input.style,
-                input.closed,
-                options,
-                document.tolerance(),
-                &mut |c, s, closed| {
-                    simplified_surface(c, s, closed, ends, input, document.tolerance())
-                },
-            )?
-        } else {
-            Brep::try_loft_with_surface_end_points(
-                &profiles,
-                input.style,
-                ends,
-                options,
-                document.tolerance(),
-                &mut |c, s, ends| {
-                    simplified_surface(c, s, false, ends, input, document.tolerance())
-                },
-            )?
-        };
+        let brep = prepare(
+            LoftProfiles::Automatic(&profiles),
+            input,
+            self.0.get().0,
+            document.tolerance(),
+        )?;
         let faces = brep.faces().len();
         document.add_geometry(Geometry::Brep(brep))?;
         Ok(format!(
@@ -63,6 +40,40 @@ impl Command for LoftCommand {
             profiles.len(),
         ))
     }
+}
+
+/// Build the exact draft B-rep through the same solver as the registered command.
+pub fn prepare(
+    profiles: LoftProfiles<'_>,
+    input: Options,
+    crease_splitting: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, CommandError> {
+    let ends = input.ends;
+    let options = LoftOptions {
+        crease_splitting,
+        split_at_tangents: input.split_at_tangents,
+        natural_seams: input.natural_seams,
+    };
+    Ok(if ends.is_empty() {
+        Brep::try_loft_from_profiles(
+            profiles,
+            input.style,
+            input.closed,
+            options,
+            tolerance,
+            &mut |c, s, closed| simplified_surface(c, s, closed, ends, input, tolerance),
+        )?
+    } else {
+        Brep::try_loft_from_profiles_and_points(
+            profiles,
+            input.style,
+            ends,
+            options,
+            tolerance,
+            &mut |c, s, ends| simplified_surface(c, s, false, ends, input, tolerance),
+        )?
+    })
 }
 
 fn simplified_surface(

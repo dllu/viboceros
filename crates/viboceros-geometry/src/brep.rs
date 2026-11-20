@@ -66,7 +66,7 @@ pub use join_edges::{
 };
 pub(crate) use join_edges::{join_breps_with_curve_witnesses, join_breps_with_preferred_trims};
 mod loft;
-pub use loft::LoftOptions;
+pub use loft::{LoftOptions, LoftProfiles};
 mod mass_properties;
 mod mesh_conversion;
 mod morph;

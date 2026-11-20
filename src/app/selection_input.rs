@@ -128,7 +128,7 @@ impl VibocerosApp {
         if self.pick_replace_block(click.object_id) {
             return;
         }
-        if self.select_loft_curves(click.object_id, click.mode) {
+        if self.select_loft_curve_click(click, pick) {
             return;
         }
         if self.pick_tween_surface(click.object_id) {

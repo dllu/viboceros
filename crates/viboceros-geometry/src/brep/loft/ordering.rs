@@ -6,8 +6,21 @@ pub(super) fn sort_profiles(
     curves: &mut [NurbsCurve],
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {
+    let (order, oriented) = profile_order(curves, tolerance)?;
+    let sorted = order
+        .into_iter()
+        .map(|i| curves[i].clone())
+        .collect::<Vec<_>>();
+    curves.clone_from_slice(&sorted);
+    Ok(oriented)
+}
+
+pub(super) fn profile_order(
+    curves: &[NurbsCurve],
+    tolerance: Tolerance,
+) -> Result<(Vec<usize>, bool), GeometryError> {
     if curves.len() < 2 {
-        return Ok(false);
+        return Ok(((0..curves.len()).collect(), false));
     }
     let closed = curves
         .iter()
@@ -15,22 +28,24 @@ pub(super) fn sort_profiles(
         .collect::<Result<Vec<_>, _>>()?;
     let all_closed = closed.iter().all(|c| *c);
     if !all_closed && closed.iter().any(|c| *c) {
-        return Ok(false);
+        return Ok(((0..curves.len()).collect(), false));
     }
-    if let Some(oriented) = sort_parallel_planes(curves, all_closed, tolerance)? {
-        return Ok(oriented);
+    if let Some(order) = parallel_plane_order(curves, all_closed, tolerance)? {
+        return Ok(order);
     }
-    if !all_closed {
-        sort_midpoint_chain(curves)?;
-    }
-    Ok(false)
+    let order = if all_closed {
+        (0..curves.len()).collect()
+    } else {
+        midpoint_chain_order(curves)?
+    };
+    Ok((order, false))
 }
 
-fn sort_parallel_planes(
-    curves: &mut [NurbsCurve],
+fn parallel_plane_order(
+    curves: &[NurbsCurve],
     all_closed: bool,
     tolerance: Tolerance,
-) -> Result<Option<bool>, GeometryError> {
+) -> Result<Option<(Vec<usize>, bool)>, GeometryError> {
     let mut normals = Vec::with_capacity(curves.len());
     for curve in curves.iter() {
         if !curve.is_planar(tolerance)? || (!all_closed && curve.is_linear(tolerance)?) {
@@ -76,16 +91,12 @@ fn sort_parallel_planes(
         return Ok(None);
     }
     let reference = normals[order[0].1];
-    let sorted = order
-        .into_iter()
-        .map(|(_, i)| curves[i].clone())
-        .collect::<Vec<_>>();
-    curves.clone_from_slice(&sorted);
+    let order = order.into_iter().map(|(_, i)| i).collect();
     // Open section ordering retains V; closed sections also orient the chart.
-    Ok(Some(all_closed && reference.dot(axis)? > 0.))
+    Ok(Some((order, all_closed && reference.dot(axis)? > 0.)))
 }
 
-fn sort_midpoint_chain(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
+fn midpoint_chain_order(curves: &[NurbsCurve]) -> Result<Vec<usize>, GeometryError> {
     let centers = curves
         .iter()
         .map(|c| {
@@ -113,10 +124,5 @@ fn sort_midpoint_chain(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
             order.push_front(next);
         }
     }
-    let sorted = order
-        .into_iter()
-        .map(|i| curves[i].clone())
-        .collect::<Vec<_>>();
-    curves.clone_from_slice(&sorted);
-    Ok(())
+    Ok(order.into_iter().collect())
 }

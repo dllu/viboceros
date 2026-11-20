@@ -6,15 +6,7 @@ pub(super) fn prepare(
     options: LoftOptions,
     tolerance: Tolerance,
 ) -> Result<(Vec<NurbsCurve>, bool), GeometryError> {
-    if curves
-        .iter()
-        .any(|c| c.control_points().len() > MAX_LOFT_SECTION_CONTROLS)
-    {
-        return Err(GeometryError::LoftResourceLimit {
-            context: "section controls",
-            maximum: MAX_LOFT_SECTION_CONTROLS,
-        });
-    }
+    validate_profile_controls(curves)?;
     let mut profiles = curves.to_vec();
     let oriented = super::ordering::sort_profiles(&mut profiles, tolerance)?;
     let closed = profiles
@@ -24,12 +16,28 @@ pub(super) fn prepare(
     if closed.iter().all(|c| *c) {
         align_closed_profiles(&mut profiles, !options.natural_seams)?;
     } else if closed.iter().all(|c| !c) {
-        align_open_profiles(&mut profiles)?;
+        align_open_profiles(&mut profiles, &[])?;
     }
     Ok((profiles, oriented))
 }
 
-fn align_open_profiles(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
+pub(super) fn validate_profile_controls(curves: &[NurbsCurve]) -> Result<(), GeometryError> {
+    if curves
+        .iter()
+        .any(|c| c.control_points().len() > MAX_LOFT_SECTION_CONTROLS)
+    {
+        return Err(GeometryError::LoftResourceLimit {
+            context: "section controls",
+            maximum: MAX_LOFT_SECTION_CONTROLS,
+        });
+    }
+    Ok(())
+}
+
+pub(super) fn align_open_profiles(
+    curves: &mut [NurbsCurve],
+    fixed: &[bool],
+) -> Result<(), GeometryError> {
     let Some(first) = curves.first() else {
         return Ok(());
     };
@@ -37,7 +45,7 @@ fn align_open_profiles(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
         first.evaluate(*first.domain().start())?,
         first.evaluate(*first.domain().end())?,
     ];
-    for curve in &mut curves[1..] {
+    for (index, curve) in curves.iter_mut().enumerate().skip(1) {
         let ends = [
             curve.evaluate(*curve.domain().start())?,
             curve.evaluate(*curve.domain().end())?,
@@ -55,7 +63,7 @@ fn align_open_profiles(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
             forward = distances[0] / scale + distances[1] / scale;
             backward = distances[2] / scale + distances[3] / scale;
         }
-        if backward < forward {
+        if backward < forward && !fixed.get(index).copied().unwrap_or(false) {
             *curve = curve.reversed()?;
             previous = [ends[1], ends[0]];
         } else {

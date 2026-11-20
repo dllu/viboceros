@@ -24,7 +24,7 @@ fn seam(app: &VibocerosApp, id: ObjectId) -> Point3 {
 }
 
 fn marker(app: &VibocerosApp, index: usize) -> Point3 {
-    app.curve_seam_session.as_ref().unwrap().markers()[index].point
+    app.curve_seam_session.as_ref().unwrap().editor.markers()[index].point
 }
 
 fn pointer(pos: egui::Pos2, pressed: bool) -> egui::Event {

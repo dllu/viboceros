@@ -23,6 +23,7 @@ fn loft_refit_value_prompt_option_undo_and_model_undo_are_independent() {
     enter(&mut app, "Undo");
     enter(&mut app, "RefitTolerance");
     enter(&mut app, "0.0001");
+    enter(&mut app, "Simplify=Refit");
     enter(&mut app, "Refit=-1");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(app.document.undo_label(), None);
@@ -133,4 +134,42 @@ fn point_ended_loft_uses_command_entry_and_restores_its_poles_on_redo() {
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     enter(&mut app, "Redo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), after);
+}
+
+#[test]
+fn loft_remembers_inactive_rebuild_and_refit_values_between_previews() {
+    let mut app = test_app();
+    for command in ["Line -2,0,0 2,0,0", "Line -2,0,3 2,0,3"] {
+        app.commands.execute(&mut app.document, command).unwrap();
+    }
+    let ids = app
+        .document
+        .objects()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.restore_curve_selection(ids);
+    app.document.clear_history().unwrap();
+
+    enter(&mut app, "Loft");
+    let before = app.loft_prompt.as_ref().unwrap().preview_wires().to_vec();
+    assert!(!before.is_empty());
+    enter(&mut app, "RebuildCount=7 RefitTolerance=0.046");
+    assert_eq!(app.loft_prompt.as_ref().unwrap().preview_wires(), before);
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "Cancel");
+
+    enter(&mut app, "Loft");
+    assert_eq!(app.loft_prompt.as_ref().unwrap().preview_wires(), before);
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .contains("RefitTolerance=0.046")
+    );
+    enter(&mut app, "Simplify=Rebuild");
+    enter(&mut app, "");
+    let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Loft preview");
+    };
+    assert_eq!(output.faces()[0].surface().control_point_count_v(), 7);
 }

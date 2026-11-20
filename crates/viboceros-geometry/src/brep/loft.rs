@@ -2,6 +2,7 @@
 //! ordered tensor loft API.
 
 use super::*;
+use std::borrow::Cow;
 mod ordering;
 mod orientation;
 mod profiles;
@@ -25,6 +26,42 @@ impl Default for LoftOptions {
             crease_splitting: true,
             split_at_tangents: false,
             natural_seams: false,
+        }
+    }
+}
+
+/// Source curves for a Loft. An interactive editor can supply sections whose
+/// order, seams and traversal have already been accepted by the user.
+#[derive(Clone, Copy, Debug)]
+pub enum LoftProfiles<'a> {
+    Automatic(&'a [NurbsCurve]),
+    Aligned {
+        curves: &'a [NurbsCurve],
+        oriented: bool,
+    },
+}
+
+impl<'a> LoftProfiles<'a> {
+    pub fn curves(self) -> &'a [NurbsCurve] {
+        match self {
+            Self::Automatic(curves) | Self::Aligned { curves, .. } => curves,
+        }
+    }
+
+    fn prepare(
+        self,
+        options: LoftOptions,
+        tolerance: Tolerance,
+    ) -> Result<(Cow<'a, [NurbsCurve]>, bool), GeometryError> {
+        match self {
+            Self::Automatic(curves) => {
+                let (curves, oriented) = profiles::prepare(curves, options, tolerance)?;
+                Ok((Cow::Owned(curves), oriented))
+            }
+            Self::Aligned { curves, oriented } => {
+                profiles::validate_profile_controls(curves)?;
+                Ok((Cow::Borrowed(curves), oriented))
+            }
         }
     }
 }
@@ -73,8 +110,27 @@ impl Brep {
         tolerance: Tolerance,
         loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, bool) -> Result<NurbsSurface, E>,
     ) -> Result<Self, E> {
-        crate::loft::validate_count(curves.len(), closed)?;
-        let (profiles, oriented) = profiles::prepare(curves, options, tolerance)?;
+        Self::try_loft_from_profiles(
+            LoftProfiles::Automatic(curves),
+            style,
+            closed,
+            options,
+            tolerance,
+            loft,
+        )
+    }
+
+    /// Reuse the command's topology and orientation policy for staged profiles.
+    pub fn try_loft_from_profiles<E: From<GeometryError>>(
+        profiles: LoftProfiles<'_>,
+        style: LoftStyle,
+        closed: bool,
+        options: LoftOptions,
+        tolerance: Tolerance,
+        loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, bool) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
+        crate::loft::validate_count(profiles.curves().len(), closed)?;
+        let (profiles, oriented) = profiles.prepare(options, tolerance)?;
         let surface = loft(&profiles, style, closed)?;
         Ok(Self::from_loft_surface(
             surface, style, closed, options, tolerance, oriented,
@@ -111,12 +167,48 @@ impl Brep {
         tolerance: Tolerance,
         loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, LoftEndPoints) -> Result<NurbsSurface, E>,
     ) -> Result<Self, E> {
-        crate::loft::validate_end_points(curves.len(), style, ends)?;
-        let (profiles, oriented) = profiles::prepare(curves, options, tolerance)?;
+        Self::try_loft_from_profiles_and_points(
+            LoftProfiles::Automatic(curves),
+            style,
+            ends,
+            options,
+            tolerance,
+            loft,
+        )
+    }
+
+    /// Reuse the same topology when the staged Loft includes point ends.
+    pub fn try_loft_from_profiles_and_points<E: From<GeometryError>>(
+        profiles: LoftProfiles<'_>,
+        style: LoftStyle,
+        ends: LoftEndPoints,
+        options: LoftOptions,
+        tolerance: Tolerance,
+        loft: &mut impl FnMut(&[NurbsCurve], LoftStyle, LoftEndPoints) -> Result<NurbsSurface, E>,
+    ) -> Result<Self, E> {
+        crate::loft::validate_end_points(profiles.curves().len(), style, ends)?;
+        let (profiles, oriented) = profiles.prepare(options, tolerance)?;
         let surface = loft(&profiles, style, ends)?;
         Ok(Self::from_loft_surface(
             surface, style, false, options, tolerance, oriented,
         )?)
+    }
+
+    /// Map the command's automatic section order back to the source objects.
+    pub fn loft_profile_order(
+        curves: &[NurbsCurve],
+        tolerance: Tolerance,
+    ) -> Result<(Vec<usize>, bool), GeometryError> {
+        profiles::validate_profile_controls(curves)?;
+        ordering::profile_order(curves, tolerance)
+    }
+
+    /// Align open profiles before exposing their traversal to an interactive editor.
+    pub fn align_loft_open_profiles(
+        curves: &mut [NurbsCurve],
+        fixed: &[bool],
+    ) -> Result<(), GeometryError> {
+        profiles::align_open_profiles(curves, fixed)
     }
 
     fn from_loft_surface(

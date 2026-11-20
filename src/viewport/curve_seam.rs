@@ -49,6 +49,26 @@ impl Marker {
             tangent,
         })
     }
+    pub(crate) fn endpoint(index: usize, curve: CurveRef<'_>, start: bool) -> Option<Self> {
+        let domain = curve.domain();
+        let (parameter, side) = if start {
+            (*domain.start(), ParameterSide::Right)
+        } else {
+            (*domain.end(), ParameterSide::Left)
+        };
+        Some(Self {
+            index,
+            point: curve.evaluate(parameter).ok()?,
+            tangent: start
+                .then(|| {
+                    curve
+                        .evaluate_with_tangent_on_side(parameter, side)
+                        .ok()
+                        .map(|sample| sample.tangent().as_vector())
+                })
+                .flatten(),
+        })
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -68,6 +88,7 @@ pub(crate) struct Overlay<'a> {
     pub(crate) drag: Option<Drag<'a>>,
     pub(crate) active: Option<usize>,
     pub(crate) flipping: bool,
+    pub(crate) connect: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -138,7 +159,9 @@ impl Viewport {
                 previous = None;
                 continue;
             };
-            if let Some(last) = previous {
+            if overlay.connect
+                && let Some(last) = previous
+            {
                 painter.line_segment([last, pixel], Stroke::new(1., guide));
             }
             previous = Some(pixel);

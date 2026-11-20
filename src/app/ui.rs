@@ -62,6 +62,7 @@ impl VibocerosApp {
         self.validate_curve_extend();
         self.validate_curve_match();
         self.validate_curve_seams();
+        self.validate_loft();
         self.validate_surface_seam();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
@@ -1420,11 +1421,12 @@ impl VibocerosApp {
         };
         let edge_blend_handle_mode = self.edge_handle_mode(&edge_placement_curves);
         let show_edge_blend_handles = self.show_edge_size_handles();
-        let curve_seam_session = self
-            .curve_seam_session
-            .as_ref()
-            .filter(|s| edge_handle_input && !s.selecting());
-        let seam_markers = curve_seam_session.map(curve_seam::Session::markers);
+        let curve_seam_editor = self.curve_seam_session.as_ref()
+            .filter(|session| edge_handle_input && !session.selecting())
+            .map(|session| &session.editor);
+        let loft = self.loft_prompt.as_ref().filter(|_| edge_handle_input);
+        let seam_markers = curve_seam_editor.map(curve_seam::Editor::markers)
+            .or_else(|| loft.map(loft::Prompt::seam_markers));
         let surface_seam = self.surface_seam_session.as_ref()
             .filter(|_| edge_handle_input)
             .and_then(surface_seam::Session::overlay);
@@ -1893,9 +1895,11 @@ impl VibocerosApp {
                             edge_parameters,
                             edge_distance_parameters,
                             end_markers: &end_markers,
-                            curve_seams: curve_seam_session
-                                .zip(seam_markers.as_deref())
-                                .map(|(session, markers)| session.overlay(markers, index)),
+                            curve_seams: seam_markers.as_deref().and_then(|markers| {
+                                curve_seam_editor.map(|editor| editor.overlay(markers, index))
+                                    .or_else(|| loft?.seam_overlay(markers, index))
+                            }),
+                            loft_wires: loft.map_or(&[], loft::Prompt::preview_wires),
                             surface_seam,
                             current_end_marker,
                             end_marker_color,

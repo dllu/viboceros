@@ -95,8 +95,14 @@ global `CreaseSplitting` preference; `Natural` retains supplied profile seams.
 `StartPoint=x,y,z` and `EndPoint=x,y,z` add [point poles](../loft-points.md),
 including a single closed profile with two poles.
 `Rebuild=6` adds [section rebuilding](../loft-rebuild.md).
-Bare `Loft` opens ordered curve selection; its `Point` option picks either pole
-with snapping. Enter accepts, `Undo` revises input, and Escape cancels.
+Run `Loft` with preselected profiles or select them at the prompt. Pick open
+curves near corresponding ends or use `Point` to pick a pole with snapping.
+For closed profiles, drag the seam markers or use `Flip`, `Automatic`,
+`Natural`, and `SnapToKnots`. Enter opens the options preview. Change the style,
+simplification, closure, or tangent splitting while previewing the result.
+`RebuildCount` and `RefitTolerance` retain their values when their simplification
+modes are inactive. `AlignCurves` lets you reverse open sections or revisit the closed seams.
+Enter accepts the preview, `Undo` revises the current input, and Escape cancels.
 See [Loft geometry, ordering, tests and limits](../loft.md), especially
 the endpoint-weight normalization policy for rational profiles.
 

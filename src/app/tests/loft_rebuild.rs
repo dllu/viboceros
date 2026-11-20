@@ -32,6 +32,7 @@ fn loft_rebuild_point_prompt_undo_and_model_history_are_independent() {
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     assert_eq!(app.document.undo_label(), None);
     enter(&mut app, "");
+    enter(&mut app, "");
     let output = app.document.objects().find(|o| o.id() != id).unwrap();
     let Geometry::Brep(brep) = output.geometry() else {
         panic!("Loft B-rep")
