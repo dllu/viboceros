@@ -6,6 +6,7 @@ const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
 const DENSE_GRID_AXIS_LIMIT: usize = 32;
 const DENSE_OPEN_DISPLAY_AXIS_LIMIT: usize = 96;
 const DENSE_DISPLAY_CHORD_DENSITY: Real = 0.35;
+const DENSE_ISOLATED_DISPLAY_CHORD_DENSITY: Real = 0.5;
 
 fn dense_grid_axis_limit(face_count: usize) -> usize {
     // Reserve part of the mesh budget for the actual trim curves. Allow more
@@ -127,6 +128,13 @@ impl Brep {
                 })
                 .collect::<Vec<_>>();
             let sampling = Sampling::per_face(&grids).with_axis_limit(limit);
+            let chord_density = if self.faces.len() == 1 && !self.is_solid() {
+                // The budget for an isolated patch can resolve tight folds
+                // without increasing the cost of dense assembled bodies.
+                DENSE_ISOLATED_DISPLAY_CHORD_DENSITY
+            } else {
+                DENSE_DISPLAY_CHORD_DENSITY
+            };
             if retain_parameters
                 && let Ok(mesh) = self.tessellate_conforming_with_chords(
                     sampling
@@ -134,7 +142,7 @@ impl Brep {
                         .with_display_edge_samples(samples_per_span),
                     tolerance,
                     true,
-                    DENSE_DISPLAY_CHORD_DENSITY,
+                    chord_density,
                 )
             {
                 return Ok(mesh);
