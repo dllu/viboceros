@@ -115,6 +115,24 @@ pub(super) struct CertifiedJoinedRefit {
     pub maximum_deviation_bound: Real,
 }
 
+/// Fit and retime a regular region under Sweep1's measured length lookup.
+pub(crate) fn try_retimed_cubic_pieces(
+    source: &NurbsCurve,
+    tolerance: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    let Some(raw) = pieces::construct(
+        source,
+        tolerance,
+        corner_angle(None),
+        pieces::SplitClock::SourceLookupWithSampledMidpoints,
+    )?
+    else {
+        return Ok(None);
+    };
+    let retimed = join::retime(&raw.curve)?;
+    Ok(crate::curve_fit::g1::within_deviation(source, &retimed, tolerance)?.then_some(retimed))
+}
+
 pub(super) fn certified_joined_refit(
     source: &NurbsCurve,
     tolerance: Real,

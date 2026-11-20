@@ -13,13 +13,16 @@ pub(super) fn construct_refined(
     if !super::super::super::parameterize::fitted_region_breaks(raw, angle)?.is_empty() {
         return construct(raw, angle).map(Some);
     }
+    rebuild::propose(&retime(raw)?, tolerance)
+}
+
+pub(super) fn retime(raw: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
     let cuts = raw
         .knots()
         .chunk_by(|a, b| a == b)
         .map(|g| g[0])
         .collect::<Vec<_>>();
-    let retimed = c1_region_impl(raw, &cuts, 0, cuts.len() - 1, false)?;
-    rebuild::propose(&retimed, tolerance)
+    c1_region_impl(raw, &cuts, 0, cuts.len() - 1, false)
 }
 
 pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, GeometryError> {

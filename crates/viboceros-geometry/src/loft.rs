@@ -20,6 +20,7 @@ pub use points::{
     try_loft_nurbs_curves_with_matched_ends_and_operations,
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
+pub(crate) use refit::try_retimed_cubic_pieces;
 pub use refit::{
     AdaptiveLinearRefitProposal, prepare_refitted_loft_sections_with_operations,
     try_loft_nurbs_curves_refitted, try_loft_nurbs_curves_refitted_with_angle,

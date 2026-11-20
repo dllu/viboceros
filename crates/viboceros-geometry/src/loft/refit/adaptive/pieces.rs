@@ -1,6 +1,8 @@
 //! Adaptive endpoint-frame proposals; complete image certificates admit them.
 use super::*;
 
+const LENGTH_INTERVALS: usize = 8;
+
 #[derive(Clone, Copy)]
 struct Interval {
     start: Real,
@@ -58,6 +60,8 @@ impl Interval {
 pub(super) enum SplitClock {
     IntervalLength,
     SourceLookup,
+    // Sweep1's measured lookup qualifies splits whose midpoints are sampled.
+    SourceLookupWithSampledMidpoints,
 }
 
 // Raw pieces are provisional. Only the caller can certify their complete
@@ -103,10 +107,12 @@ pub(super) fn construct(
     }
     let lookup = match clock {
         SplitClock::IntervalLength => None,
-        SplitClock::SourceLookup => {
+        SplitClock::SourceLookup | SplitClock::SourceLookupWithSampledMidpoints => {
             let sampler =
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
-            let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
+            let fractions = std::array::from_fn::<_, { LENGTH_INTERVALS + 1 }, _>(|i| {
+                i as Real / LENGTH_INTERVALS as Real
+            });
             Some(sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?)
         }
     };
@@ -141,6 +147,11 @@ pub(super) fn construct(
             to,
             ..
         } = interval;
+        if matches!(clock, SplitClock::SourceLookupWithSampledMidpoints)
+            && (from.midpoint(to) * LENGTH_INTERVALS as Real).fract() != 0.
+        {
+            return Ok(None);
+        }
         let trimmed = source.try_trimmed(start..=end)?;
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
         let parameters = if let Some(lookup) = &lookup {
@@ -268,8 +279,8 @@ fn sampled_fit(
 }
 
 fn lookup_parameter(lookup: &[Real], fraction: Real) -> Real {
-    let station = fraction * 8.;
-    let index = (station.floor() as usize).min(7);
+    let station = fraction * LENGTH_INTERVALS as Real;
+    let index = (station.floor() as usize).min(LENGTH_INTERVALS - 1);
     let blend = station - index as Real;
     lookup[index].mul_add(1. - blend, lookup[index + 1] * blend)
 }

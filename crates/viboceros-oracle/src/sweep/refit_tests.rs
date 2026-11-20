@@ -66,6 +66,8 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
                 "closed-refit-0.1",
                 "polyline-refit-0.001",
                 "polyline-refit-0.01",
+                "rational-refit-0.001",
+                "rational-refit-0.01",
                 "two-open-refit-0.01",
                 "two-closed-refit-0.01",
             ][..]
@@ -79,6 +81,8 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
                 "open-refit-0.1",
                 "closed-refit-0.0",
                 "closed-refit-0.001",
+                "rational-refit-0.001",
+                "rational-refit-0.01",
                 "polyline-refit-0.01",
                 "two-open-refit-0.01",
                 "two-closed-refit-0.01",
@@ -93,6 +97,8 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
             "sweep1_refit_common_handles",
             &[
                 "common-0.9-1-0.01",
+                "common-0.9-1-0.001",
+                "common-0.97-1-0.001",
                 "common-0.97-1-0.01",
                 "common-0.99-1-0.001",
                 "common-0.99-1-0.01",
@@ -113,8 +119,10 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
                 "single-scale-0.5-0.01",
                 "equal-pair-scale-0.5-0.01",
                 "single-scale-2.0-0.01",
+                "single-scale-2.0-0.001",
                 "equal-pair-scale-2.0-0.01",
                 "single-scale-10.0-0.01",
+                "single-scale-10.0-0.001",
                 "domain-0.001",
                 "elevated-0.001",
                 "reversed-0.001",
@@ -213,6 +221,6 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
             compared += 1;
         }
     }
-    assert_eq!(compared, 46);
+    assert_eq!(compared, 54);
     println!("{compared} captures; maximum complete-surface bound {maximum:.3e}");
 }

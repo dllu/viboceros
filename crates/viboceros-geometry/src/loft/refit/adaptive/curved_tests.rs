@@ -1,5 +1,28 @@
 use super::*;
 
+#[test]
+fn sweep_refit_requires_measured_midpoints_in_both_subdivision_halves() {
+    let source = NurbsCurve::try_new(
+        2,
+        [[0., 0., 0.], [1., 2., 0.], [3., 0., 0.]]
+            .map(|p| Point3::try_from(p).unwrap())
+            .to_vec(),
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    assert_eq!(
+        try_retimed_cubic_pieces(&source, 0.001)
+            .unwrap()
+            .unwrap()
+            .control_points()
+            .len(),
+        6
+    );
+    // Interpolated midpoints beyond the measured Sweep1 lookup produce a
+    // different tight fit for this curve, even with a source-distance proof.
+    assert!(try_retimed_cubic_pieces(&source, 2e-6).unwrap().is_none());
+}
+
 fn unequal_source() -> NurbsCurve {
     NurbsCurve::try_new(
         3,

@@ -97,6 +97,10 @@ fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
     assert_ne!(fitted, coarse);
     enter(&mut app, "Undo");
     wait_for_wires(&mut app, &context, |wires| wires == fitted);
+    enter(&mut app, "RefitTolerance=0.0005");
+    let adaptive = wait_for_wires(&mut app, &context, |wires| {
+        wires.iter().any(|wire| wire.control_points().len() == 6)
+    });
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
     assert_eq!(app.document.undo_label(), None);
 
@@ -104,10 +108,11 @@ fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
     let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
         panic!("expected the refitted Sweep1 draft to commit");
     };
-    assert_eq!(output.wireframe_curves(1, tolerance).unwrap(), fitted);
+    assert_eq!(output.wireframe_curves(1, tolerance).unwrap(), adaptive);
     let surface = output.faces()[0].surface();
     assert_eq!((surface.degree_u(), surface.degree_v()), (1, 3));
-    let native = point(0.7967266525831762, 1.5934533051663524, 0.);
+    assert_eq!(surface.control_point_count_v(), 6);
+    let native = point(0.2746064667026328, 0.5492129334052656, 0.);
     let handle = surface.control_point(0, 1).unwrap().point();
     assert!(handle.distance_to(native).unwrap() < 1e-7);
     assert_eq!(app.document.undo_label(), Some("Sweep1"));
@@ -115,7 +120,7 @@ fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
     enter(&mut app, "Sweep1");
     enter(&mut app, "RefitTolerance");
-    assert!(app.command_log.back().unwrap().contains("[0.01]"));
+    assert!(app.command_log.back().unwrap().contains("[0.0005]"));
 }
 
 #[test]

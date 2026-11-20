@@ -19,9 +19,8 @@ impl Sweep1 {
 
     /// Fit ordered real profiles while preserving their rail stations.
     ///
-    /// Supports exact polygon regions, regular open single-span cubic proposals,
-    /// and full circular profiles that can use four cubic spans. Inconclusive
-    /// proposals and profiles requiring adaptive fitting return an error.
+    /// Supports exact polygon regions, regular open profiles, and full circles
+    /// that can use four cubic spans. Lone open profiles can be fit adaptively.
     pub fn refit_sections(
         mut sections: Vec<SweepSection>,
         fit_tolerance: Real,
@@ -54,7 +53,7 @@ impl Sweep1 {
 
 fn unsupported() -> GeometryError {
     GeometryError::UnsupportedCurveApproximation {
-        context: "Sweep1 Refit requires exact straight regions, four-span circular fits, or a verified single cubic. Adaptive section fitting remains unfinished",
+        context: "Sweep1 Refit could not fit the selected profile at this tolerance",
     }
 }
 
@@ -68,14 +67,7 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
     if source.is_closed()? {
         return circle::fit(source, limit, single)?.ok_or_else(unsupported);
     }
-    // Regular Bézier sources need no separate corner or discontinuity policy.
-    if source.control_points().len() != source.degree() + 1
-        || source.degree() > 16
-        || source
-            .control_points()
-            .iter()
-            .any(|c| c.weight() != source.control_points()[0].weight())
-    {
+    if source.degree() > 16 || source.control_points().iter().any(|c| c.weight() <= 0.) {
         return Err(unsupported());
     }
     let initial = g1::initial_cubic(source).map_err(|_| unsupported())?;
@@ -85,16 +77,19 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
     if limit >= chord {
         return Err(unsupported());
     }
-    let first = one_pass(source, &initial, limit)?;
     if !single {
-        return Ok(first);
+        if source.control_points().len() != source.degree() + 1 {
+            return Err(unsupported());
+        }
+        return single_span_proposal(source, &initial, limit)?.ok_or_else(unsupported);
     }
+    let first = open_pass(source, &initial, limit)?;
     // Lone profiles use the fitted cubic as the source of a second pass.
     let clock = fit_clock(source, &first)?;
     let fitted = if first == initial {
         first
     } else {
-        let fitted = one_pass(&first, &initial, limit)?;
+        let fitted = open_pass(&first, &initial, limit)?;
         if !g1::within_deviation(source, &fitted, comparison_limit(limit))? {
             return Err(unsupported());
         }
@@ -103,11 +98,24 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
     fitted.try_reparameterized(0. ..=clock)
 }
 
-fn one_pass(
+fn open_pass(
     source: &NurbsCurve,
     initial: &NurbsCurve,
     limit: Real,
 ) -> Result<NurbsCurve, GeometryError> {
+    if source.control_points().len() == source.degree() + 1
+        && let Some(fitted) = single_span_proposal(source, initial, limit)?
+    {
+        return Ok(fitted);
+    }
+    crate::loft::try_retimed_cubic_pieces(source, comparison_limit(limit))?.ok_or_else(unsupported)
+}
+
+fn single_span_proposal(
+    source: &NurbsCurve,
+    initial: &NurbsCurve,
+    limit: Real,
+) -> Result<Option<NurbsCurve>, GeometryError> {
     let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
     let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
     let parameters = sampler.parameters_at_incremental_normalized_lengths(&fractions, 1e-4)?;
@@ -128,14 +136,14 @@ fn one_pass(
         g1::within_deviation(source, candidate, comparison_limit(limit))
     };
     if fits(initial)? {
-        return Ok(initial.clone());
+        return Ok(Some(initial.clone()));
     }
-    let adjusted =
-        g1::adjusted_cubic_at_point(initial, samples[3], limit)?.ok_or_else(unsupported)?;
-    if !fits(&adjusted)? {
-        return Err(unsupported());
+    if let Some(adjusted) = g1::adjusted_cubic_at_point(initial, samples[3], limit)?
+        && fits(&adjusted)?
+    {
+        return Ok(Some(adjusted));
     }
-    Ok(adjusted)
+    Ok(None)
 }
 
 fn comparison_limit(station_limit: Real) -> Real {
