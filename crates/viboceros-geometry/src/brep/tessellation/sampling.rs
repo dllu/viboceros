@@ -349,7 +349,8 @@ pub(super) fn append_trimmed_surface_grid_parameters(
             // the longer physical direction of the trimmed patch.
             let short = usize::from(aspect[1] < aspect[0]);
             let long = 1 - short;
-            let factor = aspect[short].recip().sqrt().min(2.5);
+            // Keep at least a third of the short-axis station budget.
+            let factor = aspect[short].recip().sqrt().min(3.);
             let mut counts = [0; 2];
             counts[long] = wanted[long].min((limit as Real * factor) as usize);
             counts[short] = wanted[short].min(limit * limit / counts[long]);
