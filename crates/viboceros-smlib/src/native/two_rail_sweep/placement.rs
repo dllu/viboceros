@@ -8,6 +8,8 @@ use viboceros_geometry::{
     AffineTransform3, NurbsCurve, Point3, SweepEndPoints, Tolerance, WeightedPoint3,
 };
 
+mod closed;
+
 pub(super) struct PreparedRail {
     pub(super) curve: NurbsCurve,
     pub(super) original: NurbsCurve,
@@ -50,6 +52,8 @@ pub(super) struct Placement {
     pub(super) origin: Point3,
     pub(super) to_local: AffineTransform3,
     pub(super) refit_rails: bool,
+    pub(super) closed_rails: bool,
+    pub(super) closed_loop: bool,
 }
 
 pub(super) fn prepare_placement(
@@ -60,6 +64,15 @@ pub(super) fn prepare_placement(
     tolerance: Tolerance,
 ) -> Result<Placement, Error> {
     let ends = options.ends;
+    let closed_rails = match [first.is_closed()?, second.is_closed()?] {
+        [true, true] if ends.is_empty() => true,
+        [false, false] if !options.closed => false,
+        _ => {
+            return Err(unsupported(
+                "a closed sweep needs two closed rails and open profiles without point ends",
+            ));
+        }
+    };
     if options.slashes.len() > MAX_TWO_RAIL_SLASHES {
         return Err(unsupported("slash count exceeds the limit"));
     }
@@ -81,8 +94,8 @@ pub(super) fn prepare_placement(
         ));
     }
     let mut prepared = [
-        prepare_rail(first, sections, ends, tolerance)?,
-        prepare_rail(second, sections, ends, tolerance)?,
+        prepare_rail(first, sections, ends, closed_rails, tolerance)?,
+        prepare_rail(second, sections, ends, closed_rails, tolerance)?,
     ];
     let origin = prepared[0].curve.evaluate(0.)?;
     let zero = Point3::try_new(0., 0., 0.)?;
@@ -92,15 +105,20 @@ pub(super) fn prepare_placement(
         prepared[1].curve.transformed(to_local)?,
     ];
     let mut rows = Vec::with_capacity(row_count);
+    let locate = if closed_rails {
+        closed::contact
+    } else {
+        contact
+    };
     for section in sections {
-        let mut curve = prepare(section, tolerance, false)?;
+        let mut curve = prepare(section, tolerance, false, false)?;
         let local = curve.transformed(to_local)?;
         let endpoints = [local.evaluate(0.)?, local.evaluate(1.)?];
         let mut matches = Vec::new();
         for reverse in [false, true] {
             if let (Some(a), Some(b)) = (
-                contact(&local_rails[0], endpoints[usize::from(reverse)], tolerance)?,
-                contact(&local_rails[1], endpoints[usize::from(!reverse)], tolerance)?,
+                locate(&local_rails[0], endpoints[usize::from(reverse)], tolerance)?,
+                locate(&local_rails[1], endpoints[usize::from(!reverse)], tolerance)?,
             ) {
                 matches.push((a, b, reverse));
             }
@@ -133,7 +151,18 @@ pub(super) fn prepare_placement(
         }
     }
     let single = rows.len() == 1;
-    let partial = retain_sections(&mut prepared, &mut rows, ends.is_empty())?;
+    let closed_loop = closed_rails && (options.closed || single);
+    let (partial, refit_closed) = if closed_rails {
+        (
+            false,
+            closed::retain(&mut prepared, &mut rows, closed_loop)?,
+        )
+    } else {
+        (
+            retain_sections(&mut prepared, &mut rows, ends.is_empty())?,
+            false,
+        )
+    };
     let independent = rows
         .iter()
         .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10);
@@ -142,11 +171,12 @@ pub(super) fn prepare_placement(
     let refit_rails = options.refit_rails
         || !options.slashes.is_empty()
         || independent
+        || refit_closed
         || (partial && !single && ends.is_empty());
-    if !refit_rails && prepared.iter().any(|rail| rail.curve.is_rational()) {
+    if !closed_rails && !refit_rails && prepared.iter().any(|rail| rail.curve.is_rational()) {
         return Err(unsupported("rational rails require refitting"));
     }
-    let paired_stations = if refit_rails {
+    let paired_stations = if refit_rails || closed_rails {
         collect_paired_stations(&prepared, &rows, options.slashes, tolerance)?
     } else {
         Vec::new()
@@ -158,6 +188,8 @@ pub(super) fn prepare_placement(
         origin,
         to_local,
         refit_rails,
+        closed_rails,
+        closed_loop,
     })
 }
 
@@ -326,11 +358,12 @@ fn prepare_rail(
     curve: &NurbsCurve,
     sections: &[NurbsCurve],
     ends: SweepEndPoints,
+    closed: bool,
     tolerance: Tolerance,
 ) -> Result<PreparedRail, Error> {
     if ends.is_empty() {
         return Ok(PreparedRail {
-            curve: prepare(curve, tolerance, true)?,
+            curve: prepare(curve, tolerance, true, closed)?,
             original: curve.clone(),
         });
     }
@@ -344,7 +377,7 @@ fn prepare_rail(
     if end < start {
         original = original.reversed()?;
     }
-    let prepared = clamp_curve(&prepare(&original, tolerance, true)?)?;
+    let prepared = clamp_curve(&prepare(&original, tolerance, true, false)?)?;
     let mut points = prepared.control_points().to_vec();
     if let Some(point) = ends.start {
         points[0] = WeightedPoint3::try_new(point, points[0].weight())?;
@@ -363,6 +396,7 @@ fn prepare(
     curve: &NurbsCurve,
     tolerance: Tolerance,
     allow_rational: bool,
+    allow_closed: bool,
 ) -> Result<NurbsCurve, Error> {
     if curve.degree() > 16 || curve.control_points().len() > 128 {
         return Err(unsupported(
@@ -374,10 +408,11 @@ fn prepare(
             "requires polynomial input curves outside refitting",
         ));
     }
-    if curve
-        .evaluate(*curve.domain().start())?
-        .distance_to(curve.evaluate(*curve.domain().end())?)?
-        <= tolerance.absolute()
+    if (!allow_closed
+        && curve
+            .evaluate(*curve.domain().start())?
+            .distance_to(curve.evaluate(*curve.domain().end())?)?
+            <= tolerance.absolute())
         || curve.knots()[curve.degree() + 1..curve.control_points().len()]
             .windows(curve.degree() + 1)
             .any(|k| k.iter().all(|v| *v == k[0]))

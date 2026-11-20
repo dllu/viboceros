@@ -62,12 +62,17 @@ impl VibocerosApp {
             "Refit",
             "MaintainHeight",
             "RefitRails",
+            "Closed",
         ]
         .into_iter()
         .find(|option| option.eq_ignore_ascii_case(name))
         {
-            self.sweep_two_rails.as_mut().unwrap().value = Some(option);
-            self.log_sweep_two_rails();
+            if option == "Closed" && !session.can_close() {
+                self.log_sweep_two_rail_closed_requirements();
+            } else {
+                self.sweep_two_rails.as_mut().unwrap().value = Some(option);
+                self.log_sweep_two_rails();
+            }
         } else if let Ok(id) = name.parse::<ObjectId>() {
             self.select_sweep_two_rail_curves([id], SelectionMode::Add);
         } else if name.eq_ignore_ascii_case("SelAll") && session.selecting() {
@@ -94,8 +99,13 @@ impl VibocerosApp {
 
     fn set_sweep_two_rail_option(&mut self, option: &str, value: &str) {
         let height = option.eq_ignore_ascii_case("MaintainHeight");
-        if !height && !option.eq_ignore_ascii_case("RefitRails") {
+        let closed = option.eq_ignore_ascii_case("Closed");
+        if !height && !closed && !option.eq_ignore_ascii_case("RefitRails") {
             self.set_sweep_two_rail_fit(option, value);
+            return;
+        }
+        if closed && !self.sweep_two_rails.as_ref().unwrap().can_close() {
+            self.log_sweep_two_rail_closed_requirements();
             return;
         }
         match Options::parse_toggle(value) {
@@ -105,6 +115,8 @@ impl VibocerosApp {
                 let mut next = session.state.shape;
                 let toggle = if height {
                     &mut next.maintain_height
+                } else if closed {
+                    &mut next.closed
                 } else {
                     &mut next.refit_rails
                 };
@@ -118,6 +130,13 @@ impl VibocerosApp {
             }
             Err(error) => self.push_log(format!("Error: {error}")),
         }
+    }
+
+    fn log_sweep_two_rail_closed_requirements(&mut self) {
+        self.push_log(
+            "Sweep2: Closed is available in review with two closed rails and at least two profiles"
+                .into(),
+        );
     }
 
     fn set_sweep_two_rail_fit(&mut self, option: &str, value: &str) {

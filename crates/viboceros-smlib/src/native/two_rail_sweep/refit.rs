@@ -293,7 +293,7 @@ pub(super) fn sweep<'a>(
             let controls = blend.interpolate(rails, DEGREE, &knots, &sites, |t| {
                 samples.clock.locations(t)
             })?;
-            let surface = blend.tensor(DEGREE, &knots, &controls, |i| {
+            let surface = blend.tensor(DEGREE, &knots, &controls, None, |i| {
                 [
                     fitted[0].control_points()[i].point(),
                     fitted[1].control_points()[i].point(),

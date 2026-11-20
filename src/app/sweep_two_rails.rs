@@ -100,6 +100,14 @@ impl Session {
         self.rail_count() == 2 && self.section_count() > 0
     }
 
+    fn closed_rails(&self) -> bool {
+        self.rail_count() == 2 && self.state.rails.iter().all(Rail::is_closed)
+    }
+
+    fn can_close(&self) -> bool {
+        self.state.review && self.section_count() > 1 && self.closed_rails()
+    }
+
     fn profile_ids(&self) -> Vec<ObjectId> {
         self.state.picks.iter().map(|pick| pick.id).collect()
     }
@@ -131,12 +139,22 @@ impl Session {
             Some("Refit") => "Enter the cross-section refit tolerance",
             Some("MaintainHeight") => "Maintain height? Choose Yes or No",
             Some("RefitRails") => "Refit rails? Choose Yes or No",
+            Some("Closed") => "Close the sweep? Choose Yes or No",
+            _ if self.can_close() => {
+                "Closed / Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / Undo. Enter creates the sweep"
+            }
+            _ if self.state.review && self.closed_rails() => {
+                "Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / Undo. Enter creates the sweep"
+            }
             _ if self.state.review => {
                 "Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / StartPoint / EndPoint / Undo. Enter creates the sweep"
             }
             _ => match self.rail_count() {
                 0 => "Select the first rail or choose ChainEdges",
                 1 => "Select the second rail or choose ChainEdges or Undo",
+                _ if self.closed_rails() => {
+                    "Select cross sections in order. Enter reviews the sweep"
+                }
                 _ => "Select cross sections in order or choose Point. Enter reviews the sweep",
             },
         }
@@ -403,13 +421,16 @@ impl VibocerosApp {
         let choice = |enabled| if enabled { "Yes" } else { "No" };
         let height = choice(session.state.shape.maintain_height);
         let rails = choice(session.state.shape.refit_rails);
-        self.push_log(
-            if session.state.review && session.value.is_none() && session.slash_picker.is_none() {
-                format!("Sweep2: {hint}. {fit}. MaintainHeight={height}. RefitRails={rails}")
-            } else {
-                format!("Sweep2: {hint}")
-            },
-        );
+        let mut message = format!("Sweep2: {hint}");
+        if session.state.review && session.value.is_none() && session.slash_picker.is_none() {
+            message.push_str(&format!(
+                ". {fit}. MaintainHeight={height}. RefitRails={rails}"
+            ));
+            if session.can_close() {
+                message.push_str(&format!(". Closed={}", choice(session.state.shape.closed)));
+            }
+        }
+        self.push_log(message);
     }
 
     pub(super) fn validate_sweep_two_rails(&mut self) -> bool {

@@ -44,6 +44,7 @@ pub struct ShapeOptions {
     pub ends: SweepEndPoints,
     pub maintain_height: bool,
     pub refit_rails: bool,
+    pub closed: bool,
 }
 
 impl Options {
@@ -53,6 +54,7 @@ impl Options {
         let mut ends = SweepEndPoints::default();
         let mut maintain_height = None;
         let mut refit_rails = None;
+        let mut closed = None;
         let mut slashes = Vec::new();
         for arg in args {
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
@@ -86,6 +88,10 @@ impl Options {
                 if refit_rails.replace(Self::parse_toggle(value)?).is_some() {
                     return Err(CommandError::Usage(USAGE));
                 }
+            } else if option_name_eq(key, "Closed") {
+                if closed.replace(Self::parse_toggle(value)?).is_some() {
+                    return Err(CommandError::Usage(USAGE));
+                }
             } else if option_name_eq(key, "Slash") {
                 if slashes.len() == MAX_SLASHES {
                     return Err(CommandError::Usage(SLASH_USAGE));
@@ -108,6 +114,7 @@ impl Options {
                 ends,
                 maintain_height: maintain_height.unwrap_or_default(),
                 refit_rails: refit_rails.unwrap_or_default(),
+                closed: closed.unwrap_or_default(),
             },
         })
     }
@@ -149,6 +156,7 @@ impl ShapeOptions {
             ends: self.ends,
             maintain_height: self.maintain_height,
             refit_rails: self.refit_rails,
+            closed: self.closed,
             slashes,
         }
     }

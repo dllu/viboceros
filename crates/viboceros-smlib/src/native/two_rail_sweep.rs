@@ -13,12 +13,15 @@ pub struct TwoRailSweepOptions<'a> {
     pub ends: SweepEndPoints,
     pub maintain_height: bool,
     pub refit_rails: bool,
+    /// Return from the last profile to the first when both rails are closed.
+    pub closed: bool,
     /// One point on each rail, in rail selection order.
     pub slashes: &'a [[Point3; 2]],
 }
 
 pub const MAX_TWO_RAIL_SLASHES: usize = 32;
 
+#[derive(Clone)]
 struct Section {
     stations: [f64; 2],
     curve: NurbsCurve,
@@ -42,10 +45,9 @@ fn unsupported(message: &str) -> Error {
     Error::Kernel(format!("Two-rail sweep: {message}"))
 }
 
-/// Construct an open two-rail sweep from 1–32 open polynomial sections.
-/// With multiple sections, the terminal contacts trim the rails. Refit pairs
-/// any remaining independent stations. The rail and profile images are
-/// certified within the absolute tolerance.
+/// Sweep 1–32 open polynomial sections between two rails. Multiple sections
+/// bound the retained portion by default. One section on closed rails sweeps
+/// the entire loop. The rail and section images are certified within tolerance.
 pub fn two_rail_sweep_surface(
     first: &NurbsCurve,
     second: &NurbsCurve,
@@ -112,6 +114,8 @@ pub fn two_rail_sweep_surface_with_options(
         origin,
         to_local,
         refit_rails,
+        closed_rails,
+        closed_loop,
     } = prepare_placement(first, second, sections, options, tolerance)?;
     let TwoRailSweepOptions {
         ends,
@@ -130,7 +134,15 @@ pub fn two_rail_sweep_surface_with_options(
         .all(|rail| rail.degree() == 1 && rail.control_points().len() == 2);
     let interior_profiles = ends.is_empty() && rows.len() > 2;
     let rails = [&rails[0], &rails[1]];
-    let (surface, stations, clock) = if refit_rails {
+    let exact = if closed_rails && !refit_rails {
+        transport::sweep_on_rail_basis(rails, &rows, maintain_height)?
+    } else {
+        None
+    };
+    let row_stations = || rows.iter().map(|row| row.stations[0]).collect();
+    let (surface, stations, clock) = if let Some(surface) = exact {
+        (surface, row_stations(), None)
+    } else if refit_rails || closed_rails {
         let fitted = refit::sweep(rails, &rows, &paired_stations, maintain_height, tolerance)?;
         (fitted.surface, fitted.stations, Some(fitted.clock))
     } else {
@@ -139,11 +151,7 @@ pub fn two_rail_sweep_surface_with_options(
         } else {
             skin(rails, &rows)?
         };
-        (
-            surface,
-            rows.iter().map(|row| row.stations[0]).collect(),
-            None,
-        )
+        (surface, row_stations(), None)
     };
     let mut surface = surface.transformed(AffineTransform3::from_translation(
         Vector3::try_from(origin.to_array())?,
@@ -153,6 +161,9 @@ pub fn two_rail_sweep_surface_with_options(
     }
     if !ends.is_empty() {
         surface = exact_pole_rows(surface, ends, tolerance)?;
+    }
+    if closed_loop {
+        surface = close_seam(surface, tolerance)?;
     }
     let u = [*surface.domain_u().start(), *surface.domain_u().end()];
     let v = [*surface.domain_v().start(), *surface.domain_v().end()];
@@ -197,6 +208,34 @@ pub fn two_rail_sweep_surface_with_options(
                 "native output could not certify a rail or section within tolerance",
             ));
         }
+    }
+    Ok(surface)
+}
+
+fn close_seam(surface: NurbsSurface, tolerance: Tolerance) -> Result<NurbsSurface, Error> {
+    let count_u = surface.control_point_count_u();
+    let mut controls = surface.control_points().to_vec();
+    for row in controls.chunks_exact_mut(count_u) {
+        let first = row[0].point();
+        let last = row.last_mut().unwrap();
+        if first.distance_to(last.point())? > tolerance.absolute() {
+            return Err(unsupported(
+                "the closed sweep's seam did not meet within tolerance",
+            ));
+        }
+        *last = WeightedPoint3::try_new(first, last.weight())?;
+    }
+    let surface = NurbsSurface::try_new_rational(
+        surface.degree_u(),
+        surface.degree_v(),
+        count_u,
+        surface.control_point_count_v(),
+        controls,
+        surface.knots_u().to_vec(),
+        surface.knots_v().to_vec(),
+    )?;
+    if !surface.is_closed_u()? {
+        return Err(unsupported("the sweep's seam could not be joined"));
     }
     Ok(surface)
 }

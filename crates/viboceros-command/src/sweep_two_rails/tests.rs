@@ -42,6 +42,9 @@ fn sweep_two_rail_arguments_and_selection_failures_preserve_document_and_redo() 
         "Sweep2 MaintainHeight=Yes MaintainHeight=No",
         "Sweep2 RefitRails=1",
         "Sweep2 RefitRails=Yes RefitRails=No",
+        "Sweep2 Closed=Maybe",
+        "Sweep2 Closed=Yes Closed=No",
+        "Sweep2 Closed=Yes",
     ] {
         assert!(r.execute(&mut d, args).is_err(), "{args}");
         assert_eq!(format!("{d:?}"), before);

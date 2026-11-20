@@ -55,6 +55,10 @@ impl VibocerosApp {
             return false;
         };
         self.command_input.clear();
+        if session.state.rails.iter().any(Rail::is_closed) {
+            self.push_log("Sweep2 point ends require open rails".into());
+            return true;
+        }
         if session.rail_count() < 2 || (end == End::Finish && session.section_count() == 0) {
             self.push_log(
                 "Select both Sweep2 rails before a point end and a profile before an end point"

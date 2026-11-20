@@ -531,5 +531,6 @@ fn sweep_two_rail_start_point_at_a_crossing_accepts_typed_world_input() {
     );
 }
 
+mod closed;
 mod rail_chains;
 mod slashes;

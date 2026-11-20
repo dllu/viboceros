@@ -1,7 +1,7 @@
 # Sweep2
 
 `Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance]`
-`[MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
+`[MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
 `[Slash=x,y,z/x,y,z ...]`
 
 Pick the first rail, the second rail, and then the cross-section curves.
@@ -41,6 +41,13 @@ height independently of rail width. The height is measured across the rail
 pair, perpendicular to the width and average sweep direction. Watch the
 preview while changing the option, or use local `Undo` to restore it.
 
+With two closed rails, the first profile places the seam. A single profile
+sweeps the full loop. With multiple profiles, pick them in order around the
+rails. `Closed=No` ends at the last profile. Choose `Closed=Yes` in review
+to continue back to the first profile and join the seam. The preview updates
+as you switch between the two options. With two profiles, the first rail's
+direction determines which arc to use for `Closed=No`.
+
 Choose `RefitRails=Yes` to fit both rails in a shared cubic basis. Between
 profile contacts the sweep pairs the rails by relative distance traveled. With
 multiple profiles, the first and last contacts bound the retained interval of
@@ -75,19 +82,20 @@ case-insensitive and currently cannot contain whitespace in this command.
 Sections may be selected in either order and either direction. The second rail
 is reversed automatically when necessary to align the section contacts.
 
-The solver requires open rails and open polynomial sections. Rail refitting
-accepts rational rails, and Rebuild can prepare polynomial sections from
-rational profiles. Section endpoints must contact both rails. With multiple
-sections, contacts must progress in order on both rails. The unrefitted native
-skin requires more sections than the maximum rail degree. Closed sweeps and
-surface-edge continuity remain unsupported. Failures leave the document and
-history unchanged.
+The solver accepts open rail pairs or closed rail pairs with open polynomial
+sections. Exact closed-rail sweeps can preserve a common rational rail basis.
+Rail refitting accepts rational rails, and Rebuild can prepare polynomial
+sections from rational profiles. Section endpoints must contact both rails.
+With multiple sections, contacts must progress in order on both rails. The
+unrefitted native skin for open rails requires more sections than the maximum
+rail degree. Failures leave the document and history unchanged.
 
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
 certificate checks each retained rail interval and cross section against the
 surface in world coordinates. An inconclusive certificate rejects the result.
 Kinks in an accepted tensor are split into connected B-rep faces.
+Exact rational closed-rail sweeps also split at full-multiplicity rail knots.
 
 Limits are 32 sections, 32 slash pairs, degree 16, 128 controls per input curve and 1,024 total
 input controls. A conservative compatibility control-net limit and the shared
@@ -103,6 +111,11 @@ is `9.31e-7` at the remote origin. These are finite fixture comparisons.
 Rhino 8.32 `ChainEdges` captures give one face for collinear pieces and two
 joined faces for kinked pieces. The chained Sweep2 fixtures match the captured
 face and edge counts and areas within `1e-8` square model units.
+
+Closed-rail command captures cover nested squares and concentric circles,
+including partial arcs, a single profile, reversed rail direction, and curved
+profiles. Exact fixtures match captured face and edge counts and areas within
+`1e-5` square model units.
 
 Rhino 8.32 command captures match the complete straight-rail arch image
 with a start or end point, including at an interior rail crossing. With

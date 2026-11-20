@@ -7,7 +7,7 @@ use crate::native::{
 };
 use viboceros_geometry::{
     GeometryError, NurbsCurve, NurbsSurface, Point3, SectionWeightScale, SurfaceKnotDirection,
-    UniformInterpolationSystem, Vector3, prepare_nurbs_sections_with_operations,
+    UniformInterpolationSystem, Vector3, WeightedPoint3, prepare_nurbs_sections_with_operations,
 };
 
 struct Frame {
@@ -135,6 +135,16 @@ impl ProfileBlend {
         degree: usize,
         knots: &[f64],
         sites: &[f64],
+        locations: impl FnMut(f64) -> Result<[f64; 2], Error>,
+    ) -> Result<Vec<f64>, Error> {
+        let targets = self.targets(rails, sites, locations)?;
+        solve_targets(degree, knots, sites, self.count(), &targets)
+    }
+
+    fn targets(
+        &self,
+        rails: [&NurbsCurve; 2],
+        sites: &[f64],
         mut locations: impl FnMut(f64) -> Result<[f64; 2], Error>,
     ) -> Result<Vec<f64>, Error> {
         self.check_control_count(sites.len())?;
@@ -178,14 +188,7 @@ impl ProfileBlend {
                 targets.push(1.);
             }
         }
-        solve_uniform_system(&UniformInterpolationSystem {
-            degree,
-            knots,
-            parameters: sites,
-            periodic: false,
-            columns: 4 * self.count(),
-            targets: &targets,
-        })
+        Ok(targets)
     }
 
     fn check_control_count(&self, count_u: usize) -> Result<(), Error> {
@@ -200,6 +203,7 @@ impl ProfileBlend {
         degree: usize,
         knots: &[f64],
         targets: &[f64],
+        weights: Option<&[f64]>,
         ends: impl Fn(usize) -> [Point3; 2],
     ) -> Result<NurbsSurface, Error> {
         let profile = &self.profiles[0];
@@ -209,19 +213,20 @@ impl ProfileBlend {
         for v in 0..count_v {
             for u in 0..count_u {
                 let offset = 4 * (u * count_v + v);
+                let weight = weights.map_or(1., |weights| weights[u]);
                 let p = match v {
                     0 => ends(u)[0],
                     index if index + 1 == count_v => ends(u)[1],
                     _ => Point3::try_from([
-                        targets[offset],
-                        targets[offset + 1],
-                        targets[offset + 2],
+                        targets[offset] / weight,
+                        targets[offset + 1] / weight,
+                        targets[offset + 2] / weight,
                     ])?,
                 };
-                controls.push(p);
+                controls.push(WeightedPoint3::try_new(p, weight)?);
             }
         }
-        Ok(NurbsSurface::try_new(
+        Ok(NurbsSurface::try_new_rational(
             degree,
             profile.degree(),
             count_u,
@@ -285,7 +290,84 @@ pub(super) fn sweep(
         }
         targets
     };
-    blend.tensor(degree, knots, &targets, ends)
+    blend.tensor(degree, knots, &targets, None, ends)
+}
+
+/// Interpolate on a matched rail basis, preserving the common rational weight function.
+pub(super) fn sweep_on_rail_basis(
+    rails: [&NurbsCurve; 2],
+    rows: &[Section],
+    maintain_height: bool,
+) -> Result<Option<NurbsSurface>, Error> {
+    let mut strip = ruled_surface(rails[0], rails[1])?;
+    if !strip.is_rational() && strip.degree_v() < 3 {
+        strip = change_surface_degree(&strip, 1, 3, false)?;
+    }
+    let degree = strip.degree_v();
+    let knots = strip.knots_v();
+    let count = strip.control_point_count_v();
+    let control = |u, v| strip.control_point(u, v).unwrap();
+    let weights = (0..count)
+        .map(|i| control(0, i).weight() / control(0, 0).weight())
+        .collect::<Vec<_>>();
+    if weights.iter().enumerate().any(|(i, &a)| {
+        let b = control(1, i).weight() / control(1, 0).weight();
+        (a - b).abs() > 64. * f64::EPSILON * a.max(b)
+    }) {
+        return Ok(None);
+    }
+    let stations = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
+    let mut sites = greville(knots, degree);
+    if pin_sections(&mut sites, &stations).is_err() {
+        return Ok(None);
+    }
+    let blend = ProfileBlend::new(rails, rows, stations, maintain_height)?;
+    let mut targets = blend.targets(rails, &sites, |site| Ok([site; 2]))?;
+    let denominator = NurbsCurve::try_new(
+        degree,
+        weights
+            .iter()
+            .map(|&w| Point3::try_new(w, 0., 0.))
+            .collect::<Result<_, _>>()?,
+        knots.to_vec(),
+    )?;
+    for (&site, row) in sites
+        .iter()
+        .zip(targets.chunks_exact_mut(4 * blend.count()))
+    {
+        let weight = denominator.evaluate(site)?.x();
+        for control in row.chunks_exact_mut(4) {
+            for coordinate in control {
+                *coordinate *= weight;
+            }
+        }
+    }
+    let controls = solve_targets(degree, knots, &sites, blend.count(), &targets)?;
+    let ends = |i| [control(0, i).point(), control(1, i).point()];
+    Ok(Some(blend.tensor(
+        degree,
+        knots,
+        &controls,
+        Some(&weights),
+        ends,
+    )?))
+}
+
+fn solve_targets(
+    degree: usize,
+    knots: &[f64],
+    sites: &[f64],
+    count: usize,
+    targets: &[f64],
+) -> Result<Vec<f64>, Error> {
+    solve_uniform_system(&UniformInterpolationSystem {
+        degree,
+        knots,
+        parameters: sites,
+        periodic: false,
+        columns: 4 * count,
+        targets,
+    })
 }
 
 fn blend_basis(mut strip: NurbsSurface, stations: &[f64]) -> Result<NurbsSurface, Error> {

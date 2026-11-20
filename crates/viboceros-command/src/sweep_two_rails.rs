@@ -5,7 +5,7 @@ use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
 const SLASH_USAGE: &str = "Sweep2 accepts up to 32 options of the form Slash=x,y,z/x,y,z";
 pub const MAX_SECTIONS: usize = 32;
 pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
@@ -125,6 +125,9 @@ impl Source {
         tolerance: Tolerance,
     ) -> Result<(), CommandError> {
         for rail in &self.rails {
+            if !ends.is_empty() && rail.is_closed() {
+                return Err(CommandError::Usage("Sweep2 point ends require open rails"));
+            }
             viboceros_smlib::two_rail_point_stations(rail.curve(), ends, tolerance)?;
         }
         Ok(())
@@ -196,7 +199,25 @@ impl Source {
             shape.native(slashes),
             tolerance,
         )?;
-        let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        let [mut u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        if surface.is_rational() && self.rails.iter().all(Rail::is_closed) {
+            // The exact rational loop retains the span boundaries of the rail basis.
+            let domain = surface.domain_u();
+            u.extend(
+                surface
+                    .knots_u()
+                    .chunk_by(|a, b| a == b)
+                    .filter_map(|group| {
+                        let knot = group[0];
+                        (group.len() == surface.degree_u()
+                            && *domain.start() < knot
+                            && knot < *domain.end())
+                        .then_some(knot)
+                    }),
+            );
+            u.sort_by(f64::total_cmp);
+            u.dedup();
+        }
         if (u.len() + 1).saturating_mul(v.len() + 1) > 4096 {
             return Err(CommandError::Usage("Sweep2 output exceeds 4096 faces"));
         }
@@ -207,6 +228,9 @@ impl Source {
 pub fn point_count(ends: SweepEndPoints) -> usize {
     [ends.start, ends.end].into_iter().flatten().count()
 }
+
+#[cfg(test)]
+mod closed_tests;
 
 #[cfg(test)]
 mod tests;

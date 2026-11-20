@@ -63,9 +63,6 @@ impl Rail {
             ));
         };
         let curve = rail.curve().as_ref().to_nurbs()?;
-        if curve.is_closed()? {
-            return Err(CommandError::Usage("Sweep2: select an open rail"));
-        }
         Ok(Self {
             pieces: pieces.into(),
             joined: Some(Arc::new(curve)),
@@ -84,6 +81,10 @@ impl Rail {
 
     pub fn current(&self, document: &Document) -> bool {
         self.pieces.iter().all(|piece| piece.current(document))
+    }
+
+    pub fn is_closed(&self) -> bool {
+        self.curve().is_closed().is_ok_and(|closed| closed)
     }
 
     pub(super) fn curve(&self) -> &NurbsCurve {
