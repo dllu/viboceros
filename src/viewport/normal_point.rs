@@ -10,17 +10,9 @@ impl Viewport {
         target: (ObjectId, Option<usize>, bool),
     ) -> Option<Point3> {
         let geometry = document.object(target.0)?.geometry();
-        // A projected surface mesh gives a local seed; the location is resolved
-        // against the original surface, never accepted from tessellation alone.
-        let display = self.display_cache.borrow_mut().get(
-            document.object(target.0)?,
-            document.tolerance(),
-            document.subd_control_net(),
-        );
-        let hint = display
-            .mesh()
-            .and_then(|mesh| self.mesh_face_pick_with_point(pointer, rect, mesh))
-            .and_then(|(_, _, point)| point)
+        let hint = self
+            .surface_mesh_hint(pointer, rect, document, target.0)
+            .map(|(_, point)| point)
             .or_else(|| self.unproject_drafting_plane(pointer, rect, None))?;
         let tolerance = document.tolerance();
         let (surface, face) = match geometry {
@@ -35,6 +27,45 @@ impl Viewport {
             }
             _ => return None,
         };
+        let [u, v] = self.surface_view_uv(pointer, rect, surface, hint, tolerance)?;
+        let point = surface.evaluate(u, v).ok()?;
+        if let Geometry::Brep(brep) = geometry
+            && !target.2
+        {
+            let (u, v) = brep
+                .closest_parameters_on_face(face, point, tolerance)
+                .ok()??;
+            surface.evaluate(u, v).ok()
+        } else {
+            Some(point)
+        }
+    }
+
+    /// The display mesh supplies a nearby seed for refinement on the source.
+    pub(super) fn surface_mesh_hint(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        object: ObjectId,
+    ) -> Option<(f32, Point3)> {
+        let display = self.display_cache.borrow_mut().get(
+            document.object(object)?,
+            document.tolerance(),
+            document.subd_control_net(),
+        );
+        let (hit, _, point) = self.mesh_face_pick_with_point(pointer, rect, display.mesh()?)?;
+        Some((hit.distance, point?))
+    }
+
+    pub(super) fn surface_view_uv(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        surface: &NurbsSurface,
+        hint: Point3,
+        tolerance: Tolerance,
+    ) -> Option<[Real; 2]> {
         let (origin, direction) = self.drafting_view_line_relative_to(
             surface.control_points().first()?.point(),
             pointer,
@@ -89,17 +120,7 @@ impl Viewport {
             };
             (u, v) = next;
         }
-        let point = surface.evaluate(u, v).ok()?;
-        if let Geometry::Brep(brep) = geometry
-            && !target.2
-        {
-            let (u, v) = brep
-                .closest_parameters_on_face(face, point, tolerance)
-                .ok()??;
-            surface.evaluate(u, v).ok()
-        } else {
-            Some(point)
-        }
+        Some([u, v])
     }
 }
 

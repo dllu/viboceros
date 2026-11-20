@@ -62,6 +62,7 @@ impl VibocerosApp {
         self.validate_curve_extend();
         self.validate_curve_match();
         self.validate_curve_seams();
+        self.validate_surface_seam();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
@@ -118,6 +119,7 @@ impl VibocerosApp {
             && self.curve_extend_session.is_none()
             && self.curve_match_session.is_none()
             && self.curve_seam_session.is_none()
+            && self.surface_seam_session.is_none()
             && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
@@ -435,7 +437,6 @@ impl VibocerosApp {
                     | InteractiveCommand::DupFaceBorder { .. }
                     | InteractiveCommand::ExtractIsocurve { .. }
                     | InteractiveCommand::DomainFace
-                    | InteractiveCommand::SrfSeam { .. }
                     | InteractiveCommand::SplitSurfaceIsocurve { .. }
                     | InteractiveCommand::ExtendSrf { .. }
                     | InteractiveCommand::EvaluateUv { .. }
@@ -1424,6 +1425,9 @@ impl VibocerosApp {
             .as_ref()
             .filter(|s| edge_handle_input && !s.selecting());
         let seam_markers = curve_seam_session.map(curve_seam::Session::markers);
+        let surface_seam = self.surface_seam_session.as_ref()
+            .filter(|_| edge_handle_input)
+            .and_then(surface_seam::Session::overlay);
         let viewports = &mut self.viewports;
         if let Some(render_state) = render_state {
             crate::viewport_gpu::set_viewport_count(render_state, viewports.len());
@@ -1892,6 +1896,7 @@ impl VibocerosApp {
                             curve_seams: curve_seam_session
                                 .zip(seam_markers.as_deref())
                                 .map(|(session, markers)| session.overlay(markers, index)),
+                            surface_seam,
                             current_end_marker,
                             end_marker_color,
                             surface_corners: &tween_corner_controls,
@@ -1910,6 +1915,13 @@ impl VibocerosApp {
             .find_map(|(viewport, output)| output.curve_seam_event.map(|event| (viewport, event)))
             && self.apply_curve_seam_event(viewport, event)
         {
+            ui.ctx().request_repaint();
+        }
+        let surface_seam_contact = viewport_outputs
+            .iter()
+            .filter_map(|output| output.surface_seam_contact)
+            .max_by_key(|contact| contact.accept);
+        if self.update_surface_seam_contact(surface_seam_contact) {
             ui.ctx().request_repaint();
         }
         let parametric_menu_consumed = self.show_reparameterize_menu(ui, &viewport_outputs);

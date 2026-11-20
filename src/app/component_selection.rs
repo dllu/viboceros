@@ -208,6 +208,7 @@ impl VibocerosApp {
             && self.curve_extend_session.is_none()
             && self.curve_match_session.is_none()
             && self.curve_seam_session.is_none()
+            && self.surface_seam_session.is_none()
             && self.nested_measurement.is_none()
             && self.edge_pattern_prompt.is_none()
             && self.chain_prompt.is_none()

@@ -551,6 +551,11 @@ impl VibocerosApp {
                 .selecting_curve_seams()
                 .then_some(ObjectSelectionFilter::ClosedCurves);
         }
+        if let Some(session) = &self.surface_seam_session
+            && self.plane_prompt.is_none()
+        {
+            return session.selecting().then_some(ObjectSelectionFilter::ClosedSurfaces);
+        }
         if self.picking_curve_extend_boundaries() {
             return Some(ObjectSelectionFilter::Any);
         }

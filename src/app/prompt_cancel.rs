@@ -141,6 +141,7 @@ impl VibocerosApp {
             || self.curve_extend_session.is_some()
             || self.curve_match_session.is_some()
             || self.curve_seam_session.is_some()
+            || self.surface_seam_session.is_some()
             || self.subcurve_prompt.is_some()
             || self.object_prompt.is_some()
             || self.group_prompt.is_some()

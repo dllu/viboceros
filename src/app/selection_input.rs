@@ -62,7 +62,9 @@ impl VibocerosApp {
             }
             return;
         }
-        if self.select_curve_seams(click.object_id, click.mode) {
+        if self.pick_surface_seam_sources(click.object_id)
+            || self.select_curve_seams(click.object_id, click.mode)
+        {
             return;
         }
         if self.pick_curve_extend(click, pick) {
@@ -791,7 +793,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
-        if self.select_curve_seams(selection.object_ids.iter().copied(), selection.mode) {
+        if self.pick_surface_seam_sources(selection.object_ids.iter().copied())
+            || self.select_curve_seams(selection.object_ids.iter().copied(), selection.mode)
+        {
             self.selection_window_override = None;
             return;
         }

@@ -131,8 +131,7 @@ impl VibocerosApp {
                 }
             }
             Some(
-                InteractiveCommand::SrfSeam { .. }
-                | InteractiveCommand::SplitSurfaceIsocurve { .. }
+                InteractiveCommand::SplitSurfaceIsocurve { .. }
                 | InteractiveCommand::ExtendSrf { .. },
             ) => {
                 if let Some(point) = point {

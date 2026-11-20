@@ -251,6 +251,7 @@ mod subd_join;
 mod subd_volume;
 #[path = "../../../crates/viboceros-oracle/tests/support/surface_apex.rs"]
 mod surface_apex_support;
+mod surface_seam;
 mod torus;
 mod transform_input;
 mod trim_split_input;

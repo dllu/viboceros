@@ -77,6 +77,7 @@ pub mod subdivide;
 mod surface_edge_reference;
 pub mod surface_flow;
 pub mod surface_reference;
+pub mod surface_seam;
 pub mod to_subd;
 mod torus;
 pub mod torus_input;
@@ -2101,7 +2102,7 @@ impl CommandRegistry {
             .register(CurveSeamCommand)
             .expect("unique built-in command");
         registry
-            .register(SurfaceSeamCommand)
+            .register(surface_seam::SurfaceSeamCommand)
             .expect("unique built-in command");
         registry
             .register(ReparameterizeCommand)
@@ -8638,126 +8639,6 @@ fn parse_yes_no(value: &str) -> Option<bool> {
     } else {
         None
     }
-}
-
-const SURFACE_SEAM_USAGE: &str =
-    "SrfSeam point [Direction=U|V|Both] | SrfSeam Parameter=u[,v] [Direction=U|V|Both]";
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum SurfaceSeamLocation {
-    Point(Point3),
-    Parameter(KnotLocation),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct SurfaceSeamOptions {
-    location: SurfaceSeamLocation,
-    direction: Option<SurfaceKnotDirection>,
-}
-
-struct SurfaceSeamCommand;
-
-impl Command for SurfaceSeamCommand {
-    fn name(&self) -> &'static str {
-        "SrfSeam"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_surface_seam_options(arguments)?;
-        let mut candidates = document
-            .selected_objects()
-            .filter_map(|object| match object.geometry() {
-                Geometry::NurbsSurface(surface) => Some((object.id(), surface.clone())),
-                _ => None,
-            })
-            .collect::<Vec<_>>();
-        if candidates.len() != 1 {
-            return Err(CommandError::SurfaceSeamRequiresOneSurface {
-                actual: candidates.len(),
-            });
-        }
-        let (id, surface) = candidates
-            .pop()
-            .expect("one NURBS surface candidate was required");
-        let direction = if let Some(direction) = options.direction {
-            direction
-        } else {
-            match (surface.is_closed_u()?, surface.is_closed_v()?) {
-                (true, _) => SurfaceKnotDirection::U,
-                (false, true) => SurfaceKnotDirection::V,
-                (false, false) => return Err(CommandError::SurfaceSeamHasNoClosedDirection),
-            }
-        };
-        let (u, v) = match options.location {
-            SurfaceSeamLocation::Point(point) => {
-                surface.closest_parameters(point, document.tolerance())?
-            }
-            SurfaceSeamLocation::Parameter(KnotLocation::Surface { u, v }) => (u, v),
-            SurfaceSeamLocation::Parameter(KnotLocation::Scalar(parameter)) => match direction {
-                SurfaceKnotDirection::U => (parameter, Real::NAN),
-                SurfaceKnotDirection::V => (Real::NAN, parameter),
-                SurfaceKnotDirection::Both => {
-                    return Err(CommandError::SurfaceSeamBothDirectionsRequireUv);
-                }
-            },
-        };
-        let relocated = knot_refinement::surface_seam(&surface, direction, u, v)?;
-        document.replace_object_geometries([(id, Geometry::NurbsSurface(relocated))])?;
-        let description = match direction {
-            SurfaceKnotDirection::U => format!("U at parameter {u}"),
-            SurfaceKnotDirection::V => format!("V at parameter {v}"),
-            SurfaceKnotDirection::Both => format!("U at {u} and V at {v}"),
-        };
-        Ok(format!(
-            "Set the selected NURBS surface seam in {description}"
-        ))
-    }
-}
-
-fn parse_surface_seam_options(arguments: &[&str]) -> Result<SurfaceSeamOptions, CommandError> {
-    let Some(first) = arguments.first() else {
-        return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
-    };
-    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
-    let (location, mut index) = if option_name_eq(first_name, "Parameter") {
-        let (name, value, consumed) = orient_option(arguments, 0, SURFACE_SEAM_USAGE)?;
-        if !option_name_eq(name, "Parameter") {
-            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
-        }
-        (
-            SurfaceSeamLocation::Parameter(parse_knot_location(value, SURFACE_SEAM_USAGE)?),
-            consumed,
-        )
-    } else {
-        let (point, consumed) = parse_point(arguments).map_err(|error| match error {
-            CommandError::Usage(_) => CommandError::Usage(SURFACE_SEAM_USAGE),
-            error => error,
-        })?;
-        (SurfaceSeamLocation::Point(point), consumed)
-    };
-
-    let mut direction = None;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, SURFACE_SEAM_USAGE)?;
-        if !option_name_eq(name, "Direction") || direction.is_some() {
-            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
-        }
-        let value = value.trim_start_matches(['_', '-']);
-        direction = Some(if value.eq_ignore_ascii_case("U") {
-            SurfaceKnotDirection::U
-        } else if value.eq_ignore_ascii_case("V") {
-            SurfaceKnotDirection::V
-        } else if value.eq_ignore_ascii_case("Both") {
-            SurfaceKnotDirection::Both
-        } else {
-            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
-        });
-        index += consumed;
-    }
-    Ok(SurfaceSeamOptions {
-        location,
-        direction,
-    })
 }
 
 const EXTEND_CURVE_USAGE: &str = "Extend point [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Length=value [Side=Start|End|Both] [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";

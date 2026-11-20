@@ -132,16 +132,21 @@ domain is `[0,1]` (in both directions for surfaces); trims are discarded.
 
 ## Seams and parameter domains
 
-`SrfSeam point Direction=U|V|Both` performs the corresponding exact edit on
-one selected untrimmed NURBS surface; omit the point for a one-click viewport
-pick on the surface, independent of the construction plane. `Parameter=value`
-targets one axis directly, while `Parameter=u,v` also supports
-`Direction=Both`. Without `Direction`, the only closed axis is chosen,
-or U is used when both axes close. The implementation follows OpenNURBS by
-flattening the stored homogeneous control net, so rational and periodic tensor
-structure, parameter-span lengths, surface orientation, identity, attributes,
-groups, selection, and undo are preserved. A projectively coincident boundary
-whose stored homogeneous seam controls do not close is rejected as Rhino does.
+Run `SrfSeam` on one closed surface, or select it at the prompt. The viewport
+shows the current seam and previews the new one as you move the pointer. On doubly
+closed surfaces, choose `Direction=U`, `Direction=V`, or `Direction=Both`.
+U and V name the direction of the seam curve. `Toggle` switches between U and V.
+Click the surface or enter a point to apply the change, or press Esc to cancel.
+The interactive edit keeps the original U and V domains and the orientation of
+natural single-face B-reps.
+
+The direct form `SrfSeam point Direction=U|V|Both` names the parameter axes to
+relocate. `Parameter=value` supplies one axis directly, and `Parameter=u,v`
+supports both. Without `Direction`, the direct form uses the only closed axis
+or U when both close. It starts each relocated domain at the requested
+parameter. Rational and periodic tensor structure, object identity,
+attributes, and groups are preserved. Boundaries whose stored homogeneous
+seam controls do not close are rejected.
 
 `Reparameterize start end` changes one selected curve's domain, while four
 values set the U and V domains of one selected untrimmed NURBS surface. Commas

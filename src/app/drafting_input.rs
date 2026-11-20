@@ -1250,13 +1250,6 @@ impl VibocerosApp {
                     if ignore_trims { "Yes" } else { "No" },
                 ));
             }
-            InteractiveCommand::SrfSeam { direction } => {
-                self.active_command = None;
-                let direction = direction.map_or(String::new(), |direction| {
-                    format!(" Direction={}", direction.option_value())
-                });
-                self.execute_command(&format!("SrfSeam {}{direction}", format_model_point(point)));
-            }
             InteractiveCommand::Extend { style, join } => {
                 self.active_command = None;
                 self.execute_command(&format!(

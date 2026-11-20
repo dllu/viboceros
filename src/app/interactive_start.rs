@@ -21,6 +21,7 @@ impl VibocerosApp {
         if self.start_curve_connect(input)
             || self.start_curve_match(input)
             || self.start_curve_seam(input)
+            || self.start_surface_seam(input)
             || self.start_curve_chamfer(input)
             || self.start_curve_fillet(input)
         {
@@ -790,28 +791,6 @@ impl VibocerosApp {
                 smooth,
                 merge,
             }
-        } else if normalized == "srfseam" {
-            let mut direction = None;
-            for option in arguments {
-                let Some((name, value)) = option.split_once('=') else {
-                    return false;
-                };
-                let name = name.trim_start_matches(['_', '-']);
-                let value = value.trim_start_matches('_');
-                if !name.eq_ignore_ascii_case("Direction") || direction.is_some() {
-                    return false;
-                }
-                direction = Some(if value.eq_ignore_ascii_case("U") {
-                    InteractiveIsocurveDirection::U
-                } else if value.eq_ignore_ascii_case("V") {
-                    InteractiveIsocurveDirection::V
-                } else if value.eq_ignore_ascii_case("Both") {
-                    InteractiveIsocurveDirection::Both
-                } else {
-                    return false;
-                });
-            }
-            InteractiveCommand::SrfSeam { direction }
         } else if matches!(normalized.as_str(), "deletesubcrv" | "break") && arguments.is_empty() {
             InteractiveCommand::SubCrv {
                 start: None,
@@ -1488,7 +1467,6 @@ impl VibocerosApp {
                 | InteractiveCommand::DupMeshEdge { .. }
                 | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
-                | InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::Extend { .. }
                 | InteractiveCommand::ExtendSrf { .. }
                 | InteractiveCommand::SubCrv { .. }

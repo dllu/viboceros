@@ -1,61 +1,6 @@
 use super::*;
 
 #[test]
-fn interactive_surface_seam_uses_one_location_pick_and_direction_options() {
-    let mut app = test_app();
-    app.execute_command("Sphere 0,0,0 5");
-    let source_id = app.document.objects().next().unwrap().id();
-    app.document
-        .select_object(source_id, viboceros_document::SelectionMode::Replace)
-        .unwrap();
-    let Geometry::NurbsSurface(source) = app.document.object(source_id).unwrap().geometry() else {
-        panic!("Sphere must create an exact NURBS surface")
-    };
-    let source = source.clone();
-    let u = source.parameter_at_u(0.37).unwrap();
-    let v = source.parameter_at_v(0.43).unwrap();
-    let pick = source.evaluate(u, v).unwrap();
-
-    assert!(app.try_start_interactive_command("SrfSeam"));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::SrfSeam { direction: None })
-    );
-    assert!(app.command_log.back().unwrap().contains("closed surface"));
-    app.accept_component_face_hit(source_id, 0, Some(pick));
-
-    assert_eq!(app.active_command, None);
-    let Geometry::NurbsSurface(relocated) = app.document.object(source_id).unwrap().geometry()
-    else {
-        panic!("expected an interactively edited NURBS surface")
-    };
-    assert!(
-        app.document
-            .tolerance()
-            .approx_eq(*relocated.domain_u().start(), u)
-    );
-    assert_eq!(relocated.domain_v(), source.domain_v());
-    assert!(app.document.is_selected(source_id));
-    assert_eq!(app.document.undo_label(), Some("SrfSeam"));
-
-    assert!(app.try_start_interactive_command("SrfSeam Direction=Both"));
-    assert_eq!(
-        app.active_command,
-        Some(InteractiveCommand::SrfSeam {
-            direction: Some(InteractiveIsocurveDirection::Both),
-        })
-    );
-    app.cancel_interactive_command(false);
-    assert!(!app.try_start_interactive_command("SrfSeam Parameter=1 Direction=U"));
-    assert!(!app.try_start_interactive_command("SrfSeam Direction=Sideways"));
-
-    app.document.clear_selection();
-    assert!(app.try_start_interactive_command("SrfSeam"));
-    assert_eq!(app.active_command, None);
-    assert!(app.command_log.back().unwrap().contains("no objects"));
-}
-
-#[test]
 fn interactive_extend_picks_a_source_end_among_selected_boundary_curves() {
     let mut app = test_app();
     app.execute_command("Line 0,0 5,0");

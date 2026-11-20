@@ -26,6 +26,7 @@ pub enum ObjectSelectionFilter {
     MeshPatchHoles,
     LineCurves,
     ClosedCurves,
+    ClosedSurfaces,
     ClosedPolylines,
     Smooth,
     PolygonCount,
@@ -74,6 +75,7 @@ impl ObjectSelectionFilter {
     pub fn accepts_object(self, object: &viboceros_document::Object) -> bool {
         let geometry = object.geometry();
         match self {
+            Self::ClosedSurfaces => surface_seam::accepts(geometry),
             Self::ClosedPolylines => geometry.curve_ref().is_some_and(|curve| {
                 curve.is_closed().unwrap_or(false)
                     && curve.polyline_vertices().is_ok_and(|p| p.is_some())

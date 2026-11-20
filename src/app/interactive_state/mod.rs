@@ -476,9 +476,6 @@ pub(super) enum InteractiveCommand {
         direction: InteractiveIsocurveDirection,
         ignore_trims: bool,
     },
-    SrfSeam {
-        direction: Option<InteractiveIsocurveDirection>,
-    },
     Extend {
         style: InteractiveCurveExtensionStyle,
         join: InteractiveCurveExtensionJoin,

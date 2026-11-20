@@ -610,9 +610,6 @@ impl InteractiveCommand {
             Self::ExtractIsocurve { .. } => {
                 "ExtractIsocurve: pick a location on the selected surface or B-rep face (Esc to cancel)"
             }
-            Self::SrfSeam { .. } => {
-                "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
-            }
             Self::Extend { .. } => {
                 "Extend: pick the source curve near the end to extend to the other selected curve, surface, or B-rep boundaries (Esc to cancel)"
             }

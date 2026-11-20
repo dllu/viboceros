@@ -192,6 +192,7 @@ mod curve_offset;
 mod curve_preview;
 mod curve_prompt;
 mod curve_seam;
+mod surface_seam;
 mod curve_selection;
 mod cutting_preview;
 mod direction;
@@ -471,6 +472,8 @@ pub struct VibocerosApp {
     curve_match_session: Option<curve_match::Session>,
     curve_seam_session: Option<curve_seam::Session>,
     curve_seam_snap_to_knots: bool,
+    surface_seam_session: Option<surface_seam::Session>,
+    surface_seam_mode: viboceros_geometry::SurfaceKnotDirection,
     curve_match_options: viboceros_command::match_curve::Options,
     curve_boolean_prompt: Option<curve_boolean::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
@@ -702,6 +705,8 @@ impl VibocerosApp {
             curve_match_session: None,
             curve_seam_session: None,
             curve_seam_snap_to_knots: true,
+            surface_seam_session: None,
+            surface_seam_mode: viboceros_geometry::SurfaceKnotDirection::Both,
             curve_match_options: viboceros_command::match_curve::Options {
                 continuity: viboceros_geometry::CurveBlendContinuity::Curvature,
                 ..Default::default()
@@ -1074,6 +1079,7 @@ impl VibocerosApp {
             || self.continue_curve_extend(&input)
             || self.continue_curve_match(&input)
             || self.continue_curve_seam(&input)
+            || self.continue_surface_seam(&input)
             || self.continue_curve_chamfer(&input)
             || self.continue_curve_fillet(&input)
             || self.continue_fillet_corners(&input)
@@ -1240,6 +1246,7 @@ impl VibocerosApp {
             || self.start_curve_extend(&input)
             || self.start_curve_match(&input)
             || self.start_curve_seam(&input)
+            || self.start_surface_seam(&input)
             || self.start_curve_chamfer(&input)
             || self.start_curve_fillet(&input)
             || self.start_fillet_surface(&input)
@@ -1331,6 +1338,7 @@ impl VibocerosApp {
             || self.continue_curve_extend(input)
             || self.continue_curve_match(input)
             || self.continue_curve_seam(input)
+            || self.continue_surface_seam(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)
             || self.continue_fillet_corners(input)

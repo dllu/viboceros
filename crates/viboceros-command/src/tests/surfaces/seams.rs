@@ -1,5 +1,6 @@
 //! surfaces seams command regressions.
 use super::*;
+use crate::surface_seam::SURFACE_SEAM_USAGE;
 
 #[test]
 fn changes_surface_seams_in_both_directions_without_losing_document_state() {

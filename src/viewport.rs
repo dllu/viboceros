@@ -96,6 +96,7 @@ pub(crate) use translation_preview::TranslationPreview;
 mod extents;
 pub(crate) use extents::ZoomExtentsBorders;
 pub(crate) mod curve_seam;
+pub(crate) mod surface_seam;
 mod end_markers;
 mod surface_corners;
 pub(crate) use end_markers::{EndMarker, EndMarkerKind, EndMarkerOptions, collect_end_markers};
@@ -393,6 +394,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction_analysis: Option<&'a viboceros_command::direction::analysis::View>,
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) curve_seams: Option<curve_seam::Overlay<'a>>,
+    pub(crate) surface_seam: Option<surface_seam::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
     pub(crate) tapered_extrusion: Option<(Real, &'a [NurbsCurve])>,
@@ -587,6 +589,7 @@ impl Default for ViewportInput<'_> {
             face_packs: None,
             direction: None,
             curve_seams: None,
+            surface_seam: None,
             surface_apex: None,
             surface_extrusion: None,
             tapered_extrusion: None,
@@ -752,6 +755,7 @@ pub struct ViewportOutput {
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
     pub curve_connect_hover: Option<(ObjectId, Point3)>,
     pub(crate) curve_seam_event: Option<curve_seam::Event>,
+    pub(crate) surface_seam_contact: Option<surface_seam::Contact>,
     pub direction_click: Option<ObjectId>,
     pub(crate) direction_readout: Option<direction::Readout>,
     pub insert_point: Option<(
@@ -2710,6 +2714,9 @@ impl Viewport {
         let curve_seam_event = input
             .curve_seams
             .and_then(|seams| self.curve_seam_event(&painter, rect, &response, seams));
+        let surface_seam_contact = input.surface_seam.and_then(|overlay| {
+            self.surface_seam_contact(&painter, rect, &response, document, overlay)
+        });
         for (index, marker) in input.end_markers.iter().enumerate() {
             if let Some(pixel) = self.project(marker.point, rect) {
                 let color = if let Some(color) = input.end_marker_color {
@@ -3899,6 +3906,7 @@ impl Viewport {
                     .find(|id| !sources.includes_owner(*id))
                 }),
             curve_seam_event,
+            surface_seam_contact,
             curve_connect_hover: (input.curve_connect_pick && selecting && !modifiers.any())
                 .then(|| {
                     let pointer = response.hover_pos()?;

@@ -68,6 +68,7 @@ impl VibocerosApp {
         }
         self.cancel_curve_extend(announce);
         self.cancel_curve_seam(announce);
+        self.cancel_surface_seam(announce);
         if self.curve_match_session.take().is_some() {
             self.document.clear_selection();
             if announce {
