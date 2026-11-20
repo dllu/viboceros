@@ -42,6 +42,38 @@ pub fn try_loft_nurbs_curves_with_end_points_and_operations<E: From<GeometryErro
     prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
     solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
 ) -> Result<NurbsSurface, E> {
+    loft_open_with_operations(curves, style, ends, prepare, solve, None)
+}
+
+/// Use the same open Loft constraints, replacing only the requested handles.
+pub fn try_loft_nurbs_curves_with_matched_ends_and_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    ends: LoftEndPoints,
+    prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
+    solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+    end_tangents: LoftEndTangents<'_, E>,
+) -> Result<NurbsSurface, E> {
+    if matches!(style, LoftStyle::Loose | LoftStyle::Straight)
+        || end_tangents.active[0] && ends.start.is_some()
+        || end_tangents.active[1] && ends.end.is_some()
+    {
+        return Err(GeometryError::InvalidControlNet {
+            context: "Loft tangent matching needs an interpolated curve at the matched end",
+        }
+        .into());
+    }
+    loft_open_with_operations(curves, style, ends, prepare, solve, Some(end_tangents))
+}
+
+fn loft_open_with_operations<E: From<GeometryError>>(
+    curves: &[NurbsCurve],
+    style: LoftStyle,
+    ends: LoftEndPoints,
+    prepare: &mut impl FnMut(&[NurbsCurve]) -> Result<Vec<NurbsCurve>, E>,
+    solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+    end_tangents: Option<LoftEndTangents<'_, E>>,
+) -> Result<NurbsSurface, E> {
     validate_end_points(curves.len(), style, ends)?;
     let mut sections = checked_sections(curves, prepare)?;
     let start = ends
@@ -58,7 +90,7 @@ pub fn try_loft_nurbs_curves_with_end_points_and_operations<E: From<GeometryErro
     if let Some(end) = end {
         sections.push(end);
     }
-    surface_from_sections(&sections, style, false, solve)
+    surface_from_sections(&sections, style, false, solve, end_tangents)
 }
 
 pub(crate) fn validate_end_points(

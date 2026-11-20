@@ -174,6 +174,7 @@ mod loft_rebuild;
 mod loft_splitting_native;
 #[path = "../../../crates/viboceros-oracle/tests/support/loft_splitting.rs"]
 mod loft_splitting_support;
+mod loft_tangency;
 mod maelstrom;
 mod mark_foci;
 mod match_surface;

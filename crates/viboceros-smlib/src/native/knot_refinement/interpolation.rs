@@ -166,7 +166,7 @@ pub fn rebuild_surface(
     )
 }
 
-fn solve_uniform_system(
+pub(super) fn solve_uniform_system(
     input: &viboceros_geometry::UniformInterpolationSystem<'_>,
 ) -> Result<Vec<f64>, Error> {
     solve_with_fixed_rows(input, None)

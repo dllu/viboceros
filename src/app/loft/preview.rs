@@ -20,6 +20,7 @@ pub(super) struct Draft {
 #[derive(Debug)]
 pub(super) struct Review {
     profiles: Profiles,
+    supports: [Option<loft::TangentSupport>; 2],
     pub(super) draft: Result<Draft, CommandError>,
     pub(super) aligning: bool,
     pub(super) undo: Vec<(Options, SimplificationValues)>,
@@ -32,8 +33,9 @@ impl Profiles {
         options: Options,
         crease: bool,
         tolerance: Tolerance,
+        supports: &[Option<loft::TangentSupport>; 2],
     ) -> Result<Draft, CommandError> {
-        let brep = loft::prepare(
+        let brep = loft::prepare_with_tangent_supports(
             LoftProfiles::Aligned {
                 curves: &self.curves,
                 oriented: self.oriented,
@@ -41,6 +43,7 @@ impl Profiles {
             options,
             crease,
             tolerance,
+            [supports[0].as_ref(), supports[1].as_ref()],
         )?;
         let wires = brep.wireframe_curves(1, tolerance).unwrap_or_else(|_| {
             brep.edges()
@@ -53,6 +56,10 @@ impl Profiles {
 }
 
 impl Review {
+    pub(super) fn tangent_sides(&self) -> [bool; 2] {
+        [self.supports[0].is_some(), self.supports[1].is_some()]
+    }
+
     pub(super) fn alignment_markers(&self) -> Vec<Marker> {
         if !self.aligning {
             return Vec::new();
@@ -192,14 +199,20 @@ impl VibocerosApp {
     }
 
     fn begin_loft_preview(&mut self, profiles: Profiles) {
+        let supports = [profiles.sources.first(), profiles.sources.last()].map(|source| {
+            let (id, edge) = section_key(source?);
+            loft::TangentSupport::capture(&self.document, id, edge?, None).ok()
+        });
         let prompt = self.loft_prompt.as_mut().unwrap();
         let draft = profiles.build(
             prompt.state.options,
             self.commands.crease_splitting(),
             self.document.tolerance(),
+            &supports,
         );
         prompt.review = Some(Review {
             profiles,
+            supports,
             draft,
             aligning: false,
             undo: Vec::new(),
@@ -215,6 +228,7 @@ impl VibocerosApp {
                 prompt.state.options,
                 self.commands.crease_splitting(),
                 self.document.tolerance(),
+                &review.supports,
             );
         }
         self.report_loft_preview();

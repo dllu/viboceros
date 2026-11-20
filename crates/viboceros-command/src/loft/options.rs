@@ -10,6 +10,7 @@ pub struct Options {
     pub ends: LoftEndPoints,
     pub rebuild_point_count: usize,
     pub refit_tolerance: Option<f64>,
+    pub match_tangents: [bool; 2],
 }
 
 impl Options {
@@ -78,6 +79,13 @@ impl Options {
                     },
                 );
                 128
+            } else if let Some(end) = ["MatchStartTangent", "MatchEndTangent"]
+                .into_iter()
+                .position(|option| option_name_eq(name, option))
+            {
+                result.match_tangents[end] =
+                    parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?;
+                512 << end
             } else {
                 return Err(CommandError::Usage(USAGE));
             };
@@ -119,7 +127,31 @@ impl Options {
         if result.closed && !result.ends.is_empty() {
             return Err(CommandError::Usage(USAGE));
         }
+        for (end, capable) in result.tangent_capable().into_iter().enumerate() {
+            if seen & (512 << end) != 0 && result.match_tangents[end] && !capable {
+                return Err(CommandError::Usage(
+                    "Loft tangent matching needs a curve at the end of an open Normal, Tight, or Uniform loft",
+                ));
+            }
+        }
         Ok(result)
+    }
+
+    pub fn tangent_capable(self) -> [bool; 2] {
+        let open_interpolation =
+            !self.closed && !matches!(self.style, LoftStyle::Loose | LoftStyle::Straight);
+        [
+            open_interpolation && self.ends.start.is_none(),
+            open_interpolation && self.ends.end.is_none(),
+        ]
+    }
+
+    pub fn active_tangent_matches(self) -> [bool; 2] {
+        let [start, end] = self.tangent_capable();
+        [
+            start && self.match_tangents[0],
+            end && self.match_tangents[1],
+        ]
     }
 
     /// A lossless script spelling used when accepting the interactive getter.
@@ -149,6 +181,14 @@ impl Options {
         }
         if let Some(tolerance) = self.refit_tolerance {
             result.push_str(&format!(" Refit={tolerance}"));
+        }
+        for (option, enabled) in ["MatchStartTangent", "MatchEndTangent"]
+            .into_iter()
+            .zip(self.active_tangent_matches())
+        {
+            if enabled {
+                result.push_str(&format!(" {option}=Yes"));
+            }
         }
         result
     }

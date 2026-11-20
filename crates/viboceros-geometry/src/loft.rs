@@ -1,8 +1,12 @@
 //! Surface construction from ordered sections with shared parameter preparation.
 
-use crate::{GeometryError, NurbsCurve, NurbsSurface, Real, WeightedPoint3};
+use crate::{
+    GeometryError, NurbsCurve, NurbsInterpolationSystem, NurbsSurface, Point3, Real, Vector3,
+    WeightedPoint3,
+};
 
 mod compatible;
+mod end_handles;
 mod interpolate;
 mod parameterize;
 pub(crate) use parameterize::prepare as prepare_section_regions;
@@ -13,6 +17,7 @@ pub(crate) use points::validate_end_points;
 pub use points::{
     LoftEndPoints, try_loft_nurbs_curves_with_end_points,
     try_loft_nurbs_curves_with_end_points_and_operations,
+    try_loft_nurbs_curves_with_matched_ends_and_operations,
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
 pub use refit::{
@@ -42,6 +47,15 @@ pub enum LoftStyle {
 /// Shared homogeneous interpolation targets and section parameter policy.
 /// Targets use row-major order; open systems append two control-handle rows.
 pub type LoftInterpolation<'a> = crate::CubicInterpolationSystem<'a>;
+
+/// Transverse directions for an open loft's end handles. Index 0 is the start
+/// and index 1 is the end. The direction query receives a boundary point and
+/// its tangent along the profile.
+pub struct LoftEndTangents<'a, E> {
+    pub active: [bool; 2],
+    pub direction: &'a mut dyn FnMut(usize, Point3, Vector3) -> Result<Vector3, E>,
+    pub solve_offsets: &'a mut dyn FnMut(&NurbsInterpolationSystem<'_>) -> Result<Vec<Real>, E>,
+}
 
 /// Lofts ordered profiles without reordering, reversing or relocating seams.
 /// U runs through the sections; V follows the matched section regions.
@@ -84,7 +98,7 @@ pub fn try_loft_nurbs_curves_with_operations<E: From<GeometryError>>(
 ) -> Result<NurbsSurface, E> {
     validate_count(curves.len(), closed)?;
     let sections = checked_sections(curves, prepare)?;
-    surface_from_sections(&sections, style, closed, solve)
+    surface_from_sections(&sections, style, closed, solve, None)
 }
 
 fn checked_sections<E: From<GeometryError>>(
@@ -113,8 +127,10 @@ fn surface_from_sections<E: From<GeometryError>>(
     style: LoftStyle,
     closed: bool,
     solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+    end_tangents: Option<LoftEndTangents<'_, E>>,
 ) -> Result<NurbsSurface, E> {
-    let (degree, knots, controls) = interpolate::loft_with_solver(sections, style, closed, solve)?;
+    let (degree, knots, controls) =
+        interpolate::loft_with_solver(sections, style, closed, solve, end_tangents)?;
     let count_v = sections[0].control_points().len();
     let count_u = controls.len() / count_v;
     let surface = NurbsSurface::try_new_rational(

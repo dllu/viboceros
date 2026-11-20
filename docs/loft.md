@@ -5,6 +5,7 @@
 ```text
 Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No]
      [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z]
+     [MatchStartTangent=Yes|No] [MatchEndTangent=Yes|No]
      [Rebuild=0..512|Refit=tolerance]
 ```
 
@@ -26,6 +27,12 @@ suffices with a point end; Uniform and `Closed=Yes` do not accept point ends.
 offset and uses a midpoint chain for other open sections. Traversal is aligned
 on private copies. Closed profiles move each later seam to the nearest knot;
 `Natural` retains supplied seams while still aligning traversal.
+
+The interactive options can match either end to the supporting face of a
+selected boundary edge. Start and end refer to the prepared section order.
+Loose, Straight and closed lofts suspend the checks while retaining their
+values for the current preview. A simplified matched profile must stay within
+the model tolerance of the edge.
 
 `CreaseSplitting` controls tangent-break partitioning at 0.1 degrees.
 `SplitAtTangents=Yes` additionally splits curvature breaks at 1 degree,
@@ -76,7 +83,11 @@ once for all channels. U runs through sections; V follows each compatible sectio
 Open cubic end handles come from the parabola through the first/last three
 sections in the complete homogeneous control space. This endpoint metric is
 distinct from the knot-spacing metric. Two sections use linear homogeneous
-handles. Closed interpolating styles use periodic cubic systems; closed Loose
+handles. A matched end redirects the sampled handle offsets across the edge
+in the supporting face's tangent plane. The offsets are interpolated in the
+rational profile basis. The cubic solve preserves all intermediate section
+constraints. The result is sampled for angular agreement on each boundary span.
+Closed interpolating styles use periodic cubic systems; closed Loose
 is cubic even with three sections. Open Loose uses degree `min(3, n-1)`.
 Final domains use the longest Euclidean control polygons in each direction,
 matching the tested Rhino surface-size policy.
@@ -110,8 +121,8 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Remaining work includes general spatial profile matching, start/end tangent
-matching on surface-edge profiles, and curved-profile Refit
+Remaining work includes general spatial profile matching, tangent fields that
+cannot be represented in the compatible section basis, and curved-profile Refit
 simplification. Nonparallel or nonplanar closed sections keep their input order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
 compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when

@@ -63,9 +63,13 @@ impl VibocerosApp {
         let end = p.picking?;
         p.undo.push(p.state.clone());
         match end {
-            End::Start => p.state.options.ends.start = Some(point),
+            End::Start => {
+                p.state.options.ends.start = Some(point);
+                p.state.options.match_tangents[0] = false;
+            }
             End::Finish => {
                 p.state.options.ends.end = Some(point);
+                p.state.options.match_tangents[1] = false;
                 p.state.finished_profiles = true;
             }
         }
@@ -153,6 +157,8 @@ impl VibocerosApp {
             "Type",
             "Closed",
             "SplitAtTangents",
+            "MatchStartTangent",
+            "MatchEndTangent",
             "Rebuild",
             "RebuildPointCount",
             "RebuildCount",
@@ -299,6 +305,15 @@ impl VibocerosApp {
                 if let Some(review) = &mut p.review {
                     if options.closed && p.state.sources.len() < 3 {
                         self.push_log("Closed loft needs at least three curve sections".into());
+                        return;
+                    }
+                    if options
+                        .active_tangent_matches()
+                        .into_iter()
+                        .zip(review.tangent_sides())
+                        .any(|(requested, available)| requested && !available)
+                    {
+                        self.push_log("Select a boundary edge with one supporting face at the Loft end you want to match".into());
                         return;
                     }
                     let values = values.expect("Loft preview options");

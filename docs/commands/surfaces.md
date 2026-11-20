@@ -102,6 +102,9 @@ snapping.
 For closed profiles, drag the seam markers or use `Flip`, `Automatic`,
 `Natural`, and `SnapToKnots`. Enter opens the options preview. Change the style,
 simplification, closure, or tangent splitting while previewing the result.
+When a boundary edge is the first or last profile, use
+`MatchStartTangent=Yes` or `MatchEndTangent=Yes` to follow its supporting face.
+Tangent matching applies to open Normal, Tight, and Uniform lofts.
 `RebuildCount` and `RefitTolerance` retain their values when their simplification
 modes are inactive. `AlignCurves` lets you reverse open sections or revisit the closed seams.
 Enter accepts the preview, `Undo` revises the current input, and Escape cancels.

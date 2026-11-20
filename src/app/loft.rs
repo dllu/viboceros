@@ -240,6 +240,7 @@ impl VibocerosApp {
             self.loft_options = Options {
                 ends: Default::default(),
                 natural_seams: false,
+                match_tangents: [false; 2],
                 ..prompt.state.options
             };
             if let Some(review) = &prompt.review {
@@ -260,6 +261,17 @@ impl VibocerosApp {
                         .refit
                         .unwrap_or(self.document.tolerance().absolute()),
                 ));
+                for (index, name) in ["MatchStartTangent", "MatchEndTangent"]
+                    .into_iter()
+                    .enumerate()
+                {
+                    if review.tangent_sides()[index]
+                        && p.state.options.tangent_capable()[index]
+                        && !p.state.options.match_tangents[index]
+                    {
+                        text.push_str(&format!(" {name}=No"));
+                    }
+                }
             }
             self.push_log(text);
         }

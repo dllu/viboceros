@@ -1,10 +1,13 @@
 use super::*;
+use std::borrow::Cow;
 use viboceros_geometry::{LoftEndPoints, LoftOptions, LoftProfiles, LoftStyle};
 
-pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z] [Rebuild=0..512|Refit=tolerance]";
+pub const USAGE: &str = "Loft [Type=Normal|Loose|Tight|Straight|Uniform] [Closed=Yes|No] [SplitAtTangents=Yes|No] [MatchStartTangent=Yes|No] [MatchEndTangent=Yes|No] [Natural] [StartPoint=x,y,z] [EndPoint=x,y,z] [Rebuild=0..512|Refit=tolerance]";
 
 mod options;
 pub use options::Options;
+mod tangency;
+pub use crate::surface_edge_reference::Edge as TangentSupport;
 
 pub(super) struct LoftCommand(pub crease_splitting::Preference);
 
@@ -49,11 +52,33 @@ pub fn prepare(
     crease_splitting: bool,
     tolerance: Tolerance,
 ) -> Result<Brep, CommandError> {
+    prepare_with_tangent_supports(profiles, input, crease_splitting, tolerance, [None; 2])
+}
+
+/// Build the displayed draft with the supporting faces of the aligned end edges.
+pub fn prepare_with_tangent_supports(
+    profiles: LoftProfiles<'_>,
+    input: Options,
+    crease_splitting: bool,
+    tolerance: Tolerance,
+    supports: [Option<&TangentSupport>; 2],
+) -> Result<Brep, CommandError> {
+    let supports = tangency::requested_supports(input.active_tangent_matches(), supports)?;
     let ends = input.ends;
     let options = LoftOptions {
         crease_splitting,
         split_at_tangents: input.split_at_tangents,
         natural_seams: input.natural_seams,
+    };
+    let build = |curves: &[NurbsCurve], style, closed, ends| {
+        let sections = simplified_sections(curves, style, closed, ends, input, tolerance)?;
+        if supports.iter().any(Option::is_some) {
+            tangency::surface(&sections, style, ends, supports, tolerance)
+        } else if ends.is_empty() {
+            surface(&sections, style, closed)
+        } else {
+            surface_with_end_points(&sections, style, ends)
+        }
     };
     Ok(if ends.is_empty() {
         Brep::try_loft_from_profiles(
@@ -62,7 +87,7 @@ pub fn prepare(
             input.closed,
             options,
             tolerance,
-            &mut |c, s, closed| simplified_surface(c, s, closed, ends, input, tolerance),
+            &mut |c, s, closed| build(c, s, closed, ends),
         )?
     } else {
         Brep::try_loft_from_profiles_and_points(
@@ -71,54 +96,38 @@ pub fn prepare(
             ends,
             options,
             tolerance,
-            &mut |c, s, ends| simplified_surface(c, s, false, ends, input, tolerance),
+            &mut |c, s, ends| build(c, s, false, ends),
         )?
     })
 }
 
-fn simplified_surface(
+fn simplified_sections(
     curves: &[NurbsCurve],
     style: LoftStyle,
     closed: bool,
     ends: LoftEndPoints,
     options: Options,
     tolerance: Tolerance,
-) -> Result<NurbsSurface, CommandError> {
+) -> Result<Cow<'_, [NurbsCurve]>, CommandError> {
     if let Some(fit_tolerance) = options.refit_tolerance.filter(|t| *t > 0.) {
-        let sections =
-            viboceros_geometry::try_prepare_refitted_loft_sections(curves, fit_tolerance)?;
-        return if ends.is_empty() {
-            surface(&sections, style, closed)
-        } else {
-            surface_with_end_points(&sections, style, ends)
-        };
+        return Ok(Cow::Owned(
+            viboceros_geometry::try_prepare_refitted_loft_sections(curves, fit_tolerance)?,
+        ));
     }
     if options.rebuild_point_count != 0 {
-        rebuilt_surface(
-            curves,
-            style,
-            closed,
-            ends,
-            options.rebuild_point_count,
-            tolerance,
-        )
-    } else if ends.is_empty() {
-        surface(curves, style, closed)
-    } else {
-        surface_with_end_points(curves, style, ends)
+        return Ok(Cow::Owned(
+            viboceros_smlib::rebuild_loft_profiles(
+                curves,
+                style,
+                closed,
+                ends,
+                options.rebuild_point_count,
+                tolerance,
+            )
+            .map_err(knot_refinement::native_geometry_error)?,
+        ));
     }
-}
-
-pub(super) fn rebuilt_surface(
-    curves: &[NurbsCurve],
-    style: LoftStyle,
-    closed: bool,
-    ends: LoftEndPoints,
-    count: usize,
-    tolerance: Tolerance,
-) -> Result<NurbsSurface, CommandError> {
-    viboceros_smlib::loft_surface_rebuilt(curves, style, closed, ends, count, tolerance)
-        .map_err(knot_refinement::native_geometry_error)
+    Ok(Cow::Borrowed(curves))
 }
 
 fn surface_with_end_points(

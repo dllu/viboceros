@@ -11,6 +11,7 @@ pub(super) fn loft_with_solver<E: From<GeometryError>>(
     style: LoftStyle,
     closed: bool,
     solve: &mut impl FnMut(&LoftInterpolation<'_>) -> Result<Vec<Real>, E>,
+    end_tangents: Option<LoftEndTangents<'_, E>>,
 ) -> Result<(usize, Vec<Real>, Vec<WeightedPoint3>), E> {
     let n = sections.len();
     let width = sections[0].control_points().len();
@@ -86,7 +87,7 @@ pub(super) fn loft_with_solver<E: From<GeometryError>>(
     let end = (!closed)
         .then(|| end_coefficients(sections, weight_scale, true))
         .transpose()?;
-    let rhs = Mat::from_fn(unknowns, width * 4, |i, j| {
+    let mut rhs = Mat::from_fn(unknowns, width * 4, |i, j| {
         if i < n {
             data[(i, j)]
         } else if i == n {
@@ -99,6 +100,32 @@ pub(super) fn loft_with_solver<E: From<GeometryError>>(
                 - b * (data[(n.saturating_sub(3), j)] - data[(n - 2, j)])
         }
     });
+    if let Some(mut tangents) = end_tangents {
+        for (side, active) in tangents.active.into_iter().enumerate() {
+            if !active {
+                continue;
+            }
+            let row = n + side;
+            let controls = (0..width)
+                .map(|v| {
+                    let w = rhs[(row, 4 * v + 3)];
+                    let point = Point3::try_from(std::array::from_fn(|j| {
+                        rhs[(row, 4 * v + j)] / w + origin[v][j]
+                    }))?;
+                    WeightedPoint3::try_new(point, w * weight_scale)
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            let section = &sections[if side == 0 { 0 } else { n - 1 }];
+            let controls = end_handles::match_row(section, controls, side, &mut tangents)?;
+            for (v, control) in controls.into_iter().enumerate() {
+                let w = control.weight() / weight_scale;
+                for (j, coordinate) in control.point().to_array().into_iter().enumerate() {
+                    rhs[(row, 4 * v + j)] = (coordinate - origin[v][j]) * w;
+                }
+                rhs[(row, 4 * v + 3)] = w;
+            }
+        }
+    }
     require_finite(
         (0..rhs.ncols())
             .flat_map(|j| (0..rhs.nrows()).map(move |i| (i, j)))
@@ -127,9 +154,9 @@ pub(super) fn loft_with_solver<E: From<GeometryError>>(
         // A constant homogeneous channel is exactly representable. Retaining
         // it avoids introducing spurious rationality or world-offset variation.
         let fixed: [Option<Real>; 4] = std::array::from_fn(|j| {
-            let first = data[(0, v * 4 + j)];
-            (0..n)
-                .all(|i| data[(i, v * 4 + j)] == first)
+            let first = rhs[(0, v * 4 + j)];
+            (0..unknowns)
+                .all(|i| rhs[(i, v * 4 + j)] == first)
                 .then_some(first)
         });
         for u in 0..count {

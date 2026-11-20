@@ -15,6 +15,12 @@ the updated 140-command Rebuild comparison and its remaining differences.
 Command and application regressions exercise the ordinary command entry,
 independent global crease and per-command curvature splitting, malformed-option
 atomicity, source preservation, and preference changes across undo/redo.
+Headless Rhino 8.32 captures also cover tangent matching on skew planar edges,
+cylindrical rims, and conical rims. Application tests compare sampled positions
+within `1e-9` and exercise preview changes, option undo, and style switching.
+In a separate Rhino capture, rebuilding with ten control points displaced
+conical rims by up to 0.00401 model units. Matching across that displacement
+remains outside the current tolerance-based workflow.
 Eight additional native closed-ring captures cover circular and square profiles,
 Normal and Straight styles, and both traversal directions. The portable B-rep
 regression checks topology counts, face sense, bounds within `1e-6`, stored

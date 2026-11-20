@@ -157,6 +157,28 @@ pub fn loft_surface(
     )
 }
 
+/// Solve all profile and matched boundary handle constraints together.
+pub fn loft_surface_with_matched_ends(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    ends: viboceros_geometry::LoftEndPoints,
+    active: [bool; 2],
+    mut direction: impl FnMut(usize, Point3, Vector3) -> Result<Vector3, Error>,
+) -> Result<NurbsSurface, Error> {
+    viboceros_geometry::try_loft_nurbs_curves_with_matched_ends_and_operations(
+        curves,
+        style,
+        ends,
+        &mut prepare_loft_sections,
+        &mut solve_cubic_system,
+        viboceros_geometry::LoftEndTangents {
+            active,
+            direction: &mut direction,
+            solve_offsets: &mut super::interpolation::solve_uniform_system,
+        },
+    )
+}
+
 /// Ordered point-ended Loft using native exact basis edits and cubic solving.
 pub fn loft_surface_with_end_points(
     curves: &[NurbsCurve],
@@ -182,7 +204,24 @@ pub fn loft_surface_rebuilt(
     point_count: usize,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
-    let sections = viboceros_geometry::try_prepare_rebuilt_loft_sections_with(
+    let sections = rebuild_loft_profiles(curves, style, closed, ends, point_count, tolerance)?;
+    if ends.is_empty() {
+        loft_surface(&sections, style, closed)
+    } else {
+        loft_surface_with_end_points(&sections, style, ends)
+    }
+}
+
+/// Share native section rebuilding between ordinary and tangent-matched lofts.
+pub fn rebuild_loft_profiles(
+    curves: &[NurbsCurve],
+    style: viboceros_geometry::LoftStyle,
+    closed: bool,
+    ends: viboceros_geometry::LoftEndPoints,
+    point_count: usize,
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, Error> {
+    viboceros_geometry::try_prepare_rebuilt_loft_sections_with(
         curves,
         style,
         closed,
@@ -198,12 +237,7 @@ pub fn loft_surface_rebuilt(
                 &mut solve_rebuild_interpolation,
             )
         },
-    )?;
-    if ends.is_empty() {
-        loft_surface(&sections, style, closed)
-    } else {
-        loft_surface_with_end_points(&sections, style, ends)
-    }
+    )
 }
 
 /// Refit supported ordered profiles, then use native common-basis operations
