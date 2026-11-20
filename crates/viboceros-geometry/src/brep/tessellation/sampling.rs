@@ -19,6 +19,27 @@ fn sparse_grid_axes(axes: [usize; 2], limit: usize) -> [usize; 2] {
     retained
 }
 
+fn sparse_uniform_stations(
+    [start, end]: [Real; 2],
+    divisions: usize,
+) -> Result<Vec<Real>, GeometryError> {
+    let magnitude = start.abs().max(end.abs());
+    let quantum = magnitude.next_up() - magnitude;
+    let origin = (start / quantum).round() * quantum;
+    let step = ((end - start) / divisions as Real / quantum).round() * quantum;
+    let station = |i: usize| step.mul_add(i as Real, origin);
+    // Keep interior grid coordinates on one binary lattice. Independent
+    // interpolation can move consecutive points on a diagonal to opposite
+    // sides of their chord. On a curved support, the resulting UV sliver
+    // can lift into a large triangle.
+    if divisions > 1 && step > 0. && station(1) > start && station(divisions - 1) < end {
+        return Ok((1..divisions).map(station).collect());
+    }
+    (1..divisions)
+        .map(|i| normalized_span_parameter([start, end], i as Real / divisions as Real))
+        .collect()
+}
+
 pub(super) fn parameter_bounds(points: &[Point2]) -> [[Real; 2]; 2] {
     let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
     for point in points {
@@ -274,12 +295,7 @@ pub(super) fn append_trimmed_surface_grid_parameters(
             // Creases are mandatory grid stations. Only the extra stations
             // on smooth intervals use the requested density limit.
             let divisions = limit.saturating_sub(stations.len()) + 1;
-            for i in 1..divisions {
-                stations.push(normalized_span_parameter(
-                    interval,
-                    i as Real / divisions as Real,
-                )?);
-            }
+            stations.extend(sparse_uniform_stations(interval, divisions)?);
             stations.sort_by(Real::total_cmp);
             stations.dedup();
             return Ok(stations);
@@ -368,6 +384,21 @@ mod tests {
         assert_eq!(sparse_grid_axes([257, 5], 16), [51, 5]);
         assert_eq!(sparse_grid_axes([5, 31], 16), [5, 31]);
         assert_eq!(sparse_grid_axes([19, 45], 16), [16, 16]);
+    }
+
+    #[test]
+    fn sparse_grid_preserves_collinearity_on_translated_parameter_diagonals() {
+        use crate::exact_scalar::rational;
+        let u = sparse_uniform_stations([0., 1.], 45).unwrap();
+        let v = sparse_uniform_stations([25., 33.], 45).unwrap();
+        let [a, b, c] =
+            [(42, 21), (41, 22), (40, 23)].map(|(i, j)| [rational(u[i - 1]), rational(v[j - 1])]);
+        assert_eq!(
+            (&b[0] - &a[0]) * (&c[1] - &a[1]),
+            (&b[1] - &a[1]) * (&c[0] - &a[0]),
+        );
+        assert!((u[41] - 42. / 45.).abs() < 1e-13);
+        assert!((v[20] - (25. + 21. * 8. / 45.)).abs() < 1e-12);
     }
 
     #[test]
