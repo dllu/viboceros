@@ -277,7 +277,10 @@ impl VibocerosApp {
             return true;
         }
         if let Some(selection) = output.control_point_selection.take() {
-            let fit_prompt = self.object_prompt.as_ref().is_some_and(prompt_selects_grips);
+            let fit_prompt = self
+                .object_prompt
+                .as_ref()
+                .is_some_and(prompt_selects_grips);
             let mode = if fit_prompt && selection.mode == SelectionMode::Replace {
                 SelectionMode::Add
             } else {
