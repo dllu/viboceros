@@ -236,7 +236,7 @@ impl CircleFrame3 {
 
     /// Returns an exact four-span rational quadratic representation.
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
-        circular_nurbs(self, TAU)
+        circular_nurbs(self, TAU, 4)
     }
 
     /// Preserves the analytic representation under a similarity. A general
@@ -955,7 +955,15 @@ impl CircularArc3 {
     }
 
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
-        circular_nurbs(self.circle, self.sweep_radians)?.try_reparameterized(self.domain())
+        self.to_nurbs_with_span_count(circular_nurbs_span_count(self.sweep_radians))
+    }
+
+    pub(crate) fn to_nurbs_with_span_count(
+        self,
+        span_count: usize,
+    ) -> Result<NurbsCurve, GeometryError> {
+        circular_nurbs(self.circle, self.sweep_radians, span_count)?
+            .try_reparameterized(self.domain())
     }
 
     pub fn transformed_similarity(
@@ -991,8 +999,11 @@ pub(crate) fn circular_nurbs_span_count(sweep: Real) -> usize {
     }
 }
 
-fn circular_nurbs(circle: CircleFrame3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
-    let span_count = circular_nurbs_span_count(sweep);
+fn circular_nurbs(
+    circle: CircleFrame3,
+    sweep: Real,
+    span_count: usize,
+) -> Result<NurbsCurve, GeometryError> {
     let span_angle = sweep / span_count as Real;
     let half_angle = span_angle * 0.5;
     let middle_weight = half_angle.cos();

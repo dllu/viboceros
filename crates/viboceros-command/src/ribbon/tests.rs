@@ -114,6 +114,13 @@ fn ribbon_trims_open_inside_crossings_and_resolves_coincident_rails_by_pick() {
     ));
 }
 
+#[test]
+fn ribbon_joins_two_sided_open_walks_across_source_and_offset_rails() {
+    verify_native_ruled_sections(include_str!(
+        "../../../../docs/ribbon-open-both-reference.json"
+    ));
+}
+
 fn verify_native_ruled_sections(fixture: &str) {
     let reference: serde_json::Value = serde_json::from_str(fixture).unwrap();
     let model = Tolerance::try_new(
@@ -196,6 +203,18 @@ fn verify_native_ruled_sections(fixture: &str) {
                             .evaluate(u, v)
                             .and_then(|point| point.distance_to(expected))
                             .is_ok_and(|error| error < 1e-9)
+                    })
+                    && face[2].as_array().is_none_or(|samples| {
+                        let fractions = [0.25, 0.5, 0.75];
+                        let u = 0.5 * (*u.start() + *u.end());
+                        samples.len() == fractions.len()
+                            && samples.iter().zip(fractions).all(|(p, fraction)| {
+                                let v = (v.end() - v.start()).mul_add(fraction, *v.start());
+                                surface
+                                    .evaluate(u, v)
+                                    .and_then(|point| point.distance_to(json_point(p)))
+                                    .is_ok_and(|error| error < 1e-9)
+                            })
                     })
             });
             let index =

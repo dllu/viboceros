@@ -65,7 +65,12 @@ loops when a narrow passage or lobe collapses. Multiple loops have separate sour
 If a single loop survives, singular ruled faces fill the omitted intervals.
 On an open three-segment planar polyline, crossed inside clips can keep several
 pieces of the middle rail. With Sharp corners and coincident outer rails, the
-side pick chooses the loop at the bend or the ribbon toward the open ends.
+one-sided pick chooses the loop at the bend or the ribbon toward the open ends.
+BothSides sews the open-end walk across the coincident offsets and the source.
+An outside pick also keeps that walk. At a strict crossing, an outside pick
+with Round, Smooth, or Chamfer joins the first inside section to the outside
+strips and corner fans. The fan V range starts at the source corner parameter
+and spans the length of the offset control polygon.
 At a two-segment Sharp corner, a short leg can limit the other rail when the
 miter falls beyond its end. With BothSides, the original curve edges are sewn
 first where the corner ruling overlaps them. An outside pick keeps the long
@@ -73,14 +78,16 @@ inside rail beyond that limit.
 `Trim=No` preserves the full ruled strips where they overlap. The live preview
 follows the setting. [Rhino 8 corner captures](../ribbon-trim-reference.json),
 [closed inward captures](../ribbon-global-trim-reference.json),
-[open crossing captures](../ribbon-open-trim-reference.json)
+[open crossing captures](../ribbon-open-trim-reference.json),
+[two-sided open captures](../ribbon-open-both-reference.json)
 
 `Tolerance=0` or `Default` uses the document tolerance. A custom value controls
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
 tolerance, Corner, and Trim. Global trimming remains incomplete for longer
 open chains, self-crossing and smooth sources, and other closed corner styles.
-BothSides on crossed open offsets or nearly perpendicular short corners and
-history-based regeneration remain unfinished. Both-sided Loose polycurves
+BothSides remains incomplete at other open crossings, near-perpendicular short
+corners, and inside picks toward coincident bends. History-based regeneration
+also remains incomplete. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

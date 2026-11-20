@@ -107,15 +107,29 @@ impl Walk {
     }
 }
 
+pub(super) enum TrimmedWalk {
+    Sewn(Brep),
+    AcrossSource(Vec<Patch>),
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum WalkSide {
+    OneSided,
+    InsideFirst,
+    OutsideFirst,
+}
+
+#[allow(clippy::too_many_arguments)]
 pub(super) fn build<E: From<GeometryError>>(
     source: &Polyline3,
     layout: &OffsetPolylineLayout,
     distance: Real,
     corner: RibbonCornerStyle,
+    side: WalkSide,
     side_point: Option<Point3>,
     tolerance: Tolerance,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
-) -> Result<Option<Brep>, E> {
+) -> Result<Option<TrimmedWalk>, E> {
     if source.segment_count() != 3
         || source.is_closed()
         || !layout.inside_corners[1]
@@ -128,6 +142,17 @@ pub(super) fn build<E: From<GeometryError>>(
     let second = layout.corners[2].0;
     let coincident =
         crate::curve_points_coincident(first, second) && first.is_near(second, tolerance);
+    let both_sides = side != WalkSide::OneSided;
+    if both_sides {
+        let sew_both = match corner {
+            RibbonCornerStyle::Sharp => coincident,
+            RibbonCornerStyle::None => false,
+            _ => !coincident && side == WalkSide::OutsideFirst,
+        };
+        if !sew_both {
+            return Ok(None);
+        }
+    }
     if !coincident && layout.segment_advances(1, middle)? {
         return Ok(None);
     }
@@ -149,6 +174,10 @@ pub(super) fn build<E: From<GeometryError>>(
     let into_corner = [false, true];
     let out_of_corner = [true, false];
     let interior = |cut: Cut| cut.fraction > 0. && cut.fraction < 1.;
+    let interior_cuts = [ac, bb, bc, cc].into_iter().all(interior);
+    if both_sides && !interior_cuts {
+        return Ok(None);
+    }
     let mut coincident_offsets = None;
     let opposite_ends_touch = [
         (first, b.offset.end()),
@@ -164,7 +193,7 @@ pub(super) fn build<E: From<GeometryError>>(
         walk.push(a, [a.at(0.)?, a.at(1.)?], anchors, ruled)?;
         walk.push(c, [cc, c.at(1.)?], anchors, ruled)?;
         false
-    } else if [ac, bb, bc, cc].into_iter().all(interior) {
+    } else if interior_cuts {
         if coincident {
             let Some(pivot) = overlap_midpoint(a.offset, c.offset, tolerance)? else {
                 return Ok(None);
@@ -175,13 +204,23 @@ pub(super) fn build<E: From<GeometryError>>(
             let pivot_a = a.project(pivot, tolerance)?;
             let pivot_c = c.project(pivot, tolerance)?;
             let pick = side_point.unwrap_or(pivot);
-            if a.project(pick, tolerance)?.fraction < pivot_a.fraction {
+            if side == WalkSide::OutsideFirst
+                || a.project(pick, tolerance)?.fraction < pivot_a.fraction
+            {
                 walk.push(a, [a.at(0.)?, pivot_a], anchors, ruled)?;
                 walk.cap(a, [pivot_a.fraction, 1.], pivot, ruled)?;
                 walk.cap(b, [0., 1.], pivot, ruled)?;
                 walk.cap(c, [0., pivot_c.fraction], pivot, ruled)?;
                 walk.push(c, [pivot_c, c.at(1.)?], anchors, ruled)?;
+                if both_sides {
+                    // Determine the joins on both source rails and on the
+                    // coincident offset span in a single assembly.
+                    return Ok(Some(TrimmedWalk::AcrossSource(walk.patches)));
+                }
             } else {
+                if both_sides {
+                    return Ok(None);
+                }
                 let first = walk.patches.len();
                 walk.push(a, [ac, a.at(1.)?], anchors, ruled)?;
                 walk.push(b, [b.at(0.)?, bc], into_corner, ruled)?;
@@ -201,6 +240,9 @@ pub(super) fn build<E: From<GeometryError>>(
             // visits both ends of it and then joins the last rail again.
             walk.push(a, [a.at(0.)?, ac], into_corner, ruled)?;
             walk.push(b, [bb, b.at(1.)?], out_of_corner, ruled)?;
+            if both_sides {
+                return Ok(Some(TrimmedWalk::AcrossSource(walk.patches)));
+            }
             walk.push(c, [c.at(0.)?, cc], anchors, ruled)?;
             walk.push(b, [bc, bb], anchors, ruled)?;
             walk.push(a, [ac, a.at(1.)?], anchors, ruled)?;
@@ -243,12 +285,12 @@ pub(super) fn build<E: From<GeometryError>>(
         )?;
         false
     };
-    Ok(Some(assembly::sew_walk(
+    Ok(Some(TrimmedWalk::Sewn(assembly::sew_walk(
         walk.patches,
         close,
         coincident_offsets,
         tolerance,
-    )?))
+    )?)))
 }
 
 fn raw_rails(

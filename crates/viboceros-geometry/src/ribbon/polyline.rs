@@ -22,7 +22,7 @@ const MAX_PATCHES: usize = 4096;
 /// retaining shared source vertices. BothSides sews at original source edges.
 ///
 /// U spans [0,abs(distance)]; segment V charts retain the source parameters and
-/// fan V charts follow their offset curve. Signed distance chooses the first
+/// fan V charts start at the source corner. Signed distance chooses the first
 /// side. Smooth corners use cubic tangent fans. Sharp seam clips can omit
 /// extra fans when both incident strips extend at other corners. Returned
 /// containers can include shells connected only at declared corner vertices.
@@ -108,6 +108,7 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
     let mut patches = Vec::new();
     let mut trimmed = Vec::new();
     let mut short_corner = None;
+    let mut crossed_open = None;
     for (side, d) in [distance, -distance].into_iter().take(sides).enumerate() {
         let layout = polyline_offset_corner_layout(
             source,
@@ -131,12 +132,25 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
             continue;
         }
         if trim
-            && !both_sides
             && !source.is_closed()
-            && let Some(brep) =
-                open::build(source, &layout, d, corner, side_point, tolerance, ruled)?
+            && let Some(walk) = {
+                let side = match (both_sides, side) {
+                    (false, _) => open::WalkSide::OneSided,
+                    (true, 0) => open::WalkSide::InsideFirst,
+                    (true, _) => open::WalkSide::OutsideFirst,
+                };
+                open::build(
+                    source, &layout, d, corner, side, side_point, tolerance, ruled,
+                )?
+            }
         {
-            return Ok(vec![brep]);
+            match walk {
+                open::TrimmedWalk::Sewn(brep) => return Ok(vec![brep]),
+                open::TrimmedWalk::AcrossSource(inside) => {
+                    crossed_open = Some((side, inside));
+                    continue;
+                }
+            }
         }
         if trim
             && corner == RibbonCornerStyle::Sharp
@@ -283,8 +297,14 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
             let center = source.vertices()[next];
             let offset = match corner {
                 RibbonCornerStyle::Round => {
-                    polyline_offset_corner_arc(center, start, end, layout.normal, tolerance)?
-                        .to_nurbs()?
+                    let arc =
+                        polyline_offset_corner_arc(center, start, end, layout.normal, tolerance)?;
+                    // Round fans use one rational span through a 120-degree turn.
+                    if arc.sweep_radians() <= std::f64::consts::TAU / 3. {
+                        arc.to_nurbs_with_span_count(1)?
+                    } else {
+                        arc.to_nurbs()?
+                    }
                 }
                 RibbonCornerStyle::Smooth => smooth_corner(
                     start,
@@ -297,6 +317,14 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
                 }
                 _ => unreachable!("sharp offset layouts have no corner gaps"),
             };
+            let controls = offset
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>();
+            let span = crate::nurbs::control_polygon_length(&controls)?;
+            let station = *domain.end();
+            let offset = offset.try_reparameterized(station..=station + span)?;
             // Keep the offset's rational clock across the fan. A unit-weight
             // constant row would change every interior radial isocurve.
             let pole = constant_with_basis(center, &offset)?;
@@ -317,6 +345,15 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
     }
     if !trim {
         return Ok(vec![assembly::sew_untrimmed(patches, tolerance)?]);
+    }
+    if let Some((side, mut inside)) = crossed_open {
+        if side == 0 {
+            inside.append(&mut patches);
+            patches = inside;
+        } else {
+            patches.append(&mut inside);
+        }
+        return Ok(assembly::sew(patches, tolerance)?);
     }
     if let Some((side, inside)) = short_corner {
         let mut sides = assembly::sew(patches, tolerance)?;

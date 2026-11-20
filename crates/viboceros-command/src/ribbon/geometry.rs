@@ -79,15 +79,17 @@ impl Source {
         } else {
             self.normal
         };
-        // The two short-corner walks depend on which side starts the ribbon,
-        // even when the user has requested both sides.
+        // Open corner walks depend on which side is picked first.
         let keeps_pick_side = !options.both_sides
             || (options.trim
                 && !options.loose
-                && options.corner == viboceros_geometry::RibbonCornerStyle::Sharp
                 && self.curve.degree() == 1
-                && self.curve.control_points().len() == 3
-                && (!self.fixed || self.parallel));
+                && matches!(
+                    (self.curve.control_points().len(), options.corner),
+                    (3, viboceros_geometry::RibbonCornerStyle::Sharp) | (4, _)
+                )
+                && (!self.fixed || self.parallel)
+                && !self.curve.is_closed()?);
         if through_point {
             let distance = viboceros_geometry::ribbon_through_distance(
                 &self.side_curve,
@@ -127,7 +129,6 @@ impl Source {
         use viboceros_geometry::RibbonCornerStyle;
         if !options.trim
             || options.loose
-            || options.both_sides
             || options.corner != RibbonCornerStyle::Sharp
             || self.curve.degree() != 1
             || (self.fixed && !self.parallel)

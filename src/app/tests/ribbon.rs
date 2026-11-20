@@ -427,6 +427,33 @@ fn ribbon_trim_preview_splits_an_inward_offset_at_a_narrow_neck() {
     assert_eq!((result.faces().len(), result.edges().len()), (10, 32));
 }
 
+fn await_ribbon_preview(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    target: Point3,
+    count: usize,
+) -> egui::Pos2 {
+    let deadline = Instant::now() + Duration::from_secs(5);
+    loop {
+        let cursor = screen_point(app, target);
+        viewport_frame(app, context, vec![egui::Event::PointerMoved(cursor)]);
+        if cursor == screen_point(app, target)
+            && app
+                .ribbon_session
+                .as_ref()
+                .and_then(|session| session.preview_curves(&app.document))
+                .is_some_and(|edges| edges.len() == count)
+        {
+            return cursor;
+        }
+        assert!(
+            Instant::now() < deadline,
+            "Ribbon did not preview {count} edges at {target:?}"
+        );
+        std::thread::sleep(Duration::from_millis(5));
+    }
+}
+
 #[test]
 fn ribbon_coincident_open_rails_follow_the_side_pick_at_fixed_width() {
     let mut app = test_app();
@@ -440,30 +467,8 @@ fn ribbon_coincident_open_rails_follow_the_side_pick_at_fixed_width() {
     enter(&mut app, "Ribbon 1 Trim=Yes");
     pick(&mut app, source);
     viewport_frame(&mut app, &context, vec![]);
-    let await_preview = |app: &mut VibocerosApp, target, count| {
-        let deadline = Instant::now() + Duration::from_secs(5);
-        loop {
-            let cursor = screen_point(app, target);
-            viewport_frame(app, &context, vec![egui::Event::PointerMoved(cursor)]);
-            if cursor == screen_point(app, target)
-                && app
-                    .ribbon_session
-                    .as_ref()
-                    .unwrap()
-                    .preview_curves(&app.document)
-                    .is_some_and(|edges| edges.len() == count)
-            {
-                return cursor;
-            }
-            assert!(
-                Instant::now() < deadline,
-                "Ribbon did not preview {count} edges at {target:?}"
-            );
-            std::thread::sleep(Duration::from_millis(5));
-        }
-    };
-    await_preview(&mut app, point(2., 1., 0.), 13);
-    let cursor = await_preview(&mut app, point(5., 1., 0.), 22);
+    await_ribbon_preview(&mut app, &context, point(2., 1., 0.), 13);
+    let cursor = await_ribbon_preview(&mut app, &context, point(5., 1., 0.), 22);
     assert_eq!(app.document.objects().len(), 1);
     assert!(!app.document.can_undo());
     viewport_click(&mut app, &context, cursor);
@@ -505,26 +510,8 @@ fn ribbon_both_sides_previews_the_picked_walk_at_a_short_corner() {
     enter(&mut app, "Ribbon 1.25 BothSides=Yes Trim=Yes");
     pick(&mut app, source);
     viewport_frame(&mut app, &context, vec![]);
-    let preview = |app: &mut VibocerosApp, target, count| {
-        let deadline = Instant::now() + Duration::from_secs(5);
-        loop {
-            let cursor = screen_point(app, target);
-            viewport_frame(app, &context, vec![egui::Event::PointerMoved(cursor)]);
-            if cursor == screen_point(app, target)
-                && app
-                    .ribbon_session
-                    .as_ref()
-                    .and_then(|session| session.preview_curves(&app.document))
-                    .is_some_and(|edges| edges.len() == count)
-            {
-                return cursor;
-            }
-            assert!(Instant::now() < deadline, "expected {count} preview edges");
-            std::thread::sleep(Duration::from_millis(5));
-        }
-    };
-    preview(&mut app, point(5.5, 1., 0.), 15);
-    let outside = preview(&mut app, point(5.5, -1., 0.), 11);
+    await_ribbon_preview(&mut app, &context, point(5.5, 1., 0.), 15);
+    let outside = await_ribbon_preview(&mut app, &context, point(5.5, -1., 0.), 11);
     assert_eq!(app.document.objects().len(), 1);
     assert!(!app.document.can_undo());
     viewport_click(&mut app, &context, outside);
@@ -539,6 +526,52 @@ fn ribbon_both_sides_previews_the_picked_walk_at_a_short_corner() {
         panic!("expected a ruled ribbon");
     };
     assert_eq!((brep.faces().len(), brep.edges().len()), (3, 11));
+}
+
+#[test]
+fn ribbon_both_sides_joins_coincident_open_end_offsets() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    enter(&mut app, "Polyline 0,0,0 6,0,0 6,2,0 0,2,0");
+    let source = app.document.objects().next().unwrap().id();
+    app.document.clear_selection();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Ribbon 1 Trim=Yes");
+    pick(&mut app, source);
+    viewport_frame(&mut app, &context, vec![]);
+    let mouth = point(2., 1., 0.);
+    await_ribbon_preview(&mut app, &context, mouth, 13);
+    enter(&mut app, "BothSides=Yes");
+    await_ribbon_preview(&mut app, &context, mouth, 19);
+    let outside = await_ribbon_preview(&mut app, &context, point(5., -1., 0.), 19);
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(!app.document.can_undo());
+    viewport_click(&mut app, &context, outside);
+    let topology = |app: &VibocerosApp| {
+        assert!(app.command_line_idle(), "{:?}", app.command_log);
+        let Geometry::Brep(brep) = app
+            .document
+            .objects()
+            .find(|object| object.id() != source)
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a ruled ribbon");
+        };
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len(),
+        )
+    };
+    assert_eq!(topology(&app), (8, 19, 12));
+    enter(&mut app, "Undo");
+    enter(&mut app, "Ribbon BothSides=Yes ThroughPoint");
+    pick(&mut app, source);
+    enter(&mut app, "w5,-1,0");
+    assert_eq!(topology(&app), (8, 19, 12));
 }
 
 #[test]
