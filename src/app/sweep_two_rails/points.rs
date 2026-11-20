@@ -38,7 +38,10 @@ impl VibocerosApp {
             return false;
         }
         let Some(session) = self.sweep_two_rails.as_ref().filter(|session| {
-            session.picking.is_none() && session.value.is_none() && session.slash_picker.is_none()
+            session.picking.is_none()
+                && session.value.is_none()
+                && session.slash_picker.is_none()
+                && session.seam_editor().is_none()
         }) else {
             return false;
         };
@@ -127,14 +130,36 @@ impl VibocerosApp {
             self.push_log(format!("Sweep2: {error}"));
             return false;
         }
+        let review = end == End::Finish && !session.state.review;
+        let new_seams = if review {
+            match session
+                .state
+                .prepare_seams(&self.document, session.options.natural_seams)
+            {
+                Ok(seams) => seams,
+                Err(error) => {
+                    self.push_log(format!("Sweep2: {error}"));
+                    return false;
+                }
+            }
+        } else {
+            None
+        };
         let session = self.sweep_two_rails.as_mut().unwrap();
         session.undo.push(session.state.clone());
         session.state.shape.ends = ends;
-        session.state.review |= end == End::Finish;
         session.picking = None;
-        session
-            .preview
-            .accept_provisional(preview::Provisional::End(end, point), tolerance);
+        if new_seams.is_some() {
+            session.state.seams = new_seams;
+            session.preview.invalidate();
+        } else {
+            session.state.review |= review;
+            session.preview.accept_provisional(
+                preview::Provisional::End(end, point),
+                tolerance,
+                session.state.seams.as_ref(),
+            );
+        }
         self.finish_sweep_two_rail_point_getter();
         self.log_sweep_two_rails();
         true

@@ -45,7 +45,7 @@ fn unsupported(message: &str) -> Error {
     Error::Kernel(format!("Two-rail sweep: {message}"))
 }
 
-/// Sweep 1–32 open polynomial sections between two rails. Multiple sections
+/// Sweep 1–32 sections between two rails. Multiple sections
 /// bound the retained portion by default. One section on closed rails sweeps
 /// the entire loop. The rail and section images are certified within tolerance.
 pub fn two_rail_sweep_surface(
@@ -116,6 +116,7 @@ pub fn two_rail_sweep_surface_with_options(
         refit_rails,
         closed_rails,
         closed_loop,
+        closed_profiles,
     } = prepare_placement(first, second, sections, options, tolerance)?;
     let TwoRailSweepOptions {
         ends,
@@ -134,16 +135,24 @@ pub fn two_rail_sweep_surface_with_options(
         .all(|rail| rail.degree() == 1 && rail.control_points().len() == 2);
     let interior_profiles = ends.is_empty() && rows.len() > 2;
     let rails = [&rails[0], &rails[1]];
-    let exact = if closed_rails && !refit_rails {
-        transport::sweep_on_rail_basis(rails, &rows, maintain_height)?
+    let transported = closed_rails || closed_profiles;
+    let exact = if transported && !refit_rails {
+        transport::sweep_on_rail_basis(rails, &rows, maintain_height, closed_profiles)?
     } else {
         None
     };
     let row_stations = || rows.iter().map(|row| row.stations[0]).collect();
     let (surface, stations, clock) = if let Some(surface) = exact {
         (surface, row_stations(), None)
-    } else if refit_rails || closed_rails {
-        let fitted = refit::sweep(rails, &rows, &paired_stations, maintain_height, tolerance)?;
+    } else if refit_rails || transported {
+        let fitted = refit::sweep(
+            rails,
+            &rows,
+            &paired_stations,
+            maintain_height,
+            closed_profiles,
+            tolerance,
+        )?;
         (fitted.surface, fitted.stations, Some(fitted.clock))
     } else {
         let surface = if maintain_height || rows.len() == 1 || (affine_rails && interior_profiles) {
@@ -165,6 +174,9 @@ pub fn two_rail_sweep_surface_with_options(
     if closed_loop {
         surface = close_seam(surface, tolerance)?;
     }
+    if closed_profiles && !surface.is_closed_v()? {
+        return Err(unsupported("the profile seam could not be joined"));
+    }
     let u = [*surface.domain_u().start(), *surface.domain_u().end()];
     let v = [*surface.domain_v().start(), *surface.domain_v().end()];
     let mut constraints = Vec::new();
@@ -173,6 +185,7 @@ pub fn two_rail_sweep_surface_with_options(
         .map(|rail| &rail.original)
         .zip(v)
         .enumerate()
+        .filter(|_| !closed_profiles)
     {
         if let Some(clock) = &clock {
             let edge = surface.isocurve_u(v)?;

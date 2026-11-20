@@ -433,6 +433,7 @@ pub use polyline::{JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, join_p
 pub use section_basis::{
     WeightScale as SectionWeightScale,
     prepare_with_operations as prepare_nurbs_sections_with_operations,
+    try_share_denominator as try_share_section_denominator,
 };
 pub use spiral::{
     DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, MAX_SPIRAL_CONTROL_POINTS,

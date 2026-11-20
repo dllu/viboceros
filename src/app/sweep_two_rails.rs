@@ -1,4 +1,5 @@
 //! Ordered rail and profile picks followed by a review of the exact surface.
+use super::curve_seam::Editor;
 use super::{object_selection::PendingObjectCommand, *};
 use std::collections::BTreeSet;
 use viboceros_command::chain_selection::Target;
@@ -11,6 +12,7 @@ use viboceros_geometry::SweepEndPoints;
 mod input;
 mod points;
 mod preview;
+mod seams;
 mod slashes;
 use points::End;
 
@@ -55,6 +57,7 @@ struct State {
     slashes: Vec<[Point3; 2]>,
     rebuild: usize,
     refit: f64,
+    seams: Option<Editor>,
     review: bool,
 }
 
@@ -67,6 +70,7 @@ pub(super) struct Session {
     undo: Vec<State>,
     value: Option<&'static str>,
     picking: Option<End>,
+    seam_id_pending: bool,
     slash_picker: Option<slashes::Picker>,
     preview: preview::Preview,
 }
@@ -85,7 +89,10 @@ impl State {
 
 impl Session {
     pub(super) fn selecting(&self) -> bool {
-        !self.state.review && self.value.is_none() && self.picking.is_none()
+        !self.state.review
+            && self.state.seams.is_none()
+            && self.value.is_none()
+            && self.picking.is_none()
     }
 
     fn rail_count(&self) -> usize {
@@ -132,6 +139,12 @@ impl Session {
         }
         if let Some(end) = self.picking {
             return end.prompt();
+        }
+        if self.seam_id_pending {
+            return "Enter the closed profile object ID";
+        }
+        if let Some(editor) = self.seam_editor() {
+            return editor.hint();
         }
         match self.value {
             Some("Simplify") => "Choose None, Rebuild or Refit",
@@ -215,7 +228,7 @@ impl VibocerosApp {
                 return true;
             }
         };
-        let mut session = Session {
+        let session = Session {
             state: State {
                 rails,
                 picks,
@@ -229,6 +242,7 @@ impl VibocerosApp {
                     SectionFit::Refit(distance) => distance,
                     _ => self.document.tolerance().absolute(),
                 },
+                seams: None,
                 review: false,
             },
             options,
@@ -237,6 +251,7 @@ impl VibocerosApp {
             undo: Vec::new(),
             value: None,
             picking: None,
+            seam_id_pending: false,
             slash_picker: None,
             preview: Default::default(),
         };
@@ -251,10 +266,6 @@ impl VibocerosApp {
             ));
             return true;
         }
-        if session.ready() {
-            session.undo.push(session.state.clone());
-            session.state.review = true;
-        }
         let description = self
             .commands
             .object_selection_prompt(&format!("{command} {}", arguments.join(" ")))
@@ -268,6 +279,8 @@ impl VibocerosApp {
         self.push_log(format!("> {input}"));
         if let Some(chain) = chain {
             self.start_sweep_two_rail_chain(&words[chain + 1..].join(" "));
+        } else if self.sweep_two_rails.as_ref().unwrap().ready() {
+            self.advance_sweep_two_rails();
         } else {
             self.log_sweep_two_rails();
         }

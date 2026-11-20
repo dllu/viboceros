@@ -5,7 +5,7 @@ use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Natural|Automatic] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
 const SLASH_USAGE: &str = "Sweep2 accepts up to 32 options of the form Slash=x,y,z/x,y,z";
 pub const MAX_SECTIONS: usize = 32;
 pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
@@ -76,7 +76,20 @@ impl Source {
             Rail::capture(doc, Target::Curve(rails[0]))?,
             Rail::capture(doc, Target::Curve(rails[1]))?,
         ];
-        Self::with_rails(doc, rails, selected)
+        let source = Self::with_rails(doc, rails, selected)?;
+        if options.natural_seams {
+            return Ok(source);
+        }
+        let mut profiles = source
+            .sections
+            .iter()
+            .map(Self::curve)
+            .collect::<Result<Vec<_>, _>>()?;
+        if profile_closure(&profiles)? == Some(true) {
+            Brep::align_closed_profile_seams(&mut profiles)?;
+            return source.with_profile_curves(profiles);
+        }
+        Ok(source)
     }
 
     pub fn with_rails(
@@ -113,6 +126,18 @@ impl Source {
         Ok(Self { rails, sections })
     }
 
+    /// Use privately relocated profiles while preserving the captured rail choices.
+    pub fn with_profile_curves(mut self, profiles: Vec<NurbsCurve>) -> Result<Self, CommandError> {
+        if profiles.len() != self.sections.len() {
+            return Err(CommandError::Usage(USAGE));
+        }
+        self.sections = profiles
+            .into_iter()
+            .map(|curve| Geometry::NurbsCurve(curve).into())
+            .collect();
+        Ok(self)
+    }
+
     fn curve(source: &GeometrySnapshot) -> Result<NurbsCurve, CommandError> {
         source
             .nurbs_curve_representation()?
@@ -143,6 +168,7 @@ impl Source {
             .iter()
             .map(Self::curve)
             .collect::<Result<Vec<_>, _>>()?;
+        let closed = profile_closure(&sections)? == Some(true);
         match fit {
             SectionFit::Unchanged => Ok(sections),
             SectionFit::Rebuild(count @ 2..=128) => sections
@@ -159,6 +185,21 @@ impl Source {
                 })
                 .collect(),
             SectionFit::Rebuild(_) => Err(CommandError::Usage(USAGE)),
+            SectionFit::Refit(distance) if closed && distance > 2. * Real::EPSILON.sqrt() => {
+                sections
+                    .iter()
+                    .map(|curve| {
+                        viboceros_smlib::fit_curve(
+                            CurveRef::NurbsCurve(curve),
+                            3,
+                            distance,
+                            std::f64::consts::PI / 180.,
+                            tolerance,
+                        )
+                        .map_err(knot_refinement::native_geometry_error)
+                    })
+                    .collect()
+            }
             SectionFit::Refit(distance) => Ok(
                 viboceros_geometry::try_prepare_refitted_loft_sections(&sections, distance)?,
             ),
@@ -200,7 +241,10 @@ impl Source {
             tolerance,
         )?;
         let [mut u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
-        if surface.is_rational() && self.rails.iter().all(Rail::is_closed) {
+        if surface.is_rational()
+            && !sections[0].is_closed()?
+            && self.rails.iter().all(Rail::is_closed)
+        {
             // The exact rational loop retains the span boundaries of the rail basis.
             let domain = surface.domain_u();
             u.extend(
@@ -225,12 +269,30 @@ impl Source {
     }
 }
 
+fn profile_closure(profiles: &[NurbsCurve]) -> Result<Option<bool>, CommandError> {
+    let Some(first) = profiles.first() else {
+        return Ok(None);
+    };
+    let closed = first.is_closed()?;
+    for profile in &profiles[1..] {
+        if profile.is_closed()? != closed {
+            return Err(CommandError::Usage(
+                "Sweep2: select either open or closed profiles",
+            ));
+        }
+    }
+    Ok(Some(closed))
+}
+
 pub fn point_count(ends: SweepEndPoints) -> usize {
     [ends.start, ends.end].into_iter().flatten().count()
 }
 
 #[cfg(test)]
 mod closed_tests;
+
+#[cfg(test)]
+mod profile_loop_tests;
 
 #[cfg(test)]
 mod tests;

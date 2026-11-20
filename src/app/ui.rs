@@ -1442,7 +1442,10 @@ impl VibocerosApp {
         let show_edge_blend_handles = self.show_edge_size_handles();
         let curve_seam_editor = self.curve_seam_session.as_ref()
             .filter(|session| edge_handle_input && !session.selecting())
-            .map(|session| &session.editor);
+            .map(|session| &session.editor)
+            .or_else(|| self.sweep_two_rails.as_ref()
+                .filter(|_| edge_handle_input)
+                .and_then(sweep_two_rails::Session::seam_editor));
         let loft = self.loft_prompt.as_ref().filter(|_| edge_handle_input);
         let surface_draft_wires = if edge_handle_input {
             loft.map(loft::Prompt::preview_wires)

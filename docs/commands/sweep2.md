@@ -1,13 +1,14 @@
 # Sweep2
 
-`Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance]`
+`Sweep2 [Rail1Name=name Rail2Name=name] [Natural|Automatic] [Rebuild=point-count|Refit=tolerance]`
 `[MaintainHeight=Yes|No] [RefitRails=Yes|No] [Closed=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
 `[Slash=x,y,z/x,y,z ...]`
 
 Pick the first rail, the second rail, and then the cross-section curves.
 As soon as the inputs define a valid surface, Sweep2 draws a wire
-preview. Enter opens the options review. If all inputs are preselected, the
-bare `Sweep2` command opens review directly. Enter commits the preview and
+preview. Enter advances to the seam editor for closed profiles or the options
+review for open profiles. With preselected inputs, `Sweep2` opens that stage
+directly. Enter in review commits the preview and
 Escape cancels. Local `Undo` steps back through settings, review, and picks.
 Finishing creates one B-rep in one model undo step.
 
@@ -25,8 +26,16 @@ type a point within model tolerance of both rails. If the rails cross away
 from their endpoints, pick profiles on one side of the crossing. The sweep
 can end at a profile within that retained rail interval.
 Once a profile is available, the preview follows the snapped cursor. Picking
-the last point opens review. A point end counts as a section, and at least
+the last point advances the command. A point end counts as a section, and at least
 one real profile is required. Scripts can use `StartPoint=` and `EndPoint=`.
+
+For closed profiles, drag the seam markers to change how the curves line up.
+The surface preview follows the drag. `Flip` reverses the profile at the
+selected marker, `Automatic` aligns the seams and directions, and `Natural`
+restores their original positions and directions. `SnapToKnots=Yes` limits
+movement to profile knots. Choose `SnapToKnots=No` to move between knots.
+You can also use `SelID` to select a profile, then type a point or
+`Parameter=value`. Press Enter to review the sweep.
 
 Use `Simplify` to choose `None`, `Rebuild`, or `Refit`. Rebuild accepts 2 to
 128 control points per section, and Refit accepts a positive tolerance in
@@ -82,20 +91,25 @@ case-insensitive and currently cannot contain whitespace in this command.
 Sections may be selected in either order and either direction. The second rail
 is reversed automatically when necessary to align the section contacts.
 
-The solver accepts open rail pairs or closed rail pairs with open polynomial
-sections. Exact closed-rail sweeps can preserve a common rational rail basis.
-Rail refitting accepts rational rails, and Rebuild can prepare polynomial
-sections from rational profiles. Section endpoints must contact both rails.
-With multiple sections, contacts must progress in order on both rails. The
-unrefitted native skin for open rails requires more sections than the maximum
-rail degree. Failures leave the document and history unchanged.
+The solver accepts open or closed rail pairs and sets of open or closed
+profiles. Open profiles are polynomial, and their endpoints must contact both
+rails. Closed profiles may be rational and use the rails to guide their frame
+and scale. All profiles in one sweep must have the same closure. With
+multiple sections, contacts must progress in order on both rails. Exact
+sweeps can preserve a common rational rail basis. Rail refitting accepts
+rational rails, and Rebuild can prepare polynomial sections from rational
+profiles. The unrefitted native skin for open rails and open profiles requires
+more sections than the maximum rail degree. Failures leave the document and
+history unchanged.
 
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
-certificate checks each retained rail interval and cross section against the
-surface in world coordinates. An inconclusive certificate rejects the result.
+certificate checks the cross sections and, with open profiles, both retained
+rail boundaries against the surface in world coordinates. An inconclusive
+certificate rejects the result.
 Kinks in an accepted tensor are split into connected B-rep faces.
-Exact rational closed-rail sweeps also split at full-multiplicity rail knots.
+Exact rational sweeps with closed rails and open profiles also split at
+full-multiplicity rail knots.
 
 Limits are 32 sections, 32 slash pairs, degree 16, 128 controls per input curve and 1,024 total
 input controls. A conservative compatibility control-net limit and the shared
@@ -116,6 +130,11 @@ Closed-rail command captures cover nested squares and concentric circles,
 including partial arcs, a single profile, reversed rail direction, and curved
 profiles. Exact fixtures match captured face and edge counts and areas within
 `1e-5` square model units.
+
+Closed-profile captures cover circular tubes, tapers, asymmetric guides,
+square profiles and point ends. Smooth profiles form a joined seam in the
+transverse direction. Closing the sweep along the rails can join the other
+direction as well.
 
 Rhino 8.32 command captures match the complete straight-rail arch image
 with a start or end point, including at an interior rail crossing. With

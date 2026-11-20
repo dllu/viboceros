@@ -12,14 +12,19 @@ mod input;
 #[derive(Clone, Debug)]
 struct Seam {
     source: CapturedCurve,
+    use_nurbs: bool,
     knots: Arc<[(Real, Point3)]>,
     parameter: Real,
     reversed: bool,
 }
 
 impl Seam {
-    fn from_source(source: CapturedCurve) -> Self {
-        let curve = source.curve_ref();
+    fn from_source(source: CapturedCurve, use_nurbs: bool) -> Self {
+        let curve = if use_nurbs {
+            CurveRef::NurbsCurve(source.curve())
+        } else {
+            source.curve_ref()
+        };
         let domain = curve.domain();
         let knots: Vec<_> = match curve {
             CurveRef::NurbsCurve(_) | CurveRef::Ellipse(_) => source
@@ -38,6 +43,7 @@ impl Seam {
         };
         Self {
             source,
+            use_nurbs,
             knots: knots.into(),
             parameter: *domain.start(),
             reversed: false,
@@ -45,7 +51,11 @@ impl Seam {
     }
 
     fn curve(&self) -> CurveRef<'_> {
-        self.source.curve_ref()
+        if self.use_nurbs {
+            CurveRef::NurbsCurve(self.source.curve())
+        } else {
+            self.source.curve_ref()
+        }
     }
 
     fn start(&self) -> Real {
@@ -90,7 +100,11 @@ impl Seam {
         };
         // The native getter reports parameters in the current traversal direction.
         let parameter = self.normalize(parameter);
-        self.parameter = if self.reversed { -parameter } else { parameter };
+        self.parameter = if self.reversed && !self.use_nurbs {
+            -parameter
+        } else {
+            parameter
+        };
         if let Some(tangent) = previous.tangent
             && let Ok(sample) = self.curve().evaluate_with_tangent(parameter)
             && let Ok(dot) = sample.tangent().as_vector().dot(tangent)
@@ -172,9 +186,27 @@ impl Editor {
         snap_to_knots: bool,
         natural: bool,
     ) -> Self {
+        Self::new(sources, tolerance, snap_to_knots, natural, false)
+    }
+
+    pub(super) fn for_sweep_profiles(
+        sources: impl IntoIterator<Item = CapturedCurve>,
+        tolerance: Tolerance,
+        natural: bool,
+    ) -> Self {
+        Self::new(sources, tolerance, true, natural, true)
+    }
+
+    fn new(
+        sources: impl IntoIterator<Item = CapturedCurve>,
+        tolerance: Tolerance,
+        snap_to_knots: bool,
+        natural: bool,
+        use_nurbs: bool,
+    ) -> Self {
         let seams = sources
             .into_iter()
-            .map(Seam::from_source)
+            .map(|source| Seam::from_source(source, use_nurbs))
             .collect::<Vec<_>>();
         let target = (seams.len() == 1).then_some(0);
         let mut editor = Self {
@@ -295,12 +327,48 @@ impl Editor {
         };
         let parameter =
             parameter.or_else(|| seam.curve().closest_parameter(point?, tolerance).ok());
-        let Some(parameter) = parameter else {
+        let Some(mut parameter) = parameter else {
             return false;
         };
+        if seam.use_nurbs && self.snap_to_knots && !seam.knots.is_empty() {
+            let curve = seam.curve();
+            let Some(point) = wrap_closed_curve_parameter(parameter, &curve.domain())
+                .and_then(|parameter| curve.evaluate(parameter))
+                .ok()
+            else {
+                return false;
+            };
+            if let Some((knot, _)) = seam
+                .knots
+                .iter()
+                .filter_map(|&(knot, p)| Some((knot, p.distance_to(point).ok()?)))
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+            {
+                parameter = knot;
+            }
+        }
         seam.parameter = parameter;
         self.moving = None;
         true
+    }
+
+    pub(super) fn flip_at_point(
+        &mut self,
+        viewport: usize,
+        point: Point3,
+        tolerance: Tolerance,
+    ) -> bool {
+        if !self.flipping {
+            return false;
+        }
+        let index = self
+            .markers()
+            .iter()
+            .filter_map(|marker| Some((marker.index, marker.point.distance_to(point).ok()?)))
+            .filter(|&(_, distance)| distance <= tolerance.absolute())
+            .min_by(|a, b| a.1.total_cmp(&b.1))
+            .map(|(index, _)| index);
+        index.is_some_and(|index| self.apply(viewport, Event::Flip(index)))
     }
 
     pub(super) fn markers(&self) -> Vec<Marker> {
@@ -523,7 +591,8 @@ impl VibocerosApp {
 
     pub(super) fn apply_curve_seam_event(&mut self, viewport: usize, event: Event) -> bool {
         let Some(session) = &mut self.curve_seam_session else {
-            return self.apply_loft_seam_event(viewport, event);
+            return self.apply_loft_seam_event(viewport, event)
+                || self.apply_sweep_two_rail_seam_event(viewport, event);
         };
         let changed = session.editor.apply(viewport, event);
         if matches!(event, Event::Flip(_)) {

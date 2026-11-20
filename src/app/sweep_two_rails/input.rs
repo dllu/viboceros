@@ -16,13 +16,15 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
         } else if name.eq_ignore_ascii_case("Undo") {
             let session = self.sweep_two_rails.as_mut().unwrap();
-            if session.picking.take().is_some() {
-                self.finish_sweep_two_rail_point_getter();
-            } else if session.value.take().is_none()
-                && let Some(state) = session.undo.pop()
-            {
-                session.state = state;
-                self.sync_sweep_two_rail_picks();
+            if !std::mem::take(&mut session.seam_id_pending) {
+                if session.picking.take().is_some() {
+                    self.finish_sweep_two_rail_point_getter();
+                } else if session.value.take().is_none()
+                    && let Some(state) = session.undo.pop()
+                {
+                    session.state = state;
+                    self.sync_sweep_two_rail_picks();
+                }
             }
             self.log_sweep_two_rails();
         } else if session.picking.is_some() {
@@ -32,14 +34,11 @@ impl VibocerosApp {
         } else if input.is_empty() || name.eq_ignore_ascii_case("Enter") {
             if session.state.review {
                 self.commit_sweep_two_rails();
-            } else if !session.ready() {
-                self.log_sweep_two_rails();
             } else {
-                let session = self.sweep_two_rails.as_mut().unwrap();
-                session.undo.push(session.state.clone());
-                session.state.review = true;
-                self.log_sweep_two_rails();
+                self.advance_sweep_two_rails();
             }
+        } else if session.seam_editor().is_some() {
+            self.continue_sweep_two_rail_seams(name);
         } else if let Some(word) = name
             .split_whitespace()
             .next()

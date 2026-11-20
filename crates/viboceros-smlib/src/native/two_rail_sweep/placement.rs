@@ -9,6 +9,7 @@ use viboceros_geometry::{
 };
 
 mod closed;
+mod loop_contacts;
 
 pub(super) struct PreparedRail {
     pub(super) curve: NurbsCurve,
@@ -54,6 +55,7 @@ pub(super) struct Placement {
     pub(super) refit_rails: bool,
     pub(super) closed_rails: bool,
     pub(super) closed_loop: bool,
+    pub(super) closed_profiles: bool,
 }
 
 pub(super) fn prepare_placement(
@@ -69,7 +71,7 @@ pub(super) fn prepare_placement(
         [false, false] if !options.closed => false,
         _ => {
             return Err(unsupported(
-                "a closed sweep needs two closed rails and open profiles without point ends",
+                "a closed sweep needs two closed rails without point ends",
             ));
         }
     };
@@ -93,6 +95,12 @@ pub(super) fn prepare_placement(
             "requires 1–32 total sections including a real profile, and at most 1024 total controls",
         ));
     }
+    let closed_profiles = sections[0].is_closed()?;
+    for section in &sections[1..] {
+        if section.is_closed()? != closed_profiles {
+            return Err(unsupported("select either open or closed profiles"));
+        }
+    }
     let mut prepared = [
         prepare_rail(first, sections, ends, closed_rails, tolerance)?,
         prepare_rail(second, sections, ends, closed_rails, tolerance)?,
@@ -111,8 +119,16 @@ pub(super) fn prepare_placement(
         contact
     };
     for section in sections {
-        let mut curve = prepare(section, tolerance, false, false)?;
+        let mut curve = prepare(section, tolerance, closed_profiles, closed_profiles)?;
         let local = curve.transformed(to_local)?;
+        if closed_profiles {
+            rows.push(Section {
+                stations: loop_contacts::stations(&local_rails, &local, tolerance)?,
+                curve,
+                original: section.clone(),
+            });
+            continue;
+        }
         let endpoints = [local.evaluate(0.)?, local.evaluate(1.)?];
         let mut matches = Vec::new();
         for reverse in [false, true] {
@@ -173,10 +189,14 @@ pub(super) fn prepare_placement(
         || independent
         || refit_closed
         || (partial && !single && ends.is_empty());
-    if !closed_rails && !refit_rails && prepared.iter().any(|rail| rail.curve.is_rational()) {
+    if !closed_profiles
+        && !closed_rails
+        && !refit_rails
+        && prepared.iter().any(|rail| rail.curve.is_rational())
+    {
         return Err(unsupported("rational rails require refitting"));
     }
-    let paired_stations = if refit_rails || closed_rails {
+    let paired_stations = if refit_rails || closed_rails || closed_profiles {
         collect_paired_stations(&prepared, &rows, options.slashes, tolerance)?
     } else {
         Vec::new()
@@ -190,6 +210,7 @@ pub(super) fn prepare_placement(
         refit_rails,
         closed_rails,
         closed_loop,
+        closed_profiles,
     })
 }
 
@@ -330,6 +351,13 @@ fn rail_interval(
         // The terminal profile can itself be inside that side of the rail.
         let mut occupied = [false; 2];
         for section in sections {
+            if section.is_closed()? {
+                let center = section.control_point_bounds().center()?;
+                let location = loop_contacts::station(curve, section, center, tolerance)?;
+                occupied[0] |= location < station;
+                occupied[1] |= location > station;
+                continue;
+            }
             let section_domain = section.domain();
             for t in [*section_domain.start(), *section_domain.end()] {
                 if let Some(location) = contact(curve, section.evaluate(t)?, tolerance)? {

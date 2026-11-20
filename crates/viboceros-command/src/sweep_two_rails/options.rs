@@ -34,6 +34,7 @@ impl SectionFit {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Options {
     names: Option<[String; 2]>,
+    pub natural_seams: bool,
     pub shape: ShapeOptions,
     pub slashes: Vec<[Point3; 2]>,
 }
@@ -55,8 +56,18 @@ impl Options {
         let mut maintain_height = None;
         let mut refit_rails = None;
         let mut closed = None;
+        let mut natural_seams = None;
         let mut slashes = Vec::new();
         for arg in args {
+            if option_name_eq(arg, "Natural") || option_name_eq(arg, "Automatic") {
+                if natural_seams
+                    .replace(option_name_eq(arg, "Natural"))
+                    .is_some()
+                {
+                    return Err(CommandError::Usage(USAGE));
+                }
+                continue;
+            }
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if let Some(index) = ["Rail1Name", "Rail2Name"]
                 .iter()
@@ -108,6 +119,7 @@ impl Options {
         };
         Ok(Self {
             names,
+            natural_seams: natural_seams.unwrap_or_default(),
             slashes,
             shape: ShapeOptions {
                 fit: fit.unwrap_or_default(),

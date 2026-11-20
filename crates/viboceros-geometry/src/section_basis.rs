@@ -2,6 +2,9 @@
 
 use crate::{GeometryError, NurbsCurve, Real, WeightedPoint3};
 
+mod denominator;
+pub use denominator::try_share_denominator;
+
 #[cfg(test)]
 mod tests;
 

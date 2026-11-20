@@ -8,6 +8,7 @@ use crate::native::{
 use viboceros_geometry::{
     GeometryError, NurbsCurve, NurbsSurface, Point3, SectionWeightScale, SurfaceKnotDirection,
     UniformInterpolationSystem, Vector3, WeightedPoint3, prepare_nurbs_sections_with_operations,
+    try_share_section_denominator,
 };
 
 struct Frame {
@@ -77,9 +78,10 @@ pub(super) fn greville(knots: &[f64], degree: usize) -> Vec<f64> {
 
 pub(super) struct ProfileBlend {
     profiles: Vec<NurbsCurve>,
-    positions: Vec<Vec<[f64; 3]>>,
+    positions: Vec<Vec<[f64; 4]>>,
     stations: Vec<f64>,
     maintain_height: bool,
+    closed_profiles: bool,
 }
 
 impl ProfileBlend {
@@ -88,39 +90,61 @@ impl ProfileBlend {
         rows: &[Section],
         stations: Vec<f64>,
         maintain_height: bool,
+        closed_profiles: bool,
     ) -> Result<Self, Error> {
         let curves = rows.iter().map(|row| row.curve.clone()).collect::<Vec<_>>();
-        let profiles = prepare_nurbs_sections_with_operations(
+        let mut profiles = prepare_nurbs_sections_with_operations(
             &curves,
             1024,
             GeometryError::InvalidControlNet {
                 context: "Sweep2 section basis exceeds 1024 controls",
             },
-            SectionWeightScale::Preserve,
+            if closed_profiles {
+                SectionWeightScale::PerSection
+            } else {
+                SectionWeightScale::Preserve
+            },
             &mut clamp_curve,
             &mut |curve, degree| change_curve_degree(curve, degree, false),
             &mut insert_curve_knot,
         )?;
-        let positions = rows
+        let poles = if closed_profiles {
+            let poles = fill_closed_profile_poles(&mut profiles)?;
+            try_share_section_denominator(&mut profiles, 1024)?;
+            poles
+        } else {
+            [(0, 0); 2]
+        };
+        let mut positions = rows
             .iter()
             .zip(&profiles)
             .map(|(row, curve)| {
                 let controls = curve.control_points();
                 if controls.iter().all(|c| c.point() == controls[0].point()) {
-                    return Ok(vec![[0.; 3]; controls.len()]);
+                    return Ok(vec![[0., 0., 0., 1.]; controls.len()]);
                 }
                 let frame = Frame::at(rails, row.stations)?;
                 controls
                     .iter()
-                    .map(|p| frame.coordinates(p.point(), maintain_height))
+                    .map(|p| {
+                        let [x, y, z] = frame.coordinates(p.point(), maintain_height)?;
+                        let w = p.weight();
+                        Ok([x * w, y * w, z * w, w])
+                    })
                     .collect::<Result<Vec<_>, Error>>()
             })
             .collect::<Result<Vec<_>, _>>()?;
+        for (pole, neighbor) in poles {
+            if pole != neighbor {
+                positions[pole] = positions[neighbor].clone();
+            }
+        }
         Ok(Self {
             profiles,
             positions,
             stations,
             maintain_height,
+            closed_profiles,
         })
     }
 
@@ -152,8 +176,7 @@ impl ProfileBlend {
         for &site in sites {
             if let Ok(i) = self.stations.binary_search_by(|s| s.total_cmp(&site)) {
                 for p in self.profiles[i].control_points() {
-                    targets.extend(p.point().to_array());
-                    targets.push(1.);
+                    push_homogeneous(&mut targets, p.point(), p.weight());
                 }
                 continue;
             }
@@ -162,8 +185,7 @@ impl ProfileBlend {
             let end = rails[1].evaluate(b)?;
             if start == end {
                 for _ in 0..self.count() {
-                    targets.extend(start.to_array());
-                    targets.push(1.);
+                    push_homogeneous(&mut targets, start, 1.);
                 }
                 continue;
             }
@@ -180,12 +202,9 @@ impl ProfileBlend {
                 t * t * (3. - 2. * t)
             };
             for (a, b) in self.positions[lo].iter().zip(&self.positions[hi]) {
-                let p = frame.point(
-                    std::array::from_fn(|i| a[i] + blend * (b[i] - a[i])),
-                    self.maintain_height,
-                )?;
-                targets.extend(p.to_array());
-                targets.push(1.);
+                let [x, y, z, w] = std::array::from_fn(|i| a[i] + blend * (b[i] - a[i]));
+                let p = frame.point([x / w, y / w, z / w], self.maintain_height)?;
+                push_homogeneous(&mut targets, p, w);
             }
         }
         Ok(targets)
@@ -213,10 +232,14 @@ impl ProfileBlend {
         for v in 0..count_v {
             for u in 0..count_u {
                 let offset = 4 * (u * count_v + v);
-                let weight = weights.map_or(1., |weights| weights[u]);
-                let p = match v {
-                    0 => ends(u)[0],
-                    index if index + 1 == count_v => ends(u)[1],
+                let weight = if self.closed_profiles {
+                    targets[offset + 3]
+                } else {
+                    weights.map_or(1., |weights| weights[u])
+                };
+                let p = match (self.closed_profiles, v) {
+                    (false, 0) => ends(u)[0],
+                    (false, index) if index + 1 == count_v => ends(u)[1],
                     _ => Point3::try_from([
                         targets[offset] / weight,
                         targets[offset + 1] / weight,
@@ -238,6 +261,46 @@ impl ProfileBlend {
     }
 }
 
+fn fill_closed_profile_poles(profiles: &mut [NurbsCurve]) -> Result<[(usize, usize); 2], Error> {
+    let collapsed = |profile: &NurbsCurve| {
+        let points = profile.control_points();
+        points.iter().all(|c| c.point() == points[0].point())
+    };
+    let first = profiles
+        .iter()
+        .position(|curve| !collapsed(curve))
+        .ok_or_else(|| unsupported("a point end needs a noncollapsed profile"))?;
+    let last = profiles
+        .iter()
+        .rposition(|curve| !collapsed(curve))
+        .unwrap();
+    let poles = [(0, first), (profiles.len() - 1, last)];
+    for (pole, neighbor) in poles {
+        if pole == neighbor {
+            continue;
+        }
+        // Use the neighboring shape and its weight function as the rail width
+        // falls to zero. The stored pole section stays exactly at the point.
+        let point = profiles[pole].control_points()[0].point();
+        let controls = profiles[neighbor]
+            .control_points()
+            .iter()
+            .map(|c| WeightedPoint3::try_new(point, c.weight()))
+            .collect::<Result<Vec<_>, _>>()?;
+        profiles[pole] = NurbsCurve::try_new_rational(
+            profiles[neighbor].degree(),
+            controls,
+            profiles[neighbor].knots().to_vec(),
+        )?;
+    }
+    Ok(poles)
+}
+
+fn push_homogeneous(targets: &mut Vec<f64>, point: Point3, weight: f64) {
+    targets.extend(point.to_array().map(|coordinate| coordinate * weight));
+    targets.push(weight);
+}
+
 pub(super) fn sweep(
     rails: [&NurbsCurve; 2],
     rows: &[Section],
@@ -246,7 +309,7 @@ pub(super) fn sweep(
     // The ruled tensor retains the exact rail columns in its V direction.
     let strip = ruled_surface(rails[0], rails[1])?;
     let stations = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
-    let blend = ProfileBlend::new(rails, rows, stations.clone(), maintain_height)?;
+    let blend = ProfileBlend::new(rails, rows, stations.clone(), maintain_height, false)?;
 
     let interpolate = maintain_height || rows.len() > 1;
     let strip = if interpolate {
@@ -278,10 +341,10 @@ pub(super) fn sweep(
             let frame = (anchor.is_none() && a != b)
                 .then(|| Frame::new(a, b, tangent(rails, [site; 2])?))
                 .transpose()?;
-            for (v, local) in blend.positions[0].iter().enumerate() {
+            for (v, &[x, y, z, _]) in blend.positions[0].iter().enumerate() {
                 let p = match (anchor, &frame) {
                     (Some(controls), _) => controls[v].point(),
-                    (_, Some(frame)) => frame.point(*local, false)?,
+                    (_, Some(frame)) => frame.point([x, y, z], false)?,
                     _ => a,
                 };
                 targets.extend(p.to_array());
@@ -298,10 +361,15 @@ pub(super) fn sweep_on_rail_basis(
     rails: [&NurbsCurve; 2],
     rows: &[Section],
     maintain_height: bool,
+    closed_profiles: bool,
 ) -> Result<Option<NurbsSurface>, Error> {
     let mut strip = ruled_surface(rails[0], rails[1])?;
-    if !strip.is_rational() && strip.degree_v() < 3 {
+    if (closed_profiles || !strip.is_rational()) && strip.degree_v() < 3 {
         strip = change_surface_degree(&strip, 1, 3, false)?;
+    }
+    let stations = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
+    if closed_profiles && !strip.is_rational() && stations.len() > 2 {
+        strip = blend_basis(strip, &stations)?;
     }
     let degree = strip.degree_v();
     let knots = strip.knots_v();
@@ -316,12 +384,11 @@ pub(super) fn sweep_on_rail_basis(
     }) {
         return Ok(None);
     }
-    let stations = rows.iter().map(|row| row.stations[0]).collect::<Vec<_>>();
     let mut sites = greville(knots, degree);
     if pin_sections(&mut sites, &stations).is_err() {
         return Ok(None);
     }
-    let blend = ProfileBlend::new(rails, rows, stations, maintain_height)?;
+    let blend = ProfileBlend::new(rails, rows, stations, maintain_height, closed_profiles)?;
     let mut targets = blend.targets(rails, &sites, |site| Ok([site; 2]))?;
     let denominator = NurbsCurve::try_new(
         degree,

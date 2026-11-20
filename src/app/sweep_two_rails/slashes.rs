@@ -53,9 +53,12 @@ impl VibocerosApp {
             return;
         }
         let tolerance = self.document.tolerance();
-        let rails = session.state.capture(&self.document).and_then(|source| {
-            source.slash_paths(session.state.shape, &session.state.slashes, tolerance)
-        });
+        let rails = session
+            .state
+            .capture_edited(&self.document)
+            .and_then(|source| {
+                source.slash_paths(session.state.shape, &session.state.slashes, tolerance)
+            });
         let rails = match rails {
             Ok(rails) => rails,
             Err(error) => {
@@ -195,7 +198,7 @@ impl VibocerosApp {
         let tolerance = self.document.tolerance();
         let valid = session
             .state
-            .capture(&self.document)
+            .capture_edited(&self.document)
             .and_then(|source| source.slash_paths(session.state.shape, &slashes, tolerance));
         if let Err(error) = valid {
             self.push_log(format!("Error: {error}"));
@@ -206,9 +209,11 @@ impl VibocerosApp {
         if let Some(picker) = &mut session.slash_picker {
             picker.first = None;
         }
-        session
-            .preview
-            .accept_provisional(preview::Provisional::Slash(pair), tolerance);
+        session.preview.accept_provisional(
+            preview::Provisional::Slash(pair),
+            tolerance,
+            session.state.seams.as_ref(),
+        );
         self.log_sweep_two_rails();
         true
     }

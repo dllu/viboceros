@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{Brep, NurbsCurve};
+use viboceros_geometry::{Brep, NurbsCurve, Real};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub(super) enum Provisional {
@@ -16,11 +16,12 @@ impl Provisional {
     }
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct Request {
     revision: u64,
     tolerance: Tolerance,
     provisional: Option<Provisional>,
+    seams: Vec<(Real, bool)>,
 }
 
 #[derive(Debug)]
@@ -46,18 +47,29 @@ impl Preview {
         self.worker.clear_result();
     }
 
-    pub(super) fn accept_provisional(&mut self, provisional: Provisional, tolerance: Tolerance) {
-        let previous = self.request(tolerance, Some(provisional));
+    pub(super) fn accept_provisional(
+        &mut self,
+        provisional: Provisional,
+        tolerance: Tolerance,
+        editor: Option<&Editor>,
+    ) {
+        let previous = self.request(tolerance, Some(provisional), editor);
         self.revision = self.revision.wrapping_add(1);
         self.worker
-            .retain_as(&previous, self.request(tolerance, None));
+            .retain_as(&previous, self.request(tolerance, None, editor));
     }
 
-    fn request(&self, tolerance: Tolerance, provisional: Option<Provisional>) -> Request {
+    fn request(
+        &self,
+        tolerance: Tolerance,
+        provisional: Option<Provisional>,
+        editor: Option<&Editor>,
+    ) -> Request {
         Request {
             revision: self.revision,
             tolerance,
             provisional,
+            seams: editor.map_or_else(Vec::new, |editor| editor.placements().collect()),
         }
     }
 }
@@ -101,18 +113,22 @@ impl VibocerosApp {
         let ready = session.picking.is_none() || provisional.is_some();
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = session.preview.request(tolerance, provisional);
+        let request = session
+            .preview
+            .request(tolerance, provisional, session.state.seams.as_ref());
         session.preview.worker.update(
-            ready.then_some(request),
+            ready.then_some(request.clone()),
             context,
             |previous, current| {
                 previous.revision == current.revision
                     && previous.tolerance == current.tolerance
+                    && previous.seams.len() == current.seams.len()
                     && previous.provisional.and_then(Provisional::point_end)
                         == current.provisional.and_then(Provisional::point_end)
             },
             |_| {
                 let source = session.state.capture(&self.document);
+                let editor = session.state.seams.clone();
                 let mut slashes = session.state.slashes.clone();
                 if let Some(Provisional::Slash(pair)) = provisional {
                     slashes.push(pair);
@@ -120,6 +136,9 @@ impl VibocerosApp {
                 move || {
                     Some(
                         source
+                            .and_then(|source| {
+                                super::seams::with_seam_profiles(source, editor.as_ref(), tolerance)
+                            })
                             .and_then(|source| {
                                 if matches!(provisional, Some(Provisional::End(..))) {
                                     source.validate_point_ends(shape.ends, tolerance)?;
@@ -138,7 +157,7 @@ impl VibocerosApp {
         if session.state.review
             && session.picking.is_none()
             && provisional.is_none()
-            && session.preview.reported != Some(request)
+            && session.preview.reported.as_ref() != Some(&request)
             && let Some(Err(error)) = session.preview.worker.latest()
         {
             session.preview.reported = Some(request);
@@ -153,13 +172,15 @@ impl VibocerosApp {
         }
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = session.preview.request(tolerance, None);
+        let request = session
+            .preview
+            .request(tolerance, None, session.state.seams.as_ref());
         let result = if let Some(draft) = session.preview.worker.take(&request) {
             draft.map(|draft| draft.brep)
         } else {
             session
                 .state
-                .capture(&self.document)
+                .capture_edited(&self.document)
                 .and_then(|source| {
                     source.build(session.state.shape, &session.state.slashes, tolerance)
                 })

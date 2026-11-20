@@ -220,6 +220,7 @@ pub(super) fn sweep<'a>(
     rows: &[Section],
     paired_stations: &[[f64; 2]],
     maintain_height: bool,
+    closed_profiles: bool,
     tolerance: Tolerance,
 ) -> Result<FittedSweep<'a>, Error> {
     let clock = Clock::new(rails, paired_stations, tolerance)?;
@@ -250,7 +251,13 @@ pub(super) fn sweep<'a>(
             has_kinks = true;
         }
     }
-    let blend = ProfileBlend::new(rails, rows, stations.clone(), maintain_height)?;
+    let blend = ProfileBlend::new(
+        rails,
+        rows,
+        stations.clone(),
+        maintain_height,
+        closed_profiles,
+    )?;
     let mut samples = RailSamples {
         rails,
         clock,

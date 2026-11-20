@@ -211,6 +211,11 @@ impl Brep {
         profiles::align_open_profiles(curves, fixed)
     }
 
+    /// Align closed profiles to neighboring seam knots in the supplied order.
+    pub fn align_closed_profile_seams(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
+        profiles::align_closed_profiles(curves, true)
+    }
+
     fn from_loft_surface(
         mut surface: NurbsSurface,
         style: LoftStyle,
