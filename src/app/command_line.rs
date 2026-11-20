@@ -45,6 +45,7 @@ impl VibocerosApp {
         !self.command_file.waiting_for_filename()
             && self.layer_prompt.is_none()
             && self.direction_session.is_none()
+            && self.curve_connect_session.is_none()
             && self.end_analysis_pick.is_none()
             && self.zoom_factor_pending.is_none()
             && self.snap_size_pending.is_none()
@@ -243,6 +244,12 @@ impl VibocerosApp {
             } else {
                 "Pick regions or AllRegions; DeleteInput / CombineRegions / Output / SimplifyCurves; Enter accepts, Esc cancels"
             }
+        } else if let Some(p) = self
+            .curve_connect_session
+            .as_ref()
+            .filter(|_| self.subcurve_prompt.is_none())
+        {
+            p.hint()
         } else if let Some(p) = &self.curve_chamfer_session {
             p.hint()
         } else if let Some(p) = &self.distribute_session {

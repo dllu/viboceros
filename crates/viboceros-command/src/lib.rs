@@ -446,7 +446,7 @@ pub mod blend_edge;
 mod cap;
 pub mod chamfer;
 pub mod chamfer_edge;
-mod connect;
+pub mod connect;
 mod curve_pair_edit;
 mod edge_blend_input;
 mod extract_surface;
@@ -1088,6 +1088,7 @@ pub struct CommandRegistry {
     shell_options: std::sync::Arc<remembered::Remembered<shell::ShellOptions>>,
     fillet_preferences: std::sync::Arc<remembered::Remembered<fillet::Preferences>>,
     chamfer_preferences: std::sync::Arc<remembered::Remembered<chamfer::Preferences>>,
+    connect_options: std::sync::Arc<remembered::Remembered<connect::Options>>,
     commands: Vec<Box<dyn Command>>,
     lookup: BTreeMap<String, usize>,
     copy_preferences: copy_options::CopyPreferences,
@@ -2039,7 +2040,7 @@ impl CommandRegistry {
             .register(ChamferCommand(registry.chamfer_preferences.clone()))
             .expect("unique built-in command");
         registry
-            .register(ConnectCommand)
+            .register(ConnectCommand(registry.connect_options.clone()))
             .expect("unique built-in command");
         registry
             .register(blend_curve::BlendCurveCommand::default())
@@ -3018,6 +3019,12 @@ impl CommandRegistry {
     }
     pub fn chamfer_preferences(&self) -> chamfer::Preferences {
         self.chamfer_preferences.get()
+    }
+    pub fn connect_options(&self) -> connect::Options {
+        self.connect_options.get()
+    }
+    pub fn remember_connect_options(&self, options: connect::Options) {
+        self.connect_options.set(options);
     }
     pub fn remember_chamfer_preferences(
         &self,

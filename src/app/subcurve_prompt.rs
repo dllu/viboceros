@@ -7,6 +7,7 @@ use viboceros_document::ObjectId;
 pub(super) enum Temporary {
     Offset,
     Ribbon,
+    Connect,
     Radius,
     NestedLength,
 }
@@ -388,6 +389,7 @@ impl VibocerosApp {
                 };
                 if let Some(id) = id {
                     self.pick_subcurve_source(Some(id));
+                    self.command_input.clear();
                     return true;
                 }
             }
@@ -597,6 +599,7 @@ impl VibocerosApp {
             Temporary::Radius => self.return_to_radius(portion)?,
             Temporary::NestedLength => self.continue_after_nested_length_portion(portion)?,
             Temporary::Ribbon => self.finish_ribbon_portion(portion)?,
+            Temporary::Connect => self.finish_connect_portion(portion)?,
             Temporary::Offset => {
                 if let Some((reference, curve)) = portion {
                     self.add_curve_offset_portion(&reference, curve);

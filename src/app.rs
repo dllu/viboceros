@@ -182,6 +182,7 @@ mod curve_apex;
 mod curve_array;
 mod curve_boolean;
 mod curve_chamfer;
+mod curve_connect;
 mod curve_deviation;
 mod curve_extrusion;
 mod curve_fillet;
@@ -461,6 +462,7 @@ pub struct VibocerosApp {
     curve_fillet_session: Option<curve_fillet::Session>,
     fillet_corners_session: Option<fillet_corners::Session>,
     curve_chamfer_session: Option<curve_chamfer::Session>,
+    curve_connect_session: Option<curve_connect::Session>,
     curve_boolean_prompt: Option<curve_boolean::Prompt>,
     reparameterize_prompt: Option<reparameterize::Prompt>,
     direction_session: Option<direction::Session>,
@@ -685,6 +687,7 @@ impl VibocerosApp {
             curve_fillet_session: None,
             fillet_corners_session: None,
             curve_chamfer_session: None,
+            curve_connect_session: None,
             curve_boolean_prompt: None,
             reparameterize_prompt: None,
             direction_session: None,
@@ -1046,7 +1049,8 @@ impl VibocerosApp {
         if self.continue_curve_boolean(&input) {
             return;
         }
-        if self.continue_curve_chamfer(&input)
+        if self.continue_curve_connect(&input)
+            || self.continue_curve_chamfer(&input)
             || self.continue_curve_fillet(&input)
             || self.continue_fillet_corners(&input)
         {
@@ -1208,6 +1212,7 @@ impl VibocerosApp {
             || self.start_refinement(&input)
             || self.start_reparameterize(&input)
             || self.start_curve_boolean(&input)
+            || self.start_curve_connect(&input)
             || self.start_curve_chamfer(&input)
             || self.start_curve_fillet(&input)
             || self.start_fillet_surface(&input)
@@ -1295,6 +1300,7 @@ impl VibocerosApp {
             || self.continue_offset_surface(input)
             || self.continue_ribbon(input)
             || self.continue_surface_point_grid(input)
+            || self.continue_curve_connect(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)
             || self.continue_fillet_corners(input)

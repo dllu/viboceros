@@ -60,6 +60,12 @@ impl VibocerosApp {
         self.block_session = None;
         self.blend_surface_prompt = None;
         self.fillet_surface_prompt = None;
+        if self.curve_connect_session.take().is_some() {
+            self.document.clear_selection();
+            if announce {
+                self.push_log("Cancelled Connect".into());
+            }
+        }
         if self.curve_chamfer_session.take().is_some() {
             self.document.clear_selection();
         }

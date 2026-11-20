@@ -58,6 +58,7 @@ impl VibocerosApp {
         self.validate_match_surface();
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
+        self.validate_curve_connect();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
@@ -110,6 +111,7 @@ impl VibocerosApp {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.curve_connect_session.is_none()
             && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
@@ -1112,6 +1114,11 @@ impl VibocerosApp {
             .is_none()
             .then_some(self.point_constraint.filter(|_| model_input_active))
             .flatten();
+        let connect_first = self
+            .picking_curve_connect()
+            .then(|| self.connect_first_id())
+            .flatten();
+        let curve_connect_pick = model_input_active && connect_first.is_some();
         let selection_excluded_object = self
             .planar_boolean_prompt
             .as_ref()
@@ -1120,7 +1127,8 @@ impl VibocerosApp {
                 self.fillet_surface_prompt
                     .as_ref()
                     .and_then(|p| p.excluded())
-            });
+            })
+            .or(connect_first);
         let selection_allowed_objects = self
             .offset_surface_session
             .as_ref()
@@ -1556,6 +1564,7 @@ impl VibocerosApp {
                                 object_filter
                             },
                             selection_excluded_object,
+                            curve_connect_pick,
                             selection_allowed_objects: selection_allowed_objects.as_ref(),
                             selection_preview: if self.surface_path_prompt.is_some()
                                 || plane_object_pick
@@ -1635,6 +1644,12 @@ impl VibocerosApp {
                                 .as_ref()
                                 .filter(|_| model_input_active && self.plane_prompt.is_none())
                                 .and_then(|s| s.preview_curves(&self.document))
+                                .or_else(|| {
+                                    self.curve_connect_session
+                                        .as_ref()
+                                        .filter(|_| curve_connect_pick)
+                                        .and_then(|s| s.preview_curves(&self.document))
+                                })
                                 .or_else(|| {
                                     self.face_create_session
                                         .as_ref()
@@ -1977,6 +1992,12 @@ impl VibocerosApp {
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());
+        self.update_curve_connect_preview(
+            viewport_outputs
+                .iter()
+                .find_map(|output| output.curve_connect_hover),
+            ui.ctx(),
+        );
         if self.observe_surface_extrusion_hover(apex_hover) {
             ui.ctx().request_repaint();
         }

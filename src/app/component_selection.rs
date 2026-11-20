@@ -204,6 +204,7 @@ impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
         self.direction_session.is_none()
             && self.active_command.is_none()
+            && self.curve_connect_session.is_none()
             && self.nested_measurement.is_none()
             && self.edge_pattern_prompt.is_none()
             && self.chain_prompt.is_none()

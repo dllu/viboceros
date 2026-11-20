@@ -60,16 +60,10 @@ impl Prepared {
     pub fn is_current(&self, document: &Document) -> bool {
         self.tolerance == document.tolerance()
             && self.layer == document.current_layer_id()
-            && self.sources.iter().all(|old| {
-                document.is_object_selectable(old.id())
-                    && document.object(old.id()).is_some_and(|new| {
-                        old.geometry_snapshot()
-                            .shares_storage_with(new.geometry_snapshot())
-                            && old.attributes() == new.attributes()
-                            && old.group_ids() == new.group_ids()
-                            && old.geometry_user_text() == new.geometry_user_text()
-                    })
-            })
+            && self
+                .sources
+                .iter()
+                .all(|old| source_is_current(document, old))
     }
     pub fn commit(&self, document: &mut Document) -> Result<Vec<ObjectId>, CommandError> {
         run_command_transaction(document, self.command, |doc| self.apply(doc))
@@ -114,6 +108,17 @@ impl Prepared {
         document.clear_selection();
         Ok(outputs)
     }
+}
+
+pub(crate) fn source_is_current(document: &Document, old: &Object) -> bool {
+    document.is_object_selectable(old.id())
+        && document.object(old.id()).is_some_and(|new| {
+            old.geometry_snapshot()
+                .shares_storage_with(new.geometry_snapshot())
+                && old.attributes() == new.attributes()
+                && old.group_ids() == new.group_ids()
+                && old.geometry_user_text() == new.geometry_user_text()
+        })
 }
 
 // A trimmed line keeps the source's parameter chart, including when the

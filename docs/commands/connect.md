@@ -2,13 +2,21 @@
 
 [Command reference](README.md) · [Rhino command](https://docs.mcneel.com/rhino/8/help/en-us/commands/connect.htm)
 
-Select two open curves and run `Connect`. The selected ends are trimmed or
-extended to meet at one point. Two updated curves are selected, and one Undo
-restores the originals. `Join=Yes` creates a single selected polycurve.
+Run `Connect` and pick two open curves near the ends you want to keep. Moving
+over a second curve previews the connection. The second pick applies it in
+one Undo step. Separate results retain their object identities. `Join=Yes`
+keeps the first curve's identity and replaces the two curves with a polycurve.
+The command leaves the results unselected.
 
-The nearest pair of endpoints is used by default. `Pick1=x,y,z` and
-`Pick2=x,y,z` choose other ends. Separate outputs inherit their respective
-sources' attributes and groups; a joined output inherits the first source's.
+`Join`, `ExtendArcsBy` and `ExtendOtherCurvesBy` are available at either
+curve prompt. Edits survive cancellation. Use `SelID` followed by an object
+ID to select a curve by its ID. `SubCrv` defines a temporary input
+using the last portion point as the pick. It preserves the original curve.
+When the picked ends cannot connect, the command tries the other ends.
+
+Scripted input also accepts two preselected curves with `Pick1=x,y,z` and
+`Pick2=x,y,z` to specify the ends to edit. The scripted default uses the
+nearest pair of endpoints. Scripted outputs inherit source attributes and groups.
 
 Straight terminal segments may meet by extension. Nonmeeting NURBS and
 polyline ends can extend with straight tangent segments; this is also available

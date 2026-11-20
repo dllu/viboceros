@@ -431,6 +431,7 @@ pub struct ViewportInput<'a> {
     pub zoom_target: Option<ZoomTargetInput>,
     pub object_filter: Option<ObjectSelectionFilter>,
     pub selection_excluded_object: Option<ObjectId>,
+    pub curve_connect_pick: bool,
     pub selection_allowed_objects: Option<&'a std::collections::BTreeSet<ObjectId>>,
     pub selection_preview: Option<ObjectSelectionFilter>,
     pub selection_preview_ids: &'a [ObjectId],
@@ -623,6 +624,7 @@ impl Default for ViewportInput<'_> {
             zoom_target: None,
             object_filter: Some(ObjectSelectionFilter::Any),
             selection_excluded_object: None,
+            curve_connect_pick: false,
             selection_allowed_objects: None,
             selection_preview: None,
             selection_preview_ids: &[],
@@ -745,6 +747,7 @@ pub struct ViewportOutput {
     pub blend_curve_hover: Option<Real>,
     pub blend_curve_parameter: Option<Real>,
     pub curve_line_click: Option<(ObjectId, Option<usize>, Point3)>,
+    pub curve_connect_hover: Option<(ObjectId, Point3)>,
     pub direction_click: Option<ObjectId>,
     pub(crate) direction_readout: Option<direction::Readout>,
     pub insert_point: Option<(
@@ -3888,6 +3891,30 @@ impl Viewport {
                     .into_iter()
                     .find(|id| !sources.includes_owner(*id))
                 }),
+            curve_connect_hover: (input.curve_connect_pick && selecting && !modifiers.any())
+                .then(|| {
+                    let pointer = response.hover_pos()?;
+                    let id = self
+                        .pick_object_candidates_matching_preview_excluding(
+                            pointer,
+                            rect,
+                            document,
+                            ObjectSelectionFilter::Curves,
+                            None,
+                            input.selection_excluded_object,
+                        )
+                        .into_iter()
+                        .next()?;
+                    let object = document.object(id)?;
+                    let point = self.curve_pick_point(
+                        object.geometry(),
+                        None,
+                        pointer,
+                        document.tolerance(),
+                    )?;
+                    Some((id, point))
+                })
+                .flatten(),
             drafting_hover_is_free: response.hovered()
                 && input.point_filter.is_none()
                 && input.point_constraint.is_none()

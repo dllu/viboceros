@@ -79,6 +79,7 @@ mod curve_array;
 mod curve_boolean;
 mod curve_boolean_corpus;
 mod curve_completion;
+mod curve_connect;
 mod curve_deviation;
 mod curve_input;
 mod curve_offset;

@@ -62,7 +62,10 @@ impl VibocerosApp {
             }
             return;
         }
-        if self.pick_curve_chamfer(click.object_id) || self.pick_curve_fillet(click.object_id) {
+        if self.pick_curve_connect(click.object_id, pick)
+            || self.pick_curve_chamfer(click.object_id)
+            || self.pick_curve_fillet(click.object_id)
+        {
             return;
         }
         if self.pick_mesh_polyline(click.object_id) {
@@ -451,6 +454,7 @@ impl VibocerosApp {
         if (self.offset_surface_session.is_some()
             || self.arc_blend_session.is_some()
             || self.curve_fillet_session.is_some()
+            || self.curve_connect_session.is_some()
             || self.curve_chamfer_session.is_some())
             && self.plane_prompt.is_none()
         {

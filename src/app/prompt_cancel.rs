@@ -137,6 +137,7 @@ impl VibocerosApp {
         } else if self.plane_prompt.is_some() {
             self.cancel_plane_prompt();
         } else if self.active_command.is_some()
+            || self.curve_connect_session.is_some()
             || self.subcurve_prompt.is_some()
             || self.object_prompt.is_some()
             || self.group_prompt.is_some()
