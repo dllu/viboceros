@@ -123,7 +123,15 @@ impl Session {
             && self.value.is_none()
             && matches!(self.state.stage, ProfileStage::Selecting)
     }
-    pub(super) fn hint(&self) -> &'static str {
+    pub(super) fn hint(&self) -> &str {
+        if self.state.stage.reviewing()
+            && self.picking.is_none()
+            && self.value.is_none()
+            && self.alignment.is_none()
+            && let Some(error) = self.preview.error()
+        {
+            return error;
+        }
         match (self.picking, self.value, &self.state.stage) {
             (Some(Pick::Pole(End::Start)), _, _) => "Pick the Sweep1 start point; Esc cancels",
             (Some(Pick::Pole(End::Finish)), _, _) => "Pick the Sweep1 end point; Esc cancels",

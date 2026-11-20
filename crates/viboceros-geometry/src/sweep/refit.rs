@@ -3,6 +3,7 @@ use super::*;
 use crate::ArcLengthSampler;
 use crate::curve_fit::{cubic_polygon, g1};
 mod circle;
+mod shared;
 
 impl Sweep1 {
     /// Apply an affine section chart after common-basis preparation.
@@ -20,7 +21,8 @@ impl Sweep1 {
     /// Fit ordered real profiles while preserving their rail stations.
     ///
     /// Supports exact polygon regions, regular open profiles, and full circles
-    /// that can use four cubic spans. Lone open profiles can be fit adaptively.
+    /// that can use four cubic spans. Smooth open profiles can be fit adaptively,
+    /// with a shared subdivision when several sections need reconstruction.
     pub fn refit_sections(
         mut sections: Vec<SweepSection>,
         fit_tolerance: Real,
@@ -41,11 +43,21 @@ impl Sweep1 {
         } else {
             fit_tolerance * 0.5
         };
-        for section in &mut sections {
+        let mut fits = Vec::with_capacity(sections.len());
+        let mut shared_grid = false;
+        for section in &sections {
             if section.curve.control_points().len() > MAX_SECTION_CONTROLS {
                 return Err(invalid("refit source section control budget exceeded"));
             }
-            section.curve = refit(&section.curve, limit, single)?;
+            let fitted = refit(&section.curve, limit, single)?;
+            shared_grid |= !single && shared::needs_grid(&fitted)?;
+            fits.push(fitted);
+        }
+        if shared_grid {
+            fits = shared::reconstruct(&sections, fits, fit_tolerance)?;
+        }
+        for (section, fitted) in sections.iter_mut().zip(fits) {
+            section.curve = fitted;
         }
         Ok(sections)
     }
@@ -77,13 +89,10 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
     if limit >= chord {
         return Err(unsupported());
     }
-    if !single {
-        if source.control_points().len() != source.degree() + 1 {
-            return Err(unsupported());
-        }
-        return single_span_proposal(source, &initial, limit)?.ok_or_else(unsupported);
-    }
     let first = open_pass(source, &initial, limit)?;
+    if !single {
+        return Ok(first);
+    }
     // Lone profiles use the fitted cubic as the source of a second pass.
     let clock = fit_clock(source, &first)?;
     let fitted = if first == initial {

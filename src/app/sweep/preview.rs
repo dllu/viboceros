@@ -23,10 +23,14 @@ struct Draft {
 pub(super) struct Preview {
     revision: u64,
     source: Option<Option<Arc<Source>>>,
-    worker: draft_worker::Worker<Request, Draft>,
+    worker: draft_worker::Worker<Request, Result<Draft, String>>,
 }
 
 impl Preview {
+    pub(super) fn error(&self) -> Option<&str> {
+        self.worker.latest()?.as_ref().err().map(String::as_str)
+    }
+
     pub(super) fn invalidate(&mut self) {
         self.revision = self.revision.wrapping_add(1);
         self.source = None;
@@ -68,6 +72,7 @@ impl Session {
         self.preview
             .worker
             .latest()
+            .and_then(|draft| draft.as_ref().ok())
             .map_or(&[], |draft| &draft.wires)
     }
 }
@@ -132,17 +137,21 @@ impl VibocerosApp {
                 let editor = p.state.stage.seams().cloned();
                 let reversed_profiles = request.reversed_profiles.clone();
                 move || {
-                    let source =
-                        seams::with_seam_profiles(source?, editor.as_ref(), tolerance).ok()?;
-                    let (brep, sections) = source
-                        .build_with_reversed_profiles(&options, tolerance, &reversed_profiles)
-                        .ok()?;
-                    let wires = draft_worker::wireframe(&brep, tolerance);
-                    Some(Draft {
-                        brep,
-                        sections,
-                        wires,
-                    })
+                    let result = seams::with_seam_profiles(source?, editor.as_ref(), tolerance)
+                        .and_then(|source| {
+                            source.build_with_reversed_profiles(
+                                &options,
+                                tolerance,
+                                &reversed_profiles,
+                            )
+                        })
+                        .map(|(brep, sections)| Draft {
+                            wires: draft_worker::wireframe(&brep, tolerance),
+                            brep,
+                            sections,
+                        })
+                        .map_err(|error| error.to_string());
+                    Some(result)
                 }
             },
         );
@@ -153,28 +162,35 @@ impl VibocerosApp {
         let tolerance = self.document.tolerance();
         let request = session.preview.request(tolerance, None, &session.state);
         let options = session.state.effective_options().into_owned();
-        let result =
-            if let Some(Draft { brep, sections, .. }) = session.preview.worker.take(&request) {
-                Ok((brep, sections))
-            } else {
-                session
-                    .state
-                    .capture_source(&self.document)
-                    .and_then(|source| {
-                        seams::with_seam_profiles(
-                            Arc::new(source),
-                            session.state.stage.seams(),
-                            tolerance,
-                        )
-                    })
-                    .and_then(|source| {
-                        source.build_with_reversed_profiles(
-                            &options,
-                            tolerance,
-                            &request.reversed_profiles,
-                        )
-                    })
-            };
+        let preview_failure = session
+            .preview
+            .worker
+            .result_for(&request)
+            .and_then(|draft| draft.as_ref().err().cloned());
+        let cached = preview_failure
+            .map(Err)
+            .or_else(|| session.preview.worker.take(&request));
+        let result = match cached {
+            Some(draft) => draft.map(|Draft { brep, sections, .. }| (brep, sections)),
+            None => session
+                .state
+                .capture_source(&self.document)
+                .and_then(|source| {
+                    seams::with_seam_profiles(
+                        Arc::new(source),
+                        session.state.stage.seams(),
+                        tolerance,
+                    )
+                })
+                .and_then(|source| {
+                    source.build_with_reversed_profiles(
+                        &options,
+                        tolerance,
+                        &request.reversed_profiles,
+                    )
+                })
+                .map_err(|error| error.to_string()),
+        };
         let (brep, sections) = match result {
             Ok(result) => result,
             Err(error) => {

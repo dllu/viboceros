@@ -7,15 +7,15 @@ mode and tolerance changes, and Undo in review restores the prior draft.
 `Simplify=None` turns simplification off while retaining the distance.
 
 Section Refit supports exact straight and polygonal profiles, full circles that
-fit with four cubic spans, and regular open Bézier sections. A lone smooth
-open profile can use adaptive pieces, including the captured rational
-quadratics. Placement uses the original profile. Fitting follows seam and
-direction edits. Shared adaptive fits for several profiles and tight circular
-fits remain open. Open fits requiring midpoints beyond the measured
-eight-interval length lookup report a fitting error.
+fit with four cubic spans, and regular open Bézier sections. It supports
+adaptive pieces for smooth open profiles, including the captured rational
+quadratics, and shared subdivision for multiple smooth profiles. Placement
+uses the original profile. Fitting follows seam and direction edits. Open
+fits requiring midpoints beyond the measured eight-interval length lookup and
+tight circular fits remain open.
 
 The oracle accepts `refit_tolerance` independently of rail refitting and
-rejects simultaneous section rebuilding. Across 54 captures, the complete
+rejects simultaneous section rebuilding. Across 60 captures, the complete
 surface deviation bound is at most `1.5e-8` at epsilon `1e-7`. The comparison
 reverses the Rhino rail parameter for the two-pole capture. The public
 `Curve.Fit` diagnostics produce different controls. SDK captures preserve the
@@ -41,9 +41,15 @@ for small relative changes.
 In the two-profile adaptive captures, Rhino interpolates the retimed curves
 and their derivatives on a shared dyadic grid. Rebuilding each profile on
 its own grid and inserting the other profile's knots changes the geometry.
-The interval acceptance rule still needs qualification. For example, at
-scale 10 the grid splits at `0.1875` with tolerance `0.001`, even though the
-unsplit interval differs from the retimed curve by about `0.000474`.
+The implementation accepts an interval with a proven pointwise bound and
+subdivides when any profile has a point proven to exceed the distance limit.
+If neither test decides an interval, review shows a fitting error and the
+tolerance stays editable. The native interval acceptance rule still needs
+qualification in that gap. For example, at scale 10 the native grid splits
+at `0.1875` with tolerance `0.001` while the unsplit interval has a geometric
+deviation of about `0.000474` from the retimed curve. The cut disappears near
+`0.001083516`. Rotation, translation, rail length, and model tolerance
+changes preserved that transition in the measured cases.
 
 The final boundary can exceed the nominal tolerance. The
 [exact Bernstein regression](../../tools/rhino_oracle/test_sweep1_refit.py)

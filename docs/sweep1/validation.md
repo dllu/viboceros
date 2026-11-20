@@ -194,7 +194,8 @@ cost of repeated accurate arc-length inversion.
 
 [Cross-section Refit](refitting.md) has complete-surface checks for qualifying
 straight, circular, and adaptive open fits, including rational quadratics.
-Shared adaptive grids and tight fits remain open.
+Shared adaptive grids pass matched command and SDK comparisons. Unresolved
+subdivision decisions and tight fits remain open.
 
 An exact-key, bounded sample cache reduced single-profile spatial timings from
 about 43 ms to 25 ms, versus 15 ms Freeform and 12 ms Roadlike in Rhino under

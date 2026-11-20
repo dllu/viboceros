@@ -3,9 +3,11 @@ use crate::{GeometryError, NurbsCurve, ParameterSide};
 mod adjust;
 pub(crate) use adjust::{adjusted_cubic, adjusted_cubic_at_point};
 mod correspondence;
+mod hermite;
 #[cfg(test)]
 pub(crate) use correspondence::within_deviation_at_pairs;
 pub(crate) use correspondence::{deviation_bound, deviation_bound_at_pairs, within_deviation};
+pub(crate) use hermite::hermite_cubics;
 
 /// Initial unit-domain polynomial cubic. Each handle has length
 /// `chord_length * (2 - cos(chord, tangent)^2) / 3`. It interpolates endpoint

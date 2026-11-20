@@ -32,6 +32,11 @@ impl<K: PartialEq, T: Send + 'static> Worker<K, T> {
         self.result.as_ref()?.1.as_ref()
     }
 
+    pub(super) fn result_for(&self, request: &K) -> Option<&T> {
+        let (key, result) = self.result.as_ref()?;
+        (key == request).then_some(result.as_ref()).flatten()
+    }
+
     pub(super) fn clear_result(&mut self) {
         self.result = None;
     }

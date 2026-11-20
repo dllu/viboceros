@@ -124,6 +124,98 @@ fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
 }
 
 #[test]
+fn sweep_refit_previews_a_shared_grid_for_different_profiles() {
+    let mut app = test_app();
+    for input in [
+        "Line 0,0,0 0,0,5",
+        "Curve 0,0,0 1,2,0 3,0,0 Degree=2",
+        "Curve 0,0,5 2,4,5 6,0,5 Degree=2",
+    ] {
+        app.commands.execute(&mut app.document, input).unwrap();
+    }
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    app.maximized_viewport = Some(0);
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let context = egui::Context::default();
+
+    enter(&mut app, "Sweep1 Simplify=Refit RefitRail=Yes");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    let coarse = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "RefitTolerance=0.001");
+    let adaptive = wait_for_wires(&mut app, &context, |wires| {
+        wires.iter().any(|wire| wire.control_points().len() == 14)
+    });
+    assert_ne!(coarse, adaptive);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "");
+    let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected the shared-grid Sweep1 draft to commit");
+    };
+    assert_eq!(
+        output
+            .wireframe_curves(1, app.document.tolerance())
+            .unwrap(),
+        adaptive
+    );
+    let surface = output.faces()[0].surface();
+    assert_eq!(surface.control_point_count_v(), 14);
+    let handle = surface.control_point(0, 1).unwrap().point();
+    assert!(
+        handle
+            .distance_to(point(0.12477591125166383, 0.24955182250332766, 0.))
+            .unwrap()
+            < 1e-7
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}
+
+#[test]
+fn sweep_refit_reports_unresolved_subdivision_during_review() {
+    let mut app = test_app();
+    for input in [
+        "Line 0,0,0 0,0,5",
+        "Curve 0,0,0 2,4,0 6,0,0 Degree=2",
+        "Curve 0,0,5 2,4,5 6,0,5 Degree=2",
+    ] {
+        app.commands.execute(&mut app.document, input).unwrap();
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let context = egui::Context::default();
+
+    enter(&mut app, "Sweep1 Refit=0.001");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    let diagnostic = "could not resolve the shared profile subdivision";
+    let deadline = Instant::now() + Duration::from_secs(10);
+    loop {
+        viewport_frame(&mut app, &context, vec![]);
+        if app.command_hint().contains(diagnostic) {
+            break;
+        }
+        assert!(Instant::now() < deadline, "{}", app.command_hint());
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    enter(&mut app, "");
+    assert!(app.command_log.back().unwrap().contains(diagnostic));
+    assert!(app.command_hint().contains(diagnostic));
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "RefitTolerance=0.01");
+    wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    assert!(app.command_hint().starts_with("Review the sweep"));
+}
+
+#[test]
 fn sweep_roadlike_axis_uses_the_snapped_cursor_and_commits_the_draft() {
     let mut app = test_app();
     let tolerance = app.document.tolerance();
