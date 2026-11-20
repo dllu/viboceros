@@ -67,6 +67,102 @@ fn hover_pole(
 }
 
 #[test]
+fn sweep_roadlike_axis_uses_the_snapped_cursor_and_commits_the_draft() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let mid = std::f64::consts::FRAC_1_SQRT_2;
+    let arc = CircularArc3::try_from_three_points(
+        point(1., 0., 0.),
+        point(mid, mid, 0.),
+        point(0., 1., 0.),
+        tolerance,
+    )
+    .unwrap();
+    let rail = app.document.add_geometry(Geometry::Arc(arc)).unwrap();
+    enter(&mut app, "Line 1,0,0 2,0,0.5");
+    let profile = app.document.objects().last().unwrap().id();
+    let default_tip = point(-1., -1.5, 0.25);
+    let oblique_tip = point(-1., -0.5, 0.25);
+    for p in [default_tip, oblique_tip] {
+        app.document.add_geometry(Geometry::Point(p)).unwrap();
+    }
+    app.document.clear_history().unwrap();
+    let originals = app.document.objects().cloned().collect::<Vec<_>>();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+
+    enter(&mut app, "Sweep1");
+    for id in [rail, profile] {
+        enter(&mut app, &id.to_string());
+    }
+    let initial = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "Style");
+    enter(&mut app, "_Roadlike");
+    assert!(app.command_hint().contains("axis base point"));
+    enter(&mut app, "w-1,-1.5,-0.75");
+    assert!(app.command_hint().contains("second Roadlike axis point"));
+    enter(&mut app, "w-1,-1.5,-0.75");
+    assert!(app.command_log.back().unwrap().contains("distinct points"));
+    enter(&mut app, "Undo");
+    assert!(app.command_hint().contains("axis base point"));
+    enter(&mut app, "w-1,-1.5,-0.75");
+    enter(&mut app, "Point");
+    assert!(app.snaps.model_override.is_some());
+    let (_, upright) = hover_pole(&mut app, &context, default_tip, point(0., 2., 0.5));
+    let (pixel, oblique) = hover_pole(
+        &mut app,
+        &context,
+        oblique_tip,
+        point(0., 2.060660171779821, -0.35355339059327373),
+    );
+    assert_ne!(upright, oblique);
+    assert_eq!(app.document.undo_label(), None);
+    viewport_click(&mut app, &context, pixel);
+    assert!(app.snaps.model_override.is_none());
+    wait_for_wires(&mut app, &context, |wires| wires == oblique);
+
+    enter(&mut app, "SetAxis");
+    enter(&mut app, "w0,0,0");
+    app.cancel_current_prompt_or_selection();
+    assert!(app.sweep_session.is_some());
+    assert!(app.active_command.is_none());
+    wait_for_wires(&mut app, &context, |wires| wires == oblique);
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == initial);
+    enter(&mut app, "SetAxis");
+    enter(&mut app, "w-1,-1.5,-0.75");
+    enter(&mut app, "wr0,1,1");
+    wait_for_wires(&mut app, &context, |wires| wires == oblique);
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected the Sweep1 draft to commit");
+    };
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), oblique);
+    assert_eq!((sweep.faces().len(), sweep.edges().len()), (1, 4));
+    // Rhino 8.32 with a two-point axis parallel to (0, 1, 1).
+    let middle = sweep.faces()[0]
+        .surface()
+        .control_point(1, 1)
+        .unwrap()
+        .point();
+    let native = point(2.179539348757548, 2.136646129944096, -0.5118016810571365);
+    assert!(middle.distance_to(native).unwrap() < 1e-8, "{middle:?}");
+    assert!((sweep.area(tolerance).unwrap() - 2.755682092970889).abs() < 1e-6);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+}
+
+#[test]
 fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
     for (command, profile_command, getter, height, rail_first) in [
         ("Sweep1", "Line 0,0,2.5 2,0,2.5", "StartPoint", 0., true),

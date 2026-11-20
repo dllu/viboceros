@@ -146,6 +146,7 @@ supporting face and uses the refitted rail basis. `FrameStyle=Freeform|Roadlike`
 `Axis=x,y,z` (Roadlike only), and
 `ShapeBlending=Local|Global` select the frame and blend model. Inputs and selection
 are retained; one unselected B-rep is added on the current layer with atomic undo.
+Use `Style` then `Roadlike`, or `SetAxis`, to pick the axis with a live preview.
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular
 rail with one profile. General closed-rail holonomy correction, miters,

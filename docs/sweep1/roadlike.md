@@ -10,6 +10,13 @@ line-plane convention. Inference uses the original rail before automatic
 direction changes or fitting. `Axis=x,y,z` supplies an explicit override.
 Parallel rail tangent and axis remain an error.
 
+During Sweep1, choose `Style` and then `Roadlike`, or enter `SetAxis`.
+Pick the base and direction points in the viewport or type their coordinates.
+The surface preview follows the second point, including object snaps and point
+constraints. Enter at either prompt uses the construction plane's Z axis
+captured when picking begins. `Automatic` uses the rail-based default.
+Escape returns to the sweep. Undo removes an accepted axis change.
+
 The command and JSON API share `SweepFrameStyle::roadlike_default`. JSON requests
 select it with `"roadlike": true`; `"roadlike_axis": [x,y,z]` takes precedence.
 Freeform remains the default frame style.
@@ -35,8 +42,10 @@ default using Rhino's public `TryGetPlane` query. An older SDK diagnostic passed
 `Vector3d.Unset`: its eight planar arc results are empty, while the two lines
 and spatial rail return surfaces. These diagnostic results do not establish
 default-axis compatibility. Original producer versions are archived with every
-capture. The scripted `_Style=_Roadlike` axis getter accepts CPlane Z on Enter;
-this prompt is separate from the documented automatic policy.
+capture. Rhino 8.32 produced the same reference surface when Enter was used at
+either Roadlike axis prompt. The two-point oblique axis is also covered by a
+headless preview and commit comparison. `FrameStyle=Roadlike` uses the
+rail-based default when supplied with the `Sweep1` command.
 
 General multi-profile Roadlike compatibility, frame-style persistence, surface
 edge alignment, and parallel-axis fallback remain unqualified. Existing

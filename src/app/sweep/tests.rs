@@ -76,6 +76,54 @@ fn sweep_one_preselection_opens_closed_seams_and_script_dispatch_remains_direct(
 }
 
 #[test]
+fn sweep_roadlike_axis_enter_uses_the_captured_cplane_at_either_point() {
+    let (mut app, ids) = setup();
+    let plane = Frame3::try_from_normal(
+        point(4., 5., 6.),
+        viboceros_geometry::Vector3::try_new(0., 1., 1.).unwrap(),
+        app.document.tolerance(),
+    )
+    .unwrap();
+    app.viewports[0].set_construction_plane(plane);
+    enter(
+        &mut app,
+        &format!("Sweep1 RailId={} Parameters=2.5 _SetAxis", ids[0]),
+    );
+    assert!(app.command_hint().contains("axis base point"));
+    let world_xy = Viewport::new(ViewKind::Top).construction_plane();
+    assert!(app.viewports[0].set_construction_plane(world_xy));
+    enter(&mut app, "");
+    let options = &app.sweep_session.as_ref().unwrap().state.options;
+    assert_eq!(options.roadlike, Some(true));
+    assert_eq!(options.axis, Some(plane.z_axis()));
+    assert!(app.viewports[0].set_construction_plane(plane));
+    enter(&mut app, "_FrameStyle=_Roadlike");
+    enter(&mut app, "w1,2,3");
+    assert_eq!(app.sweep_axis_origin(), Some(point(1., 2., 3.)));
+    enter(&mut app, "_Enter");
+    assert_eq!(app.sweep_axis_origin(), None);
+    assert_eq!(
+        app.sweep_session.as_ref().unwrap().state.options.axis,
+        Some(plane.z_axis())
+    );
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.sweep_session.as_ref().unwrap().state.options.axis,
+        Some(plane.z_axis())
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.sweep_session.as_ref().unwrap().state.options.axis, None);
+    enter(&mut app, "SetAxis");
+    enter(&mut app, "Automatic");
+    let options = &app.sweep_session.as_ref().unwrap().state.options;
+    assert_eq!(options.roadlike, Some(true));
+    assert_eq!(options.axis, None);
+    enter(&mut app, "Cancel");
+    assert!(app.command_line_idle());
+}
+
+#[test]
 fn rebuilding_sections_uses_shared_value_getters_local_undo_and_model_undo() {
     let (mut app, ids) = setup();
     app.document

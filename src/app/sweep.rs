@@ -8,7 +8,9 @@ use viboceros_command::{
     sweep::{Options, Rail, RailReference, Source},
 };
 use viboceros_document::GeometrySnapshot;
+use viboceros_geometry::UnitVector3;
 
+mod axis;
 mod input;
 mod preview;
 mod rail_picks;
@@ -30,6 +32,33 @@ impl End {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Pick {
+    Pole(End),
+    AxisStart,
+    AxisEnd(Point3),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum DraftChange {
+    Pole(End, Point3),
+    Axis(Option<UnitVector3>),
+}
+
+impl DraftChange {
+    fn apply(self, options: &mut Options) {
+        match self {
+            Self::Pole(end, point) => end.set_point(options, point),
+            Self::Axis(axis) => {
+                options.roadlike = Some(true);
+                options.surface_aligned = false;
+                options.axis = axis;
+            }
+        }
+    }
+}
+
 #[derive(Clone, Debug)]
 struct State {
     options: Options,
@@ -71,7 +100,7 @@ impl State {
 pub(super) struct Session {
     state: State,
     undo: Vec<State>,
-    picking: Option<End>,
+    picking: Option<Pick>,
     value: Option<&'static str>,
     seam_id_pending: bool,
     preview: preview::Preview,
@@ -85,8 +114,14 @@ impl Session {
     }
     pub(super) fn hint(&self) -> &'static str {
         match (self.picking, self.value, &self.state.stage) {
-            (Some(End::Start), _, _) => "Pick the Sweep1 start point; Esc cancels",
-            (Some(End::Finish), _, _) => "Pick the Sweep1 end point; Esc cancels",
+            (Some(Pick::Pole(End::Start)), _, _) => "Pick the Sweep1 start point; Esc cancels",
+            (Some(Pick::Pole(End::Finish)), _, _) => "Pick the Sweep1 end point; Esc cancels",
+            (Some(Pick::AxisStart), _, _) => {
+                "Pick the Roadlike axis base point. Automatic uses the rail. Enter uses CPlane Z"
+            }
+            (Some(Pick::AxisEnd(_)), _, _) => {
+                "Pick the second Roadlike axis point. Automatic uses the rail. Enter uses CPlane Z"
+            }
             (_, Some(_), _) => "Enter the Sweep1 option value; Undo returns, Esc cancels",
             (
                 _,
@@ -108,10 +143,10 @@ impl Session {
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. })
                 if self.can_close() =>
             {
-                "Review the sweep. Closed / Style / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+                "Review the sweep. Closed / Style / SetAxis / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
             }
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. }) => {
-                "Review the sweep. Style / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+                "Review the sweep. Style / SetAxis / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
             }
             _ if self.state.rail.is_none()
                 && !self.state.options.has_explicit_rail()
@@ -124,7 +159,7 @@ impl Session {
                 "Select a rail curve or surface edge. ChainEdges / RailId / RailEdge"
             }
             _ => {
-                "Select profiles in order. Point / StartPoint / EndPoint / RefitRail / Style / Undo. Enter sweeps"
+                "Select profiles in order. Point / StartPoint / EndPoint / RefitRail / Style / SetAxis / Undo. Enter sweeps"
             }
         }
     }
@@ -263,7 +298,7 @@ impl VibocerosApp {
             .position(|word| rail_picks::is_chain_option(word));
         let getter = chain.or_else(|| {
             let name = words.last()?.trim_start_matches('_');
-            ["Point", "StartPoint", "EndPoint"]
+            ["Point", "StartPoint", "EndPoint", "SetAxis"]
                 .iter()
                 .any(|value| name.eq_ignore_ascii_case(value))
                 .then_some(words.len() - 1)
@@ -284,6 +319,11 @@ impl VibocerosApp {
         self.initialize_sweep_prompt(&base);
         if chain.is_some() {
             self.start_sweep_one_rail_chain(&words[getter + 1..].join(" "));
+        } else if words[getter]
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("SetAxis")
+        {
+            self.begin_sweep_axis();
         } else {
             self.begin_sweep_point(words[getter]);
         }
@@ -300,11 +340,15 @@ impl VibocerosApp {
         }
     }
     fn sync_sweep_selection(&mut self) {
-        let p = self.sweep_session.as_mut().unwrap();
-        p.preview.invalidate();
-        let ids = p.state.sources.iter().map(|(id, _)| *id).collect();
-        let text = format!("Sweep1 {}", p.state.options.arguments());
-        self.object_prompt.as_mut().unwrap().command_override = Some(text);
+        self.sweep_session.as_mut().unwrap().preview.invalidate();
+        self.restore_sweep_picks();
+    }
+
+    fn restore_sweep_picks(&mut self) {
+        let state = &self.sweep_session.as_ref().unwrap().state;
+        let ids = state.sources.iter().map(|(id, _)| *id).collect();
+        self.object_prompt.as_mut().unwrap().command_override =
+            Some(format!("Sweep1 {}", state.options.arguments()));
         self.restore_curve_selection(ids);
     }
     pub(super) fn finish_sweep_input(&mut self) {

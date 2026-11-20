@@ -50,7 +50,7 @@ impl VibocerosApp {
             return;
         }
         let p = self.sweep_session.as_mut().unwrap();
-        p.picking = Some(if start { End::Start } else { End::Finish });
+        p.picking = Some(Pick::Pole(if start { End::Start } else { End::Finish }));
         p.preview.clear_wires();
         p.value = None;
         self.active_command = Some(InteractiveCommand::SweepPoint);
@@ -65,31 +65,66 @@ impl VibocerosApp {
         );
     }
     pub(in crate::app) fn accept_sweep_point(&mut self, point: Point3) -> Option<bool> {
-        let end = self.sweep_session.as_ref()?.picking?;
+        let pick = self.sweep_session.as_ref()?.picking?;
         if !self.validate_sweep_sources() {
             return Some(false);
         }
+        Some(match pick {
+            Pick::Pole(end) => {
+                self.accept_sweep_draft_change(DraftChange::Pole(end, point));
+                true
+            }
+            Pick::AxisStart => {
+                self.sweep_session.as_mut().unwrap().picking = Some(Pick::AxisEnd(point));
+                self.log_sweep_input();
+                true
+            }
+            Pick::AxisEnd(start) => match axis::between(start, point) {
+                Ok(direction) => {
+                    self.accept_sweep_draft_change(DraftChange::Axis(Some(direction)));
+                    true
+                }
+                Err(_) => {
+                    self.push_log("Pick two distinct points for the Sweep1 axis".into());
+                    false
+                }
+            },
+        })
+    }
+
+    pub(super) fn accept_sweep_draft_change(&mut self, change: DraftChange) {
         let p = self.sweep_session.as_mut().unwrap();
         p.undo.push(p.state.clone());
-        end.set_point(&mut p.state.options, point);
-        if end == End::Finish && p.state.stage.seams().is_none() {
+        change.apply(&mut p.state.options);
+        if matches!(change, DraftChange::Pole(End::Finish, _)) && p.state.stage.seams().is_none() {
             p.state.stage = ProfileStage::PointEndPicked;
         }
         p.picking = None;
+        p.preview
+            .accept_change(change, self.document.tolerance(), &p.state.stage);
+        self.clear_sweep_point_getter();
+        self.restore_sweep_picks();
+        self.log_sweep_input();
+    }
+
+    pub(super) fn clear_sweep_point_getter(&mut self) {
         self.active_command = None;
         self.drafting_plane = None;
-        self.sync_sweep_selection();
-        self.log_sweep_input();
-        Some(true)
+        self.snaps.model_override = None;
+        self.point_filter = None;
+        self.point_constraint = None;
     }
     pub(in crate::app) fn continue_sweep_input(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some() {
             return false;
         }
+        let name = input.trim_start_matches(['_', '-']);
+        if self.continue_sweep_axis_input(name) {
+            return true;
+        }
         let Some(p) = self.sweep_session.as_ref() else {
             return false;
         };
-        let name = input.trim_start_matches(['_', '-']);
         if name.eq_ignore_ascii_case("Undo") {
             let p = self.sweep_session.as_mut().unwrap();
             if !std::mem::take(&mut p.seam_id_pending)
@@ -99,11 +134,7 @@ impl VibocerosApp {
             {
                 p.state = state;
             }
-            self.active_command = None;
-            self.drafting_plane = None;
-            self.snaps.model_override = None;
-            self.point_filter = None;
-            self.point_constraint = None;
+            self.clear_sweep_point_getter();
             self.sync_sweep_selection();
             self.log_sweep_input();
         } else if name.eq_ignore_ascii_case("Cancel") || name == "!" {
@@ -114,6 +145,10 @@ impl VibocerosApp {
             self.finish_sweep_input();
         } else if p.seam_editor().is_some() {
             self.continue_sweep_seams(name);
+        } else if (p.value.is_none() && name.eq_ignore_ascii_case("SetAxis"))
+            || axis::requests_axis(name, p.value)
+        {
+            self.begin_sweep_axis();
         } else if p.value.is_none()
             && let (name, options) = name.split_once(char::is_whitespace).unwrap_or((name, ""))
             && super::rail_picks::is_chain_option(name)

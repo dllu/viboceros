@@ -7,7 +7,7 @@ use viboceros_geometry::{Brep, NurbsCurve, Real};
 struct Request {
     revision: u64,
     tolerance: Tolerance,
-    pole: Option<(End, Point3)>,
+    change: Option<DraftChange>,
     seams: Vec<(Real, bool)>,
 }
 
@@ -36,16 +36,28 @@ impl Preview {
         self.worker.clear_result();
     }
 
+    pub(super) fn accept_change(
+        &mut self,
+        change: DraftChange,
+        tolerance: Tolerance,
+        stage: &ProfileStage,
+    ) {
+        let previous = self.request(tolerance, Some(change), stage);
+        self.revision = self.revision.wrapping_add(1);
+        self.worker
+            .retain_as(&previous, self.request(tolerance, None, stage));
+    }
+
     fn request(
         &self,
         tolerance: Tolerance,
-        pole: Option<(End, Point3)>,
+        change: Option<DraftChange>,
         stage: &ProfileStage,
     ) -> Request {
         Request {
             revision: self.revision,
             tolerance,
-            pole,
+            change,
             seams: stage
                 .seams()
                 .map_or_else(Vec::new, |editor| editor.placements().collect()),
@@ -81,11 +93,17 @@ impl VibocerosApp {
         }
         let p = self.sweep_session.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let pole = p.picking.zip(point);
-        // During a point getter, dropping the resolved cursor also hides the
-        // provisional shape. Outside the getter, show the accepted settings.
-        let request = (p.picking.is_none() || pole.is_some())
-            .then(|| p.preview.request(tolerance, pole, &p.state.stage));
+        let change = p.picking.zip(point).and_then(|(pick, point)| match pick {
+            Pick::Pole(end) => Some(DraftChange::Pole(end, point)),
+            Pick::AxisEnd(start) => axis::between(start, point)
+                .ok()
+                .map(|axis| DraftChange::Axis(Some(axis))),
+            Pick::AxisStart => None,
+        });
+        // Keep the accepted draft until the base point is picked. A provisional
+        // draft requires a resolved cursor and a usable direction.
+        let ready = matches!(p.picking, None | Some(Pick::AxisStart)) || change.is_some();
+        let request = ready.then(|| p.preview.request(tolerance, change, &p.state.stage));
         p.preview.worker.update(
             request,
             context,
@@ -93,7 +111,13 @@ impl VibocerosApp {
                 previous.revision == current.revision
                     && previous.tolerance == current.tolerance
                     && previous.seams.len() == current.seams.len()
-                    && previous.pole.map(|(end, _)| end) == current.pole.map(|(end, _)| end)
+                    && match (previous.change, current.change) {
+                        (None, None) | (Some(DraftChange::Axis(_)), Some(DraftChange::Axis(_))) => {
+                            true
+                        }
+                        (Some(DraftChange::Pole(a, _)), Some(DraftChange::Pole(b, _))) => a == b,
+                        _ => false,
+                    }
             },
             |request| {
                 let source = p
@@ -104,8 +128,8 @@ impl VibocerosApp {
                     })
                     .clone();
                 let mut options = p.state.options.clone();
-                if let Some((end, point)) = request.pole {
-                    end.set_point(&mut options, point);
+                if let Some(change) = request.change {
+                    change.apply(&mut options);
                 }
                 let editor = p.state.stage.seams().cloned();
                 move || {

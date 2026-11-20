@@ -177,6 +177,7 @@ impl VibocerosApp {
                     .or_else(|| self.offset_mesh_session.as_ref()?.anchor())
                     .or_else(|| self.polyline_session.as_ref()?.input.anchor())
                     .or_else(|| self.curve_extend_session.as_ref()?.anchor())
+                    .or_else(|| self.sweep_axis_origin())
                     .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
             },
             reference: if self.plane_prompt.is_some() {

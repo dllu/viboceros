@@ -49,6 +49,7 @@ impl VibocerosApp {
                 .or_else(|| self.maelstrom_circle_anchor())
                 .or_else(|| self.distribute_session.as_ref()?.anchor())
                 .or_else(|| self.polyline_session.as_ref()?.input.anchor())
+                .or_else(|| self.sweep_axis_origin())
                 .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
                 .or(self.last_point.filter(|_| {
                     self.refinement_prompt.is_some() || self.select_uv_prompt.is_some()
@@ -153,6 +154,7 @@ impl VibocerosApp {
                             .then(|| input.anchor())
                             .flatten()
                     })
+                    .or_else(|| self.sweep_axis_origin())
                     .or(self.last_point),
             )
         });
