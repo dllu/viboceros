@@ -147,6 +147,11 @@ For an open Local sweep on straight rail segments, place a cross section at
 each rail corner. The preview shows the shared profile at each joint in both
 miter modes. You can add sections between corners or use a point end.
 
+A Local sweep around a polygonal loop uses profiles at all the corners.
+Turning on `Closed` previews the final leg. At a corner seam with an open
+profile, switch `UntrimmedMiters` to show or hide the two seam extensions.
+Use untrimmed mode for a closed seam profile or a seam on a straight leg.
+
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,
 and section rebuilding options for the application session. Cancel discards
 draft edits in normal review. A scripted `-Sweep1` retains accepted settings

@@ -5,6 +5,24 @@ fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
 
+fn add_circle(document: &mut Document, center: Point3, a: Real, b: Real, radius: Real) -> ObjectId {
+    let unit = |x, y| {
+        Vector3::try_new(x, y, 0.)
+            .unwrap()
+            .normalized_nonzero()
+            .unwrap()
+    };
+    let circle = Circle3::try_from_frame(
+        center,
+        radius,
+        unit(-b, a),
+        unit(a, b),
+        document.tolerance(),
+    )
+    .unwrap();
+    document.add_geometry(Geometry::Circle(circle)).unwrap()
+}
+
 #[test]
 fn sweep_miters_place_a_closed_profile_around_the_rail_corner() {
     let registry = CommandRegistry::with_builtins();
@@ -19,15 +37,7 @@ fn sweep_miters_place_a_closed_profile_around_the_rail_corner() {
         (point(5., 0., 0.), 1., 1., 1.2),
         (point(5., 5., 0.), 0., 1., 1.5),
     ] {
-        let unit = |x, y| {
-            Vector3::try_new(x, y, 0.)
-                .unwrap()
-                .normalized_nonzero()
-                .unwrap()
-        };
-        let circle =
-            Circle3::try_from_frame(center, radius, unit(-b, a), unit(a, b), tolerance).unwrap();
-        ids.push(document.add_geometry(Geometry::Circle(circle)).unwrap());
+        ids.push(add_circle(&mut document, center, a, b, radius));
     }
     document
         .select_objects_direct(ids, SelectionMode::Replace)
@@ -92,4 +102,144 @@ fn sweep_miters_join_point_ends_to_a_shared_corner_profile() {
         assert!(c.control_points().iter().all(|p| p.point() == pole));
     }
     assert!((brep.area(document.tolerance()).unwrap() - 5. * 2_f64.sqrt()).abs() < 1e-7);
+}
+
+#[test]
+fn sweep_miters_transport_the_return_section_around_a_spatial_loop() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in [
+        "Polyline 0,0,0 5,0,0 5,4,2 0,4,0 0,0,0",
+        "Line 0,0,0 1,1,0.5",
+        "Line 5,0,0 4,1,2",
+        "Line 5,4,2 4,3,2",
+        "Line 0,4,0 1,3,1",
+    ] {
+        registry.execute(&mut document, command).unwrap();
+    }
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    for (options, topology, tip, area) in [
+        (
+            "Closed=Yes UntrimmedMiters=Yes",
+            (4, 13, 9),
+            point(1.071523002947292, -1., 0.3191213784045467),
+            21.13494938,
+        ),
+        (
+            "Closed=Yes UntrimmedMiters=No",
+            (6, 19, 14),
+            point(1.071523002947291, -3.3233944016987693, 0.3191213784045462),
+            26.33021720,
+        ),
+    ] {
+        registry
+            .execute(&mut document, &format!("Sweep1 {options}"))
+            .unwrap();
+        let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+            panic!("expected a Sweep1 BRep");
+        };
+        assert_eq!(
+            (
+                brep.faces().len(),
+                brep.edges().len(),
+                brep.vertices().len()
+            ),
+            topology
+        );
+        let last = brep.faces().last().unwrap().surface();
+        let actual = last
+            .evaluate(*last.domain_u().end(), *last.domain_v().end())
+            .unwrap();
+        assert!(actual.distance_to(tip).unwrap() < 1e-8, "{actual:?}");
+        let measured = brep.area(document.tolerance()).unwrap();
+        assert!((measured - area).abs() < 5e-5, "{measured} != {area}");
+        document.undo().unwrap();
+    }
+}
+
+#[test]
+fn sweep_miters_place_round_profiles_at_polygonal_loop_corners() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0")
+        .unwrap();
+    let mut ids = vec![document.objects().last().unwrap().id()];
+    for (center, a, b, radius) in [
+        (point(0., 0., 0.), 1., -1., 0.8),
+        (point(5., 0., 0.), 1., 1., 1.0),
+        (point(5., 5., 0.), -1., 1., 1.2),
+        (point(0., 5., 0.), -1., -1., 1.4),
+    ] {
+        ids.push(add_circle(&mut document, center, a, b, radius));
+    }
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut document, "Sweep1 Closed=Yes UntrimmedMiters=Yes")
+        .unwrap();
+    let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+        panic!("expected a Sweep1 BRep");
+    };
+    assert_eq!(
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len()
+        ),
+        (4, 9, 5)
+    );
+    assert!((brep.area(document.tolerance()).unwrap() - 119.18477541).abs() < 3e-4);
+    let last = brep.faces().last().unwrap().surface();
+    let seam = last
+        .evaluate(*last.domain_u().end(), *last.domain_v().start())
+        .unwrap();
+    let q = 0.8 * std::f64::consts::FRAC_1_SQRT_2;
+    assert!(seam.distance_to(point(q, -q, 0.)).unwrap() < 1e-8);
+}
+
+#[test]
+fn sweep_miters_sew_an_untrimmed_polygonal_loop_at_a_smooth_seam() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in [
+        "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0",
+        "Line 2.5,0,0 2.5,1,1",
+        "Line 5,0,0 4,1,1",
+        "Line 5,5,0 4,4,1",
+        "Line 0,5,0 1,4,1",
+        "Line 0,0,0 1,1,1",
+    ] {
+        registry.execute(&mut document, command).unwrap();
+    }
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut document, "Sweep1 Closed=Yes UntrimmedMiters=Yes")
+        .unwrap();
+    let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+        panic!("expected a Sweep1 BRep");
+    };
+    assert_eq!(
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len()
+        ),
+        (5, 15, 10)
+    );
+    assert_eq!(
+        brep.edge_use_counts()
+            .iter()
+            .filter(|&&uses| uses == 2)
+            .count(),
+        5
+    );
+    assert!((brep.area(document.tolerance()).unwrap() - 22.62741700).abs() < 5e-5);
 }

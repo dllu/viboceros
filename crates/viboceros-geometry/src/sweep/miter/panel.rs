@@ -136,33 +136,6 @@ fn shifted(
     NurbsCurve::try_new_rational(profile.degree(), controls, profile.knots().to_vec())
 }
 
-fn surface_between(
-    profiles: &[NurbsCurve; 2],
-    u: [Real; 2],
-) -> Result<NurbsSurface, GeometryError> {
-    let [start, end] = profiles;
-    let mut controls = Vec::with_capacity(4 * start.control_points().len());
-    for (a, b) in start.control_points().iter().zip(end.control_points()) {
-        controls.push(*a);
-        for fraction in [1. / 3., 2. / 3.] {
-            let p = a
-                .point()
-                .translated(a.point().vector_to(b.point())?.scaled(fraction)?)?;
-            controls.push(WeightedPoint3::try_new(p, a.weight())?);
-        }
-        controls.push(*b);
-    }
-    NurbsSurface::try_new_rational(
-        3,
-        start.degree(),
-        4,
-        start.control_points().len(),
-        controls,
-        u.into_iter().flat_map(|t| [t; 4]).collect(),
-        start.knots().to_vec(),
-    )
-}
-
 fn iso_trim(u: Real, v: [Real; 2]) -> Result<NurbsCurve2, GeometryError> {
     NurbsCurve2::try_line(Point2::try_new(u, v[0])?, Point2::try_new(u, v[1])?)
 }

@@ -1,8 +1,6 @@
 //! Native Loft and Sweep section preparation.
 use super::*;
-use viboceros_geometry::{
-    Brep, CurveRef, Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection,
-};
+use viboceros_geometry::{Brep, CurveRef, Sweep1, SweepProfileMiterOptions, SweepSection};
 
 /// Rebuild real sweep profiles with native basis evaluation and interpolation.
 pub fn rebuild_sweep_sections(
@@ -129,17 +127,13 @@ pub fn fit_sweep_model_surface(sweep: &viboceros_geometry::Sweep1) -> Result<Nur
 pub fn sweep_profile_miters(
     rail: CurveRef<'_>,
     sections: &[SweepSection],
-    ends: SweepEndPoints,
-    style: SweepFrameStyle,
-    blend: SweepBlend,
+    options: SweepProfileMiterOptions,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, Error> {
     Sweep1::try_profile_miters_with(
         rail,
         sections,
-        ends,
-        style,
-        blend,
+        options,
         tolerance,
         &mut prepare_sweep_sections,
         &mut |sweep| sweep_surface(sweep, true),

@@ -271,3 +271,71 @@ fn sweep_miter_preview_extends_to_the_hovered_point_end() {
         whole
     );
 }
+
+#[test]
+fn sweep_miter_review_wraps_the_rail_and_updates_both_seam_modes() {
+    let mut app = test_app();
+    for input in [
+        "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0",
+        "Line 0,0,0 1,1,1",
+        "Line 5,0,0 4,1,1",
+        "Line 5,5,0 4,4,1",
+        "Line 0,5,0 1,4,1",
+    ] {
+        enter(&mut app, input);
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("Closed"));
+    let open = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "_Closed");
+    enter(&mut app, "_Yes");
+    let trimmed = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != open
+    });
+    let has_end = |wires: &[NurbsCurve], target: Point3| {
+        wires.iter().any(|wire| {
+            let domain = wire.domain();
+            [*domain.start(), *domain.end()]
+                .into_iter()
+                .any(|t| wire.evaluate(t).unwrap().distance_to(target).unwrap() < 1e-8)
+        })
+    };
+    let extension = point(-6_f64.sqrt(), 0., 0.);
+    assert!(has_end(&trimmed, extension));
+    enter(&mut app, "UntrimmedMiters=Yes");
+    let natural = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != open && wires != trimmed
+    });
+    assert!(has_end(&natural, point(1., -1., 1.)));
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == trimmed);
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!(
+            "expected a joined sweep around the rail: {:?}",
+            app.command_log
+        );
+    };
+    assert_eq!(
+        (
+            sweep.faces().len(),
+            sweep.edges().len(),
+            sweep.vertices().len()
+        ),
+        (6, 19, 14)
+    );
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), trimmed);
+    assert!((sweep.area(tolerance).unwrap() - 30.96983379).abs() < 5e-5);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}

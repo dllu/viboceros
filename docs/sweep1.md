@@ -83,13 +83,20 @@ produces a native one-face solid.
 | `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
 | `UntrimmedMiters=Yes\|No` | Choose natural or trimmed faces at straight-segment corners with one profile. Trimmed miters split extension faces at the original rail stations and split shared miter edges at profile knots. With Local blending and a profile at every active corner of an open sweep, the profiles define the shared boundaries in both modes. The review shows the resulting wires. |
-| `Closed=Yes` | Sweep the full circuit of a closed rail. Open profiles at rail knots retain the rational basis, with faces split at fully multiple knots. Closed profiles, explicit refitting, and profiles between knots use a periodic cubic arc-length surface. |
+| `Closed=Yes` | Sweep the full circuit of a closed rail. Smooth rails can retain their rational basis or use a periodic cubic arc-length surface. Profiled polygonal loops use separate cubic faces along the rail. |
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
 | `FrameStyle=Roadlike Axis=0,0,1` | Use a fixed axis; default to the planar rail's normal, otherwise world Z. `Axis` overrides it. See [Roadlike frames](sweep1/roadlike.md). |
 | `Style=AlignWithSurface` | Orient frames using the supporting face's normal along a single edge and use the cubic arc-length rail basis. Specify an adjacent face in `RailEdge` for shared edges. |
 | `ShapeBlending=Local` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
-| `ShapeBlending=Global` | Refitted open sweeps blend linearly in arc length between neighboring profiles. Retained bases and closed sweeps use Local blending, as in the measured Rhino commands. `GlobalShapeBlending=Yes|No` also works. |
+| `ShapeBlending=Global` | Refitted open sweeps blend linearly in arc length between neighboring profiles. Retained bases and smooth closed sweeps use Local blending in the measured cases. `GlobalShapeBlending=Yes|No` also works. |
+
+For a Local sweep around a polygonal loop, supply a profile at every corner.
+The return face uses the first profile transported into the final rail frame.
+Untrimmed mode shows that profile directly and sews the seam if the two copies
+coincide. For an open profile at a corner seam, trimmed mode shows the two
+extension faces observed in Rhino. Use `UntrimmedMiters=Yes` for a closed
+seam profile or a seam on a straight leg.
 
 For two profiles at native stations 0 and 5, select them in that order and use
 `Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes`. The refitted model preserves

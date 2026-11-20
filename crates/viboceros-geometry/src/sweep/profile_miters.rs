@@ -2,6 +2,17 @@
 use super::*;
 use crate::Brep;
 
+mod seam;
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct SweepProfileMiterOptions {
+    pub ends: SweepEndPoints,
+    pub style: SweepFrameStyle,
+    pub blend: SweepBlend,
+    pub closed: bool,
+    pub untrimmed: bool,
+}
+
 impl Sweep1 {
     /// Sweep a polygonal interval with a real section at each active corner.
     /// Every leg shares the same V basis and its neighbors' endpoint section.
@@ -9,13 +20,18 @@ impl Sweep1 {
     pub fn try_profile_miters_with<E: From<GeometryError>>(
         rail: CurveRef<'_>,
         sections: &[SweepSection],
-        ends: SweepEndPoints,
-        style: SweepFrameStyle,
-        blend: SweepBlend,
+        options: SweepProfileMiterOptions,
         tolerance: Tolerance,
         prepare: &mut impl FnMut(&[NurbsCurve], usize, GeometryError) -> Result<Vec<NurbsCurve>, E>,
         surface: &mut impl FnMut(&Sweep1) -> Result<NurbsSurface, E>,
     ) -> Result<Option<Brep>, E> {
+        let SweepProfileMiterOptions {
+            ends,
+            style,
+            blend,
+            closed,
+            untrimmed,
+        } = options;
         if !matches!(rail, CurveRef::Polyline(_))
             && !matches!(rail, CurveRef::NurbsCurve(curve) if curve.degree() == 1)
         {
@@ -49,7 +65,11 @@ impl Sweep1 {
         let first = parameters[0];
         let last = *parameters.last().unwrap();
         let start = ends.start.map_or(first, |_| *domain.start());
-        let finish = ends.end.map_or(last, |_| *domain.end());
+        let finish = if closed || ends.end.is_some() {
+            *domain.end()
+        } else {
+            last
+        };
         kinks.retain(|&t| start < t && t < finish);
         if kinks.is_empty() {
             return Ok(None);
@@ -67,6 +87,14 @@ impl Sweep1 {
             return Err(
                 invalid("profiled rail miters currently require Local shape blending").into(),
             );
+        }
+        if closed
+            && (!ends.is_empty()
+                || !source.is_closed()?
+                || first != *domain.start()
+                || last >= finish)
+        {
+            return Err(invalid("a profiled miter loop requires ordered profiles from the rail seam without point ends").into());
         }
         if sections.len() + pole_count > MAX_SECTIONS {
             return Err(invalid("mitered sweep section budget exceeded").into());
@@ -100,17 +128,27 @@ impl Sweep1 {
         if curves.len() != sections.len() {
             return Err(invalid("section preparation lost a supplied profile").into());
         }
-        let sections = parameters
+        let mut sections = parameters
             .into_iter()
             .zip(curves)
             .map(|(parameter, curve)| SweepSection { parameter, curve })
             .collect::<Vec<_>>();
-        let mut panels = Vec::with_capacity(kinks.len() + 1);
+        let seam = if closed {
+            let seam = seam::LoopSeam::try_new(&source, &sections[0].curve, style, tolerance)?;
+            sections.push(SweepSection {
+                parameter: finish,
+                curve: seam.last.clone(),
+            });
+            Some(seam)
+        } else {
+            None
+        };
+        let mut panels = Vec::with_capacity(kinks.len() + 3);
         let mut first = 0;
         let mut rail_start = start;
         let mut length = 0.;
         let mut count = 1;
-        let mut cuts = Vec::with_capacity(kinks.len());
+        let mut cuts = Vec::with_capacity(kinks.len() + 2);
         for (last, rail_end) in hinges
             .into_iter()
             .zip(kinks)
@@ -145,6 +183,19 @@ impl Sweep1 {
             length = end;
             first = last;
             rail_start = rail_end;
+        }
+        if !untrimmed && let Some(seam) = seam {
+            let [start, finish] = seam.extensions(&sections[0].curve, length, tolerance)?;
+            count += start.control_point_count_u() + finish.control_point_count_u() - 2;
+            if count > MAX_AXIS_CONTROLS
+                || count * start.control_point_count_v() > MAX_SURFACE_CONTROLS
+            {
+                return Err(invalid("mitered sweep control budget exceeded").into());
+            }
+            panels.insert(0, start);
+            panels.push(finish);
+            cuts.insert(0, 0.);
+            cuts.push(length);
         }
         Ok(Some(join_panels(&panels, count, &cuts, tolerance)?))
     }

@@ -14,6 +14,7 @@ mod point_ends;
 pub use point_ends::SweepEndPoints;
 mod periodic;
 mod profile_miters;
+pub use profile_miters::SweepProfileMiterOptions;
 mod rail;
 mod rebuild;
 mod roadlike;

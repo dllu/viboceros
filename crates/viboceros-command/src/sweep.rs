@@ -3,7 +3,9 @@ use crate::chain_selection::Target;
 pub use crate::sweep_rail::{Rail, RailReference};
 use std::collections::BTreeSet;
 use viboceros_document::GeometrySnapshot;
-use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
+use viboceros_geometry::{
+    Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepProfileMiterOptions, SweepSection,
+};
 
 const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [UntrimmedMiters=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
@@ -379,10 +381,18 @@ impl Source {
         } else {
             SweepBlend::Local
         };
-        if !closed
-            && !options.surface_aligned
+        if !options.surface_aligned
             && let Some(brep) = viboceros_smlib::sweep_profile_miters(
-                rail, &sections, ends, style, blend, tolerance,
+                rail,
+                &sections,
+                SweepProfileMiterOptions {
+                    ends,
+                    style,
+                    blend,
+                    closed,
+                    untrimmed: options.untrimmed_miters.unwrap_or_default(),
+                },
+                tolerance,
             )
             .map_err(knot_refinement::native_geometry_error)?
         {

@@ -442,7 +442,8 @@ pub use spiral::{
 pub use surface_curvature::SurfaceCurvature;
 pub use surface_directional::SurfaceNormalJet3;
 pub use sweep::{
-    Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection, SweepSurfaceOperations,
+    Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepProfileMiterOptions, SweepSection,
+    SweepSurfaceOperations,
 };
 mod text_dot;
 pub use text_dot::{TextDot, TextDotStyle};

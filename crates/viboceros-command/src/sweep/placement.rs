@@ -105,7 +105,7 @@ pub(super) fn profile_contacts(
 }
 
 // A closed section can enclose a corner or endpoint. Use its station when
-// the rail crosses the section's plane only at that vertex.
+// that vertex is the sole rail contact inside the section's region.
 fn enclosed_rail_node(
     curve: &NurbsCurve,
     nodes: &[(Real, Point3)],
@@ -122,12 +122,13 @@ fn enclosed_rail_node(
     let min = bounds.min().to_array();
     let max = bounds.max().to_array();
     let slack = tolerance.absolute();
-    if !nodes.iter().any(|&(_, p)| {
+    let within_bounds = |p: Point3| {
         p.to_array()
             .into_iter()
             .enumerate()
             .all(|(i, x)| min[i] - slack <= x && x <= max[i] + slack)
-    }) {
+    };
+    if !nodes.iter().any(|&(_, p)| within_bounds(p)) {
         return Ok(None);
     }
     let face = match Brep::try_planar_face(curve, tolerance) {
@@ -142,26 +143,53 @@ fn enclosed_rail_node(
         tolerance,
     )?;
     let plane = Plane::new(frame.origin(), frame.z_axis());
-    let mut previous: Real = 0.;
+    let inside = |point| -> Result<bool, GeometryError> {
+        if within_bounds(point)
+            && let Some((_, u, v)) = face.closest_face_parameters(point, tolerance)?
+        {
+            return Ok(surface.evaluate(u, v)?.distance_to(point)? <= slack);
+        }
+        Ok(false)
+    };
+    let distances = nodes
+        .iter()
+        .map(|&(_, point)| plane.signed_distance_to(point))
+        .collect::<Result<Vec<_>, _>>()?;
+    let repeats_endpoint = nodes[0].1 == nodes[nodes.len() - 1].1;
     let mut hit = None;
-    for &(t, point) in nodes {
-        let distance = plane.signed_distance_to(point)?;
-        if distance.abs() <= slack {
-            if hit.replace((t, point)).is_some() {
-                return Ok(None);
-            }
-        } else if previous.abs() > slack && previous.signum() != distance.signum() {
+    for (&(t, point), &distance) in nodes[..nodes.len() - usize::from(repeats_endpoint)]
+        .iter()
+        .zip(&distances)
+    {
+        if distance.abs() <= slack && inside(point)? && hit.replace(t).is_some() {
             return Ok(None);
         }
-        previous = distance;
     }
-    if let Some((t, point)) = hit
-        && let Some((_, u, v)) = face.closest_face_parameters(point, tolerance)?
-        && surface.evaluate(u, v)?.distance_to(point)? <= slack
-    {
-        return Ok(Some(t));
+    if hit.is_none() {
+        return Ok(None);
     }
-    Ok(None)
+    for (segment, distance) in nodes.windows(2).zip(distances.windows(2)) {
+        let a = segment[0].1.to_array();
+        let b = segment[1].1.to_array();
+        let da = distance[0].abs();
+        let db = distance[1].abs();
+        if da <= slack && db <= slack {
+            if (0..3).all(|i| a[i].min(b[i]) <= max[i] + slack && a[i].max(b[i]) >= min[i] - slack)
+            {
+                return Ok(None);
+            }
+        } else if da > slack && db > slack && distance[0].signum() != distance[1].signum() {
+            let scale = da.max(db);
+            let fraction = (da / scale) / (da / scale + db / scale);
+            let point = Point3::try_from(std::array::from_fn(|i| {
+                (1. - fraction).mul_add(a[i], fraction * b[i])
+            }))?;
+            if inside(point)? {
+                return Ok(None);
+            }
+        }
+    }
+    Ok(hit)
 }
 
 pub(super) fn full_rail_anchor(
