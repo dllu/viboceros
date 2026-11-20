@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{Circle3, Vector3};
+use viboceros_geometry::{Circle3, Ellipse3, Vector3};
 
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
@@ -179,8 +179,77 @@ fn sweep_miters_place_round_profiles_at_polygonal_loop_corners() {
     document
         .select_objects_direct(ids, SelectionMode::Replace)
         .unwrap();
+    let q = 0.8 * std::f64::consts::FRAC_1_SQRT_2;
+    for (options, topology, area, distance) in [
+        ("UntrimmedMiters=Yes", (4, 9, 5), 119.18477541, 0.),
+        (
+            "UntrimmedMiters=No",
+            (6, 13, 7),
+            141.36306489,
+            2.565707922359274,
+        ),
+    ] {
+        registry
+            .execute(&mut document, &format!("Sweep1 Closed=Yes {options}"))
+            .unwrap();
+        let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+            panic!("expected a Sweep1 BRep");
+        };
+        assert_eq!(
+            (
+                brep.faces().len(),
+                brep.edges().len(),
+                brep.vertices().len()
+            ),
+            topology
+        );
+        let measured = brep.area(document.tolerance()).unwrap();
+        assert!((measured - area).abs() < 3e-4, "{measured} != {area}");
+        let first = brep.faces()[0].surface();
+        let last = brep.faces().last().unwrap().surface();
+        let start = first
+            .evaluate(*first.domain_u().start(), *first.domain_v().start())
+            .unwrap();
+        let end = last
+            .evaluate(*last.domain_u().end(), *last.domain_v().start())
+            .unwrap();
+        assert!(start.distance_to(point(q - distance, q, 0.)).unwrap() < 1e-8);
+        assert!(end.distance_to(point(q, -q - distance, 0.)).unwrap() < 1e-8);
+        assert!(
+            brep.faces()
+                .iter()
+                .all(|f| f.surface().is_closed_v().unwrap())
+        );
+        document.undo().unwrap();
+    }
+}
+
+#[test]
+fn sweep_miters_extend_closed_ellipses_on_a_polygonal_loop() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    let tolerance = document.tolerance();
     registry
-        .execute(&mut document, "Sweep1 Closed=Yes UntrimmedMiters=Yes")
+        .execute(&mut document, "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0")
+        .unwrap();
+    let rail = document.objects().last().unwrap().id();
+    let mut ids = vec![rail];
+    let z = UnitVector3::try_new(0., 0., 1., tolerance).unwrap();
+    for (center, x, y) in [
+        (point(0., 0., 0.), 1., 1.),
+        (point(5., 0., 0.), -1., 1.),
+        (point(5., 5., 0.), -1., -1.),
+        (point(0., 5., 0.), 1., -1.),
+    ] {
+        let axis = UnitVector3::try_new(x, y, 0., tolerance).unwrap();
+        let ellipse = Ellipse3::try_new(center, 0.55, 1.1, axis, z, tolerance).unwrap();
+        ids.push(document.add_geometry(Geometry::Ellipse(ellipse)).unwrap());
+    }
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut document, "Sweep1 Closed=Yes UntrimmedMiters=No")
         .unwrap();
     let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
         panic!("expected a Sweep1 BRep");
@@ -191,15 +260,10 @@ fn sweep_miters_place_round_profiles_at_polygonal_loop_corners() {
             brep.edges().len(),
             brep.vertices().len()
         ),
-        (4, 9, 5)
+        (6, 13, 7)
     );
-    assert!((brep.area(document.tolerance()).unwrap() - 119.18477541).abs() < 3e-4);
-    let last = brep.faces().last().unwrap().surface();
-    let seam = last
-        .evaluate(*last.domain_u().end(), *last.domain_v().start())
-        .unwrap();
-    let q = 0.8 * std::f64::consts::FRAC_1_SQRT_2;
-    assert!(seam.distance_to(point(q, -q, 0.)).unwrap() < 1e-8);
+    let area = brep.area(tolerance).unwrap();
+    assert!((area - 126.5681139).abs() < 3e-4, "{area}");
 }
 
 #[test]

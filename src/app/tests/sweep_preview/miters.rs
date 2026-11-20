@@ -447,3 +447,63 @@ fn sweep_miter_review_keeps_both_failed_trim_pieces_in_one_undo_step() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
 }
+
+#[test]
+fn sweep_miter_review_extends_a_loop_with_closed_cross_sections() {
+    use viboceros_geometry::{Circle3, UnitVector3};
+
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    enter(&mut app, "Polyline 0,0,0 5,0,0 5,5,0 0,5,0 0,0,0");
+    for (center, nx, ny, radius) in [
+        (point(0., 0., 0.), 1., -1., 0.8),
+        (point(5., 0., 0.), 1., 1., 1.),
+        (point(5., 5., 0.), -1., 1., 1.2),
+        (point(0., 5., 0.), -1., -1., 1.4),
+    ] {
+        let axis = UnitVector3::try_new(-ny, nx, 0., tolerance).unwrap();
+        let normal = UnitVector3::try_new(nx, ny, 0., tolerance).unwrap();
+        let circle = Circle3::try_from_frame(center, radius, axis, normal, tolerance).unwrap();
+        app.document.add_geometry(Geometry::Circle(circle)).unwrap();
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1 Closed=Yes");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("Drag seam"));
+    enter(&mut app, "Natural");
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("UntrimmedMiters"));
+
+    let seam = point(-2.000022497410038, 0.565685424949238, 0.);
+    let trimmed = wait_for_wires(&mut app, &context, |wires| {
+        wires.iter().any(|curve| {
+            let domain = curve.domain();
+            [*domain.start(), *domain.end()]
+                .into_iter()
+                .any(|t| curve.evaluate(t).unwrap().distance_to(seam).unwrap() < 1e-8)
+        })
+    });
+    enter(&mut app, "UntrimmedMiters=Yes");
+    wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != trimmed
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == trimmed);
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(result) = app.document.objects().last().unwrap().geometry() else {
+        panic!(
+            "expected a Sweep1 BRep around the closed rail: {:?}",
+            app.command_log
+        );
+    };
+    assert_eq!((result.faces().len(), result.edges().len()), (6, 13));
+    assert_eq!(result.wireframe_curves(1, tolerance).unwrap(), trimmed);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}

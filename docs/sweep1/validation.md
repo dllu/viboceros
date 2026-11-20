@@ -170,17 +170,20 @@ trimmed draft restores the same extended pieces that Enter commits.
 On polygonal loops with a profile at each corner, Rhino rotates the return
 profile using the transported rail frame. The planar and spatial fixtures
 check the seam geometry, topology, and area. In trimmed mode, Rhino reports
-a miter failure at a corner seam and leaves two straight extension faces.
-For the measured open profiles, their lengths equal the diagonal of the
-combined seam control-point bounds. For circular profiles, the extension
-length also changed with the neighboring profile radii.
+a miter failure at an authored corner seam and leaves two extension faces.
+Both use the diagonal of the combined seam control-point bounds as the model
+length. The ExtendSrf boundary-speed rule converts it to a parameter length
+and extends each support along its boundary tangents. Circular and elliptical
+fixtures check the resulting extensions. One equal-radius circular fixture
+changes its native leg fit after translation, uniform scaling, or changing
+model tolerance. That fit also changes the seam extension.
 
 ## Remaining work and performance
 
 General closed-rail holonomy correction, curved rail miters, Global miters
-with three or more profiles or an authored corner, trimmed loops with a
-closed seam profile and authored corner sections, general intersection
-selection for complex miters, complete unrefitted multi-profile compatibility, automatic
+with three or more profiles or an authored corner, exact fit parity for
+equal-radius circular loops, general intersection selection for complex
+miters, complete unrefitted multi-profile compatibility, automatic
 branch and seam alignment, and further Rhino section-refit options remain open.
 Section rebuilding now has
 [separate complete-image checks](rebuilding.md). These are explicit limits,

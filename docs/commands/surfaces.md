@@ -154,9 +154,9 @@ intersection. When a miter cannot be joined, the preview shows the extended
 pieces and Enter adds them together in one undo step.
 
 A Local sweep around a polygonal loop previews the final leg when `Closed`
-is enabled. When every corner has a profile and the corner seam profile is
-open, switch `UntrimmedMiters` to show or hide the two seam extensions.
-Use untrimmed mode for a closed seam profile or a seam on a straight leg.
+is enabled. When every corner has a profile, switching `UntrimmedMiters`
+shows or hides the two corner-seam extensions. This works with circular and
+elliptical profiles. Use untrimmed mode for a seam on a straight leg.
 
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,
 and section rebuilding options for the application session. Cancel discards

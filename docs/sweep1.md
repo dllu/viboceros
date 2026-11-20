@@ -101,9 +101,9 @@ as separate BReps in one undo step.
 
 On a Local polygonal loop, the return face uses the first profile transported
 into the final rail frame. Untrimmed mode sews the seam if the two copies
-coincide. The trimmed loop with profiles at all corners and an open seam
-profile shows the two extension faces observed in Rhino. Use
-`UntrimmedMiters=Yes` for a closed seam profile or a seam on a straight leg.
+coincide. At an authored corner seam, trimmed mode previews the two
+extension faces for open or closed profiles. Use `UntrimmedMiters=Yes` for
+a seam on a straight leg.
 
 For two profiles at native stations 0 and 5, select them in that order and use
 `Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes`. The refitted model preserves

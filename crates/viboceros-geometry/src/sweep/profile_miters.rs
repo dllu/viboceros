@@ -216,7 +216,7 @@ impl Sweep1 {
             rail_start = rail_end;
         }
         if !untrimmed && let Some(seam) = seam {
-            let [start, finish] = seam.extensions(&sections[0].curve, length, tolerance)?;
+            let [start, finish] = seam.extensions(&panels[0], panels.last().unwrap(), tolerance)?;
             count += start.control_point_count_u() + finish.control_point_count_u() - 2;
             check_control_budget(count, start.control_point_count_v())?;
             panels.insert(0, start);
@@ -224,6 +224,12 @@ impl Sweep1 {
         }
         Ok(Some(join_panels(&panels, tolerance)?))
     }
+}
+
+/// Use the diagonal of the combined one-sided section bounds.
+fn extension_distance(a: &NurbsCurve, b: &NurbsCurve) -> Result<Real, GeometryError> {
+    let bounds = a.control_point_bounds().union(b.control_point_bounds())?;
+    bounds.min().distance_to(bounds.max())
 }
 
 // Profile contact can land a few ulps to either side of the true corner.

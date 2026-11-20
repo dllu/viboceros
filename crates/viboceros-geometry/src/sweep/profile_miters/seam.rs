@@ -1,11 +1,10 @@
 //! Return section and seam extensions for a profiled polygonal loop.
 use super::*;
-use crate::sweep::miter::surface_between;
+use crate::SurfaceExtensionEdge;
 
 pub(super) struct LoopSeam {
     pub last: NurbsCurve,
-    first_frame: Frame3,
-    last_frame: Frame3,
+    tangent_angle: Real,
 }
 
 impl LoopSeam {
@@ -32,17 +31,17 @@ impl LoopSeam {
         };
         let first_frame = frames[0];
         let last_frame = frames[1];
+        let tangent_angle = first_frame
+            .z_axis()
+            .as_vector()
+            .angle_to(last_frame.z_axis().as_vector())?;
         let same_frame = first_frame.origin() == last_frame.origin()
             && first_frame
                 .x_axis()
                 .as_vector()
                 .angle_to(last_frame.x_axis().as_vector())?
                 <= tolerance.angular()
-            && first_frame
-                .z_axis()
-                .as_vector()
-                .angle_to(last_frame.z_axis().as_vector())?
-                <= tolerance.angular();
+            && tangent_angle <= tolerance.angular();
         let last = if same_frame {
             first.clone()
         } else {
@@ -52,40 +51,29 @@ impl LoopSeam {
         };
         Ok(Self {
             last,
-            first_frame,
-            last_frame,
+            tangent_angle,
         })
     }
 
     pub(super) fn extensions(
-        self,
-        first: &NurbsCurve,
-        finish: Real,
+        &self,
+        first: &NurbsSurface,
+        last: &NurbsSurface,
         tolerance: Tolerance,
     ) -> Result<[NurbsSurface; 2], GeometryError> {
-        let incoming = self.last_frame.z_axis().as_vector();
-        let outgoing = self.first_frame.z_axis().as_vector();
-        if incoming.angle_to(outgoing)? <= tolerance.angular() {
+        if self.tangent_angle <= tolerance.angular() {
             return Err(invalid(
                 "a smooth polygonal sweep seam requires UntrimmedMiters=Yes",
             ));
         }
-        if first.is_closed()? {
-            return Err(invalid(
-                "a closed polygonal seam profile requires UntrimmedMiters=Yes",
-            ));
-        }
-        let bounds = first
-            .control_point_bounds()
-            .union(self.last.control_point_bounds())?;
-        let distance = bounds.min().distance_to(bounds.max())?;
-        let back = outgoing.scaled(-distance)?;
-        let ahead = incoming.scaled(distance)?;
-        let start = map_profile(first, |p| p.translated(back))?;
-        let end = map_profile(&self.last, |p| p.translated(ahead))?;
+        let start = *first.domain_u().start();
+        let finish = *last.domain_u().end();
+        let distance = extension_distance(&first.isocurve_v(start)?, &last.isocurve_v(finish)?)?;
+        let west = first.try_extended_linearly_by_length(SurfaceExtensionEdge::West, distance)?;
+        let east = last.try_extended_linearly_by_length(SurfaceExtensionEdge::East, distance)?;
         Ok([
-            surface_between(&[start, first.clone()], [-distance, 0.])?,
-            surface_between(&[self.last, end], [finish, finish + distance])?,
+            west.try_trimmed_u(*west.domain_u().start()..=start)?,
+            east.try_trimmed_u(finish..=*east.domain_u().end())?,
         ])
     }
 }

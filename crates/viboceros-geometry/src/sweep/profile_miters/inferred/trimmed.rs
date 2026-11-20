@@ -44,8 +44,7 @@ pub(in crate::sweep::profile_miters) fn sew<E: From<GeometryError>>(
     for joint in joints.iter().filter(|joint| !joint.authored) {
         let a = panels[joint.first].isocurve_v(*domains[joint.first].end())?;
         let b = panels[joint.second].isocurve_v(*domains[joint.second].start())?;
-        let bounds = a.control_point_bounds().union(b.control_point_bounds())?;
-        let distance = bounds.min().distance_to(bounds.max())?;
+        let distance = extension_distance(&a, &b)?;
         lengths[joint.first][1] = distance;
         lengths[joint.second][0] = distance;
     }
