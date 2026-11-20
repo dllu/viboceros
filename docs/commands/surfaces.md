@@ -138,8 +138,9 @@ Each sweep starts with `Closed=No`.
 
 With one cross section on a straight-segment rail, Sweep1 joins faces at the
 rail corners. Set `UntrimmedMiters=Yes` in review to build natural-domain
-faces, or `UntrimmedMiters=No` to cut the faces at the miter planes. The wire
-preview reflects the chosen face boundaries. Natural faces currently require
+faces, or `UntrimmedMiters=No` to cut the faces at the miter planes and split
+extensions at the rail stations. The wire preview shows those shared edges.
+Natural faces currently require
 a perpendicular profile and compatible frames across each corner.
 
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,

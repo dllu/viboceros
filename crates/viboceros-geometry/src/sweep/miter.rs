@@ -84,6 +84,7 @@ impl Sweep1 {
         let closed_profile = profile.curve.is_closed()?;
         let stitch_rail_seam = closed && !untrimmed;
         let mut joins = Vec::new();
+        let mut miter_joins = Vec::new();
         let mut panels: Vec<(Brep, [usize; 4])> = Vec::new();
         let mut edge_count = 0;
         let width = pieces.len();
@@ -125,10 +126,10 @@ impl Sweep1 {
                 let edges = [start, end, south, north].map(|edge| edge + edge_count);
                 if i > 0 {
                     let previous: &[usize; 4] = &panels[index - width].1;
-                    joins.push((previous[1], edges[0], false));
+                    miter_joins.push((previous[1], edges[0], false));
                 }
                 if stitch_rail_seam && i + 1 == segment_count {
-                    joins.push((edges[1], panels[j].1[0], false));
+                    miter_joins.push((edges[1], panels[j].1[0], false));
                 }
                 if j > 0 {
                     joins.push((panels[index - 1].1[3], edges[2], false));
@@ -141,12 +142,49 @@ impl Sweep1 {
             }
         }
         let panels = panels.into_iter().map(|(brep, _)| brep).collect();
+        let first_miter = joins.len();
+        joins.extend(miter_joins);
         let result = Brep::try_combine(panels, tolerance)?.try_join_edge_pairs(
             &joins,
             tolerance.absolute(),
             tolerance,
         )?;
-        Ok(Some(result))
+        if untrimmed {
+            Ok(Some(result))
+        } else {
+            let result = split_miter_rims(result, &joins, first_miter, tolerance);
+            Ok(Some(result.partition_sweep_extensions(tolerance)))
+        }
+    }
+}
+
+fn split_miter_rims(
+    brep: Brep,
+    joins: &[(usize, usize, bool)],
+    first_miter: usize,
+    tolerance: Tolerance,
+) -> Brep {
+    // The join retains edge order, omitting the second edge of each pair.
+    let mut removed = joins.iter().map(|&(_, edge, _)| edge).collect::<Vec<_>>();
+    removed.sort_unstable();
+    let mut splits = Vec::new();
+    for &(edge, _, _) in &joins[first_miter..] {
+        let index = edge - removed.partition_point(|&old| old < edge);
+        let parameters = brep.edges()[index]
+            .curve()
+            .interior_knot_groups()
+            .into_iter()
+            .map(|(knot, _)| knot)
+            .collect::<Vec<_>>();
+        if !parameters.is_empty() {
+            splits.push((index, parameters));
+        }
+    }
+    if splits.is_empty() {
+        brep
+    } else {
+        brep.try_split_edges_at_parameters(&splits, tolerance)
+            .unwrap_or(brep)
     }
 }
 

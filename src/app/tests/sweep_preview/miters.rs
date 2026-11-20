@@ -70,3 +70,50 @@ fn sweep_miter_review_edits_the_preview_and_commits_the_selected_face_trims() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
 }
+
+#[test]
+fn sweep_miter_trimmed_preview_shows_extension_boundaries_on_a_picked_chain() {
+    let mut app = test_app();
+    for input in [
+        "Line 0,0,0 5,0,0",
+        "Line 5,0,0 5,5,0",
+        "Line 0,0,0 0,-1.5,1",
+    ] {
+        enter(&mut app, input);
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(
+        &mut app,
+        "Sweep1 ChainEdges AutoChain=No ChainContinuity=Position",
+    );
+    for source in &sources[..2] {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    assert!(app.chain_prompt.is_none());
+    enter(&mut app, &sources[2].id().to_string());
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("UntrimmedMiters"));
+    let trimmed = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    let extension_ends = [point(5., 0., 0.), point(5., -1.5, 1.)];
+    assert!(trimmed.iter().any(|curve| {
+        let bounds = curve.domain();
+        let ends = [*bounds.start(), *bounds.end()].map(|t| curve.evaluate(t).unwrap());
+        extension_ends
+            .iter()
+            .all(|p| ends.iter().any(|end| p.distance_to(*end).unwrap() < 1e-8))
+    }));
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected a committed Sweep1 surface: {:?}", app.command_log);
+    };
+    assert_eq!((sweep.faces().len(), sweep.edges().len()), (4, 11));
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), trimmed);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}

@@ -315,7 +315,7 @@ fn curved_uv_crossings_require_exact_restrictions_and_full_hull_sides() {
             < 1e-9
     );
     let before = source.clone();
-    assert!(curves::crossings(&source, 0, 0, 2., Tolerance::DEFAULT, &mut Budget(1)).is_err());
+    assert!(curves::crossings(&source, 0, 0, 2., Tolerance::DEFAULT, &mut Budget(1), 0.).is_err());
     assert_eq!(source, before);
 }
 

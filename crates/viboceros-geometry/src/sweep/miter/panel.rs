@@ -84,11 +84,13 @@ pub(super) fn build(
                 iso_trim(length, v_bounds)?
             },
         ];
-        (
-            surface_between(&[low?, high?], limits)?,
-            trims,
-            [start, end],
-        )
+        let mut surface = surface_between(&[low?, high?], limits)?;
+        for cut in bounds {
+            if limits[0] < cut && cut < limits[1] {
+                surface = surface.try_insert_knot_u(cut, surface.degree_u())?;
+            }
+        }
+        (surface, trims, [start, end])
     };
     face(surface, profiles, trims, iso, tolerance)
 }
@@ -169,6 +171,14 @@ fn iso_trim(u: Real, v: [Real; 2]) -> Result<NurbsCurve2, GeometryError> {
 /// Bézier span, elevate the first numerator and the denominator once and
 /// multiply the original denominator by the linear parameter for the second.
 fn trim_graph(profile: &NurbsCurve, offsets: &[Real]) -> Result<NurbsCurve2, GeometryError> {
+    if profile.degree() == 1 && !profile.is_rational() {
+        let points = offsets
+            .iter()
+            .zip(&profile.knots()[1..])
+            .map(|(&u, &v)| Point2::try_new(u, v))
+            .collect::<Result<Vec<_>, _>>()?;
+        return NurbsCurve2::try_new(1, points, profile.knots().to_vec());
+    }
     let controls = profile
         .control_points()
         .iter()

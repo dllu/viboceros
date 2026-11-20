@@ -66,6 +66,47 @@ impl Brep {
         )
     }
 
+    /// Partition the authored boundaries of extended sweep surfaces. All
+    /// such cuts share the same budget, and edge subdivisions propagate to
+    /// adjacent faces through the usual knot-line partitioner. U is distance
+    /// on these straight extrusion surfaces. Keep a valid unsplit face if
+    /// its trim incidences cannot be resolved at model tolerance.
+    pub(crate) fn partition_sweep_extensions(mut self, tolerance: Tolerance) -> Self {
+        let mut budget = Budget(MAX_WORK);
+        let mut index = 0;
+        while let Some(face) = self.faces.get(index) {
+            let surface = &face.surface;
+            let domain = surface.domain_u();
+            let mut partition = None;
+            for knots in surface.knots_u().chunk_by(|a, b| a == b) {
+                let cut = knots[0];
+                if knots.len() == surface.degree_u() && *domain.start() < cut && cut < *domain.end()
+                {
+                    partition = self
+                        .partition_face_with_budget(
+                            index,
+                            SurfaceKnotDirection::U,
+                            cut,
+                            tolerance,
+                            &mut budget,
+                            tolerance.absolute() * 0.125,
+                        )
+                        .ok()
+                        .flatten();
+                    if partition.is_some() {
+                        break;
+                    }
+                }
+            }
+            if let Some(next) = partition {
+                self = next;
+            } else {
+                index += 1;
+            }
+        }
+        self
+    }
+
     /// Splits qualifying fully-multiple surface knots without rebuilding
     /// unrelated faces or discarding existing boundary topology. The angular
     /// candidates use [`NurbsSurface::sampled_kink_parameters`], not a continuous
@@ -130,6 +171,18 @@ impl Brep {
         tolerance: Tolerance,
         budget: &mut Budget,
     ) -> Result<Option<Self>, GeometryError> {
+        self.partition_face_with_budget(face, direction, parameter, tolerance, budget, 0.)
+    }
+
+    fn partition_face_with_budget(
+        &self,
+        face: usize,
+        direction: SurfaceKnotDirection,
+        parameter: Real,
+        tolerance: Tolerance,
+        budget: &mut Budget,
+        sweep_snap_limit: Real,
+    ) -> Result<Option<Self>, GeometryError> {
         let axis = match direction {
             SurfaceKnotDirection::U => 0,
             SurfaceKnotDirection::V => 1,
@@ -171,9 +224,24 @@ impl Brep {
             }
         }
         let patches = surface::split(&source.surface, axis, parameter, budget)?;
-        let splits = curves::crossings(self, face, axis, parameter, tolerance, budget)?;
+        let splits = curves::crossings(
+            self,
+            face,
+            axis,
+            parameter,
+            tolerance,
+            budget,
+            sweep_snap_limit,
+        )?;
         let mut result = self.try_split_edges_at_parameters(&splits, tolerance)?;
-        curves::certify(self, &mut result, &splits, budget)?;
+        if sweep_snap_limit > 0. {
+            // U is signed distance on these straight extrusion surfaces. The
+            // positive trim basis bounds the whole displacement by the change
+            // in the U coordinates of the clamped end controls.
+            curves::snap_sweep_trim_ends(&mut result.faces[face], parameter, sweep_snap_limit)?;
+        } else {
+            curves::certify(self, &mut result, &splits, budget)?;
+        }
         singular::split(&mut result.faces[face], axis, parameter, budget)?;
         let Some(partitions) = rings::partition(
             &mut result,

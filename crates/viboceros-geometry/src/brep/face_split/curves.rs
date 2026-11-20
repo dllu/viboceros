@@ -24,6 +24,7 @@ pub(super) fn crossings(
     cut: Real,
     tolerance: Tolerance,
     budget: &mut Budget,
+    snap_limit: Real,
 ) -> Result<Vec<(usize, Vec<Real>)>, GeometryError> {
     let face = &source.faces[face];
     let frame = face.local_parameter_frame()?;
@@ -50,9 +51,19 @@ pub(super) fn crossings(
         };
         let edge = &source.edges[edge_index];
         let domain = trim.curve.domain();
-        for t in crossing_parameters(&local.curve, axis, local_cut, budget)? {
+        for t in crossing_parameters_with_snap(&local.curve, axis, local_cut, budget, snap_limit)? {
             let uv = local.curve.evaluate(t)?;
             let target = frame.face.surface.evaluate(uv.x(), uv.y())?;
+            if snap_limit > 0.
+                && edge.vertices.iter().any(|&vertex| {
+                    source.vertices[vertex]
+                        .point
+                        .distance_to(target)
+                        .is_ok_and(|d| d <= snap_limit)
+                })
+            {
+                continue;
+            }
             let fraction = (t - *domain.start()) / (*domain.end() - *domain.start());
             let fraction = if trim.reversed_3d {
                 1. - fraction
@@ -80,9 +91,20 @@ pub(super) fn crossings(
         }
     }
     let mut count = 0;
-    for parameters in splits.values_mut() {
+    for (&edge, parameters) in &mut splits {
         parameters.sort_by(Real::total_cmp);
         parameters.dedup();
+        if snap_limit > 0. {
+            // Both UV copies of a seam can propose the same spatial cut with
+            // slightly different parameters. Reconcile them before splitting.
+            let curve = &source.edges[edge].curve;
+            parameters.dedup_by(|a, b| {
+                curve
+                    .evaluate(*a)
+                    .and_then(|p| p.distance_to(curve.evaluate(*b)?))
+                    .is_ok_and(|distance| distance <= snap_limit)
+            });
+        }
         count += parameters.len();
         if count > MAX_PARTS {
             return invalid("too many face partition crossings");
@@ -96,6 +118,16 @@ pub(super) fn crossing_parameters(
     axis: usize,
     cut: Real,
     budget: &mut Budget,
+) -> Result<Vec<Real>, GeometryError> {
+    crossing_parameters_with_snap(curve, axis, cut, budget, 0.)
+}
+
+fn crossing_parameters_with_snap(
+    curve: &NurbsCurve2,
+    axis: usize,
+    cut: Real,
+    budget: &mut Budget,
+    snap_limit: Real,
 ) -> Result<Vec<Real>, GeometryError> {
     if curve.degree() > 16 {
         return invalid("face partition root proposal exceeds degree 16");
@@ -118,11 +150,42 @@ pub(super) fn crossing_parameters(
     let domain = curve.domain();
     roots.retain(|&t| t > *domain.start() && t < *domain.end());
     for &t in &roots {
-        if parameter_coordinate(curve.evaluate(t)?, axis) != cut {
+        if (parameter_coordinate(curve.evaluate(t)?, axis) - cut).abs() > snap_limit {
             return invalid("face partition UV crossing is not exactly representable");
         }
     }
     Ok(roots)
+}
+
+pub(super) fn snap_sweep_trim_ends(
+    face: &mut BrepFace,
+    cut: Real,
+    snap_limit: Real,
+) -> Result<(), GeometryError> {
+    for trim in face.loops.iter_mut().flat_map(|ring| &mut ring.trims) {
+        let points = trim.curve.control_points();
+        let snaps =
+            |p: WeightedPoint2| p.point().x() != cut && (p.point().x() - cut).abs() <= snap_limit;
+        let end = points.len() - 1;
+        if snaps(points[0]) || snaps(points[end]) {
+            let mut points = points.to_vec();
+            for index in [0, end] {
+                let point = points[index];
+                if snaps(point) {
+                    points[index] = WeightedPoint2::try_new(
+                        Point2::try_new(cut, point.point().y())?,
+                        point.weight(),
+                    )?;
+                }
+            }
+            trim.curve = NurbsCurve2::try_new_rational(
+                trim.curve.degree(),
+                points,
+                trim.curve.knots().to_vec(),
+            )?;
+        }
+    }
+    Ok(())
 }
 
 fn roots_in_span(
