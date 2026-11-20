@@ -198,7 +198,17 @@ impl<'a> Spline<'a> {
             && self.knots[span + 1..=span + p + 1]
                 .iter()
                 .all(|k| k == right);
-        charge(if isolated { p + 1 } else { 4 * (p + 1).pow(3) })?;
+        let width = p + 1;
+        charge(if isolated {
+            width
+        } else if p <= 3 {
+            // Keep the existing work allowance for linear and cubic editing.
+            4 * width.pow(3)
+        } else {
+            let polar_blends = p * width * (p + 5) / 6;
+            let knot_blends = p * width / 2;
+            width + 4 * polar_blends + 6 * knot_blends
+        })?;
         // Exact normalization eliminates arbitrary common weight gauges,
         // including negative, subnormal and huge finite gauges.
         let source = (span - p..=span)
@@ -214,27 +224,29 @@ impl<'a> Spline<'a> {
         if isolated {
             return Ok(source);
         }
-        let mut output = Vec::with_capacity(p + 1);
-        for right_arguments in 0..=p {
-            let mut work = source.clone();
-            for level in 1..=p {
-                let t = if level <= p - right_arguments {
-                    left
-                } else {
-                    right
-                };
-                for j in (level..=p).rev() {
-                    let k = span - p + j;
-                    let alpha =
-                        (t - &self.knots[k]) / (&self.knots[k + p - level + 1] - &self.knots[k]);
-                    let beta = rational(1.) - &alpha;
-                    work[j] = std::array::from_fn(|axis| {
-                        &beta * &work[j - 1][axis] + &alpha * &work[j][axis]
-                    });
+        // The blossom is symmetric. Share the partial evaluations across
+        // coefficients, with one row for each number of right arguments.
+        let one = rational(1.);
+        let mut rows = Vec::with_capacity(width);
+        rows.push(source);
+        for level in 1..=p {
+            rows.push(rows[level - 1].clone());
+            let (left_rows, right_row) = rows.split_at_mut(level);
+            for j in (level..=p).rev() {
+                let k = span - p + j;
+                let low = &self.knots[k];
+                let knot_width = &self.knots[k + p - level + 1] - low;
+                for (t, target) in [(left, &mut *left_rows), (right, &mut *right_row)] {
+                    let alpha = (t - low) / &knot_width;
+                    let beta = &one - &alpha;
+                    for row in target {
+                        row[j] = std::array::from_fn(|axis| {
+                            &beta * &row[j - 1][axis] + &alpha * &row[j][axis]
+                        });
+                    }
                 }
             }
-            output.push(work[p].clone());
         }
-        Ok(output)
+        Ok(rows.into_iter().map(|mut row| row.pop().unwrap()).collect())
     }
 }

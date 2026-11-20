@@ -220,6 +220,7 @@ fn extracted_spans_match_independent_exact_basis_at_knots_and_interior_points() 
         (2, vec![-2., -1., 0., 0.25, 0.5, 1., 2., 3.]),
         (2, vec![0., 0., 0., 0.5, 0.5, 0.5, 1., 1., 1.]),
         (3, vec![0., 0., 0., 0., 0.125, 0.75, 1., 1., 1., 1.]),
+        (12, [vec![0.; 13], vec![0.25, 0.625], vec![1.; 13]].concat()),
     ] {
         let count = knots.len() - degree - 1;
         let points = (0..count)
@@ -237,8 +238,9 @@ fn extracted_spans_match_independent_exact_basis_at_knots_and_interior_points() 
             // Also test a proper subinterval, as needed for unequal knot partitions.
             let left = rational(knots[span]);
             let right = (&left + rational(knots[span + 1])) / rational(2.);
+            let mut budget = Budget(3_000);
             let net = spline
-                .extract(span, &left, &right, &mut |_| Ok(()))
+                .extract(span, &left, &right, &mut |work| budget.charge(work))
                 .unwrap();
             for j in 0..=8 {
                 let t = rational(j as Real / 8.);
