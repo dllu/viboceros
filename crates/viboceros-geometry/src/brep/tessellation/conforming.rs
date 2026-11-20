@@ -560,8 +560,8 @@ impl Brep {
             {
                 diagonals::repair(
                     &face.surface,
-                    &face_mesh.parameters,
-                    &face_mesh.points,
+                    &mut face_mesh.parameters,
+                    &mut face_mesh.points,
                     &mut face_mesh.triangles,
                     height,
                 );
