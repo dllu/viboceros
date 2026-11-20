@@ -24,7 +24,10 @@ positions within `1e-9`, and checks the rebuilt boundary's departure from the
 original rims, which reaches 0.00401 model units.
 Skewed elliptical rims exercise varying tangent directions. The captured Loft
 matches the supporting direction at the fit stations and has four patches,
-with tangent-plane differences between stations.
+with tangent-plane differences between stations. A reversed-pick capture
+checks that `MatchStartTangent` follows the first picked rim and verifies its
+handle row. Rhino also adjusts the opposite handle row in this asymmetric
+single-end case. The full surface still differs there.
 Eight additional native closed-ring captures cover circular and square profiles,
 Normal and Straight styles, and both traversal directions. The portable B-rep
 regression checks topology counts, face sense, bounds within `1e-6`, stored

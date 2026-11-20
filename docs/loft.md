@@ -23,13 +23,15 @@ supports straight profiles, including rational and unevenly parameterized lines.
 Optional [point ends](loft-points.md) taper either side to a pole. A single curve
 suffices with a point end; Uniform and `Closed=Yes` do not accept point ends.
 
-[Profile ordering](loft-ordering.md) sorts parallel planar profiles by plane
-offset and uses a midpoint chain for other open sections. Traversal is aligned
-on private copies. Closed profiles move each later seam to the nearest knot;
+[Automatic profile ordering](loft-ordering.md) for curve-only Loft sorts parallel
+planar profiles by plane offset and uses a midpoint chain for other open sections.
+Interactive Loft with surface-edge profiles follows the selected profile sequence.
+Traversal is aligned on private copies. Closed profiles move each later seam
+to the nearest knot.
 `Natural` retains supplied seams while still aligning traversal.
 
 The interactive options can match either end to the supporting face of a
-selected boundary edge. Start and end refer to the prepared section order.
+selected boundary edge. Start and end refer to the first and last selected profiles.
 Loose, Straight and closed lofts suspend the checks while retaining their
 values for the current preview. With Rebuild or Refit, each simplified
 profile station takes its tangent direction from the nearest point on the

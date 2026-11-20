@@ -133,7 +133,13 @@ impl VibocerosApp {
                     "Select either open or closed Loft sections",
                 ));
             }
-            let (order, oriented) = Brep::loft_profile_order(&curves, tolerance)?;
+            let (automatic_order, oriented) = Brep::loft_profile_order(&curves, tolerance)?;
+            // Edge matches refer to the first and last picked profiles.
+            let order = if prompt.edge_highlights().next().is_some() {
+                (0..curves.len()).collect()
+            } else {
+                automatic_order
+            };
             let sources = order
                 .iter()
                 .map(|&index| prompt.state.sources[index].source.clone())

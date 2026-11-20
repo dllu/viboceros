@@ -228,23 +228,8 @@ fn loft_tangency_on_skewed_elliptical_rims_retains_native_patch_shapes() {
         .add_geometry(Geometry::NurbsCurve(ellipse([0.4, 0.3, 3., 3.6, 1.8])))
         .unwrap();
     app.document.clear_history().unwrap();
-    review_closed_profiles(&mut app, [&start, &end], middle);
-    enter(&mut app, "MatchStartTangent=Yes MatchEndTangent=Yes");
-    assert!(
-        !app.loft_prompt.as_ref().unwrap().preview_wires().is_empty(),
-        "{:?}",
-        app.command_log
-    );
-    assert_eq!(app.document.undo_label(), None);
-    enter(&mut app, "");
-    assert!(app.loft_prompt.is_none(), "{:?}", app.command_log);
-    assert_eq!(app.document.undo_label(), Some("Loft"));
-    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
-        panic!("Loft B-rep");
-    };
-    assert_eq!(brep.faces().len(), 4);
     // Rhino 8.32 samples from all four faces, away from the shared edges.
-    for [x, y, z] in [
+    let both_ends = [
         [2.929295134737457, -0.9615899476662249, 3.086400396121126],
         [1.4055001945747467, -1.5724889733774483, 4.523185162468901],
         [-2.125070805930426, -0.9754008211782568, 3.084618274145645],
@@ -257,16 +242,117 @@ fn loft_tangency_on_skewed_elliptical_rims_retains_native_patch_shapes() {
         [-3.07333913468666, 0.5033074838913203, 1.6042498218578982],
         [2.933764474877405, 1.543189121890091, 3.082885446564188],
         [2.8221397487763347, 0.25764680097466025, 4.511704386295492],
+    ];
+    for (edges, options, first_height) in [
+        (
+            [start.as_str(), end.as_str()],
+            "MatchStartTangent=Yes MatchEndTangent=Yes",
+            0.,
+        ),
+        ([end.as_str(), start.as_str()], "MatchStartTangent=Yes", 6.),
     ] {
-        let expected = point(x, y, z);
-        let (face, u, v) = brep
-            .closest_face_parameters(expected, tolerance)
-            .unwrap()
-            .unwrap();
-        let actual = brep.faces()[face].surface().evaluate(u, v).unwrap();
+        review_closed_profiles(&mut app, edges, middle);
+        enter(&mut app, options);
         assert!(
-            actual.distance_to(expected).unwrap() < 1e-9,
-            "{actual:?} != {expected:?}"
+            !app.loft_prompt.as_ref().unwrap().preview_wires().is_empty(),
+            "{:?}",
+            app.command_log
+        );
+        assert_eq!(app.document.undo_label(), None);
+        enter(&mut app, "");
+        assert!(app.loft_prompt.is_none(), "{:?}", app.command_log);
+        assert_eq!(app.document.undo_label(), Some("Loft"));
+        let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+            panic!("Loft B-rep");
+        };
+        assert_eq!(brep.faces().len(), 4);
+        let surface = brep.faces()[0].surface();
+        let first = surface
+            .evaluate(*surface.domain_u().start(), *surface.domain_v().start())
+            .unwrap();
+        assert!((first.z() - first_height).abs() < 1e-9);
+        if first_height == 0. {
+            for [x, y, z] in both_ends {
+                let expected = point(x, y, z);
+                let (face, u, v) = brep
+                    .closest_face_parameters(expected, tolerance)
+                    .unwrap()
+                    .unwrap();
+                let actual = brep.faces()[face].surface().evaluate(u, v).unwrap();
+                assert!(
+                    actual.distance_to(expected).unwrap() < 1e-9,
+                    "{actual:?} != {expected:?}"
+                );
+            }
+        } else {
+            check_reversed_start_handles(brep);
+        }
+        enter(&mut app, "Undo");
+        assert_eq!(app.document.objects().len(), 3);
+    }
+}
+
+fn check_reversed_start_handles(brep: &Brep) {
+    // Native first-row controls with the upper rim selected first and only
+    // MatchStartTangent enabled. The opposite row follows a different policy.
+    for ([x, y, z], [hx, hy, hz]) in [
+        (
+            [2.8, -0.6, 6.],
+            [1.9907234774930678, -0.6, 4.920964636657423],
+        ),
+        (
+            [2.8, 1.15, 6.],
+            [2.394375839707634, 0.11926795447648368, 4.962582545570265],
+        ),
+        (
+            [0.3, 1.15, 6.],
+            [0.3, 0.6320813647824985, 5.0134883138714255],
+        ),
+        (
+            [-2.2, 1.15, 6.],
+            [-1.8145076474329924, 0.7824475617872548, 4.90628851826779],
+        ),
+        (
+            [-2.2, -0.6, 6.],
+            [-2.018767118436487, -0.6, 4.791780789576578],
+        ),
+        (
+            [-2.2, -2.35, 6.],
+            [-2.056250011517065, -2.199998135145472, 4.8740789240494795],
+        ),
+        (
+            [0.3, -2.35, 6.],
+            [0.3, -2.0128117218484487, 4.962497605687534],
+        ),
+        (
+            [2.8, -2.35, 6.],
+            [2.5828196074377545, -1.4606776759004867, 4.843125537276538],
+        ),
+    ] {
+        let boundary = point(x, y, z);
+        let handle = brep
+            .faces()
+            .iter()
+            .find_map(|face| {
+                let surface = face.surface();
+                let column = (0..surface.control_point_count_v()).find(|&v| {
+                    surface
+                        .control_point(0, v)
+                        .unwrap()
+                        .point()
+                        .distance_to(boundary)
+                        .unwrap()
+                        < 1e-9
+                })?;
+                surface
+                    .control_point(1, column)
+                    .map(|control| control.point())
+            })
+            .expect("matched boundary control");
+        let expected = point(hx, hy, hz);
+        assert!(
+            handle.distance_to(expected).unwrap() < 1e-9,
+            "{handle:?} != {expected:?}"
         );
     }
 }
@@ -336,22 +422,21 @@ fn check_round_rim_loft(
                 max.max((point.x().hypot(point.y()) - radius).abs())
             })
         };
-        let start_height = surface.evaluate(*u.start(), *v.start()).unwrap().z();
-        let (start, end) = if start_height > 3. {
-            (*u.end(), *u.start())
-        } else {
-            (*u.start(), *u.end())
-        };
-        assert!((departure(start, 3.) - 0.0040065320630437995).abs() < 1e-7);
-        assert!((departure(end, 2.5) - 0.0033387767192034623).abs() < 1e-7);
+        assert!((departure(*u.start(), 3.) - 0.0040065320630437995).abs() < 1e-7);
+        assert!((departure(*u.end(), 2.5) - 0.0033387767192034623).abs() < 1e-7);
     }
     let domain_u = surface.domain_u();
     let domain_v = surface.domain_v();
     let mid_v = domain_v.start().midpoint(*domain_v.end());
-    // Rim orientation can reverse the loft chart. Measure from the lower rim.
-    let reversed = surface.evaluate(*domain_u.start(), mid_v).unwrap().z() > 3.;
+    assert!(
+        surface
+            .evaluate(*domain_u.start(), mid_v)
+            .unwrap()
+            .z()
+            .abs()
+            < 1e-9
+    );
     for (fraction, radius, height) in samples {
-        let fraction = if reversed { 1. - fraction } else { fraction };
         let u = *domain_u.start() + fraction * (domain_u.end() - domain_u.start());
         let sample = surface.evaluate(u, mid_v).unwrap();
         assert!(
