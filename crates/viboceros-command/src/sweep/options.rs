@@ -5,8 +5,10 @@ use super::*;
 pub struct Options {
     pub rail_name: Option<String>,
     pub rail_id: Option<ObjectId>,
+    pub rail_edge: Option<RailReference>,
     pub parameters: Option<Vec<Real>>,
     pub roadlike: Option<bool>,
+    pub surface_aligned: bool,
     pub axis: Option<UnitVector3>,
     pub global: Option<bool>,
     pub refit: Option<bool>,
@@ -19,8 +21,10 @@ impl Options {
     pub const VALUE_OPTIONS: &[&str] = &[
         "RailName",
         "RailId",
+        "RailEdge",
         "Parameters",
         "FrameStyle",
+        "Style",
         "Axis",
         "GlobalShapeBlending",
         "RefitRail",
@@ -49,10 +53,18 @@ impl Options {
                 "railname" if !value.is_empty() => {
                     result.rail_name = Some(value.into());
                     result.rail_id = None;
+                    result.rail_edge = None;
                     1
                 }
                 "railid" => {
                     result.rail_id = Some(value.parse().map_err(|_| CommandError::Usage(USAGE))?);
+                    result.rail_name = None;
+                    result.rail_edge = None;
+                    1
+                }
+                "railedge" => {
+                    result.rail_edge = Some(RailReference::parse_edge(value)?);
+                    result.rail_id = None;
                     result.rail_name = None;
                     1
                 }
@@ -65,14 +77,16 @@ impl Options {
                     );
                     2
                 }
-                "framestyle" => {
-                    result.roadlike = Some(
+                "framestyle" | "style" => {
+                    let (roadlike, aligned) =
                         match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                            "freeform" => false,
-                            "roadlike" => true,
+                            "freeform" => (false, false),
+                            "roadlike" => (true, false),
+                            "surface" | "alignwithsurface" => (false, true),
                             _ => return Err(CommandError::Usage(USAGE)),
-                        },
-                    );
+                        };
+                    result.roadlike = Some(roadlike);
+                    result.surface_aligned = aligned;
                     4
                 }
                 "axis" => {
@@ -151,6 +165,23 @@ impl Options {
             .transpose()
     }
 
+    pub fn has_explicit_rail(&self) -> bool {
+        self.rail_name.is_some() || self.rail_id.is_some() || self.rail_edge.is_some()
+    }
+
+    pub fn rail_reference(
+        &self,
+        document: &Document,
+    ) -> Result<Option<RailReference>, CommandError> {
+        if let Some(edge) = self.rail_edge {
+            return Ok(Some(edge));
+        }
+        Ok(self.explicit_rail(document)?.map(|id| RailReference {
+            target: Target::Curve(id),
+            face: None,
+        }))
+    }
+
     /// Canonical command arguments for the shared command executor.
     pub fn arguments(&self) -> String {
         let mut words = Vec::new();
@@ -162,6 +193,17 @@ impl Options {
         }
         if let Some(id) = self.rail_id {
             words.push(format!("RailId={id}"));
+        }
+        if let Some(RailReference {
+            target: Target::Edge(id, edge),
+            face,
+        }) = self.rail_edge
+        {
+            let mut option = format!("RailEdge={id},{edge}");
+            if let Some(face) = face {
+                option.push_str(&format!(",{face}"));
+            }
+            words.push(option);
         }
         if let Some(parameters) = &self.parameters {
             words.push(format!(
@@ -176,7 +218,13 @@ impl Options {
         if let Some(roadlike) = self.roadlike {
             words.push(format!(
                 "FrameStyle={}",
-                if roadlike { "Roadlike" } else { "Freeform" }
+                if self.surface_aligned {
+                    "AlignWithSurface"
+                } else if roadlike {
+                    "Roadlike"
+                } else {
+                    "Freeform"
+                }
             ));
         }
         let coordinates = |p: [Real; 3]| {

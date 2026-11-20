@@ -5,7 +5,7 @@ impl VibocerosApp {
         ids: impl IntoIterator<Item = ObjectId>,
         mode: SelectionMode,
     ) {
-        if self.plane_prompt.is_some() {
+        if self.plane_prompt.is_some() || self.chain_prompt.is_some() {
             return;
         }
         let Some(p) = self.sweep_session.as_ref().filter(|p| p.selecting()) else {
@@ -22,7 +22,14 @@ impl VibocerosApp {
                 0
             };
         let mut toggled = std::collections::BTreeSet::new();
+        let owners = p
+            .rail_targets()
+            .map(Target::object)
+            .collect::<std::collections::BTreeSet<_>>();
         for id in ids {
+            if owners.contains(&id) && mode != SelectionMode::Remove {
+                continue;
+            }
             let Some(o) = self.document.object(id).filter(|o| {
                 self.document.is_object_selectable(id) && o.geometry().curve_ref().is_some()
             }) else {

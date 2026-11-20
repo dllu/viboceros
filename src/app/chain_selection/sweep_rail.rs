@@ -1,9 +1,14 @@
-//! A nested chain picker that returns one Sweep2 rail without altering selection.
+//! A nested chain picker that returns a sweep rail without altering selection.
 use super::*;
 
 impl VibocerosApp {
-    pub(in crate::app) fn begin_sweep_rail_chain(&mut self, input: &str, excluded: &[Target]) {
-        let mut auto_chain = self.sweep_two_rails.as_ref().unwrap().chain_auto;
+    pub(in crate::app) fn begin_sweep_rail_chain(
+        &mut self,
+        owner: SweepRailOwner,
+        input: &str,
+        excluded: &[Target],
+    ) {
+        let mut auto_chain = *self.sweep_auto_chain(owner);
         let mut other = Vec::new();
         for word in input.split_whitespace() {
             if let Some((key, value)) = word.split_once('=')
@@ -12,7 +17,7 @@ impl VibocerosApp {
                     .eq_ignore_ascii_case("AutoChain")
             {
                 let Some(auto) = auto_value(value) else {
-                    self.push_log("Sweep2: use AutoChain=Yes or AutoChain=No".into());
+                    self.push_log("Use AutoChain=Yes or AutoChain=No".into());
                     return;
                 };
                 auto_chain = auto;
@@ -28,11 +33,11 @@ impl VibocerosApp {
         .and_then(|options| Session::new_for_rail(&self.document, options, excluded));
         match result {
             Ok(session) => {
-                self.sweep_two_rails.as_mut().unwrap().chain_auto = auto_chain;
+                *self.sweep_auto_chain(owner) = auto_chain;
                 self.commands
                     .remember_chain_selection_options(session.options())
                     .expect("validated chain options");
-                let mut prompt = Prompt::new(session, Purpose::SweepRail);
+                let mut prompt = Prompt::new(session, Purpose::SweepRail(owner));
                 prompt.auto_chain = auto_chain;
                 self.push_log(prompt.hint().into());
                 self.chain_prompt = Some(prompt);
@@ -42,7 +47,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn continue_sweep_rail_chain(&mut self, input: &str) -> bool {
-        let Some(prompt) = self.chain_prompt.as_mut().filter(|p| p.sweep_rail()) else {
+        let Some(prompt) = self.chain_prompt.as_mut() else {
+            return false;
+        };
+        let Purpose::SweepRail(owner) = prompt.purpose else {
             return false;
         };
         let name = input.trim().trim_start_matches(['_', '-']);
@@ -66,9 +74,9 @@ impl VibocerosApp {
                 prompt.pending = None;
                 prompt.session.discard_proposal();
                 prompt.refresh_preview();
-                self.sweep_two_rails.as_mut().unwrap().chain_auto = auto;
+                *self.sweep_auto_chain(owner) = auto;
             } else {
-                self.push_log("Sweep2: use AutoChain=Yes or AutoChain=No".into());
+                self.push_log("Use AutoChain=Yes or AutoChain=No".into());
             }
         } else if let Some(target) = rail_target(name) {
             self.pick_chain(vec![target]);
@@ -81,6 +89,13 @@ impl VibocerosApp {
         }
         self.command_input.clear();
         true
+    }
+
+    fn sweep_auto_chain(&mut self, owner: SweepRailOwner) -> &mut bool {
+        match owner {
+            SweepRailOwner::Sweep1 => &mut self.sweep_session.as_mut().unwrap().chain_auto,
+            SweepRailOwner::Sweep2 => &mut self.sweep_two_rails.as_mut().unwrap().chain_auto,
+        }
     }
 }
 

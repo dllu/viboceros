@@ -416,7 +416,7 @@ impl VibocerosApp {
             .rail_targets()
             .chain(session.profile_ids().into_iter().map(Target::Curve))
             .collect::<Vec<_>>();
-        self.begin_sweep_rail_chain(options, &excluded);
+        self.begin_sweep_rail_chain(chain_selection::SweepRailOwner::Sweep2, options, &excluded);
     }
 
     pub(in crate::app) fn accept_sweep_two_rail_chain(

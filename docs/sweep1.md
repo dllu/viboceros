@@ -24,13 +24,15 @@ Sweep1 RailName=Rail Parameters=0
 ```
 
 `Sweep1` can place profiles automatically: select the rail first, then profiles
-in traversal order, or select only profiles and specify `RailName=name` or
-`RailId=id`. The viewport picker accepts the same order. See
+in traversal order, or select only profiles and specify `RailName=name`,
+`RailId=id`, or `RailEdge=id,index[,face]` with zero-based component indices.
+Pick a curve or surface edge in the viewport, or use `ChainEdges` to assemble a
+rail from connected curves and edges. See
 [automatic placement](sweep1-placement.md) for direction, interval choices and
 qualification limits.
 
-Explicit `Parameters=` scripts retain their existing policy: without a named
-rail or ID, the **last** selected curve is the rail. Supply one finite, strictly
+For scripts using `Parameters=` without an explicit rail reference, the **last**
+selected curve is the rail. Supply one finite, strictly
 increasing native rail parameter per profile. These are not normalized fractions
 or distances unless that is the rail's actual domain. Profile directions and
 seams are retained. A named rail must be unique, selectable, and a curve.
@@ -60,6 +62,7 @@ command and kernel tests; a circular profile produces a native one-face solid.
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
 | `FrameStyle=Roadlike Axis=0,0,1` | Use a fixed axis; default to the planar rail's normal, otherwise world Z. `Axis` overrides it. See [Roadlike frames](sweep1/roadlike.md). |
+| `Style=AlignWithSurface` | Orient frames using the supporting face's normal along a single edge and use the cubic arc-length rail basis. Specify an adjacent face in `RailEdge` for shared edges. |
 | `GlobalShapeBlending=No` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
 | `GlobalShapeBlending=Yes` | Refitted path: linear arc-length blending between neighboring profiles (three-plus-profile compatibility remains incomplete). Retained path: Local blending, as in the measured Rhino commands. |
 

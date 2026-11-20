@@ -1264,7 +1264,7 @@ impl VibocerosApp {
             || self.start_curve_fillet(&input)
             || self.start_fillet_surface(&input)
             || self.start_loft(&input)
-            || self.start_sweep_point_input(&input)
+            || self.start_sweep_getter(&input)
             || self.start_sweep_two_rails(&input)
             || self.start_tween_surfaces(&input)
             || self.start_planar_boolean(&input)

@@ -116,16 +116,16 @@ the endpoint-weight normalization policy for rational profiles.
 
 ## One-rail sweeps
 
-`Sweep1` places profiles automatically: select the rail first, then profiles in
-traversal order, or specify `RailName=name` or `RailId=id` and select only profiles.
-Starting the command before selection opens the curve picker. `Point` picks a
+`Sweep1` accepts a curve, a surface edge, or connected curves and edges picked
+with `ChainEdges`. Pick the rail first and profiles in traversal order.
+`RailName=name`, `RailId=id`, and `RailEdge=id,index[,face]` also let you specify
+the rail and select only profiles. `Point` picks a
 [start or end pole](../sweep1/point-ends.md) with snapping. The viewport previews
-the sweep as you change profiles or options, and follows the resolved cursor
-while you place a pole. See
-[automatic placement](../sweep1-placement.md) for interval and direction choices.
+changes to profiles, options, and the pole under the cursor.
+See [automatic placement](../sweep1-placement.md) for interval and direction choices.
 
 Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous
-policy: without a named rail or ID, the last selected curve is the rail. Supply
+policy: without an explicit rail reference, the last selected curve is the rail. Supply
 one native rail parameter per profile. `RefitRail=No` (default) uses the shared
 rail-basis policy, including the implicit refits described above. `RefitRail=Yes`
 refits the rail to cubic arc-length form before interpolating transported profiles.
@@ -135,7 +135,9 @@ blends Euclidean control positions and raw relative weights, then normalizes
 placed profiles' end weights. Refitted construction instead uses homogeneous
 arc-length blending. The retained path shares Loft's common-knot policy, which
 can change later multi-span profiles when endpoint weight ratios differ.
-`FrameStyle=Freeform|Roadlike`, `Axis=x,y,z` (Roadlike only), and
+`Style=AlignWithSurface` follows the changing normals along an edge with a
+supporting face and uses the refitted rail basis. `FrameStyle=Freeform|Roadlike`,
+`Axis=x,y,z` (Roadlike only), and
 `GlobalShapeBlending=Yes|No` select the frame and blend model. Inputs and selection
 are retained; one unselected B-rep is added on the current layer with atomic undo.
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed

@@ -2,7 +2,7 @@ use super::circle_preview::{screen_point, viewport_click, viewport_frame};
 use super::curve_fillet::enter;
 use super::*;
 use std::time::{Duration, Instant};
-use viboceros_geometry::NurbsCurve;
+use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface};
 
 fn setup(profile: &str, pole: Point3) -> (VibocerosApp, [ObjectId; 3]) {
     let mut app = test_app();
@@ -153,4 +153,122 @@ fn renaming_a_named_rail_invalidates_the_sweep_preview() {
     assert!(app.sweep_session.is_none());
     assert_eq!(app.document.undo_label(), Some(label.as_str()));
     assert_eq!(app.document.objects().count(), 3);
+}
+
+#[test]
+fn sweep_one_surface_edge_pick_previews_the_selected_frame_style() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let support = NurbsSurface::try_bilinear([
+        point(0., 0., 0.),
+        point(-2., 0., 0.),
+        point(-2., 6., -2.),
+        point(0., 6., 0.),
+    ])
+    .unwrap();
+    let brep = Brep::try_surface_face(support, tolerance).unwrap();
+    let rail = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    enter(&mut app, "Line 0,0,0 2,0,0");
+    let profile = app.document.objects().last().unwrap().id();
+    let originals = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+
+    enter(&mut app, "Sweep1");
+    viewport_frame(&mut app, &context, vec![]);
+    let pick = screen_point(&app, point(0., 3., 0.));
+    viewport_click(&mut app, &context, pick);
+    assert!(
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .rail_targets()
+            .any(|target| target.object() == rail)
+    );
+    enter(&mut app, &profile.to_string());
+    let freeform = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "Style");
+    assert!(app.command_log.back().unwrap().contains("AlignWithSurface"));
+    enter(&mut app, "AlignWithSurface");
+    let aligned = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != freeform
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == freeform);
+    enter(&mut app, "Style=AlignWithSurface");
+    wait_for_wires(&mut app, &context, |wires| wires == aligned);
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected Sweep1 B-rep");
+    };
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), aligned);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+}
+
+#[test]
+fn sweep_one_rail_chain_preserves_connected_direction_and_keeps_sources() {
+    let mut app = test_app();
+    for input in ["Line 0,0,0 0,3,0", "Line 0,6,0 0,3,0", "Line 0,0,0 2,0,0"] {
+        enter(&mut app, input);
+    }
+    let originals = app.document.objects().cloned().collect::<Vec<_>>();
+    let ids = originals
+        .iter()
+        .map(|object| object.id())
+        .collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+
+    enter(&mut app, "Sweep1 ChainEdges");
+    enter(&mut app, &ids[0].to_string());
+    assert_eq!(app.chain_prompt.as_ref().unwrap().highlights().len(), 2);
+    app.cancel_current_prompt_or_selection();
+    assert!(app.chain_prompt.is_none());
+    assert!(app.command_hint().starts_with("Select a rail"));
+    enter(&mut app, "ChainEdges AutoChain=No");
+    for (index, id) in ids[..2].iter().enumerate() {
+        enter(&mut app, &id.to_string());
+        assert_eq!(
+            app.chain_prompt.as_ref().unwrap().highlights().len(),
+            index + 1
+        );
+    }
+    enter(&mut app, "");
+    assert!(app.chain_prompt.is_none());
+    assert_eq!(
+        app.sweep_session.as_ref().unwrap().rail_targets().count(),
+        2
+    );
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, &ids[2].to_string());
+    let preview = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected Sweep1 B-rep");
+    };
+    // Rhino 8.32 sweeps both rail pieces into one rectangular face.
+    assert_eq!((sweep.faces().len(), sweep.edges().len()), (1, 4));
+    assert!((sweep.area(tolerance).unwrap() - 12.).abs() < 1e-8);
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), preview);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
 }

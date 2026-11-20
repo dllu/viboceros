@@ -1,8 +1,10 @@
 use super::*;
+use crate::chain_selection::Target;
+pub use crate::sweep_rail::{Rail, RailReference};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id] [FrameStyle=Freeform|Roadlike] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -91,7 +93,7 @@ impl Command for SweepCommand {
 /// the same sweep construction without preview edits to the document.
 #[derive(Debug)]
 pub struct Source {
-    rail: GeometrySnapshot,
+    rail: Rail,
     profiles: Vec<GeometrySnapshot>,
 }
 
@@ -101,25 +103,36 @@ impl Source {
         selected: &[ObjectId],
         options: &Options,
     ) -> Result<Self, CommandError> {
-        let first = *selected.first().ok_or(CommandError::NoObjectsSelected)?;
-        let rail_id = if let Some(id) = options.explicit_rail(document)? {
-            id
+        let rail = if let Some(reference) = options.rail_reference(document)? {
+            Rail::capture_reference(document, reference)?
         } else if options.parameters.is_some() {
-            extrude_along_curve::resolve_curve_along_curve_path(document, selected, None)?
+            let id = extrude_along_curve::resolve_curve_along_curve_path(document, selected, None)?;
+            Rail::capture(document, Target::Curve(id))?
         } else {
-            first
+            let id = *selected.first().ok_or(CommandError::NoObjectsSelected)?;
+            Rail::capture(document, Target::Curve(id))?
         };
-        if !document.is_object_selectable(rail_id) {
+        Self::with_rail(document, rail, selected, options)
+    }
+
+    /// Capture profiles for a privately assembled rail in the interactive getter.
+    pub fn with_rail(
+        document: &Document,
+        rail: Rail,
+        selected: &[ObjectId],
+        options: &Options,
+    ) -> Result<Self, CommandError> {
+        if !rail.current(document) {
             return Err(CommandError::Usage(USAGE));
         }
-        let rail = document
-            .object(rail_id)
-            .filter(|object| object.geometry().curve_ref().is_some())
-            .ok_or(CommandError::Usage(USAGE))?;
+        let owners = rail
+            .targets()
+            .map(Target::object)
+            .collect::<std::collections::BTreeSet<_>>();
         let profiles = selected
             .iter()
             .copied()
-            .filter(|id| *id != rail_id)
+            .filter(|id| !owners.contains(id))
             .map(|id| {
                 document
                     .object(id)
@@ -136,10 +149,7 @@ impl Source {
         {
             return Err(CommandError::Usage(USAGE));
         }
-        Ok(Self {
-            rail: rail.geometry_snapshot().clone(),
-            profiles,
-        })
+        Ok(Self { rail, profiles })
     }
 
     /// Produce the exact sweep and the number of real profiles used.
@@ -159,7 +169,7 @@ impl Source {
             ..
         } = options;
         let ends = *ends;
-        let rail = self.rail.curve_ref().expect("captured Sweep1 rail");
+        let rail = self.rail.curve_ref();
         let curves = self
             .profiles
             .iter()
@@ -226,12 +236,23 @@ impl Source {
             SweepBlend::Local
         };
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
+        if options.surface_aligned {
+            let [support] = self.rail.supports() else {
+                return Err(CommandError::Usage(
+                    "Sweep1 AlignWithSurface requires an edge with one supporting face",
+                ));
+            };
+            sweep = sweep.try_align_with_surface(support.target.surface.clone())?;
+        }
         if full_rail_anchor {
             sweep = sweep.try_on_full_rail()?;
         }
         let surface = surface(
             &sweep,
-            refit.unwrap_or(false) || automatic_partial || !ends.is_empty(),
+            refit.unwrap_or(false)
+                || options.surface_aligned
+                || automatic_partial
+                || !ends.is_empty(),
         )?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
         let brep = Brep::try_surface_grid(&surface, &u, &v, tolerance)?;
@@ -254,3 +275,5 @@ mod tests;
 mod rebuild_tests;
 #[cfg(test)]
 mod roadlike_tests;
+#[cfg(test)]
+mod surface_alignment_tests;

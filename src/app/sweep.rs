@@ -1,11 +1,16 @@
 //! Sweep1 curve selection and point ends share the ordinary drafting pipeline.
 use super::object_selection::PendingObjectCommand;
 use super::*;
-use viboceros_command::sweep::Options;
+use viboceros_command::{
+    CommandError,
+    chain_selection::Target,
+    sweep::{Options, Rail, RailReference, Source},
+};
 use viboceros_document::GeometrySnapshot;
 
 mod input;
 mod preview;
+mod rail_picks;
 mod selection;
 #[cfg(test)]
 mod tests;
@@ -27,9 +32,22 @@ impl End {
 struct State {
     options: Options,
     sources: Vec<(ObjectId, GeometrySnapshot)>,
-    rail: Option<(ObjectId, GeometrySnapshot)>,
+    rail: Option<Rail>,
+    reference: Option<RailReference>,
     finished: bool,
 }
+
+impl State {
+    fn capture_source(&self, document: &Document) -> Result<Source, CommandError> {
+        let ids = self.sources.iter().map(|(id, _)| *id).collect::<Vec<_>>();
+        if let Some(rail) = &self.rail {
+            Source::with_rail(document, rail.clone(), &ids, &self.options)
+        } else {
+            Source::capture(document, &ids, &self.options)
+        }
+    }
+}
+
 #[derive(Debug)]
 pub(super) struct Session {
     state: State,
@@ -37,6 +55,7 @@ pub(super) struct Session {
     picking: Option<End>,
     value: Option<&'static str>,
     preview: preview::Preview,
+    pub(super) chain_auto: bool,
 }
 impl Session {
     pub(super) fn selecting(&self) -> bool {
@@ -48,22 +67,50 @@ impl Session {
             (Some(End::Finish), _, _) => "Pick the Sweep1 end point; Esc cancels",
             (_, Some(_), _) => "Enter the Sweep1 option value; Undo returns, Esc cancels",
             (_, _, true) => "Enter creates the sweep; StartPoint/EndPoint/Undo; Esc cancels",
+            _ if self.state.rail.is_none()
+                && !self.state.options.has_explicit_rail()
+                && self.state.options.parameters.is_some()
+                && !self.awaiting_rail() =>
+            {
+                "Select profiles in parameter order, then the rail. RailEdge / Undo. Enter sweeps"
+            }
+            _ if self.awaiting_rail() => {
+                "Select a rail curve or surface edge. ChainEdges / RailId / RailEdge"
+            }
             _ => {
-                "Select rail and profiles in order; Point/StartPoint/EndPoint/RefitRail/FrameStyle/Undo; Enter sweeps"
+                "Select profiles in order. Point / StartPoint / EndPoint / RefitRail / Style / Undo. Enter sweeps"
             }
         }
     }
+    fn awaiting_rail(&self) -> bool {
+        self.selecting()
+            && self.state.rail.is_none()
+            && !self.state.options.has_explicit_rail()
+            && self
+                .state
+                .options
+                .parameters
+                .as_ref()
+                .map_or(self.state.sources.is_empty(), |parameters| {
+                    self.state.sources.len() == parameters.len()
+                })
+    }
+
+    pub(super) fn rail_targets(&self) -> impl Iterator<Item = Target> + '_ {
+        self.state.rail.iter().flat_map(Rail::targets)
+    }
+
     fn profiles(&self) -> usize {
-        self.state.sources.len()
-            - usize::from(
-                self.state
-                    .sources
-                    .iter()
-                    .any(|(id, _)| self.state.rail.as_ref().is_some_and(|(rail, _)| rail == id))
-                    || (self.state.options.rail_id.is_none()
-                        && self.state.options.rail_name.is_none()
-                        && !self.state.sources.is_empty()),
-            )
+        if self.state.rail.is_none() && !self.state.options.has_explicit_rail() {
+            self.state.sources.len().saturating_sub(1)
+        } else {
+            // Private chain picking excludes the already selected profiles.
+            // An explicit loose rail can also be selected as an object.
+            let rail_selected = self.state.reference.is_some_and(|reference| {
+                matches!(reference.target, Target::Curve(rail) if self.state.sources.iter().any(|(id, _)| *id == rail))
+            });
+            self.state.sources.len() - usize::from(rail_selected)
+        }
     }
 }
 impl VibocerosApp {
@@ -85,28 +132,43 @@ impl VibocerosApp {
             .filter(|o| o.geometry().curve_ref().is_some())
             .map(|o| (o.id(), o.geometry_snapshot().clone()))
             .collect();
-        let rail = self.sweep_reference(&options);
+        let (reference, rail) = if options.has_explicit_rail() {
+            match self.capture_sweep_reference(&options) {
+                Ok((reference, rail)) => (Some(reference), Some(rail)),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    (None, None)
+                }
+            }
+        } else {
+            (None, None)
+        };
         self.sweep_session = Some(Session {
             state: State {
                 options,
                 sources,
                 rail,
+                reference,
                 finished: false,
             },
             undo: vec![],
             picking: None,
             value: None,
             preview: Default::default(),
+            chain_auto: true,
         });
     }
-    fn sweep_reference(&self, options: &Options) -> Option<(ObjectId, GeometrySnapshot)> {
-        let id = options.explicit_rail(&self.document).ok().flatten()?;
-        self.document
-            .object(id)
-            .filter(|o| o.geometry().curve_ref().is_some())
-            .map(|o| (id, o.geometry_snapshot().clone()))
+    fn capture_sweep_reference(
+        &self,
+        options: &Options,
+    ) -> Result<(RailReference, Rail), CommandError> {
+        let reference = options
+            .rail_reference(&self.document)?
+            .ok_or(CommandError::Usage("Specify a Sweep1 rail"))?;
+        let rail = Rail::capture_reference(&self.document, reference)?;
+        Ok((reference, rail))
     }
-    pub(super) fn start_sweep_point_input(&mut self, input: &str) -> bool {
+    pub(super) fn start_sweep_getter(&mut self, input: &str) -> bool {
         let words = input.split_whitespace().collect::<Vec<_>>();
         if !words.first().is_some_and(|w| {
             w.trim_start_matches(['_', '-'])
@@ -114,14 +176,20 @@ impl VibocerosApp {
         }) {
             return false;
         }
-        let Some(name) = words.last().copied().filter(|w| {
+        let chain = words
+            .iter()
+            .position(|word| rail_picks::is_chain_option(word));
+        let getter = chain.or_else(|| {
+            let name = words.last()?.trim_start_matches('_');
             ["Point", "StartPoint", "EndPoint"]
                 .iter()
-                .any(|n| w.trim_start_matches('_').eq_ignore_ascii_case(n))
-        }) else {
+                .any(|value| name.eq_ignore_ascii_case(value))
+                .then_some(words.len() - 1)
+        });
+        let Some(getter) = getter else {
             return false;
         };
-        let base = words[..words.len() - 1].join(" ");
+        let base = words[..getter].join(" ");
         let Ok(Some(description)) = self.commands.object_selection_prompt(&base) else {
             return false;
         };
@@ -132,11 +200,15 @@ impl VibocerosApp {
         pending.selection_before = Some(before);
         self.object_prompt = Some(pending);
         self.initialize_sweep_prompt(&base);
-        self.begin_sweep_point(name);
+        if chain.is_some() {
+            self.start_sweep_one_rail_chain(&words[getter + 1..].join(" "));
+        } else {
+            self.begin_sweep_point(words[getter]);
+        }
         self.command_input.clear();
         true
     }
-    fn log_sweep_input(&mut self) {
+    pub(super) fn log_sweep_input(&mut self) {
         if let Some(p) = &self.sweep_session {
             self.push_log(format!(
                 "Sweep1: {}. {}",
@@ -162,34 +234,29 @@ impl VibocerosApp {
         if !self.validate_sweep_sources() {
             return;
         }
-        self.sync_sweep_selection();
-        let session = self.sweep_session.take().unwrap();
-        let pending = self.object_prompt.take().unwrap();
-        if !self.try_execute_command(&format!("Sweep1 {}", session.state.options.arguments())) {
-            self.sweep_session = Some(session);
-            self.object_prompt = Some(pending);
-            self.log_sweep_input();
-        }
+        self.commit_sweep_preview();
     }
 
     fn validate_sweep_sources(&mut self) -> bool {
         let p = self.sweep_session.as_ref().unwrap();
-        let valid = p
+        let valid = p.state.sources.iter().all(|(id, snapshot)| {
+            self.document.is_object_selectable(*id)
+                && self
+                    .document
+                    .object(*id)
+                    .is_some_and(|o| snapshot.shares_storage_with(o.geometry_snapshot()))
+        });
+        let same_reference = p
             .state
-            .sources
-            .iter()
-            .chain(p.state.rail.iter())
-            .all(|(id, snapshot)| {
-                self.document.is_object_selectable(*id)
-                    && self
-                        .document
-                        .object(*id)
-                        .is_some_and(|o| snapshot.shares_storage_with(o.geometry_snapshot()))
-            });
-        let reference = self.sweep_reference(&p.state.options);
-        let same_reference =
-            reference.as_ref().map(|(id, _)| *id) == p.state.rail.as_ref().map(|(id, _)| *id);
-        if !valid || !same_reference {
+            .options
+            .rail_reference(&self.document)
+            .is_ok_and(|reference| reference == p.state.reference);
+        let current_rail = p
+            .state
+            .rail
+            .as_ref()
+            .is_none_or(|rail| rail.current(&self.document));
+        if !valid || !same_reference || !current_rail {
             self.cancel_object_prompt(false);
             self.push_log("Sweep1 sources changed; select them again".into());
             return false;

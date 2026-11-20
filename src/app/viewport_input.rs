@@ -395,6 +395,9 @@ impl VibocerosApp {
             if self.select_loft_edge_click(&picks, &output.edge_contacts, output.edge_click_modifiers) {
                 return true;
             }
+            if self.select_sweep_edge_click(&picks) {
+                return true;
+            }
             if self.select_sweep_two_rail_edge_click(&picks, output.edge_click_modifiers) {
                 return true;
             }

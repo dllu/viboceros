@@ -5,6 +5,7 @@ use crate::{
     ParameterSide, Point3, Real, Tolerance, UnitVector3, Vector3, WeightedPoint3,
 };
 use std::ops::RangeInclusive;
+use std::sync::Arc;
 
 mod basis;
 mod fit;
@@ -72,6 +73,7 @@ pub struct Sweep1 {
     sections: Vec<SweepSection>,
     local: Vec<Vec<WeightedPoint3>>,
     style: SweepFrameStyle,
+    support: Option<Arc<NurbsSurface>>,
     blend: SweepBlend,
     tolerance: Tolerance,
     domain: RangeInclusive<Real>,
@@ -218,6 +220,7 @@ impl Sweep1 {
                 .collect(),
             local: Vec::new(),
             style,
+            support: None,
             blend,
             tolerance,
             domain: start..=end,
@@ -226,6 +229,16 @@ impl Sweep1 {
         };
         result.prepare_local_controls()?;
         Ok(result)
+    }
+
+    /// Orient section frames by the normals of the face along the rail.
+    pub fn try_align_with_surface(
+        mut self,
+        support: Arc<NurbsSurface>,
+    ) -> Result<Self, GeometryError> {
+        self.support = Some(support);
+        self.prepare_local_controls()?;
+        Ok(self)
     }
 
     fn prepare_local_controls(&mut self) -> Result<(), GeometryError> {
@@ -457,8 +470,9 @@ impl Sweep1 {
         if prepend {
             ts.insert(0, start);
         }
-        let mut frames = match self.style {
-            SweepFrameStyle::Freeform => self.rail.as_ref().rotation_minimizing_frames(
+        let rail = self.rail.as_ref();
+        let mut frames = match (self.support.as_deref(), self.style) {
+            (None, SweepFrameStyle::Freeform) => rail.rotation_minimizing_frames(
                 &ts,
                 None,
                 FrameTransportOptions {
@@ -467,28 +481,14 @@ impl Sweep1 {
                     ..Default::default()
                 },
             )?,
-            SweepFrameStyle::Roadlike(axis) => ts
-                .iter()
-                .map(|&t| {
-                    let sample = self.rail.as_ref().evaluate_with_tangent(t)?;
-                    let x = sample
-                        .tangent()
-                        .as_vector()
-                        .cross(axis.as_vector())?
-                        .normalized_nonzero()?;
-                    let y = sample.tangent().as_vector().cross(x.as_vector())?;
-                    Frame3::try_from_directions(
-                        sample.point(),
-                        x.as_vector(),
-                        y,
-                        Tolerance::try_new(
-                            Real::MIN_POSITIVE,
-                            64.0 * Real::EPSILON,
-                            64.0 * Real::EPSILON,
-                        )?,
-                    )
-                })
-                .collect::<Result<Vec<_>, GeometryError>>()?,
+            (None, SweepFrameStyle::Roadlike(axis)) => axis_frames(rail, &ts, |_| Ok(axis))?,
+            (Some(surface), _) => axis_frames(rail, &ts, |point| {
+                let (u, v) = surface.closest_parameters(point, self.tolerance)?;
+                if point.distance_to(surface.evaluate(u, v)?)? > self.tolerance.absolute() {
+                    return Err(invalid("rail leaves the supporting surface"));
+                }
+                surface.normal_at(u, v)
+            })?,
         };
         if prepend {
             frames.remove(0);
@@ -508,6 +508,29 @@ impl Sweep1 {
             })
             .collect())
     }
+}
+
+fn axis_frames(
+    rail: CurveRef<'_>,
+    parameters: &[Real],
+    mut axis_at: impl FnMut(Point3) -> Result<UnitVector3, GeometryError>,
+) -> Result<Vec<Frame3>, GeometryError> {
+    let tolerance = Tolerance::try_new(
+        Real::MIN_POSITIVE,
+        64.0 * Real::EPSILON,
+        64.0 * Real::EPSILON,
+    )?;
+    parameters
+        .iter()
+        .map(|&t| {
+            let sample = rail.evaluate_with_tangent(t)?;
+            let axis = axis_at(sample.point())?;
+            let tangent = sample.tangent().as_vector();
+            let x = tangent.cross(axis.as_vector())?.normalized_nonzero()?;
+            let y = tangent.cross(x.as_vector())?;
+            Frame3::try_from_directions(sample.point(), x.as_vector(), y, tolerance)
+        })
+        .collect()
 }
 
 fn invalid(context: &'static str) -> GeometryError {

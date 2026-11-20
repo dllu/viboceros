@@ -214,7 +214,9 @@ impl PendingObjectCommand {
                         .next()
                         .unwrap()
                         .trim_start_matches(['_', '-']);
-                    name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
+                    ["RailName", "RailId", "RailEdge"]
+                        .iter()
+                        .any(|option| name.eq_ignore_ascii_case(option))
                 })
             }) {
                 return "Select profiles in order; Point/StartPoint/EndPoint/Undo; Enter sweeps along the specified rail, Esc cancels";
@@ -940,6 +942,7 @@ impl VibocerosApp {
                 if words.iter().skip(1).any(|w| {
                     let name = w.split('=').next().unwrap().trim_start_matches(['_', '-']);
                     name.eq_ignore_ascii_case("RailName") || name.eq_ignore_ascii_case("RailId")
+                        || (description.command == "Sweep1" && name.eq_ignore_ascii_case("RailEdge"))
                 }) {
                     1
                 } else {

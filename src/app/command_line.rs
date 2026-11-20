@@ -278,9 +278,9 @@ impl VibocerosApp {
             p.hint()
         } else if let Some(p) = &self.blend_surface_prompt {
             p.hint()
-        } else if let Some(p) = &self.sweep_session {
-            p.hint()
         } else if let Some(p) = self.chain_prompt.as_ref().filter(|p| p.sweep_rail()) {
+            p.hint()
+        } else if let Some(p) = &self.sweep_session {
             p.hint()
         } else if let Some(p) = &self.sweep_two_rails {
             p.hint()

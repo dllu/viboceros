@@ -16,12 +16,11 @@ pub const MAX_SECTIONS: usize = 32;
 pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
 
 mod options;
-mod rail;
 use crate::chain_selection::Target;
+pub use crate::sweep_rail::{Rail, RailReference};
 pub use options::{
     EDGE_CONTINUITY_NAMES, EDGE_END_NAMES, EdgeOptions, Options, SectionFit, ShapeOptions,
 };
-pub use rail::{Rail, RailReference};
 pub(super) struct SweepTwoRailsCommand;
 
 impl Command for SweepTwoRailsCommand {

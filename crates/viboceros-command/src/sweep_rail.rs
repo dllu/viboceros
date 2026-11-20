@@ -116,7 +116,7 @@ impl Rail {
         )?;
         let [rail] = joined.as_slice() else {
             return Err(CommandError::Usage(
-                "Sweep2: select pieces that form one connected rail",
+                "Select pieces that form one connected sweep rail",
             ));
         };
         let curve = rail.curve().as_ref().to_nurbs()?;
@@ -153,7 +153,7 @@ impl Rail {
         self.curve().is_closed().is_ok_and(|closed| closed)
     }
 
-    pub(super) fn supports(&self) -> &[Edge] {
+    pub(crate) fn supports(&self) -> &[Edge] {
         &self.supports
     }
 
@@ -161,10 +161,20 @@ impl Rail {
         !self.supports.is_empty()
     }
 
-    pub(super) fn curve(&self) -> &NurbsCurve {
+    pub(crate) fn curve(&self) -> &NurbsCurve {
         self.joined
             .as_deref()
             .unwrap_or_else(|| self.pieces[0].curve())
+    }
+
+    pub(crate) fn curve_ref(&self) -> CurveRef<'_> {
+        self.joined
+            .as_deref()
+            .map_or_else(|| self.pieces[0].curve_ref(), CurveRef::NurbsCurve)
+    }
+
+    pub fn supports_alignment(&self) -> bool {
+        self.supports.len() == 1
     }
 }
 

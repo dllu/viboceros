@@ -2,6 +2,7 @@ use super::*;
 impl VibocerosApp {
     pub(in crate::app) fn continue_sweep_point_option(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some()
+            || self.chain_prompt.is_some()
             || !self
                 .sweep_session
                 .as_ref()
@@ -19,9 +20,7 @@ impl VibocerosApp {
     pub(super) fn begin_sweep_point(&mut self, name: &str) {
         let p = self.sweep_session.as_ref().unwrap();
         if p.state.rail.is_none()
-            && (p.state.options.rail_id.is_some()
-                || p.state.options.rail_name.is_some()
-                || p.state.sources.is_empty())
+            && (p.state.options.has_explicit_rail() || p.state.sources.is_empty())
         {
             self.push_log("Select or specify a rail before picking a Sweep1 point end".into());
             return;
@@ -107,6 +106,11 @@ impl VibocerosApp {
             self.cancel_interactive_command(true);
         } else if p.picking.is_some() {
             return false;
+        } else if p.value.is_none()
+            && let (name, options) = name.split_once(char::is_whitespace).unwrap_or((name, ""))
+            && super::rail_picks::is_chain_option(name)
+        {
+            self.start_sweep_one_rail_chain(options);
         } else if input.is_empty() && p.value.is_none() {
             self.finish_sweep_input();
         } else if name.eq_ignore_ascii_case("SelAll") && p.selecting() {
@@ -131,8 +135,22 @@ impl VibocerosApp {
             .copied()
             .find(|n| name.eq_ignore_ascii_case(n))
         {
+            let hint = if ["Style", "FrameStyle"].contains(&option) {
+                if p.state.rail.as_ref().is_some_and(Rail::supports_alignment) {
+                    "Sweep1 style options are Freeform, Roadlike, and AlignWithSurface".into()
+                } else {
+                    "Sweep1 style options are Freeform and Roadlike".into()
+                }
+            } else {
+                format!("Sweep1: enter {option}")
+            };
             self.sweep_session.as_mut().unwrap().value = Some(option);
-            self.push_log(format!("Sweep1: enter {option}"));
+            self.push_log(hint);
+        } else if let Some((key, value)) = name.split_once('=')
+            && key.eq_ignore_ascii_case("Edge")
+            && p.awaiting_rail()
+        {
+            self.update_sweep_options(&format!("RailEdge={value}"));
         } else if input.contains('=') {
             self.update_sweep_options(input);
         } else if let Ok(id) = input.parse::<ObjectId>() {
@@ -149,7 +167,7 @@ impl VibocerosApp {
         self.command_input.clear();
         true
     }
-    fn update_sweep_options(&mut self, input: &str) {
+    pub(super) fn update_sweep_options(&mut self, input: &str) {
         let p = self.sweep_session.as_ref().unwrap();
         match p
             .state
@@ -162,18 +180,36 @@ impl VibocerosApp {
                     .split_whitespace()
                     .filter_map(|w| w.split_once('='))
                     .any(|(name, _)| {
-                        ["RailId", "RailName"]
+                        ["RailId", "RailName", "RailEdge"]
                             .iter()
                             .any(|n| name.trim_start_matches(['_', '-']).eq_ignore_ascii_case(n))
                     });
-                let rail = if replace_rail {
-                    self.sweep_reference(&options)
-                } else {
-                    p.state.rail.clone()
-                };
                 let mut next = p.state.clone();
                 next.options = options;
-                next.rail = rail;
+                if replace_rail {
+                    match self.capture_sweep_reference(&next.options) {
+                        Ok((reference, rail)) => {
+                            next.rail = Some(rail);
+                            next.reference = Some(reference);
+                        }
+                        Err(error) => {
+                            self.push_log(format!("Error: {error}"));
+                            return;
+                        }
+                    }
+                }
+                if next.options.surface_aligned
+                    && (next
+                        .rail
+                        .as_ref()
+                        .is_some_and(|rail| !rail.supports_alignment())
+                        || (next.rail.is_none() && !next.sources.is_empty()))
+                {
+                    self.push_log(
+                        "Sweep1 AlignWithSurface requires an edge with one supporting face".into(),
+                    );
+                    return;
+                }
                 let p = self.sweep_session.as_mut().unwrap();
                 let old = p.state.clone();
                 p.state = next;

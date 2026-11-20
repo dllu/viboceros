@@ -7,11 +7,17 @@ mod sweep_rail;
 pub(super) const HINT: &str = "Select connected curves or surface edges; Undo / Next / All / ChainContinuity / Direction / GapTolerance / AngleTolerance; Enter accepts, Esc restores selection";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum SweepRailOwner {
+    Sweep1,
+    Sweep2,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Purpose {
     Select,
     Measure,
     EdgeBlend,
-    SweepRail,
+    SweepRail(SweepRailOwner),
 }
 
 #[derive(Debug)]
@@ -43,7 +49,7 @@ impl Prompt {
         self.purpose == Purpose::Measure
     }
     pub(in crate::app) fn sweep_rail(&self) -> bool {
-        self.purpose == Purpose::SweepRail
+        matches!(self.purpose, Purpose::SweepRail(_))
     }
 
     fn read_only(&self) -> bool {
@@ -264,17 +270,26 @@ impl VibocerosApp {
             return;
         };
         let accept = accept && p.session.has_seed();
-        if p.sweep_rail() {
+        if let Purpose::SweepRail(owner) = p.purpose {
             self.command_input.clear();
             if accept && p.session.current(&self.document) {
-                if !self.accept_sweep_two_rail_chain(
-                    &p.session.ordered_targets(),
-                    p.session.options().gap_tolerance,
-                ) {
+                let targets = p.session.ordered_targets();
+                let gap = p.session.options().gap_tolerance;
+                let accepted = match owner {
+                    SweepRailOwner::Sweep1 => self.accept_sweep_one_rail_chain(&targets, gap),
+                    SweepRailOwner::Sweep2 => self.accept_sweep_two_rail_chain(&targets, gap),
+                };
+                if !accepted {
                     self.chain_prompt = Some(p);
                 }
-            } else if self.sweep_two_rails.is_some() {
-                self.log_sweep_two_rails();
+            } else {
+                match owner {
+                    SweepRailOwner::Sweep1 => self.log_sweep_input(),
+                    SweepRailOwner::Sweep2 if self.sweep_two_rails.is_some() => {
+                        self.log_sweep_two_rails()
+                    }
+                    SweepRailOwner::Sweep2 => {}
+                }
             }
             return;
         }

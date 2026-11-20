@@ -451,8 +451,8 @@ impl VibocerosApp {
         .filter(|_| plane_object_pick || model_input_active && self.plane_prompt.is_none());
         let extend_source_pick = self.picking_curve_extend_source();
         let loft_edge_pick = self.picking_loft_edges();
-        let sweep_two_rail_edge_pick = self.picking_sweep_two_rail_edges();
-        let edge_pick = (extend_source_pick || loft_edge_pick || sweep_two_rail_edge_pick || self
+        let sweep_rail_edge_pick = self.picking_sweep_edges() || self.picking_sweep_two_rail_edges();
+        let edge_pick = (extend_source_pick || loft_edge_pick || sweep_rail_edge_pick || self
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
@@ -899,7 +899,7 @@ impl VibocerosApp {
         let selecting_normal = model_input_active
             && (self.picking_line_normal() || self.selecting_move_normal_reference());
         let curve_or_edge_pick = edge_pick
-            && (extend_source_pick || loft_edge_pick || sweep_two_rail_edge_pick || self.picking_subcurve_edge()
+            && (extend_source_pick || loft_edge_pick || sweep_rail_edge_pick || self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
                     || self.picking_surface_offset_curve())
@@ -1412,6 +1412,7 @@ impl VibocerosApp {
             .into_iter()
             .flat_map(|session| session.rail_targets())
             .filter(|target| matches!(target, viboceros_command::chain_selection::Target::Edge(..)))
+            .chain(self.sweep_session.iter().flat_map(sweep::Session::rail_targets))
             .collect::<Vec<_>>();
         let chain_highlights = self.chain_prompt.as_ref()
             .map_or(length_highlights.as_slice(), |p| p.highlights());
