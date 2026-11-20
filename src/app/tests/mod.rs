@@ -102,6 +102,7 @@ mod direction_analysis_support;
 mod direction_support;
 mod distance;
 mod distribute;
+mod divide;
 mod divide_creases;
 mod domain;
 mod draft_angle;

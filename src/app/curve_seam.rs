@@ -10,7 +10,7 @@ use viboceros_geometry::{Curve3, CurveRef, NurbsCurve, Real, wrap_closed_curve_p
 mod input;
 mod profiles;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct Seam {
     source: CapturedCurve,
     use_nurbs: bool,
@@ -135,7 +135,7 @@ impl Seam {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 struct Move {
     viewport: usize,
     index: usize,
@@ -143,7 +143,7 @@ struct Move {
     parameter: Real,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub(super) struct Editor {
     seams: Vec<Seam>,
     moving: Option<Move>,
@@ -233,6 +233,10 @@ impl Editor {
 
     pub(super) fn snap_to_knots(&self) -> bool {
         self.snap_to_knots
+    }
+
+    pub(super) fn flipping(&self) -> bool {
+        self.flipping
     }
 
     pub(super) fn sources(&self) -> impl Iterator<Item = &CapturedCurve> {
@@ -594,7 +598,8 @@ impl VibocerosApp {
         let Some(session) = &mut self.curve_seam_session else {
             return self.apply_loft_seam_event(viewport, event)
                 || self.apply_sweep_one_seam_event(viewport, event)
-                || self.apply_sweep_two_rail_seam_event(viewport, event);
+                || self.apply_sweep_two_rail_seam_event(viewport, event)
+                || self.apply_divide_seam_event(viewport, event);
         };
         let changed = session.editor.apply(viewport, event);
         if matches!(event, Event::Flip(_)) {

@@ -1171,6 +1171,11 @@ impl VibocerosApp {
                     .map(|s| s.ids())
             })
             .or_else(|| {
+                (self.plane_prompt.is_none() && self.nested_measurement.is_none())
+                    .then(|| self.divide_direction_sources())
+                    .flatten()
+            })
+            .or_else(|| {
                 self.object_prompt
                     .as_ref()
                     .and_then(|p| self.curvature_graph_selection_ids(p.description.command))
@@ -1449,7 +1454,11 @@ impl VibocerosApp {
             .or_else(|| sweep.and_then(sweep::Session::seam_editor))
             .or_else(|| self.sweep_two_rails.as_ref()
                 .filter(|_| edge_handle_input)
-                .and_then(sweep_two_rails::Session::seam_editor));
+                .and_then(sweep_two_rails::Session::seam_editor))
+            .or_else(|| self.object_prompt.as_ref()
+                .filter(|_| edge_handle_input)
+                .and_then(|pending| pending.divide.as_ref())
+                .and_then(|session| session.seam_editor(&self.document)));
         let loft = self.loft_prompt.as_ref().filter(|_| edge_handle_input);
         let surface_draft_wires = if edge_handle_input {
             loft.map(loft::Prompt::preview_wires)

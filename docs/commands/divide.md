@@ -14,13 +14,15 @@ selected. `Div` remains an alias. Every invocation stages all results before
 document mutation and forms one Undo step. Inputs remain when point objects are
 created; Split replaces the inputs with trimmed curve pieces.
 
-Entering bare `Divide` first gathers curves, then opens a numeric/options
-prompt. Enter a count, or choose `Length` or `EqualChordLength` and enter a
-distance. Changing the number or output options updates viewport station
-markers; Enter accepts the pending result, and Escape cancels without creating
-objects or history. `NumberSegments` returns to count mode. The count and a
-shared Length/EqualChordLength distance are remembered across invocations;
-each invocation starts in count mode. The initial local count/distance is 1.
+Entering bare `Divide` gathers curves. If any are closed, drag their seam
+markers or use `Flip`, `Automatic` or `Natural`, then press Enter for the
+numeric options. Enter a count, or choose `Length` or `EqualChordLength` and
+enter a distance. In Length mode, click a selected curve or type a point on
+it to measure from the other end. These edits update viewport station markers.
+Enter accepts the preview and Escape cancels it. `NumberSegments` returns to
+count mode. The count and a shared Length/EqualChordLength distance are
+remembered across invocations. Each invocation starts in count mode. The
+initial local count and distance are 1.
 Output flags survive cancellation and Undo, and omitted flags use the remembered
 values. Preferences last for the application session. See
 [native preference evidence](../divide-preferences.md).
@@ -31,14 +33,16 @@ Options are case-insensitive Yes/No values. Bare `MarkEnds` remains accepted.
 
 - `MarkEnds` defaults to No. In count/arc-length point modes, open-curve ends
   are included in count mode when enabled. Length mode includes the start and
-  computed stations, including the end only when a whole station lands there,
-  matching the captured native remainder behavior. Closed curves emit their seam once. Chord mode
+  computed stations, including the end only when a whole station lands there.
+  Closed curves emit their chosen seam once. Chord mode
   includes the natural start and its computed stations; MarkEnds does not add
   an incomplete final chord.
 - `Split` defaults to No. Split pieces retain source attributes and parameter
   intervals; point objects use fresh attributes on the current layer.
 - `DeleteRemainder` defaults to No. In length/chord Split mode it discards the
-  final incomplete segment.
+  final incomplete segment. With Length measured backwards, Rhino omits the
+  leading partial piece when interior stations exist. The pieces retain their
+  original parameter direction.
 - `GroupOutput` defaults to No. Point outputs form one group per input curve.
   Split outputs remain ungrouped, following the captured native behavior.
 
@@ -59,7 +63,6 @@ regressions and the remaining Split differences.
 The [native fixture](../../tools/rhino_oracle/fixtures/divide_command.json) covers
 30 line, circle and polyline recipes, including source metadata, groups, split
 domains and remainder deletion. Detailed [qualification](../divide-command.md)
-records the result and limits. The UI currently accepts complete division
-arguments before source picking or [bare numeric/options input](../divide-input.md).
-Native seam/direction changes, SubCrv selection, persisted startup defaults and
-preview styling remain work in progress.
+records the result and limits. See [interactive input and preview](../divide-input.md)
+for headless UI coverage. SubCrv selection and disk-persisted defaults remain
+work in progress.

@@ -133,7 +133,7 @@ impl PendingObjectCommand {
             return session.label();
         }
         if let Some(session) = &self.divide {
-            return session.prompt.label();
+            return session.label();
         }
         match self.phase {
             ObjectPromptPhase::Menu(index) => self.description.menus[index].name,
@@ -234,15 +234,14 @@ impl PendingObjectCommand {
             }
             return "Select the rail first, then profiles in order. Press Enter to continue. Point / StartPoint / EndPoint / Undo. Esc cancels";
         }
-        if self.description.command == "Divide" {
-            return if self.phase == ObjectPromptPhase::Selecting {
-                if self.description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
-                    "Select curves; Enter divides, Esc cancels"
-                } else {
-                    "Select curves; Enter opens division options, Esc cancels"
-                }
+        if let Some(session) = &self.divide {
+            return session.hint();
+        }
+        if self.description.command == "Divide" && self.phase == ObjectPromptPhase::Selecting {
+            return if self.description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
+                "Select curves. Enter divides, Esc cancels"
             } else {
-                "Enter a number or choose Length, EqualChordLength, NumberSegments or output options; Enter creates the previewed result, Esc cancels"
+                "Select curves. Enter continues, Esc cancels"
             };
         }
         if self.description.command == "BooleanUnion" {
@@ -506,6 +505,14 @@ impl VibocerosApp {
     }
 
     pub(super) fn viewport_object_filter(&self) -> Option<ObjectSelectionFilter> {
+        if self.divide_options_active()
+            && self.plane_prompt.is_none()
+            && self.nested_measurement.is_none()
+        {
+            return self
+                .picking_divide_direction()
+                .then_some(ObjectSelectionFilter::Curves);
+        }
         if self.plane_prompt.is_none()
             && self.subcurve_prompt.is_none()
             && self.nested_measurement.is_some()

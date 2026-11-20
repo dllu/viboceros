@@ -44,7 +44,8 @@ impl VibocerosApp {
         if self.pick_curvature_source(click.object_id) {
             return;
         }
-        if self.pick_offset_mesh_flips(click.object_id, click.mode)
+        if self.pick_divide_direction(click.object_id)
+            || self.pick_offset_mesh_flips(click.object_id, click.mode)
             || self.flip_offset_surface_input(click.object_id)
             || self.flip_offset_subd_input(click.object_id)
         {
@@ -441,6 +442,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.divide_options_active()
+            && self.plane_prompt.is_none()
+            && self.nested_measurement.is_none()
+        {
+            return;
+        }
         if self.picking_curve_extend_boundaries() {
             self.select_extend_boundaries(selection.object_ids, selection.mode);
             return;

@@ -21,6 +21,14 @@ pub struct Options {
     pub delete_remainder: bool,
     pub group_output: bool,
 }
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Traversal {
+    pub seam: Option<Real>,
+    pub flip_seam: bool,
+    pub reverse_measurement: bool,
+}
+
 impl Options {
     pub fn parse(arguments: &[&str]) -> Result<Self, CommandError> {
         Self::parse_with_defaults(arguments, prompt::Prompt::default().options)
@@ -118,6 +126,21 @@ impl CommandRegistry {
             .set(prompt.with_options(prompt.options));
         Ok(())
     }
+
+    /// Apply the same staged result shown by the interactive preview.
+    pub fn finish_divide_prompt(
+        &self,
+        doc: &mut Document,
+        prompt: prompt::Prompt,
+        traversals: &BTreeMap<ObjectId, Traversal>,
+    ) -> Result<String, CommandError> {
+        let options = prompt.options;
+        let message = run_command_transaction(doc, "Divide", |doc| {
+            prepare(doc, options, traversals)?.apply(doc, options)
+        })?;
+        self.divide_preferences.set(prompt.with_options(options));
+        Ok(message)
+    }
 }
 
 pub(super) struct DivideCommand(pub(super) std::sync::Arc<remembered::Remembered<prompt::Prompt>>);
@@ -162,11 +185,25 @@ impl Command for DivideCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let preferences = self.0.get();
         let options = Options::parse_with_defaults(args, preferences.options)?;
-        let Prepared {
+        let message = prepare(doc, options, &BTreeMap::new())?.apply(doc, options)?;
+        self.0.set(preferences.with_options(options));
+        Ok(message)
+    }
+}
+
+struct Prepared {
+    source_ids: Vec<ObjectId>,
+    output: Vec<(Geometry, ObjectAttributes)>,
+    batches: Vec<usize>,
+}
+
+impl Prepared {
+    fn apply(self, doc: &mut Document, options: Options) -> Result<String, CommandError> {
+        let Self {
             source_ids,
             output,
             batches,
-        } = prepare(doc, options)?;
+        } = self;
         if output.is_empty() {
             return Err(CommandError::NoCurveDivisionPoints);
         }
@@ -187,7 +224,6 @@ impl Command for DivideCommand {
             }
         }
         replace_selection(doc, ids.iter().copied())?;
-        self.0.set(preferences.with_options(options));
         Ok(format!(
             "Divided {} curve(s), adding {} {}",
             source_ids.len(),
@@ -201,16 +237,18 @@ impl Command for DivideCommand {
     }
 }
 
-struct Prepared {
-    source_ids: Vec<ObjectId>,
-    output: Vec<(Geometry, ObjectAttributes)>,
-    batches: Vec<usize>,
-}
-
 /// Read-only station markers from the same output preparation as execution.
 /// Split markers show each piece's boundaries, including a retained remainder.
 pub fn preview_points(doc: &Document, options: Options) -> Result<Vec<Point3>, CommandError> {
-    let prepared = prepare(doc, options)?;
+    preview_points_with_traversals(doc, options, &BTreeMap::new())
+}
+
+pub fn preview_points_with_traversals(
+    doc: &Document,
+    options: Options,
+    traversals: &BTreeMap<ObjectId, Traversal>,
+) -> Result<Vec<Point3>, CommandError> {
+    let prepared = prepare(doc, options, traversals)?;
     let mut points = Vec::new();
     for (geometry, _) in prepared.output {
         match geometry {
@@ -227,7 +265,11 @@ pub fn preview_points(doc: &Document, options: Options) -> Result<Vec<Point3>, C
     Ok(points)
 }
 
-fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
+fn prepare(
+    doc: &Document,
+    options: Options,
+    traversals: &BTreeMap<ObjectId, Traversal>,
+) -> Result<Prepared, CommandError> {
     let sources = doc
         .selected_objects()
         .map(|o| (o.id(), o.geometry().clone(), o.attributes().clone()))
@@ -237,26 +279,55 @@ fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
     }
     let mut output = Vec::new();
     let mut batches = Vec::new();
-    for (_, geometry, attributes) in &sources {
+    let tolerance = doc.tolerance();
+    for (id, geometry, attributes) in &sources {
         let curve = geometry
             .curve_ref()
             .ok_or(CommandError::UnsupportedDivideGeometry)?;
-        let mut stations = stations(curve, options.specification, doc.tolerance())?;
+        let traversal = traversals.get(id).copied().unwrap_or_default();
+        let adjusted = traversal
+            .seam
+            .map(|parameter| prepare_curve_seam(&curve.to_owned(), parameter))
+            .transpose()?;
+        let curve = adjusted.as_ref().map_or(curve, Curve3::as_ref);
+        let measured_backwards = match options.specification {
+            Specification::Count(_) => traversal.flip_seam,
+            Specification::Length(_) => traversal.flip_seam ^ traversal.reverse_measurement,
+            Specification::Chord(_) => false,
+        };
+        let reversed = measured_backwards
+            .then(|| curve.to_owned().reversed(tolerance))
+            .transpose()?;
+        let measured = reversed.as_ref().map_or(curve, Curve3::as_ref);
+        let mut stations = stations(measured, options.specification, tolerance)?;
         if options.split {
+            let end = *measured.domain().end();
+            // Rhino omits the leading partial piece after reversing Length.
+            // If there are no interior stations it can still retain the whole curve.
+            if stations.last().is_some_and(|s| s.parameter < end)
+                && !options.delete_remainder
+                && (!measured_backwards || stations.len() == 1)
+            {
+                stations.push(CurveDivisionPoint {
+                    parameter: end,
+                    point: measured.end_point()?,
+                });
+            }
+            if measured_backwards {
+                stations.reverse();
+                // Curve reversal negates the native domain. Trim and emit the
+                // pieces in the original parameter direction.
+                for station in &mut stations {
+                    station.parameter = -station.parameter;
+                }
+            }
             for station in &stations {
                 if !curve
                     .evaluate(station.parameter)?
-                    .is_near(station.point, doc.tolerance())
+                    .is_near(station.point, tolerance)
                 {
                     return Err(GeometryError::UnrepresentableCurveDivisionParameter.into());
                 }
-            }
-            let end = *curve.domain().end();
-            if stations.last().is_some_and(|s| s.parameter < end) && !options.delete_remainder {
-                stations.push(CurveDivisionPoint {
-                    parameter: end,
-                    point: curve.end_point()?,
-                });
             }
             let owned = curve.to_owned();
             for pair in stations.windows(2) {
@@ -264,21 +335,21 @@ fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
                 output.push((Geometry::from(fragment), attributes.clone()));
             }
         } else {
-            let closed = curve.is_closed()?;
+            let closed = measured.is_closed()?;
             if closed {
                 if stations.len() > 1
                     && stations
                         .last()
-                        .is_some_and(|s| s.point.is_near(stations[0].point, doc.tolerance()))
+                        .is_some_and(|s| s.point.is_near(stations[0].point, tolerance))
                 {
                     stations.pop();
                 }
             } else if !matches!(options.specification, Specification::Chord(_)) {
-                let end = curve.end_point()?;
+                let end = measured.end_point()?;
                 if !options.mark_ends {
                     if stations
                         .last()
-                        .is_some_and(|s| s.point.is_near(end, doc.tolerance()))
+                        .is_some_and(|s| s.point.is_near(end, tolerance))
                     {
                         stations.pop();
                     }
@@ -286,6 +357,9 @@ fn prepare(doc: &Document, options: Options) -> Result<Prepared, CommandError> {
                         stations.remove(0);
                     }
                 }
+            }
+            if measured_backwards {
+                stations.reverse();
             }
             let attributes = ObjectAttributes::on_layer(doc.current_layer_id());
             output.extend(

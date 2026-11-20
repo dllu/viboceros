@@ -87,7 +87,7 @@ pub fn resolve(
 }
 
 /// A selectable curve/edge and its immutable parent during a point getter.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CapturedCurve {
     id: ObjectId,
     edge: Option<usize>,
