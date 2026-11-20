@@ -307,7 +307,7 @@ class Session:
         self, *pairs: tuple[Component, Component, bool], anchor: ObjectLike | None = None,
         vertex_distance: float | None = None,
     ) -> str:
-        """Sew explicit edge pairs and replace their B-reps in one undoable edit.
+        """Sew explicit edge pairs from NURBS surfaces or B-reps in one undoable edit.
 
         The boolean is true when the second edge runs opposite the first.
         The result inherits the attributes and orientation of the anchor
