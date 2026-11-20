@@ -6,16 +6,20 @@ or `Refit=0.01`. Refit accepts positive finite distances. The preview follows
 mode and tolerance changes, and Undo in review restores the prior draft.
 `Simplify=None` turns simplification off while retaining the distance.
 
-Section Refit supports exact straight and polygonal profiles, full circles that
-fit with four cubic spans, and regular open Bézier sections. It supports
-adaptive pieces for smooth open profiles, including the captured rational
-quadratics, and shared subdivision for multiple smooth profiles. Placement
-uses the original profile. Fitting follows seam and direction edits. Open
-fits requiring midpoints beyond the measured eight-interval length lookup and
-tight circular fits remain open.
+Section Refit supports straight and polygonal profiles, smooth open profiles,
+full circles, and single closed profiles with regular interior tangents.
+Adaptive cubics handle the captured rational quadratics and closed cubic loops.
+Multiple smooth profiles can share a subdivision grid, including circular
+profiles of different radii. Placement uses the original profile. Fitting
+follows seam and direction edits.
+
+For a radius-2 circle, the measured adaptive range reaches tolerance 0.00015
+for one profile and 0.0004 for a sweep with two profiles. Tighter circular
+subdivision, multiple noncircular closed profiles, and open fits requiring
+midpoints beyond the measured eight-interval lookup remain unresolved.
 
 The oracle accepts `refit_tolerance` independently of rail refitting and
-rejects simultaneous section rebuilding. Across 60 captures, the complete
+rejects simultaneous section rebuilding. Across 70 captures, the complete
 surface deviation bound is at most `1.5e-8` at epsilon `1e-7`. The comparison
 reverses the Rhino rail parameter for the two-pole capture. The public
 `Curve.Fit` diagnostics produce different controls. SDK captures preserve the
@@ -32,11 +36,14 @@ Producer sources are frozen in the capture's content-addressed archive.
 The same profile can produce different fitted boundaries when supplied alone
 or as part of a pair. At scale 0.99 and tolerance 0.01, the single-profile output
 retains the initial endpoint-frame cubic, while the pair uses adjusted handles.
-A lone open profile gets a second fitting pass. Each pass uses the source
+A lone profile can get a second fitting pass. Each pass uses the source
 length stations to select cubic pieces, rescales adjacent intervals to match
 join derivatives, and checks the assembled curve against its source. The
 section domain uses a Cash–Karp length estimate and retains the source length
-for small relative changes.
+for small relative changes. An analytic circle keeps its exact circumference
+as the section domain. The [closed-profile captures](../../tools/rhino_oracle/fixtures/sweep1_refit_closed.json)
+cover tight fits of analytic and rational circles, the shared grid for unequal
+circles, and a cubic loop that retains a linear rail when RefitRail is off.
 
 In the two-profile adaptive captures, Rhino interpolates the retimed curves
 and their derivatives on a shared dyadic grid. Rebuilding each profile on

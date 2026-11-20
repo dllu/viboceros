@@ -120,17 +120,36 @@ pub(crate) fn try_retimed_cubic_pieces(
     source: &NurbsCurve,
     tolerance: Real,
 ) -> Result<Option<NurbsCurve>, GeometryError> {
-    let Some(raw) = pieces::construct(
-        source,
-        tolerance,
-        corner_angle(None),
-        pieces::SplitClock::SourceLookupWithSampledMidpoints,
-    )?
-    else {
+    let closed = source.is_closed()?;
+    let clock = if closed {
+        pieces::SplitClock::ClosedSourceLookup
+    } else {
+        pieces::SplitClock::SourceLookupWithSampledMidpoints
+    };
+    let Some(raw) = pieces::construct(source, tolerance, corner_angle(None), clock)? else {
         return Ok(None);
     };
     let retimed = join::retime(&raw.curve)?;
-    Ok(crate::curve_fit::g1::within_deviation(source, &retimed, tolerance)?.then_some(retimed))
+    let matches = if closed {
+        let domain = source.domain();
+        let boundaries = retimed.knots().chunk_by(|a, b| a == b).map(|g| g[0]);
+        let pairs = raw
+            .source_parameters
+            .iter()
+            .zip(boundaries)
+            .map(|(&t, q)| {
+                Ok([
+                    crate::nurbs::interval_fraction(t, *domain.start(), *domain.end())?,
+                    q,
+                ])
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        crate::curve_fit::g1::deviation_bound_at_pairs(source, &retimed, tolerance, &pairs)?
+            .is_some()
+    } else {
+        crate::curve_fit::g1::within_deviation(source, &retimed, tolerance)?
+    };
+    Ok(matches.then_some(retimed))
 }
 
 pub(super) fn certified_joined_refit(

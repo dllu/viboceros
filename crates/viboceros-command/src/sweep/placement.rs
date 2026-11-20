@@ -1,6 +1,6 @@
 //! Automatic stations retain section order; reversing the rail changes traversal.
 use super::*;
-use viboceros_geometry::Plane;
+use viboceros_geometry::{LineSegment, Plane};
 
 pub(super) fn sections(
     source: CurveRef<'_>,
@@ -70,6 +70,10 @@ pub(super) fn profile_contacts(
         vec![]
     };
     for curve in profiles {
+        if let Some(parameter) = perpendicular_section_station(rail, &curve, tolerance)? {
+            sections.push(SweepSection { parameter, curve });
+            continue;
+        }
         if !nodes.is_empty()
             && curve.is_closed()?
             && let Some(parameter) = enclosed_rail_node(&curve, &nodes, tolerance)?
@@ -102,6 +106,41 @@ pub(super) fn profile_contacts(
         sections.push(SweepSection { parameter, curve });
     }
     Ok(sections)
+}
+
+fn perpendicular_section_station(
+    rail: &NurbsCurve,
+    profile: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<Option<Real>, GeometryError> {
+    let [start, end] = rail.control_points() else {
+        return Ok(None);
+    };
+    if rail.degree() != 1 || start.weight() <= 0. || start.weight() != end.weight() {
+        return Ok(None);
+    }
+    let a = start.point().to_array();
+    let b = end.point().to_array();
+    let mut axes = (0..3).filter(|&axis| a[axis] != b[axis]);
+    let Some(axis) = axes.next() else {
+        return Ok(None);
+    };
+    let point = profile.control_points()[0].point();
+    let coordinate = point.to_array()[axis];
+    if axes.next().is_some()
+        || profile
+            .control_points()
+            .iter()
+            .any(|control| control.weight() <= 0. || control.point().to_array()[axis] != coordinate)
+    {
+        return Ok(None);
+    }
+    // Every point of the profile projects to the same rail station.
+    let Ok(line) = LineSegment::try_new(start.point(), end.point(), tolerance) else {
+        return Ok(None);
+    };
+    rail.parameter_at(line.closest_parameter(point, tolerance)?)
+        .map(Some)
 }
 
 // A closed section can enclose a corner or endpoint. Use its station when

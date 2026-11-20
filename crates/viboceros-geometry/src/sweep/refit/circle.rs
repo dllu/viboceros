@@ -1,10 +1,12 @@
-//! Four equal cubic arcs with C1 joins at the circle's rotated quadrants.
+//! Recognize single circular traversals and choose their fitting chart.
 use super::*;
 use std::f64::consts::TAU;
 
 /// The standard quarter cubic interpolates its arc at 0, 1/2 and 1 of
 /// each span. Its maximum relative radial error is less than 0.000273.
 const RADIAL_ERROR: Real = 0.000273;
+const MIN_SINGLE_RELATIVE_LIMIT: Real = 0.000075;
+const MIN_SHARED_RELATIVE_LIMIT: Real = 0.0001;
 
 pub(super) fn fit(
     source: &NurbsCurve,
@@ -26,9 +28,6 @@ pub(super) fn fit(
     let start = source.evaluate(*domain.start())?;
     let radial = center.vector_to(start)?;
     let radius = radial.length()?;
-    if radius * RADIAL_ERROR > limit - recognition.absolute() {
-        return Ok(None);
-    }
     let tangent = source
         .tangent_at_on_side(*domain.start(), ParameterSide::Right)?
         .as_vector();
@@ -57,10 +56,23 @@ pub(super) fn fit(
     }
     let circumference = TAU * radius;
     let input_width = domain.end() - domain.start();
+    let analytic = (input_width - circumference).abs() <= circumference * (64. * Real::EPSILON);
+    if radius * RADIAL_ERROR > limit - recognition.absolute() {
+        // Below the measured ranges Rhino can choose a different subdivision
+        // from either our second fit pass or the shared reconstruction.
+        let minimum = if single {
+            MIN_SINGLE_RELATIVE_LIMIT
+        } else {
+            MIN_SHARED_RELATIVE_LIMIT
+        };
+        if limit < radius * minimum {
+            return Err(unsupported());
+        }
+        return fit_closed(source, limit, single, analytic.then_some(circumference)).map(Some);
+    }
     let clock = if !single {
         1.
-    } else if (input_width - circumference).abs() <= circumference * (64. * Real::EPSILON) {
-        // The native analytic circle carries its exact arc-length chart.
+    } else if analytic {
         circumference
     } else {
         fit_length(source)?

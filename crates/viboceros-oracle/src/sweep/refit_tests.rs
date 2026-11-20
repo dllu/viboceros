@@ -50,11 +50,34 @@ macro_rules! captures {
 }
 
 #[test]
+fn sweep1_section_refits_closed_match_native_control_nets_and_complete_surfaces() {
+    compare_captures(
+        [
+            captures!(
+                "sweep1_refit_closed",
+                &[
+                    "circle-tight",
+                    "circle-second-pass",
+                    "rational-circle-tight",
+                    "rotated-circle-tight",
+                    "unequal-circles-tight",
+                    "cubic-loop-command",
+                ][..]
+            ),
+            captures!(
+                "sweep1_refit_sdk_holdouts",
+                &["closed-cubic-0.01", "closed-cubic-0.001"][..]
+            ),
+            captures!("sweep1_refit_commands", &["two-closed-refit-0.001"][..]),
+            captures!("sweep1_refit_sdk", &["two-closed-refit-0.001"][..]),
+        ],
+        10,
+    );
+}
+
+#[test]
 fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
-    let limit = 1e-7;
-    let mut maximum: Real = 0.;
-    let mut compared = 0;
-    for (input, observed, cases) in [
+    let families = [
         captures!(
             "sweep1_refit_commands",
             &[
@@ -135,7 +158,15 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
                 "translated-0.001",
             ][..]
         ),
-    ] {
+    ];
+    compare_captures(families, 60);
+}
+
+fn compare_captures<const N: usize>(families: [(&str, &str, &[&str]); N], count: usize) {
+    let limit = 1e-7;
+    let mut maximum: Real = 0.;
+    let mut compared = 0;
+    for (input, observed, cases) in families {
         let mut query: Value = serde_json::from_str(input).unwrap();
         let observation: Value = serde_json::from_str(observed).unwrap();
         query["operations"]
@@ -227,6 +258,6 @@ fn sweep1_section_refits_match_native_control_nets_and_complete_surfaces() {
             compared += 1;
         }
     }
-    assert_eq!(compared, 60);
+    assert_eq!(compared, count);
     println!("{compared} captures; maximum complete-surface bound {maximum:.3e}");
 }

@@ -5,9 +5,11 @@ const MAX_DEPTH: usize = 24;
 const MAX_INTERVALS: usize = (MAX_SECTION_CONTROLS - 2) / 2;
 
 pub(super) fn needs_grid(curve: &NurbsCurve) -> Result<bool, GeometryError> {
+    // Four exact quarter spans already use the common parameter grid.
+    let knots = curve.interior_knot_groups();
     Ok(curve.control_points().len() > 4
-        && curve.interior_knot_groups().iter().all(|&(_, n)| n < 3)
-        && !curve.is_closed()?)
+        && knots.iter().all(|&(_, n)| n < 3)
+        && !(knots == [(0.25, 2), (0.5, 2), (0.75, 2)] && curve.is_closed()?))
 }
 
 pub(super) fn reconstruct(

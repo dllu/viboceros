@@ -2,6 +2,7 @@
 use super::*;
 
 const LENGTH_INTERVALS: usize = 8;
+const MAX_CLOSED_DEPTH: usize = 4;
 
 #[derive(Clone, Copy)]
 struct Interval {
@@ -62,6 +63,7 @@ pub(super) enum SplitClock {
     SourceLookup,
     // Sweep1's measured lookup qualifies splits whose midpoints are sampled.
     SourceLookupWithSampledMidpoints,
+    ClosedSourceLookup,
 }
 
 // Raw pieces are provisional. Only the caller can certify their complete
@@ -101,13 +103,16 @@ pub(super) fn construct(
     angle: Real,
     clock: SplitClock,
 ) -> Result<Option<Candidate>, GeometryError> {
-    if source.is_closed()? || super::super::super::parameterize::has_tangent_breaks(source, angle)?
+    if (source.is_closed()? && !matches!(clock, SplitClock::ClosedSourceLookup))
+        || super::super::super::parameterize::has_tangent_breaks(source, angle)?
     {
         return Ok(None);
     }
     let lookup = match clock {
         SplitClock::IntervalLength => None,
-        SplitClock::SourceLookup | SplitClock::SourceLookupWithSampledMidpoints => {
+        SplitClock::SourceLookup
+        | SplitClock::SourceLookupWithSampledMidpoints
+        | SplitClock::ClosedSourceLookup => {
             let sampler =
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
             let fractions = std::array::from_fn::<_, { LENGTH_INTERVALS + 1 }, _>(|i| {
@@ -147,10 +152,18 @@ pub(super) fn construct(
             to,
             ..
         } = interval;
-        if matches!(clock, SplitClock::SourceLookupWithSampledMidpoints)
-            && (from.midpoint(to) * LENGTH_INTERVALS as Real).fract() != 0.
-        {
-            return Ok(None);
+        match clock {
+            SplitClock::SourceLookupWithSampledMidpoints
+                if (from.midpoint(to) * LENGTH_INTERVALS as Real).fract() != 0. =>
+            {
+                return Ok(None);
+            }
+            // Closed Sweep1 profiles use the same lookup beyond the sampled
+            // stations. The measured profiles require at most sixteen pieces.
+            SplitClock::ClosedSourceLookup if interval.depth > MAX_CLOSED_DEPTH => {
+                return Ok(None);
+            }
+            _ => {}
         }
         let trimmed = source.try_trimmed(start..=end)?;
         let fractions = std::array::from_fn::<_, 9, _>(|i| i as Real / 8.);
@@ -168,10 +181,10 @@ pub(super) fn construct(
         };
         let first = source.evaluate(start)?;
         let last = source.evaluate(end)?;
-        // An open source can contain a complete loop. A zero chord cannot
-        // construct its endpoint-frame cubic or justify dropping the interval.
-        // Subdivide under the same budgets and certify its children normally.
-        if first == last {
+        // A zero chord cannot construct an endpoint-frame cubic. Closed
+        // profiles may return to the seam with a roundoff-sized gap.
+        if first == last || (interval.depth == 0 && matches!(clock, SplitClock::ClosedSourceLookup))
+        {
             let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
                 return Ok(None);
             };
@@ -267,9 +280,23 @@ fn sampled_fit(
     parameters: &[Real],
     limit: Real,
 ) -> Result<bool, GeometryError> {
-    let search = piece.prepare_closest_parameter_search()?;
+    let mut search = None;
+    let start = parameters[0];
+    let end = parameters[parameters.len() - 1];
     for &parameter in &parameters[1..parameters.len() - 1] {
         let point = source.evaluate(parameter)?;
+        // A point already within the station budget makes closest-point
+        // refinement unnecessary. The continuous certificate is independent.
+        if start < parameter && parameter < end {
+            let fraction = crate::nurbs::interval_fraction(parameter, start, end)?;
+            if point.distance_to(piece.evaluate(fraction)?)? <= limit {
+                continue;
+            }
+        }
+        if search.is_none() {
+            search = Some(piece.prepare_closest_parameter_search()?);
+        }
+        let search = search.as_ref().unwrap();
         let t = search.closest_parameter(point, Tolerance::DEFAULT)?;
         if point.distance_to(piece.evaluate(t)?)? > limit {
             return Ok(false);

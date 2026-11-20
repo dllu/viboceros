@@ -20,9 +20,9 @@ impl Sweep1 {
 
     /// Fit ordered real profiles while preserving their rail stations.
     ///
-    /// Supports exact polygon regions, regular open profiles, and full circles
-    /// that can use four cubic spans. Smooth open profiles can be fit adaptively,
-    /// with a shared subdivision when several sections need reconstruction.
+    /// Supports exact polygon regions, regular open profiles, single closed
+    /// profiles, and circular sections. Smooth fits can use adaptive cubics,
+    /// with a common grid when several sections need reconstruction.
     pub fn refit_sections(
         mut sections: Vec<SweepSection>,
         fit_tolerance: Real,
@@ -76,10 +76,16 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
         }
         return cubic_polygon(&vertices, limit);
     }
-    if source.is_closed()? {
-        return circle::fit(source, limit, single)?.ok_or_else(unsupported);
-    }
     if source.degree() > 16 || source.control_points().iter().any(|c| c.weight() <= 0.) {
+        return Err(unsupported());
+    }
+    if source.is_closed()? {
+        if let Some(fitted) = circle::fit(source, limit, single)? {
+            return Ok(fitted);
+        }
+        if single {
+            return fit_closed(source, limit, true, None);
+        }
         return Err(unsupported());
     }
     let initial = g1::initial_cubic(source).map_err(|_| unsupported())?;
@@ -104,6 +110,28 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
         }
         fitted
     };
+    fitted.try_reparameterized(0. ..=clock)
+}
+
+fn fit_closed(
+    source: &NurbsCurve,
+    limit: Real,
+    single: bool,
+    analytic_length: Option<Real>,
+) -> Result<NurbsCurve, GeometryError> {
+    let bound = comparison_limit(limit);
+    let first = crate::loft::try_retimed_cubic_pieces(source, bound)?.ok_or_else(unsupported)?;
+    if !single {
+        return Ok(first);
+    }
+    let clock = match analytic_length {
+        Some(length) => length,
+        None => fit_clock(source, &first)?,
+    };
+    let fitted = crate::loft::try_retimed_cubic_pieces(&first, bound)?.ok_or_else(unsupported)?;
+    if !g1::within_deviation(source, &fitted, bound)? {
+        return Err(unsupported());
+    }
     fitted.try_reparameterized(0. ..=clock)
 }
 

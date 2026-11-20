@@ -29,7 +29,16 @@ fn wait_for_wires(
     context: &egui::Context,
     ready: impl Fn(&[NurbsCurve]) -> bool,
 ) -> Vec<NurbsCurve> {
-    let deadline = Instant::now() + Duration::from_secs(5);
+    wait_for_wires_with_timeout(app, context, Duration::from_secs(5), ready)
+}
+
+fn wait_for_wires_with_timeout(
+    app: &mut VibocerosApp,
+    context: &egui::Context,
+    timeout: Duration,
+    ready: impl Fn(&[NurbsCurve]) -> bool,
+) -> Vec<NurbsCurve> {
+    let deadline = Instant::now() + timeout;
     loop {
         viewport_frame(app, context, vec![]);
         let wires = app.sweep_session.as_ref().unwrap().preview_wires();
@@ -38,7 +47,8 @@ fn wait_for_wires(
         }
         assert!(
             Instant::now() < deadline,
-            "Sweep1 preview did not update: {:?}",
+            "Sweep1 preview did not update: {} {:?}",
+            app.command_hint(),
             app.command_log
         );
         std::thread::sleep(Duration::from_millis(5));
@@ -121,6 +131,46 @@ fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
     enter(&mut app, "Sweep1");
     enter(&mut app, "RefitTolerance");
     assert!(app.command_log.back().unwrap().contains("[0.0005]"));
+}
+
+#[test]
+fn sweep_refit_previews_and_restores_a_tight_closed_profile() {
+    let (mut app, [rail, profile, _]) = setup("Circle 0,0,0 2", point(9., 9., 9.));
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1");
+    for id in [rail, profile] {
+        enter(&mut app, &id.to_string());
+    }
+    enter(&mut app, "");
+    enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
+
+    let timeout = Duration::from_secs(20);
+    enter(&mut app, "Refit=0.0002");
+    let tight = wait_for_wires_with_timeout(&mut app, &context, timeout, |wires| {
+        wires.iter().any(|wire| wire.control_points().len() == 18)
+    });
+    enter(&mut app, "RefitTolerance=0.0005");
+    wait_for_wires_with_timeout(&mut app, &context, timeout, |wires| {
+        wires.iter().any(|wire| wire.control_points().len() == 10)
+            && wires.iter().all(|wire| wire.control_points().len() != 18)
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires_with_timeout(&mut app, &context, timeout, |wires| wires == tight);
+    assert_eq!(app.document.objects().count(), 3);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "");
+    let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected the refitted Sweep1 draft to commit");
+    };
+    assert_eq!(output.wireframe_curves(1, tolerance).unwrap(), tight);
+    let surface = output.faces()[0].surface();
+    assert_eq!(surface.control_point_count_v(), 18);
+    let native = point(2., 0.5304203548080352, 0.);
+    let handle = surface.control_point(0, 1).unwrap().point();
+    assert!(handle.distance_to(native).unwrap() < 1e-7);
 }
 
 #[test]

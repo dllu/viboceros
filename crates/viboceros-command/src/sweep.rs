@@ -370,6 +370,20 @@ impl Source {
                 "Reverse only selected Sweep1 cross sections",
             ));
         }
+        // A straight rail uses cubic U for refitted circles. Other closed
+        // profiles can keep the authored rail basis when RefitRail is off.
+        let fitted_circular_section = options
+            .refit_tolerance
+            .is_some_and(|distance| distance > 2. * f64::EPSILON.sqrt())
+            && linear_rail
+            && sections.iter().try_fold(false, |any, section| {
+                let curve = &section.curve;
+                Ok::<_, GeometryError>(
+                    any || (curve.degree() == 2
+                        && curve.is_closed()?
+                        && curve.circular_center(Tolerance::DEFAULT)?.is_some()),
+                )
+            })?;
         let sections = if *rebuild_point_count > 1 {
             rebuild_sections(&sections, *rebuild_point_count, tolerance)?
         } else if let Some(distance) = options.refit_tolerance {
@@ -448,20 +462,6 @@ impl Source {
             && sections.len() == 2
             && linear_rail
             && sweep.sections_vary_in_frame();
-        // Native circular sections on a straight rail use a cubic U basis,
-        // including when the explicit rail refitting option is No.
-        let fitted_circular_section = options.refit_tolerance.is_some()
-            && linear_rail
-            && sections.iter().try_fold(false, |any, section| {
-                let curve = &section.curve;
-                Ok::<_, GeometryError>(
-                    any || (curve.degree() == 3
-                        && curve.is_closed()?
-                        && curve.knots()[curve.degree() + 1..curve.control_points().len()]
-                            .chunk_by(|a, b| a == b)
-                            .all(|knots| knots.len() < curve.degree())),
-                )
-            })?;
         let refit = refit.unwrap_or(false)
             || options.surface_aligned
             || closed_refit
