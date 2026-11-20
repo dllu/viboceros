@@ -317,6 +317,13 @@ class PythonApiTests(unittest.TestCase):
         )
         self.assertNotEqual(boundaries.read_bytes(), clean.read_bytes())
         self.assertNotEqual(boundaries.read_bytes(), edges.read_bytes())
+        scaled = model.screenshot(
+            self.folder / "scaled-markers.png", camera=camera, size=size, marker_scale=1.5,
+        )
+        self.assertEqual(struct.unpack(">II", scaled.read_bytes()[16:24]), size)
+        self.assertNotEqual(scaled.read_bytes(), edges.read_bytes())
+        with self.assertRaisesRegex(SessionError, "marker scale must be finite and positive"):
+            model.screenshot(self.folder / "invalid-scale.png", size=size, marker_scale=0.)
         diffuse = model.screenshot(
             self.folder / "diffuse.png", camera=camera, show_edges=False, size=size, lighting="diffuse",
         )

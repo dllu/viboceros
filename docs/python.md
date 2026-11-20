@@ -120,6 +120,9 @@ Pass `camera=Camera(eye=(...), target=(...))` for a custom perspective and
 `show_edges=False` to hide surface wires in shaded captures. Pass
 `show_isocurves=False` to keep the topological edges and hide interior
 surface isocurves. Standalone model curves remain visible.
+Use `marker_scale` to scale line widths and point sizes in capture pixels.
+For a 1.5× render that you plan to downsample, `marker_scale=1.5` preserves
+the final stroke width.
 `lighting="diffuse"` shades the model colors with a directional light and
 ambient fill. The default `lighting="viewport"` uses the desktop shading.
 

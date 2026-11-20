@@ -1,7 +1,9 @@
 //! Offscreen capture, with a temporary camera and display settings.
 use super::*;
 use crate::viewport::ViewKind;
+use crate::viewport_gpu::ViewportScene;
 use std::path::PathBuf;
+use std::sync::Arc;
 use viboceros_geometry::Vector3;
 
 #[derive(Deserialize)]
@@ -17,6 +19,8 @@ pub(super) struct Screenshot {
     show_edges: bool,
     #[serde(default = "show_edges")]
     show_isocurves: bool,
+    #[serde(default = "default_marker_scale")]
+    marker_scale: f32,
     #[serde(default)]
     lighting: Lighting,
 }
@@ -33,6 +37,10 @@ fn show_edges() -> bool {
     true
 }
 
+fn default_marker_scale() -> f32 {
+    1.0
+}
+
 #[derive(Deserialize)]
 struct Camera {
     eye: [f64; 3],
@@ -43,6 +51,9 @@ struct Camera {
 
 impl Session {
     pub(super) fn screenshot(&mut self, options: Screenshot) -> Result<()> {
+        if !options.marker_scale.is_finite() || options.marker_scale <= 0.0 {
+            return Err("capture marker scale must be finite and positive".into());
+        }
         let mut viewport = if let Some(camera) = options.camera {
             if options.view.is_some() {
                 return Err("specify a viewport or a custom camera".into());
@@ -72,6 +83,11 @@ impl Session {
             options.fit,
             self.app.zoom_extents_borders,
         )?;
+        let mut scene = ViewportScene {
+            uniform: scene.uniform,
+            geometry: Arc::clone(&scene.geometry),
+        };
+        scene.uniform.marker_scale = options.marker_scale;
         if self.renderer.is_none() {
             self.renderer = Some(OffscreenRenderer::try_new()?);
         }

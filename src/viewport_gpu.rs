@@ -21,6 +21,8 @@ pub(crate) struct ViewUniform {
     pub view_projection: [[f32; 4]; 4],
     pub viewport_size: [f32; 2],
     pub clip_depth: [f32; 2],
+    pub marker_scale: f32,
+    pub padding: [f32; 3],
 }
 
 #[repr(C)]
@@ -713,6 +715,7 @@ struct ViewUniform {
     view_projection: mat4x4<f32>,
     viewport_size: vec2<f32>,
     clip_depth: vec2<f32>,
+    marker_scale: f32,
 };
 
 @group(0) @binding(0)
@@ -811,7 +814,7 @@ fn vs_line(input: LineInput, @builtin(vertex_index) vertex_index: u32) -> FlatOu
     );
     let safe_length = max(length(delta_pixels), 1.0e-6);
     let perpendicular_pixels = vec2<f32>(-delta_pixels.y, delta_pixels.x) / safe_length;
-    let half_width = max(input.start_width.w, 1.0) * 0.5;
+    let half_width = max(input.start_width.w, 1.0) * view.marker_scale * 0.5;
     let offset_pixels = perpendicular_pixels * half_width * sides[vertex_index];
     let offset_ndc = vec2<f32>(
         offset_pixels.x * 2.0 / view.viewport_size.x,
@@ -867,7 +870,7 @@ fn vs_point(input: PointInput, @builtin(vertex_index) vertex_index: u32) -> Poin
     );
     let corner = corners[vertex_index];
     var clip = view.view_projection * vec4<f32>(input.position_size.xyz, 1.0);
-    let radius = max(input.position_size.w, 1.0);
+    let radius = max(input.position_size.w, 1.0) * view.marker_scale;
     clip.x += corner.x * radius * 2.0 / view.viewport_size.x * clip.w;
     clip.y -= corner.y * radius * 2.0 / view.viewport_size.y * clip.w;
     var output: PointOutput;

@@ -36,6 +36,8 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
             ],
             viewport_size: [SIZE as f32; 2],
             clip_depth: [0., 1.],
+            marker_scale: 1.,
+            padding: [0.; 3],
         },
         geometry: Arc::new(ViewportGeometry {
             triangles,
@@ -71,6 +73,14 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
     };
     camera.uniform.view_projection[3][0] = 0.2;
     assert_ne!(renderer.render(&camera), expected);
+    assert_eq!(renderer.preparations(), uploaded);
+    camera.uniform = first.uniform;
+    camera.uniform.marker_scale = 2.;
+    let larger_markers = renderer.render(&camera);
+    for channel in [1, 2] {
+        let visible = |pixels: &[[u8; 4]]| pixels.iter().filter(|p| p[channel] == 255).count();
+        assert!(visible(&larger_markers) > visible(&expected));
+    }
     assert_eq!(renderer.preparations(), uploaded);
     // All three buffers exceed the actual device limit; visible primitives land
     // after a chunk boundary. Overlay ranges cross those boundaries as well.

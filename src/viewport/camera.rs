@@ -1200,6 +1200,8 @@ impl Viewport {
             view_projection: matrix_to_gpu(view_projection),
             viewport_size: [rect.width().max(1.0), rect.height().max(1.0)],
             clip_depth: self.gpu_clip_depth_range(depth_range),
+            marker_scale: 1.0,
+            padding: [0.0; 3],
         }
     }
 
