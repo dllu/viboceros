@@ -4,6 +4,7 @@ use super::*;
 
 const DISPLAY_GRID_VERTEX_TARGET: usize = 262_144;
 const DENSE_GRID_AXIS_LIMIT: usize = 32;
+const DENSE_OPEN_DISPLAY_AXIS_LIMIT: usize = 96;
 const DENSE_DISPLAY_CHORD_DENSITY: Real = 0.35;
 
 fn dense_grid_axis_limit(face_count: usize) -> usize {
@@ -96,7 +97,16 @@ impl Brep {
             )
         });
         if spans.saturating_mul(4) > DISPLAY_GRID_VERTEX_TARGET && !self.has_positional_break() {
-            let limit = dense_grid_axis_limit(self.faces.len());
+            let mut limit = dense_grid_axis_limit(self.faces.len());
+            if !self.is_solid() {
+                // Spend the available grid budget on isolated open charts, where
+                // a 32-station seed can straddle several helical ribs.
+                let station_limit = DISPLAY_GRID_VERTEX_TARGET
+                    .div_ceil(self.faces.len())
+                    .isqrt()
+                    .min(DENSE_OPEN_DISPLAY_AXIS_LIMIT);
+                limit = limit.max(station_limit);
+            }
             let grids = self
                 .faces
                 .iter()
@@ -118,7 +128,6 @@ impl Brep {
                 .collect::<Vec<_>>();
             let sampling = Sampling::per_face(&grids).with_axis_limit(limit);
             if retain_parameters
-                && self.is_solid()
                 && let Ok(mesh) = self.tessellate_conforming_with_chords(
                     sampling
                         .with_vertex_limit(SPARSE_POLYGON_VERTEX_LIMIT)

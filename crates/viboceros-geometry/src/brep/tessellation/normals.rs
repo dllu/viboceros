@@ -10,7 +10,7 @@ pub struct BrepDisplayMesh {
 
 impl Brep {
     /// Sample the source normals at the display mesh's own native UV stations.
-    /// Dense closed bodies share edge samples when the result passes the
+    /// Dense B-reps share edge samples when the result passes the
     /// mesh-boundary audit.
     /// Corners without a usable limit, and triangles crossing internal creases
     /// in a sparse display mesh, return no normal for those corners.
