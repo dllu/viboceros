@@ -2,8 +2,10 @@
 use super::*;
 use crate::ArcLengthSampler;
 use crate::curve_fit::{cubic_polygon, g1};
+use crate::exact_scalar::Rational;
+use crate::surface_pullback::exact_linear_curve_vertices;
 mod circle;
-mod closed;
+mod matching;
 mod shared;
 
 impl Sweep1 {
@@ -21,9 +23,8 @@ impl Sweep1 {
 
     /// Fit ordered real profiles while preserving their rail stations.
     ///
-    /// Supports exact polygon regions, regular open profiles, single closed
-    /// profiles, and circular sections. Smooth fits can use adaptive cubics,
-    /// with a common grid when several sections need reconstruction.
+    /// Supports exact polygon regions and regular open and closed profiles.
+    /// Fitted sets can share curvature regions or a reconstructed cubic grid.
     pub fn refit_sections(
         sections: Vec<SweepSection>,
         fit_tolerance: Real,
@@ -59,7 +60,13 @@ impl Sweep1 {
         {
             return Err(invalid("refit source section control budget exceeded"));
         }
-        if !single && let Some((fits, length)) = closed::fit_set(&sections, fit_tolerance)? {
+        let linear = sections
+            .iter()
+            .map(|section| exact_linear_curve_vertices(&section.curve))
+            .collect::<Result<Vec<_>, _>>()?;
+        if !single
+            && let Some((fits, length)) = matching::fit_set(&sections, &linear, fit_tolerance)?
+        {
             for (section, fitted) in sections.iter_mut().zip(fits) {
                 section.curve = fitted;
             }
@@ -67,8 +74,12 @@ impl Sweep1 {
         }
         let mut fits = Vec::with_capacity(sections.len());
         let mut shared_grid = false;
-        for section in &sections {
-            let fitted = refit(&section.curve, limit, single)?;
+        for (section, vertices) in sections.iter().zip(&linear) {
+            let fitted = if let Some(vertices) = vertices {
+                fit_linear(vertices, limit)?
+            } else {
+                refit(&section.curve, limit, single)?
+            };
             shared_grid |= !single && shared::needs_grid(&fitted)?;
             fits.push(fitted);
         }
@@ -106,13 +117,14 @@ fn unsupported() -> GeometryError {
     }
 }
 
-fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, GeometryError> {
-    if let Some(vertices) = crate::surface_pullback::exact_linear_curve_vertices(source)? {
-        if 3 * (vertices.len() - 1) + 1 > MAX_SECTION_CONTROLS {
-            return Err(invalid("refit polygon section control budget exceeded"));
-        }
-        return cubic_polygon(&vertices, limit);
+fn fit_linear(vertices: &[[Rational; 3]], limit: Real) -> Result<NurbsCurve, GeometryError> {
+    if 3 * (vertices.len() - 1) + 1 > MAX_SECTION_CONTROLS {
+        return Err(invalid("refit polygon section control budget exceeded"));
     }
+    cubic_polygon(vertices, limit)
+}
+
+fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, GeometryError> {
     if !regular_degree_and_weights(source) {
         return Err(unsupported());
     }

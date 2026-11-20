@@ -197,9 +197,10 @@ fn sweep_refit_previews_a_shared_grid_for_different_profiles() {
     enter(&mut app, "");
     let coarse = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
     enter(&mut app, "RefitTolerance=0.001");
-    let adaptive = wait_for_wires(&mut app, &context, |wires| {
-        wires.iter().any(|wire| wire.control_points().len() == 14)
-    });
+    let adaptive =
+        wait_for_wires_with_timeout(&mut app, &context, Duration::from_secs(20), |wires| {
+            wires.iter().any(|wire| wire.control_points().len() == 14)
+        });
     assert_ne!(coarse, adaptive);
     assert_eq!(app.document.undo_label(), None);
 

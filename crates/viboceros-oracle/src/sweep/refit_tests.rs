@@ -50,6 +50,110 @@ macro_rules! captures {
 }
 
 #[test]
+fn sweep1_section_refits_polygon_point_ends_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_polygon_poles",
+            &[
+                "polygon-loop-start-pole",
+                "polygon-loop-offset-pole",
+                "polygon-loop-both-poles",
+                "polygon-ellipse-both-poles",
+                "polygon-circle-both-poles",
+            ][..]
+        )],
+        5,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_polygon_point_ends_match_native_commands() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_polygon_poles",
+            &[
+                "polygon-loop-both-poles-command",
+                "polygon-circle-both-poles-command",
+            ][..]
+        )],
+        2,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_polygon_pairs_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_polygon_profiles",
+            &[
+                "open-polygon-loop",
+                "open-polygon-ellipse",
+                "open-polygon-circle",
+                "closed-polygon-loop",
+                "closed-polygon-ellipse",
+                "closed-polygon-ellipse-tight",
+                "closed-polygon-circle",
+            ][..]
+        )],
+        7,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_straight_sections_match_native_surfaces() {
+    compare_captures(
+        [
+            captures!(
+                "sweep1_refit_polygon_profiles",
+                &[
+                    "line-loop",
+                    "line-ellipse",
+                    "line-circle",
+                    "open-curve-polygon",
+                    "line-polygon",
+                ][..]
+            ),
+            captures!(
+                "sweep1_refit_sdk_holdouts",
+                &["different-corners-0.001", "different-corners-0.01"][..]
+            ),
+        ],
+        7,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_polygon_triples_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_polygon_profiles",
+            &[
+                "polygon-loop-circle",
+                "line-polygon-ellipse",
+                "curve-polygon-loop",
+                "polygon-ellipse-circle",
+            ][..]
+        )],
+        4,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_polygon_commands_match_native_faces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_polygon_profiles",
+            &[
+                "closed-polygon-loop-command",
+                "closed-polygon-loop-command-tight",
+                "closed-polygon-circle-command",
+            ][..]
+        )],
+        3,
+    );
+}
+
+#[test]
 fn sweep1_section_refits_open_and_closed_match_native_surfaces() {
     compare_captures(
         [captures!(

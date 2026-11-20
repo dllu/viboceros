@@ -7,9 +7,10 @@ mode and tolerance changes, and Undo in review restores the prior draft.
 `Simplify=None` turns simplification off while retaining the distance.
 
 Section Refit supports straight and polygonal profiles and smooth open and
-closed profiles. Sweeps can combine regular closed cubic loops, ellipses,
-circles, and smooth open profiles. Placement uses the original profile.
-Fitting follows seam and direction edits.
+closed profiles. A polygon can share a sweep with cubic loops, ellipses, or
+circles. The selected corners remain available as face boundaries after
+refitting. Placement uses the original profile. Fitting follows seam and
+direction edits.
 
 For a radius-2 circle, the measured adaptive range reaches tolerance 0.00015
 for one profile and 0.0004 for a sweep with two profiles. Tighter circular
@@ -17,7 +18,7 @@ subdivision and open fits requiring midpoints beyond the measured
 eight-interval lookup remain unresolved.
 
 The oracle accepts `refit_tolerance` independently of rail refitting and
-rejects simultaneous section rebuilding. Across 88 captures, the complete
+rejects simultaneous section rebuilding. Across 116 captures, the complete
 surface deviation bound is at most `1.5e-8` at epsilon `1e-7`. The comparison
 reverses the Rhino rail parameter for the two-pole capture. The public
 `Curve.Fit` diagnostics produce different controls. SDK captures preserve the
@@ -43,10 +44,21 @@ as the section domain. The [closed-profile captures](../../tools/rhino_oracle/fi
 cover tight fits of analytic and rational circles, the shared grid for unequal
 circles, and a cubic loop that retains a linear rail when RefitRail is off.
 
-Closed profiles with retained curvature boundaries match regions by fitted
-length before sharing a knot vector. A set mixing noncircular loops with
-circles or open profiles combines the retimed fits and takes its section
-domain from the longest source. The
+Closed profiles with retained curvature boundaries can match regions by
+fitted length before sharing a knot vector. Cornered sections can take part
+in that matching, with the polygon's controls staying on its straight
+edges. Polygon and circle pairs combine their knots after mapping each
+profile into the longest source's section domain. The
+[polygon captures](../../tools/rhino_oracle/fixtures/sweep1_refit_polygon_profiles.json)
+cover both policies, mixed straight and curved sections, and the faces
+produced by the Rhino command. Captures mixing open and closed profiles use
+the Rhino SDK. The
+[point-end captures](../../tools/rhino_oracle/fixtures/sweep1_refit_polygon_poles.json)
+check that the matched section domain survives collapsing one or both rail
+ends when the sweep has multiple real profiles.
+
+Smooth sets that mix noncircular loops with circles or open profiles can
+also use the longest source's section domain. The
 [loop captures](../../tools/rhino_oracle/fixtures/sweep1_refit_loop_pairs.json)
 include scaled profiles, unequal region counts, and a three-section sweep.
 The [mixed-profile captures](../../tools/rhino_oracle/fixtures/sweep1_refit_mixed_sections.json)

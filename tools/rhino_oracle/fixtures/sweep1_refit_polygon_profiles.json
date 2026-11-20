@@ -1,0 +1,1649 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "line-loop",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "line-ellipse",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "line-circle",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "open-polygon-loop",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "open-polygon-ellipse",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "open-polygon-circle",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-loop",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-ellipse",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-ellipse-tight",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-circle",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "open-curve-polygon",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              5.0
+            ],
+            [
+              2.0,
+              2.0,
+              5.0
+            ],
+            [
+              3.0,
+              0.0,
+              5.0
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "line-polygon",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              5.0
+            ],
+            [
+              2.0,
+              2.0,
+              5.0
+            ],
+            [
+              3.0,
+              0.0,
+              5.0
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "polygon-loop-circle",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              2.0,
+              0.0
+            ],
+            [
+              3.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                2.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                2.5
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                2.5
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        2.5,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "line-polygon-ellipse",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            3.0,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              2.5
+            ],
+            [
+              2.0,
+              0.0,
+              2.5
+            ],
+            [
+              2.0,
+              1.0,
+              2.5
+            ],
+            [
+              0.0,
+              1.0,
+              2.5
+            ],
+            [
+              0.0,
+              0.0,
+              2.5
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        2.5,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "curve-polygon-loop",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                1.0,
+                2.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                3.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              2.5
+            ],
+            [
+              2.0,
+              2.0,
+              2.5
+            ],
+            [
+              3.0,
+              0.0,
+              2.5
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        2.5,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "polygon-ellipse-circle",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "ellipse",
+          "center": [
+            0.0,
+            0.0,
+            2.5
+          ],
+          "radius_x": 2.0,
+          "radius_y": 1.2,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "y_axis": [
+            0.0,
+            1.0,
+            0.0
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        2.5,
+        5.0
+      ],
+      "command": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-loop-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-loop-command-tight",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                -2.0,
+                2.0,
+                5.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.0,
+                5.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "closed-polygon-circle-command",
+      "rail": {
+        "type": "line",
+        "start": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "end": [
+          0.0,
+          0.0,
+          5.0
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              2.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "circle",
+          "center": [
+            0.0,
+            0.0,
+            5.0
+          ],
+          "radius": 2.0,
+          "x_axis": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0
+      ],
+      "command": true,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "refit_tolerance": 0.001
+    }
+  ]
+}

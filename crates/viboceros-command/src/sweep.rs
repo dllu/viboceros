@@ -438,8 +438,9 @@ impl Source {
             return Ok((brep, sections.len()));
         }
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
+        // A lone profile between two poles uses a unit section chart.
         if let Some(domain) = section_domain.clone()
-            && (ends.start.is_none() || ends.end.is_none())
+            && (sections.len() > 1 || ends.start.is_none() || ends.end.is_none())
         {
             sweep = sweep.try_with_section_domain(domain)?;
         }

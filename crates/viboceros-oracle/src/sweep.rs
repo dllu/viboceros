@@ -229,7 +229,7 @@ pub(super) fn run(
             )
             .map_err(CommandError::from)?;
             if let Some(domain) = section_domain
-                && (ends.start.is_none() || ends.end.is_none())
+                && (sections.len() > 1 || ends.start.is_none() || ends.end.is_none())
             {
                 model = model.try_with_section_domain(domain)?;
             }
