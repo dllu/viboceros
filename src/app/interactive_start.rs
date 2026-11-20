@@ -19,6 +19,7 @@ impl VibocerosApp {
             return true;
         }
         if self.start_curve_connect(input)
+            || self.start_curve_match(input)
             || self.start_curve_chamfer(input)
             || self.start_curve_fillet(input)
         {

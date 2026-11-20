@@ -13,7 +13,7 @@ pub use interpolation::{
     fit_surface_with_bound, interpolate_affine_greville, interpolate_curve,
     interpolate_curve_for_command, interpolate_endpoints, interpolate_open_point_grid,
     interpolate_point_grid, interpolate_surface_blend, interpolate_surface_in_basis,
-    make_curve_periodic, make_surface_periodic, match_curve_end, morph_interpolation,
+    make_curve_periodic, make_surface_periodic, match_curve_contact, match_curve_end, morph_interpolation,
     point_grid_brep, rebuild_curve, rebuild_surface, surface_tweens, surface_tweens_refitted,
     surface_tweens_sampled,
 };

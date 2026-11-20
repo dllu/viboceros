@@ -547,6 +547,7 @@ impl VibocerosApp {
                 .then_some(ObjectSelectionFilter::Parametric);
         }
         if self.picking_curve_connect()
+            || self.picking_curve_match()
             || self.picking_curve_chamfer()
             || self.picking_curve_fillet()
         {

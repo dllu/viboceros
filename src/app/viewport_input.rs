@@ -385,6 +385,9 @@ impl VibocerosApp {
             }
             return true;
         } else if let Some(picks) = output.edge_click {
+            if self.pick_curve_match_edge(&picks) {
+                return true;
+            }
             if self.pick_face_edge_click(&picks) {
                 return true;
             }
@@ -441,7 +444,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_surface_path_parameter(parameter)
+            if self.accept_curve_match_parameter(parameter)
+                || self.accept_surface_path_parameter(parameter)
                 || self.accept_temporary_subcurve_parameter(parameter)
                 || self.accept_surface_offset_parameter(parameter)
                 || self.accept_conic_parameter(parameter)

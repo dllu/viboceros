@@ -212,7 +212,7 @@ pub mod insert_edit_point;
 pub mod insert_kink;
 pub mod insert_knot;
 mod mark_foci;
-mod match_curve;
+pub mod match_curve;
 pub mod modify_radius;
 pub mod picking;
 pub mod reduce_polyline;

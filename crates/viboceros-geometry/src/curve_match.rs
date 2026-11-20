@@ -28,10 +28,12 @@ pub enum CurveMatchPreserveEnd {
     Curvature,
 }
 
-struct MatchTarget {
-    point: Point3,
-    tangent: Option<UnitVector3>,
-    curvature: Option<Vector3>,
+/// A geometric match target, with tangent oriented along the edited curve.
+#[derive(Clone, Copy)]
+pub struct CurveMatchContact {
+    pub point: Point3,
+    pub tangent: Option<UnitVector3>,
+    pub curvature: Option<Vector3>,
 }
 
 #[derive(Clone, Copy)]
@@ -102,23 +104,9 @@ pub fn try_match_curve_end_with_operations<E: From<GeometryError>>(
     }
     // Two selected starts (or two selected ends) must point in opposite
     // natural directions at the join; unlike ends point the same way.
-    let original = source.as_ref().to_nurbs()?;
-    let original = if continuity == CurveBlendContinuity::Position && original.spans().count() > 1 {
-        trim_toward_target(
-            source.as_ref(),
-            source_at_end,
-            sample.point(),
-            tolerance,
-            operations,
-        )?
-    } else {
-        original
-    };
-    let source_single_span = original.spans().count() == 1;
-    let matched = match_end_to_target(
-        &original,
-        source_at_end,
-        MatchTarget {
+    let matched = try_match_curve_contact_with_operations(
+        (source, source_at_end),
+        CurveMatchContact {
             point: sample.point(),
             tangent: Some(desired_tangent),
             curvature: (continuity == CurveBlendContinuity::Curvature)
@@ -127,12 +115,7 @@ pub fn try_match_curve_end_with_operations<E: From<GeometryError>>(
         },
         continuity,
         preserve,
-        source_single_span,
-        if source_single_span {
-            CurvatureControlRule::SingleSpan
-        } else {
-            CurvatureControlRule::OneSidedMultiSpan
-        },
+        tolerance,
         operations,
     )?;
     require_continuity(
@@ -144,6 +127,50 @@ pub fn try_match_curve_end_with_operations<E: From<GeometryError>>(
         tolerance,
     )?;
     Ok(matched)
+}
+
+/// Match to a contact jet from an interior curve point or a surface boundary.
+pub fn try_match_curve_contact_with_operations<E: From<GeometryError>>(
+    (source, source_at_end): (&Curve3, bool),
+    target: CurveMatchContact,
+    continuity: CurveBlendContinuity,
+    preserve: CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+    operations: &mut CurveMatchOperations<'_, E>,
+) -> Result<NurbsCurve, E> {
+    if source.as_ref().is_closed()? {
+        return Err(GeometryError::InvalidPolyCurve {
+            context: "Match requires an open source curve",
+        }
+        .into());
+    }
+    let original = source.as_ref().to_nurbs()?;
+    let original = if continuity == CurveBlendContinuity::Position && original.spans().count() > 1 {
+        trim_toward_target(
+            source.as_ref(),
+            source_at_end,
+            target.point,
+            tolerance,
+            operations,
+        )?
+    } else {
+        original
+    };
+    let source_single_span = original.spans().count() == 1;
+    match_end_to_target(
+        &original,
+        source_at_end,
+        target,
+        continuity,
+        preserve,
+        source_single_span,
+        if source_single_span {
+            CurvatureControlRule::SingleSpan
+        } else {
+            CurvatureControlRule::OneSidedMultiSpan
+        },
+        operations,
+    )
 }
 
 /// Moves both selected ends to their midpoint. Position matching first trims
@@ -230,7 +257,7 @@ pub fn try_average_match_curve_ends_with_operations<E: From<GeometryError>>(
         let first_output = match_end_to_target(
             &first_nurbs,
             first_at_end,
-            MatchTarget {
+            CurveMatchContact {
                 point: midpoint,
                 tangent: None,
                 curvature: None,
@@ -244,7 +271,7 @@ pub fn try_average_match_curve_ends_with_operations<E: From<GeometryError>>(
         let second_output = match_end_to_target(
             &second_nurbs,
             second_at_end,
-            MatchTarget {
+            CurveMatchContact {
                 point: midpoint,
                 tangent: None,
                 curvature: None,
@@ -295,7 +322,7 @@ pub fn try_average_match_curve_ends_with_operations<E: From<GeometryError>>(
     let first_output = match_end_to_target(
         &first_nurbs,
         first_at_end,
-        MatchTarget {
+        CurveMatchContact {
             point: midpoint,
             tangent: Some(tangent),
             curvature,
@@ -318,7 +345,7 @@ pub fn try_average_match_curve_ends_with_operations<E: From<GeometryError>>(
     let second_output = match_end_to_target(
         &second_nurbs,
         second_at_end,
-        MatchTarget {
+        CurveMatchContact {
             point: midpoint,
             tangent: Some(second_tangent),
             curvature,
@@ -377,7 +404,7 @@ fn trim_toward_target<E: From<GeometryError>>(
 fn match_end_to_target<E: From<GeometryError>>(
     original: &NurbsCurve,
     at_end: bool,
-    target: MatchTarget,
+    target: CurveMatchContact,
     continuity: CurveBlendContinuity,
     preserve: CurveMatchPreserveEnd,
     require_single_span: bool,

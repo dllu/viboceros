@@ -59,6 +59,7 @@ impl VibocerosApp {
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_connect();
+        self.validate_curve_match();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
         self.validate_align();
@@ -112,6 +113,7 @@ impl VibocerosApp {
         }
         if self.active_command.is_none()
             && self.curve_connect_session.is_none()
+            && self.curve_match_session.is_none()
             && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
             && self.object_prompt.is_none()
@@ -453,6 +455,7 @@ impl VibocerosApp {
                 .as_ref()
                 .is_some_and(blend_surface::Prompt::selecting)
             || self.picking_face_edge()
+            || self.picking_curve_match_edge()
             || self.picking_subcurve_edge()
             || (self.picking_orient_curve()
                 || self.picking_orient_edge()
@@ -591,7 +594,15 @@ impl VibocerosApp {
                 && self.point_filter.is_none()
                 && self.point_constraint.is_none()
         });
-        let edge_curve = edge_curve.or_else(|| surface_path?.point_curve(&self.document));
+        let edge_curve = edge_curve
+            .or_else(|| surface_path?.point_curve(&self.document))
+            .or_else(|| {
+                self.curve_match_session
+                    .as_ref()
+                    .filter(|_| self.plane_prompt.is_none())?
+                    .guide()
+                    .map(|guide| guide.curve())
+            });
         let surface_path_extrusion = surface_path.and_then(|path| path.preview(&self.document));
         let surface_path_boundary =
             surface_path.and_then(|path| path.boundary_preview(&self.document));
@@ -644,6 +655,11 @@ impl VibocerosApp {
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         edge_highlights.extend(self.pipe_edge_highlights());
+        if let Some(guide) = self.curve_match_guide()
+            && let Some(edge) = guide.source().1
+        {
+            edge_highlights.push(crate::viewport::EdgePick { object: guide.object_id(), edge });
+        }
         if let Some(prompt) = &self.hole_prompt {
             edge_highlights.extend(prompt.highlights());
         }
@@ -1128,7 +1144,8 @@ impl VibocerosApp {
                     .as_ref()
                     .and_then(|p| p.excluded())
             })
-            .or(connect_first);
+            .or(connect_first)
+            .or_else(|| self.curve_match_first_id());
         let selection_allowed_objects = self
             .offset_surface_session
             .as_ref()
@@ -1649,6 +1666,12 @@ impl VibocerosApp {
                                         .as_ref()
                                         .filter(|_| curve_connect_pick)
                                         .and_then(|s| s.preview_curves(&self.document))
+                                })
+                                .or_else(|| {
+                                    self.curve_match_session
+                                        .as_ref()
+                                        .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                        .and_then(curve_match::Session::preview)
                                 })
                                 .or_else(|| {
                                     self.face_create_session

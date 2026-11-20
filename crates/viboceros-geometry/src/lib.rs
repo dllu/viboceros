@@ -324,9 +324,9 @@ pub use curve_join::{
     CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves, join_curves_with_endpoint_filter,
 };
 pub use curve_match::{
-    CurveMatchOperations, CurveMatchPreserveEnd, try_average_match_curve_ends,
+    CurveMatchContact, CurveMatchOperations, CurveMatchPreserveEnd, try_average_match_curve_ends,
     try_average_match_curve_ends_with_operations, try_match_curve_end,
-    try_match_curve_end_with_operations,
+    try_match_curve_contact_with_operations, try_match_curve_end_with_operations,
 };
 pub use curve_offset::{
     CurveOffsetCornerStyle, CurveOffsetIntersections, CurveOffsetOperations, CurveOffsetSmooth,

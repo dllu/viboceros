@@ -32,7 +32,7 @@ pub use native::{
     join_curve_smooth_extension, join_curve_to_boundaries, loft_surface, loft_surface_rebuilt,
     loft_surface_refitted, loft_surface_refitted_with_angle, loft_surface_with_end_points,
     make_curve_non_periodic, make_curve_periodic, make_surface_non_periodic, make_surface_periodic,
-    match_curve_end, match_surface_supports, merge_surface_supports, mesh_boolean,
+    match_curve_contact, match_curve_end, match_surface_supports, merge_surface_supports, mesh_boolean,
     mesh_boolean_interaction, mesh_intersections, mesh_self_intersections, mesh_split,
     mesh_split_with_face_sources, modeling_surface_intersection_events, morph_interpolation,
     morph_preview_operations, offset_curve_parts, offset_curve_through_point, offset_surface,

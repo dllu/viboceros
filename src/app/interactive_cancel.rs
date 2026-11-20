@@ -66,6 +66,13 @@ impl VibocerosApp {
                 self.push_log("Cancelled Connect".into());
             }
         }
+        if self.curve_match_session.take().is_some() {
+            self.document.clear_selection();
+            if announce {
+                self.command_input.clear();
+                self.push_log("Cancelled Match".into());
+            }
+        }
         if self.curve_chamfer_session.take().is_some() {
             self.document.clear_selection();
         }

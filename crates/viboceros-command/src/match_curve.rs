@@ -2,15 +2,45 @@
 use super::*;
 use viboceros_geometry::{CurveBlendContinuity, CurveMatchPreserveEnd, CurveRef};
 
-const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Continuity=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No]";
+mod interactive;
+pub use crate::curve_pair_edit::Prepared;
+pub use interactive::{Endpoint, effective_preserve, prepare};
+
+pub const USAGE: &str = "Match [Pick1=x,y,z] [Pick2=x,y,z] [Mode=Position|Tangency|Curvature] [PreserveOtherEnd=None|Position|Tangency|Curvature] [AverageCurves=Yes|No] [Join=None|Join|Merge] [PerpendicularToEdge=Yes|No]";
 
 pub(super) struct MatchCurveCommand;
 
-struct MatchOptions {
-    picks: [Option<Point3>; 2],
-    continuity: CurveBlendContinuity,
-    preserve: CurveMatchPreserveEnd,
-    average: bool,
+pub struct Arguments {
+    pub picks: [Option<Point3>; 2],
+    pub options: Options,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct Options {
+    pub continuity: CurveBlendContinuity,
+    pub preserve: CurveMatchPreserveEnd,
+    pub average: bool,
+    pub join: Join,
+    pub perpendicular: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Join {
+    None,
+    Join,
+    Merge,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            continuity: CurveBlendContinuity::Tangency,
+            preserve: CurveMatchPreserveEnd::Position,
+            average: false,
+            join: Join::None,
+            perpendicular: false,
+        }
+    }
 }
 
 impl Command for MatchCurveCommand {
@@ -22,7 +52,7 @@ impl Command for MatchCurveCommand {
         &self,
         arguments: &[&str],
     ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
-        parse_options(arguments)?;
+        parse(arguments, Options::default())?;
         Ok(Some(ObjectSelectionPrompt {
             command: self.name(),
             filter: ObjectSelectionFilter::Curves,
@@ -34,7 +64,7 @@ impl Command for MatchCurveCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_options(arguments)?;
+        let Arguments { picks, options } = parse(arguments, Options::default())?;
         let selected = document.selected_object_ids().collect::<Vec<_>>();
         let [source_id, reference_id] = selected.as_slice() else {
             return Err(CommandError::MatchRequiresTwoOpenCurves);
@@ -55,15 +85,39 @@ impl Command for MatchCurveCommand {
         let (default_source, default_reference) = fillet::nearest_ends(&source, &reference)?;
         let source_end = pick_end(
             source.as_ref(),
-            options.picks[0].unwrap_or(default_source),
+            picks[0].unwrap_or(default_source),
             document.tolerance(),
         )?;
         let reference_end = pick_end(
             reference.as_ref(),
-            options.picks[1].unwrap_or(default_reference),
+            picks[1].unwrap_or(default_reference),
             document.tolerance(),
         )?;
-        if options.average {
+        if options.join != Join::None {
+            let endpoints = [
+                Endpoint::capture(
+                    document,
+                    *source_id,
+                    Some(if source_end {
+                        source.as_ref().end_point()?
+                    } else {
+                        source.as_ref().start_point()?
+                    }),
+                )?,
+                Endpoint::capture(
+                    document,
+                    *reference_id,
+                    Some(if reference_end {
+                        reference.as_ref().end_point()?
+                    } else {
+                        reference.as_ref().start_point()?
+                    }),
+                )?,
+            ];
+            prepare(document, endpoints.each_ref(), options)?.apply(document)?;
+            document.select_objects_direct([*source_id], SelectionMode::Replace)?;
+            Ok("Matched and joined curve ends".to_owned())
+        } else if options.average {
             let (first, second) = average_backend(
                 (&source, source_end),
                 (&reference, reference_end),
@@ -112,20 +166,23 @@ fn average_backend(
         .map_err(knot_refinement::native_geometry_error)
 }
 
-fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
+pub fn parse(arguments: &[&str], defaults: Options) -> Result<Arguments, CommandError> {
     let mut picks = [None, None];
     let mut continuity = None;
     let mut preserve = None;
     let mut average = None;
+    let mut join = None;
+    let mut perpendicular = None;
     for argument in arguments {
         let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
+        let value = value.trim_start_matches('_');
         if option_name_eq(name, "Pick1") || option_name_eq(name, "Pick2") {
             let index = if option_name_eq(name, "Pick1") { 0 } else { 1 };
             let (point, consumed) = parse_point(&[value])?;
             if consumed != 1 || picks[index].replace(point).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
-        } else if option_name_eq(name, "Continuity") {
+        } else if option_name_eq(name, "Continuity") || option_name_eq(name, "Mode") {
             let value = match value.to_ascii_lowercase().as_str() {
                 "position" => CurveBlendContinuity::Position,
                 "tangency" => CurveBlendContinuity::Tangency,
@@ -137,7 +194,7 @@ fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
             }
         } else if option_name_eq(name, "PreserveOtherEnd") {
             let value = match value.to_ascii_lowercase().as_str() {
-                "none" => CurveMatchPreserveEnd::None,
+                "none" | "nothing" => CurveMatchPreserveEnd::None,
                 "position" => CurveMatchPreserveEnd::Position,
                 "tangency" => CurveMatchPreserveEnd::Tangency,
                 "curvature" => CurveMatchPreserveEnd::Curvature,
@@ -146,26 +203,46 @@ fn parse_options(arguments: &[&str]) -> Result<MatchOptions, CommandError> {
             if preserve.replace(value).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
-        } else if option_name_eq(name, "AverageCurves") {
-            let value = if value.eq_ignore_ascii_case("Yes") || value.eq_ignore_ascii_case("True") {
-                true
-            } else if value.eq_ignore_ascii_case("No") || value.eq_ignore_ascii_case("False") {
-                false
-            } else {
-                return Err(CommandError::Usage(USAGE));
+        } else if option_name_eq(name, "Join") {
+            let value = match value.to_ascii_lowercase().as_str() {
+                "none" | "no" => Join::None,
+                "join" | "yes" => Join::Join,
+                "merge" => Join::Merge,
+                _ => return Err(CommandError::Usage(USAGE)),
             };
-            if average.replace(value).is_some() {
+            if join.replace(value).is_some() {
+                return Err(CommandError::Usage(USAGE));
+            }
+        } else if let Some(option) = [
+            ("AverageCurves", &mut average),
+            ("PerpendicularToEdge", &mut perpendicular),
+        ]
+        .into_iter()
+        .find_map(|(key, option)| option_name_eq(name, key).then_some(option))
+        {
+            if option
+                .replace(match value.to_ascii_lowercase().as_str() {
+                    "yes" | "true" => true,
+                    "no" | "false" => false,
+                    _ => return Err(CommandError::Usage(USAGE)),
+                })
+                .is_some()
+            {
                 return Err(CommandError::Usage(USAGE));
             }
         } else {
             return Err(CommandError::Usage(USAGE));
         }
     }
-    Ok(MatchOptions {
+    Ok(Arguments {
         picks,
-        continuity: continuity.unwrap_or(CurveBlendContinuity::Tangency),
-        preserve: preserve.unwrap_or(CurveMatchPreserveEnd::Position),
-        average: average.unwrap_or(false),
+        options: Options {
+            continuity: continuity.unwrap_or(defaults.continuity),
+            preserve: preserve.unwrap_or(defaults.preserve),
+            average: average.unwrap_or(defaults.average),
+            join: join.unwrap_or(defaults.join),
+            perpendicular: perpendicular.unwrap_or(defaults.perpendicular),
+        },
     })
 }
 

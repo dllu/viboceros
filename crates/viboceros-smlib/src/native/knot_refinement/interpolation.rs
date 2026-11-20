@@ -107,6 +107,20 @@ pub fn match_curve_end(
     })
 }
 
+pub fn match_curve_contact(
+    source: (&viboceros_geometry::Curve3, bool),
+    contact: viboceros_geometry::CurveMatchContact,
+    continuity: viboceros_geometry::CurveBlendContinuity,
+    preserve: viboceros_geometry::CurveMatchPreserveEnd,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, Error> {
+    with_match_operations(|operations| {
+        viboceros_geometry::try_match_curve_contact_with_operations(
+            source, contact, continuity, preserve, tolerance, operations,
+        )
+    })
+}
+
 pub fn average_match_curve_ends(
     first: (&viboceros_geometry::Curve3, bool),
     second: (&viboceros_geometry::Curve3, bool),

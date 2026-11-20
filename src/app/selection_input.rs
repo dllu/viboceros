@@ -63,6 +63,7 @@ impl VibocerosApp {
             return;
         }
         if self.pick_curve_connect(click.object_id, pick)
+            || self.pick_curve_match_viewport(click.object_id, pick)
             || self.pick_curve_chamfer(click.object_id)
             || self.pick_curve_fillet(click.object_id)
         {
@@ -455,6 +456,7 @@ impl VibocerosApp {
             || self.arc_blend_session.is_some()
             || self.curve_fillet_session.is_some()
             || self.curve_connect_session.is_some()
+            || self.curve_match_session.is_some()
             || self.curve_chamfer_session.is_some())
             && self.plane_prompt.is_none()
         {
