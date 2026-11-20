@@ -24,7 +24,7 @@ pub(super) use interpolation::solve_uniform_system;
 pub use loft::{
     fit_sweep_model_surface, loft_surface, loft_surface_rebuilt, loft_surface_refitted,
     loft_surface_refitted_with_angle, loft_surface_with_end_points, loft_surface_with_matched_ends,
-    prepare_loft_sections, rebuild_loft_profiles, rebuild_sweep_sections, ruled_surface, sweep_model,
+    prepare_loft_sections, rebuild_loft_profiles, rebuild_sweep_sections, refit_closed_sweep, ruled_surface, sweep_model,
     sweep_model_with_point_ends, sweep_surface,
 };
 pub use trim::{

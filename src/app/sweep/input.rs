@@ -18,6 +18,10 @@ impl VibocerosApp {
     }
     pub(super) fn begin_sweep_point(&mut self, name: &str) {
         let p = self.sweep_session.as_ref().unwrap();
+        if p.state.options.closed == Some(true) {
+            self.push_log("Choose Closed=No before adding Sweep1 point ends".into());
+            return;
+        }
         if p.state.rail.is_none()
             && (p.state.options.has_explicit_rail() || p.state.sources.is_empty())
         {
@@ -145,6 +149,16 @@ impl VibocerosApp {
                 }
             } else if option == "ShapeBlending" {
                 "Sweep1 shape blending options are Local and Global".into()
+            } else if option == "Closed" {
+                if !p.can_close() && p.state.options.closed != Some(true) {
+                    self.push_log(
+                        "Sweep1 Closed is available with a closed rail and two or more profiles"
+                            .into(),
+                    );
+                    self.command_input.clear();
+                    return true;
+                }
+                "Close the sweep? Choose Yes or No".into()
             } else {
                 format!("Sweep1: enter {option}")
             };
@@ -225,6 +239,16 @@ impl VibocerosApp {
                 let p = self.sweep_session.as_mut().unwrap();
                 let old = p.state.clone();
                 p.state = next;
+                if p.state.options.closed == Some(true)
+                    && !p.can_close()
+                    && (old.options.closed != p.state.options.closed
+                        || replace_rail
+                        || !p.state.options.ends.is_empty())
+                {
+                    p.state = old;
+                    self.push_log("Sweep1 Closed=Yes requires a closed rail, at least two profiles, and no point ends".into());
+                    return;
+                }
                 if p.profiles()
                     + usize::from(p.state.options.ends.start.is_some())
                     + usize::from(p.state.options.ends.end.is_some())

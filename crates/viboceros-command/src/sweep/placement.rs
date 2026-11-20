@@ -24,32 +24,7 @@ fn sections_with_direction(
     retain_direction: bool,
 ) -> Result<(NurbsCurve, Vec<SweepSection>), CommandError> {
     let mut rail = source.to_nurbs()?;
-    let mut sections = Vec::with_capacity(profiles.len());
-    for curve in profiles {
-        let minimum = {
-            let seed = viboceros_smlib::curve_minimum_distance(
-                CurveRef::NurbsCurve(&rail),
-                CurveRef::NurbsCurve(&curve),
-                [[0., 1.]; 2],
-                tolerance,
-            )
-            .map_err(knot_refinement::native_geometry_error)?
-            .ok_or(GeometryError::InvalidSweep {
-                context: "could not place a section on the rail",
-            })?;
-            rail.minimum_distance_with_curve_seeded(&curve, tolerance, seed.parameters)?
-        };
-        let minimum = minimum.ok_or(GeometryError::InvalidSweep {context:"section placement exceeded the certified curve-distance query limits; supply explicit Parameters"})?;
-        // The public Rhino command transports analytic arcs using their native
-        // station directly in the rational rail chart. Keep that compatibility
-        // policy here: the geometry query's minimum witness remains unchanged.
-        let parameter = if matches!(source, CurveRef::Arc(_)) {
-            source.parameter_from_nurbs(minimum.parameters[0])?
-        } else {
-            minimum.parameters[0]
-        };
-        sections.push(SweepSection { parameter, curve });
-    }
+    let mut sections = profile_contacts(source, &rail, profiles, tolerance)?;
     let reverse = if sections.len() == 1 {
         if rail.is_closed()? {
             false
@@ -71,6 +46,41 @@ fn sections_with_direction(
         }
     }
     Ok((rail, sections))
+}
+
+pub(super) fn profile_contacts(
+    source: CurveRef<'_>,
+    rail: &NurbsCurve,
+    profiles: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+) -> Result<Vec<SweepSection>, CommandError> {
+    let mut sections = Vec::with_capacity(profiles.len());
+    for curve in profiles {
+        let minimum = {
+            let seed = viboceros_smlib::curve_minimum_distance(
+                CurveRef::NurbsCurve(rail),
+                CurveRef::NurbsCurve(&curve),
+                [[0., 1.]; 2],
+                tolerance,
+            )
+            .map_err(knot_refinement::native_geometry_error)?
+            .ok_or(GeometryError::InvalidSweep {
+                context: "could not place a section on the rail",
+            })?;
+            rail.minimum_distance_with_curve_seeded(&curve, tolerance, seed.parameters)?
+        };
+        let minimum = minimum.ok_or(GeometryError::InvalidSweep {context:"section placement exceeded the certified curve-distance query limits; supply explicit Parameters"})?;
+        // The public Rhino command transports analytic arcs using their native
+        // station directly in the rational rail chart. Keep that compatibility
+        // policy here: the geometry query's minimum witness remains unchanged.
+        let parameter = if matches!(source, CurveRef::Arc(_)) {
+            source.parameter_from_nurbs(minimum.parameters[0])?
+        } else {
+            minimum.parameters[0]
+        };
+        sections.push(SweepSection { parameter, curve });
+    }
+    Ok(sections)
 }
 
 pub(super) fn full_rail_anchor(

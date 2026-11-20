@@ -40,6 +40,13 @@ press Enter again to create it. A complete scripted sweep uses its supplied
 profile seams. On a straight rail, two edited closed profiles that differ in
 their rail frames use a cubic rail basis for the blend.
 
+With two or more profiles on a closed rail, review offers `Closed`. `Closed=No`
+stops at the last profile. `Closed=Yes` continues around the rail and blends
+back to the first. The first profile sets the seam, two profiles follow the
+rail's authored direction, and additional profiles determine traversal order.
+One automatically placed profile on a closed rail sweeps the full circuit
+starting at its contact. Point ends require an open sweep.
+
 For scripts using `Parameters=` without an explicit rail reference, the **last**
 selected curve is the rail. Supply one finite, strictly
 increasing native rail parameter per profile. These are not normalized fractions
@@ -51,8 +58,9 @@ epsilons of the rail's domain length, accommodating endpoint reconstruction
 roundoff. Meaningful extrapolation, nonfinite values, and section parameters
 that cease to be strictly increasing after snapping are rejected.
 
-Without point ends, explicit parameters sweep from the first profile's station to the last profile's station.
-A single profile instead sweeps forward from its station to the rail's end.
+Without point ends, explicit parameters with `Closed=No` sweep from the first
+profile's station to the last profile's station. A single explicitly placed
+profile sweeps forward from its station to the rail's end.
 Inputs, attributes, groups, and selection remain unchanged. The new unselected
 B-rep uses the current layer; profile creases split into shared-topology faces.
 The operation is one undo step. Invalid options/construction do not modify the
@@ -68,12 +76,13 @@ command and kernel tests; a circular profile produces a native one-face solid.
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
 | `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
+| `Closed=Yes` | Sweep the full circuit of a closed rail. Open profiles at rail knots retain the rational basis, with faces split at fully multiple knots. Closed profiles, explicit refitting, and profiles between knots use a periodic cubic arc-length surface. |
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
 | `FrameStyle=Roadlike Axis=0,0,1` | Use a fixed axis; default to the planar rail's normal, otherwise world Z. `Axis` overrides it. See [Roadlike frames](sweep1/roadlike.md). |
 | `Style=AlignWithSurface` | Orient frames using the supporting face's normal along a single edge and use the cubic arc-length rail basis. Specify an adjacent face in `RailEdge` for shared edges. |
 | `ShapeBlending=Local` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
-| `ShapeBlending=Global` | Refitted path: linear arc-length blending between neighboring profiles (three-plus-profile compatibility remains incomplete). Retained path: Local blending, as in the measured Rhino commands. `GlobalShapeBlending=Yes|No` also works. |
+| `ShapeBlending=Global` | Refitted open sweeps blend linearly in arc length between neighboring profiles. Retained bases and closed sweeps use Local blending, as in the measured Rhino commands. `GlobalShapeBlending=Yes|No` also works. |
 
 For two profiles at native stations 0 and 5, select them in that order and use
 `Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes`. The refitted model preserves

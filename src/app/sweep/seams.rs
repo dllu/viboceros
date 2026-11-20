@@ -31,8 +31,8 @@ pub(super) fn with_seam_profiles(
 }
 
 impl VibocerosApp {
-    /// Return true if Enter opened or accepted a seam stage.
-    pub(super) fn advance_sweep_seams(&mut self) -> bool {
+    /// Return true if Enter opened the seam editor or review.
+    pub(super) fn advance_sweep_review(&mut self) -> bool {
         let session = self.sweep_session.as_mut().unwrap();
         if session.seam_editor().is_some() {
             let before = session.state.clone();
@@ -46,7 +46,10 @@ impl VibocerosApp {
             self.log_sweep_input();
             return true;
         }
-        if session.state.stage.seams().is_some() {
+        if matches!(
+            session.state.stage,
+            ProfileStage::Review | ProfileStage::Seams { .. }
+        ) {
             return false;
         }
         let document = &self.document;
@@ -55,25 +58,33 @@ impl VibocerosApp {
             .capture_source(document)
             .and_then(|source| {
                 source.validate_point_end_stations(&session.state.options)?;
-                source.closed_profile_ids()
+                Ok((
+                    source.closed_profile_ids()?,
+                    source.can_close(&session.state.options),
+                ))
             })
-            .and_then(|ids| {
-                ids.into_iter()
+            .and_then(|(ids, can_close)| {
+                let sources = ids
+                    .into_iter()
                     .map(|id| CapturedCurve::capture(document, id, None))
-                    .collect::<Result<Vec<_>, _>>()
+                    .collect::<Result<Vec<_>, _>>()?;
+                Ok((sources, can_close))
             });
         match result {
-            Ok(sources) if sources.is_empty() => false,
-            Ok(sources) => {
-                let editor = Editor::for_sweep_profiles(sources, document.tolerance(), false);
+            Ok((sources, can_close)) if can_close || !sources.is_empty() => {
                 session.undo.push(session.state.clone());
-                session.state.stage = ProfileStage::Seams {
-                    editor,
-                    editing: true,
+                session.state.stage = if sources.is_empty() {
+                    ProfileStage::Review
+                } else {
+                    ProfileStage::Seams {
+                        editor: Editor::for_sweep_profiles(sources, document.tolerance(), false),
+                        editing: true,
+                    }
                 };
                 self.log_sweep_input();
                 true
             }
+            Ok(_) => false,
             Err(error) => {
                 self.command_file.fail_dispatch();
                 self.push_log(format!("Error: {error}"));

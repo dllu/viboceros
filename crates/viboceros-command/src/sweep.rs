@@ -4,7 +4,7 @@ pub use crate::sweep_rail::{Rail, RailReference};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -51,6 +51,7 @@ pub(super) fn fitted_model_surface(sweep: &Sweep1) -> Result<NurbsSurface, Comma
     viboceros_smlib::fit_sweep_model_surface(sweep).map_err(knot_refinement::native_geometry_error)
 }
 
+mod closed;
 mod options;
 mod placement;
 pub use options::Options;
@@ -99,6 +100,10 @@ pub struct Source {
 }
 
 impl Source {
+    pub fn can_close(&self, options: &Options) -> bool {
+        self.profiles.len() >= 2 && options.ends.is_empty() && self.rail.is_closed()
+    }
+
     pub fn capture(
         document: &Document,
         selected: &[ObjectId],
@@ -234,6 +239,10 @@ impl Source {
             ..
         } = options;
         let ends = *ends;
+        let closed = options.closed.unwrap_or(false);
+        if closed && !self.can_close(options) {
+            return Err(CommandError::Usage(closed::REQUIREMENTS));
+        }
         let rail = self.rail.curve_ref();
         let curves = self
             .profiles
@@ -245,7 +254,20 @@ impl Source {
                 Ok(curve)
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
-        let (automatic_rail, sections) = if let Some(parameters) = parameters {
+        let automatic_loop = parameters.is_none() && ends.is_empty() && self.rail.is_closed();
+        let single_loop = automatic_loop && curves.len() == 1;
+        let place_loop = closed || automatic_loop;
+        let loop_profiles_closed = place_loop
+            && curves
+                .iter()
+                .try_fold(true, |all, curve| -> Result<bool, GeometryError> {
+                    Ok(all && curve.is_closed()?)
+                })?;
+        let (placed_rail, sections, closed_refit) = if place_loop {
+            let (rail, sections, refit) =
+                closed::sections(rail, curves, parameters.as_deref(), tolerance)?;
+            (Some(rail), sections, refit)
+        } else if let Some(parameters) = parameters {
             if parameters.len() != curves.len() {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -256,6 +278,7 @@ impl Source {
                     .zip(parameters.iter().copied())
                     .map(|(curve, parameter)| SweepSection { parameter, curve })
                     .collect(),
+                false,
             )
         } else {
             let (rail, sections) = if ends.is_empty() {
@@ -263,11 +286,12 @@ impl Source {
             } else {
                 placement::sections_with_point_ends(rail, curves, tolerance)?
             };
-            (Some(rail), sections)
+            (Some(rail), sections, false)
         };
-        let full_rail_anchor = if ends.is_empty()
+        let full_rail_anchor = if !place_loop
+            && ends.is_empty()
             && !refit.unwrap_or(false)
-            && let Some(rail) = &automatic_rail
+            && let Some(rail) = &placed_rail
         {
             placement::full_rail_anchor(rail, &sections)?
         } else {
@@ -275,12 +299,13 @@ impl Source {
         };
         // Captured partial line intervals use a cubic refit. Keeping the line
         // basis instead changes the geometry between two interior profiles.
-        let automatic_partial = automatic_rail.as_ref().is_some_and(|rail| {
-            !full_rail_anchor
-                && (sections[0].parameter != *rail.domain().start()
-                    || (sections.len() > 1
-                        && sections.last().unwrap().parameter != *rail.domain().end()))
-        });
+        let automatic_partial = !place_loop
+            && placed_rail.as_ref().is_some_and(|rail| {
+                !full_rail_anchor
+                    && (sections[0].parameter != *rail.domain().start()
+                        || (sections.len() > 1
+                            && sections.last().unwrap().parameter != *rail.domain().end()))
+            });
         let style = if roadlike.unwrap_or(false) {
             match axis {
                 Some(axis) => SweepFrameStyle::Roadlike(*axis),
@@ -289,7 +314,7 @@ impl Source {
         } else {
             SweepFrameStyle::Freeform
         };
-        let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
+        let rail = placed_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
         let linear_rail = match rail {
             CurveRef::Line(_) => true,
             CurveRef::NurbsCurve(curve) => curve.degree() == 1 && curve.control_points().len() == 2,
@@ -317,6 +342,9 @@ impl Source {
         if full_rail_anchor {
             sweep = sweep.try_on_full_rail()?;
         }
+        if closed || single_loop {
+            sweep = sweep.try_close_rail()?;
+        }
         // A pair of closed sections with different local correspondence needs
         // interior stations to carry the blend. Identical sections can keep
         // the straight rail's linear basis.
@@ -324,15 +352,25 @@ impl Source {
             && sections.len() == 2
             && linear_rail
             && sweep.sections_vary_in_frame();
-        let surface = surface(
-            &sweep,
-            refit.unwrap_or(false)
-                || options.surface_aligned
-                || closed_section_blend
-                || automatic_partial
-                || !ends.is_empty(),
-        )?;
-        let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        let refit = refit.unwrap_or(false)
+            || options.surface_aligned
+            || closed_refit
+            || loop_profiles_closed
+            || closed_section_blend
+            || automatic_partial
+            || !ends.is_empty();
+        let surface = if closed && refit {
+            viboceros_smlib::refit_closed_sweep(&sweep)
+                .map_err(knot_refinement::native_geometry_error)?
+        } else {
+            surface(&sweep, refit)?
+        };
+        let [mut u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        if place_loop && !refit {
+            // Sweep1 retains separate faces at fully multiple rail knots,
+            // including geometrically smooth rational circle joins.
+            u = closed::split_parameters(&surface);
+        }
         let brep = Brep::try_surface_grid(&surface, &u, &v, tolerance)?;
         Ok((brep, sections.len()))
     }
@@ -342,6 +380,8 @@ impl Source {
 mod arc_station_tests;
 #[cfg(test)]
 mod automatic_tests;
+#[cfg(test)]
+mod closed_tests;
 #[cfg(test)]
 mod curved_tests;
 #[cfg(test)]

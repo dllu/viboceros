@@ -93,7 +93,7 @@ pub use knot_refinement::{
     make_surface_non_periodic, make_surface_periodic, match_curve_contact, match_curve_end,
     morph_interpolation, point_grid_brep, prepare_loft_sections, rebuild_curve, rebuild_loft_profiles,
     rebuild_surface,
-    rebuild_sweep_sections, reduce_curve_knots_in_range, reduce_surface_knots_in_range,
+    rebuild_sweep_sections, reduce_curve_knots_in_range, reduce_surface_knots_in_range, refit_closed_sweep,
     remove_curve_knot, remove_curve_knot_at_value, remove_curve_multiple_knots,
     remove_periodic_surface_knot, remove_surface_knot, remove_surface_multiple_knots,
     ruled_surface, split_curve, split_curve_at_parameters, split_surface, subcurve,

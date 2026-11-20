@@ -11,6 +11,7 @@ mod basis;
 mod fit;
 mod point_ends;
 pub use point_ends::SweepEndPoints;
+mod periodic;
 mod rail;
 mod rebuild;
 mod roadlike;
@@ -306,6 +307,31 @@ impl Sweep1 {
         Ok(self)
     }
 
+    /// Complete the remaining interval with a blend back to the first profile.
+    /// The rail must start at that profile's station.
+    pub fn try_close_rail(mut self) -> Result<Self, GeometryError> {
+        let rail = self.rail.as_ref();
+        let domain = rail.domain();
+        let first = &self.sections[0];
+        let last = self.sections.last().unwrap();
+        if first.parameter != *domain.start()
+            || last.parameter >= *domain.end()
+            || !validate_rail_interval(rail, domain.clone(), self.tolerance)?
+        {
+            return Err(invalid(
+                "closing the sweep requires ordered profiles on a complete closed rail",
+            ));
+        }
+        self.sections.push(SweepSection {
+            parameter: *domain.end(),
+            curve: first.curve.clone(),
+        });
+        self.closed_rail = true;
+        self.domain = domain;
+        self.prepare_local_controls()?;
+        Ok(self)
+    }
+
     pub fn domain(&self) -> RangeInclusive<Real> {
         self.domain.clone()
     }
@@ -431,6 +457,20 @@ impl Sweep1 {
         operations: &mut SweepSurfaceOperations<'_, E>,
     ) -> Result<NurbsSurface, E> {
         Ok(self.validate_surface_closure(basis::rail_basis(self, true, operations)?)?)
+    }
+
+    /// Fit the cyclic section model with a periodic cubic arc-length basis.
+    pub fn refit_closed_with_solver<E: From<GeometryError>>(
+        &self,
+        solve: &mut impl FnMut(&crate::NurbsInterpolationSystem<'_>, usize) -> Result<Vec<Real>, E>,
+    ) -> Result<NurbsSurface, E> {
+        if !self.closed_rail || self.sections[0].curve != self.sections.last().unwrap().curve {
+            return Err(invalid(
+                "periodic refit requires a closed sweep with a repeated seam profile",
+            )
+            .into());
+        }
+        Ok(self.validate_surface_closure(periodic::fit(self, solve)?)?)
     }
 
     /// Fits the continuous frame/blending model, not Rhino's fixed-basis sweep.

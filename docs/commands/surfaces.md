@@ -127,6 +127,8 @@ See [automatic placement](../sweep1-placement.md) for interval and direction cho
 After selecting closed profiles, drag the seam markers or use `Flip`,
 `Automatic`, `Natural`, and `SnapToKnots`. Enter opens a review of the
 draft. Adjust the sweep options there and press Enter again to create the surface.
+On a closed rail with two or more profiles, `Closed=Yes` wraps the sweep from
+the last profile back to the first. The review preview reflects the change.
 
 Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous
 policy: without an explicit rail reference, the last selected curve is the rail. Supply

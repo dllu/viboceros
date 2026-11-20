@@ -40,7 +40,7 @@ pub use native::{
     prepare_loft_sections, prepare_morph_preview_curve, prepared_gordon_surface,
     projected_curve_intervals, pull_curve_to_surface, rail_revolved_brep, rail_revolved_surface,
     rebuild_curve, rebuild_loft_profiles, rebuild_surface, rebuild_sweep_sections, reduce_curve_knots_in_range,
-    reduce_surface_knots_in_range, remove_curve_knot, remove_curve_knot_at_value,
+    reduce_surface_knots_in_range, refit_closed_sweep, remove_curve_knot, remove_curve_knot_at_value,
     remove_curve_multiple_knots, remove_periodic_surface_knot, remove_surface_knot,
     remove_surface_multiple_knots, ruled_surface, separate_curve_extensions_to_boundaries,
     separate_curve_natural_extensions, separate_curve_smooth_extensions, split_curve,

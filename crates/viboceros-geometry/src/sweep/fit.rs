@@ -77,18 +77,7 @@ pub(super) fn fit<E: From<GeometryError>>(
         let mut refine = vec![false; breaks.len() - 1];
         for (&t, target) in parameters.iter().zip(sections) {
             let curve = surface.isocurve_v(t)?;
-            let bounds = target.control_point_bounds();
-            let diameter = bounds.min().distance_to(bounds.max())?;
-            let mut point_error: Real = 0.0;
-            let mut relative_weight_error: Real = 0.0;
-            for (a, b) in curve.control_points().iter().zip(target.control_points()) {
-                point_error = point_error.max(a.point().distance_to(b.point())?);
-                relative_weight_error =
-                    relative_weight_error.max((a.weight() - b.weight()).abs() / a.weight());
-            }
-            // Positive rational basis functions bound the entire profile, not
-            // only sampled V parameters. Rail-direction auditing is sampled.
-            if point_error + diameter * relative_weight_error > sweep.tolerance.absolute() * 0.8 {
+            if section_error(&curve, &target)? > sweep.tolerance.absolute() * 0.8 {
                 let index = breaks
                     .partition_point(|b| b.parameter < t)
                     .saturating_sub(1)
@@ -118,6 +107,23 @@ pub(super) fn fit<E: From<GeometryError>>(
         breaks.extend(added);
         breaks.sort_by(|a, b| a.parameter.total_cmp(&b.parameter));
     }
+}
+
+pub(super) fn section_error(
+    curve: &NurbsCurve,
+    target: &NurbsCurve,
+) -> Result<Real, GeometryError> {
+    let bounds = target.control_point_bounds();
+    let diameter = bounds.min().distance_to(bounds.max())?;
+    let mut point_error: Real = 0.0;
+    let mut relative_weight_error: Real = 0.0;
+    for (a, b) in curve.control_points().iter().zip(target.control_points()) {
+        point_error = point_error.max(a.point().distance_to(b.point())?);
+        relative_weight_error =
+            relative_weight_error.max((a.weight() - b.weight()).abs() / a.weight());
+    }
+    // Positive rational basis functions bound the whole isocurve. U is sampled.
+    Ok(point_error + diameter * relative_weight_error)
 }
 
 fn interpolate<E: From<GeometryError>>(

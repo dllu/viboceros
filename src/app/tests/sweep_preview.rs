@@ -419,3 +419,59 @@ fn sweep_one_rail_chain_preserves_connected_direction_and_keeps_sources() {
         originals
     );
 }
+
+#[test]
+fn sweep_one_closed_preview_toggles_the_return_span_and_matches_commit() {
+    let mut app = test_app();
+    for text in ["Circle 0,0,0 1", "Line 1,0,0 3,0,0", "Line 0,1,0 0,3,0"] {
+        enter(&mut app, text);
+    }
+    let originals = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1");
+    for object in &originals {
+        enter(&mut app, &object.id().to_string());
+    }
+    enter(&mut app, "");
+    assert!(app.command_hint().contains("Closed / Style"));
+    let open = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "Closed");
+    assert!(app.command_log.back().unwrap().contains("Choose Yes or No"));
+    enter(&mut app, "Yes");
+    let closed = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != open
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == open);
+    enter(&mut app, "Closed=Yes");
+    wait_for_wires(&mut app, &context, |wires| wires == closed);
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    assert!(app.command_line_idle());
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected Sweep1 B-rep");
+    };
+    assert_eq!((brep.faces().len(), brep.edges().len()), (4, 12));
+    assert_eq!(brep.wireframe_curves(1, tolerance).unwrap(), closed);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+    app.restore_curve_selection(originals.iter().map(|object| object.id()).collect());
+    enter(&mut app, "Sweep1");
+    assert!(app.command_hint().contains("Closed / Style"));
+    enter(&mut app, "Cancel");
+    assert!(app.command_line_idle());
+    assert_eq!(
+        app.document.objects().cloned().collect::<Vec<_>>(),
+        originals
+    );
+}

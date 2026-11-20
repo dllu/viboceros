@@ -12,6 +12,7 @@ pub struct Options {
     pub axis: Option<UnitVector3>,
     pub global: Option<bool>,
     pub refit: Option<bool>,
+    pub closed: Option<bool>,
     pub rebuild_point_count: usize,
     pub ends: SweepEndPoints,
 }
@@ -29,6 +30,7 @@ impl Options {
         "GlobalShapeBlending",
         "ShapeBlending",
         "RefitRail",
+        "Closed",
         "Rebuild",
         "RebuildPointCount",
         "RebuildCount",
@@ -140,6 +142,13 @@ impl Options {
                         },
                     );
                     512
+                }
+                "closed" => {
+                    result.closed = Some(
+                        parse_yes_no(value.trim_start_matches('_'))
+                            .ok_or(CommandError::Usage(USAGE))?,
+                    );
+                    1024
                 }
                 _ => return Err(CommandError::Usage(USAGE)),
             };
@@ -259,6 +268,9 @@ impl Options {
         }
         if let Some(refit) = self.refit {
             words.push(format!("RefitRail={}", if refit { "Yes" } else { "No" }));
+        }
+        if let Some(closed) = self.closed {
+            words.push(format!("Closed={}", if closed { "Yes" } else { "No" }));
         }
         for (name, value) in [("StartPoint", self.ends.start), ("EndPoint", self.ends.end)] {
             if let Some(value) = value {

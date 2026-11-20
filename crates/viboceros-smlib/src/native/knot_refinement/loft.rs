@@ -122,6 +122,10 @@ pub fn fit_sweep_model_surface(sweep: &viboceros_geometry::Sweep1) -> Result<Nur
     with_sweep_operations(|operations| sweep.fit_model_surface_with_operations(operations))
 }
 
+pub fn refit_closed_sweep(sweep: &viboceros_geometry::Sweep1) -> Result<NurbsSurface, Error> {
+    sweep.refit_closed_with_solver(&mut |input, shift| solve_interpolation(input, None, Some(shift)))
+}
+
 fn with_sweep_operations(
     run: impl FnOnce(
         &mut viboceros_geometry::SweepSurfaceOperations<'_, Error>,

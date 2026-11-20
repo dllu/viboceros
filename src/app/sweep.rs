@@ -43,6 +43,7 @@ struct State {
 enum ProfileStage {
     Selecting,
     PointEndPicked,
+    Review,
     Seams { editor: Editor, editing: bool },
 }
 
@@ -104,7 +105,12 @@ impl Session {
             (_, _, ProfileStage::PointEndPicked) => {
                 "Enter accepts the profiles and point ends. StartPoint / EndPoint / Undo"
             }
-            (_, _, ProfileStage::Seams { editing: false, .. }) => {
+            (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. })
+                if self.can_close() =>
+            {
+                "Review the sweep. Closed / Style / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+            }
+            (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. }) => {
                 "Review the sweep. Style / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
             }
             _ if self.state.rail.is_none()
@@ -136,6 +142,23 @@ impl Session {
                 })
     }
 
+    fn can_close(&self) -> bool {
+        self.profiles() >= 2
+            && self.state.options.ends.is_empty()
+            && if let Some(rail) = &self.state.rail {
+                rail.is_closed()
+            } else {
+                let source = if self.state.options.parameters.is_some() {
+                    self.state.sources.last()
+                } else {
+                    self.state.sources.first()
+                };
+                source
+                    .and_then(|(_, geometry)| geometry.curve_ref())
+                    .is_some_and(|curve| curve.is_closed().unwrap_or(false))
+            }
+    }
+
     pub(super) fn rail_targets(&self) -> impl Iterator<Item = Target> + '_ {
         self.state.rail.iter().flat_map(Rail::targets)
     }
@@ -154,6 +177,24 @@ impl Session {
     }
 }
 impl VibocerosApp {
+    pub(super) fn should_review_preselected_sweep(&self) -> bool {
+        let mut curves = self
+            .document
+            .selected_objects()
+            .filter_map(|object| object.geometry().curve_ref());
+        let closed_rail = curves
+            .next()
+            .is_some_and(|rail| rail.is_closed().unwrap_or(false));
+        let first = curves.next();
+        let second = curves.next();
+        (closed_rail && second.is_some())
+            || first
+                .into_iter()
+                .chain(second)
+                .chain(curves)
+                .any(|curve| curve.is_closed().unwrap_or(false))
+    }
+
     pub(super) fn initialize_sweep_prompt(&mut self, input: &str) {
         if self
             .object_prompt
@@ -275,7 +316,7 @@ impl VibocerosApp {
         if !self.validate_sweep_sources() {
             return;
         }
-        if self.advance_sweep_seams() {
+        if self.advance_sweep_review() {
             return;
         }
         self.commit_sweep_preview();

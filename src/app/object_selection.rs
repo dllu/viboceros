@@ -1053,17 +1053,12 @@ impl VibocerosApp {
         {
             return false;
         }
-        let preselected_sweep_seams = preselected
+        let preselected_sweep_review = preselected
             && description.command == "Sweep1"
             && words.len() == 1
             && !words[0].contains('-')
-            && self
-                .document
-                .selected_objects()
-                .filter_map(|object| object.geometry().curve_ref())
-                .skip(1)
-                .any(|curve| curve.is_closed().unwrap_or(false));
-        if preselected && !preselected_sweep_seams {
+            && self.should_review_preselected_sweep();
+        if preselected && !preselected_sweep_review {
             if matches!(
                 description.command,
                 "QuadrangulateMesh" | "TriangulateNonPlanarQuads"
@@ -1244,7 +1239,7 @@ impl VibocerosApp {
         self.initialize_weight_prompt(input);
         self.initialize_sweep_prompt(input);
         self.push_log(format!("> {input}"));
-        if preselected_sweep_seams {
+        if preselected_sweep_review {
             self.finish_sweep_input();
         } else {
             self.log_object_prompt();
