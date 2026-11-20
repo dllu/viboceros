@@ -93,6 +93,7 @@ impl SurfaceMesh<'_> {
         indices: [usize; 3],
         faces: &[Triangle],
         adjacent: &Adjacency,
+        chord_errors: &mut HashMap<Edge, Real>,
     ) -> Option<(Real, [Triangle; 3])> {
         let old = indices.map(|i| faces[i]);
         let ring = boundary(old)?;
@@ -125,28 +126,37 @@ impl SurfaceMesh<'_> {
         let mut best = None;
         for i in 0..5 {
             let v = |j: usize| ring[(i + j) % 5];
+            let candidate = [[v(0), v(1), v(2)], [v(0), v(2), v(3)], [v(0), v(3), v(4)]];
+            // Discard fans that leave the original UV region before evaluating
+            // the surface along their proposed diagonals.
+            if candidate
+                .iter()
+                .any(|&face| wound_side(self.uv(face)) != winding)
+            {
+                continue;
+            }
             let internal = [edge(v(0), v(2)), edge(v(0), v(3))];
             let mut error: Real = 0.;
             for key in internal {
                 let chord = match adjacent.get(&key) {
                     Some(owners) if owners.iter().all(|i| indices.contains(i)) => 0.,
                     Some(_) => Real::INFINITY,
-                    None => self.chord_error(key).unwrap_or(Real::INFINITY),
+                    None => *chord_errors
+                        .entry(key)
+                        .or_insert_with(|| self.chord_error(key).unwrap_or(Real::INFINITY)),
                 };
                 error = error.max(chord);
             }
             if error > self.height || best.is_some_and(|(distance, _)| error >= distance) {
                 continue;
             }
-            let candidate = [[v(0), v(1), v(2)], [v(0), v(2), v(3)], [v(0), v(3), v(4)]];
             if candidate.iter().any(|&face| {
-                wound_side(self.uv(face)) != winding
-                    || !crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
-                        self.points,
-                        face,
-                        Tolerance::MESH_VALIDATION,
-                    )
-                    .unwrap_or(false)
+                !crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
+                    self.points,
+                    face,
+                    Tolerance::MESH_VALIDATION,
+                )
+                .unwrap_or(false)
             }) {
                 continue;
             }
@@ -194,6 +204,9 @@ pub(super) fn repair(
         points,
         height,
     };
+    // Cavities overlap, so several partitions test the same diagonal.
+    // Its samples depend only on the unchanged vertices and surface.
+    let mut chord_errors = HashMap::new();
     for &i in inverted {
         if !sample(surface, points, parameters, faces[i]).is_some_and(|s| s.alignment < 0.) {
             continue;
@@ -216,7 +229,8 @@ pub(super) fn repair(
                     continue;
                 }
                 tried.push(indices);
-                if let Some((error, replacement)) = mesh.best_partition(indices, faces, adjacent)
+                if let Some((error, replacement)) =
+                    mesh.best_partition(indices, faces, adjacent, &mut chord_errors)
                     && best.is_none_or(|(prior, _, _)| error < prior)
                 {
                     best = Some((error, indices, replacement));
