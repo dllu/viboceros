@@ -8,6 +8,7 @@ mod chords;
 mod conforming;
 mod creases;
 mod curvature;
+mod diagonals;
 mod independent;
 mod metric;
 mod normals;
