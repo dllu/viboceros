@@ -40,10 +40,11 @@ pair, perpendicular to the width and average sweep direction. Watch the
 preview while changing the option, or use local `Undo` to restore it.
 
 Choose `RefitRails=Yes` to fit both rails in a shared cubic basis. Between
-profile contacts the sweep pairs the rails by relative distance traveled.
-This supports profiles meeting the rails at different normalized parameters.
-The fitted boundaries are checked against the original rails at the document
-tolerance. The review preview updates for both choices.
+profile contacts the sweep pairs the rails by relative distance traveled. With
+multiple profiles, the first and last contacts bound the retained interval of
+each rail. Sweep2 fits the rails automatically for shortened sweeps and when
+interior contacts have different normalized parameters. The fitted boundaries
+are checked against the retained rail intervals at the document tolerance.
 
 For example, in a new document:
 
@@ -66,11 +67,10 @@ is reversed automatically when necessary to align the section contacts.
 The solver requires open rails and open polynomial sections. Rail refitting
 accepts rational rails, and Rebuild can prepare polynomial sections from
 rational profiles. Section endpoints must contact both rails. With multiple
-sections, the terminal sections must span the rails. Without rail refitting,
-the interior contacts must have matching normalized parameters. The default
-native skin requires more sections than the maximum rail degree. Closed
-sweeps, slash guides and surface-edge continuity remain unsupported.
-Failures leave the document and history unchanged.
+sections, contacts must progress in order on both rails. The unrefitted native
+skin requires more sections than the maximum rail degree. Closed sweeps,
+slash guides and surface-edge continuity remain unsupported. Failures leave
+the document and history unchanged.
 
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
@@ -103,8 +103,9 @@ Tapered straight-rail captures cover one, two, and three profiles with
 rails the local transport can differ from Rhino's interior shape.
 
 The `RefitRails` captures cover tapered straight rails, an interior profile
-paired across different stations, and curved rails. Curved-rail fitting can
-choose different knots from Rhino.
+paired across different stations, and curved rails. Partial-rail captures
+also cover independent terminal stations and reverse pick order. Curved-rail
+fitting can choose different knots from Rhino.
 
 Validation and raw reference observations are retained in the
 [qualification record](../sweep2-qualification.json). The public SDK reference

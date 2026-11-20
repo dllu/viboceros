@@ -113,6 +113,62 @@ fn wait_for_draft(app: &mut VibocerosApp, context: &egui::Context) -> Vec<NurbsC
 }
 
 #[test]
+fn sweep_two_rail_profile_bracket_shortens_preview_and_commit() {
+    let mut app = test_app();
+    for input in ["Line 0,0,0 0,0,8", "Line 2,0,8 2,0,0"] {
+        enter(&mut app, input);
+    }
+    let rails = app.document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    let sections = [(2., 0.8), (6., 1.2)].map(|(z, height)| {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![point(0., 0., z), point(1., height, z), point(2., 0., z)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        app.document
+            .add_geometry(Geometry::NurbsCurve(curve))
+            .unwrap()
+    });
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Front);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2");
+    for id in rails {
+        enter(&mut app, &id.to_string());
+    }
+    viewport_frame(&mut app, &context, vec![]);
+    for (id, z) in sections.into_iter().zip([2., 6.]) {
+        let pixel = screen_point(&app, point(1., 0., z));
+        viewport_click(&mut app, &context, pixel);
+        assert!(app.document.is_selected(id));
+        let wires = wait_for_draft(&mut app, &context);
+        let max_z = wires
+            .iter()
+            .flat_map(|wire| wire.control_points().iter().map(|c| c.point().z()))
+            .fold(f64::NEG_INFINITY, f64::max);
+        assert!((max_z - if z == 2. { 8. } else { 6. }).abs() < 1e-8);
+    }
+    let bracket = wait_for_draft(&mut app, &context);
+    enter(&mut app, "");
+    assert_eq!(wait_for_draft(&mut app, &context), bracket);
+    assert_eq!(app.document.undo_label(), None);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    let tolerance = app.document.tolerance();
+    assert_eq!(brep.wireframe_curves(1, tolerance).unwrap(), bracket);
+    assert!((brep.area(tolerance).unwrap() - 9.201940759406227).abs() < 1e-5);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+}
+
+#[test]
 fn sweep_two_rail_refit_review_and_script_use_the_same_draft() {
     let mut app = test_app();
     for input in ["Line 0,0,0 0,0,8", "Line 1,0,0 5,0,8"] {

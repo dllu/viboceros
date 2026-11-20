@@ -18,6 +18,41 @@ struct Section {
     original: NurbsCurve,
 }
 
+struct PreparedRail {
+    curve: NurbsCurve,
+    original: NurbsCurve,
+}
+
+impl PreparedRail {
+    fn reverse(&mut self, rows: &mut [Section], axis: usize) -> Result<(), Error> {
+        self.curve = self.curve.reversed()?.try_reparameterized(0. ..=1.)?;
+        self.original = self.original.reversed()?;
+        for row in rows {
+            row.stations[axis] = 1. - row.stations[axis];
+        }
+        Ok(())
+    }
+
+    fn trim(&mut self, [start, end]: [f64; 2]) -> Result<(), Error> {
+        if [start, end] == [0., 1.] {
+            return Ok(());
+        }
+        let domain = self.original.domain();
+        let at = |t: f64| {
+            if t == 0. {
+                *domain.start()
+            } else if t == 1. {
+                *domain.end()
+            } else {
+                (1. - t).mul_add(*domain.start(), t * domain.end())
+            }
+        };
+        self.original = super::trim_curve(&self.original, at(start)..=at(end))?;
+        self.curve = super::trim_curve(&self.curve, start..=end)?.try_reparameterized(0. ..=1.)?;
+        Ok(())
+    }
+}
+
 unsafe extern "C" {
     fn vb_curves_two_rail_sweep(
         first: *const NativeCurve,
@@ -85,9 +120,9 @@ fn contact(rail: &NurbsCurve, point: Point3, tolerance: Tolerance) -> Result<Opt
 }
 
 /// Construct an open two-rail sweep from 1–32 open polynomial sections.
-/// With multiple sections, contacts must pair matching normalized stations
-/// and cover both ends. The resulting rails and profiles are certified within
-/// the absolute tolerance, including when a single profile trims the rails.
+/// With multiple sections, the terminal contacts trim the rails. Refit pairs
+/// any remaining independent stations. The rail and profile images are
+/// certified within the absolute tolerance.
 pub fn two_rail_sweep_surface(
     first: &NurbsCurve,
     second: &NurbsCurve,
@@ -156,14 +191,17 @@ pub fn two_rail_sweep_surface_with_options(
             "requires 1–32 total sections including a real profile, and at most 1024 total controls",
         ));
     }
-    let (mut first, mut certificate_first) =
-        prepare_rail(first, sections, ends, tolerance, refit_rails)?;
-    let (mut second, mut certificate_second) =
-        prepare_rail(second, sections, ends, tolerance, refit_rails)?;
-    let origin = first.evaluate(0.)?;
+    let mut prepared = [
+        prepare_rail(first, sections, ends, tolerance)?,
+        prepare_rail(second, sections, ends, tolerance)?,
+    ];
+    let origin = prepared[0].curve.evaluate(0.)?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
-    let local_rails = [first.transformed(to_local)?, second.transformed(to_local)?];
+    let local_rails = [
+        prepared[0].curve.transformed(to_local)?,
+        prepared[1].curve.transformed(to_local)?,
+    ];
     let mut rows = Vec::with_capacity(row_count);
     for section in sections {
         let mut curve = prepare(section, tolerance, false)?;
@@ -205,58 +243,21 @@ pub fn two_rail_sweep_surface_with_options(
             });
         }
     }
-    rows.sort_by(|a, b| a.stations[0].total_cmp(&b.stations[0]));
     let single = rows.len() == 1;
-    let [a, b] = rows[0].stations;
-    let reverse_second = if single {
-        match (a, b) {
-            (0., 0.) | (1., 1.) => false,
-            (0., 1.) | (1., 0.) => true,
-            _ => first.derivative_at(a)?.dot(second.derivative_at(b)?)? < 0.,
-        }
-    } else {
-        ends.is_empty() && b == 1. && rows.last().unwrap().stations[1] == 0.
-    };
-    if reverse_second {
-        second = second.reversed()?.try_reparameterized(0. ..=1.)?;
-        certificate_second = certificate_second.reversed()?;
-        for row in &mut rows {
-            row.stations[1] = 1. - row.stations[1];
-        }
+    let partial = retain_sections(&mut prepared, &mut rows, ends.is_empty())?;
+    let independent = rows
+        .iter()
+        .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10);
+    // Rhino refits automatically for shortened multi-profile sweeps and
+    // whenever exact normalized rail clocks cannot pair the profile contacts.
+    let refit_rails = refit_rails || independent || (partial && !single && ends.is_empty());
+    if !refit_rails && prepared.iter().any(|rail| rail.curve.is_rational()) {
+        return Err(unsupported("rational rails require refitting"));
     }
-    if single {
-        let [a, b] = rows[0].stations;
-        let toward_start = a == 1. || b == 1.;
-        (first, certificate_first) = trim_single_rail(first, certificate_first, a, toward_start)?;
-        (second, certificate_second) =
-            trim_single_rail(second, certificate_second, b, toward_start)?;
-        rows[0].stations = [f64::from(toward_start); 2];
-    } else if rows[0].stations[0] != 0.
-        || rows.last().unwrap().stations[0] != 1.
-        || (refit_rails && (rows[0].stations[1] != 0. || rows.last().unwrap().stations[1] != 1.))
-    {
-        return Err(unsupported(
-            "first and last sections must contact the rail ends",
-        ));
-    }
-    let unordered = rows
-        .windows(2)
-        .any(|pair| (0..2).any(|axis| pair[1].stations[axis] - pair[0].stations[axis] <= 1e-10));
-    if unordered {
-        return Err(unsupported(
-            "requires distinct, consistently ordered contacts on both rails",
-        ));
-    }
-    if !refit_rails
-        && rows
-            .iter()
-            .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10)
-    {
-        return Err(unsupported(
-            "requires matching normalized rail parameters or RefitRails=Yes",
-        ));
-    }
-    let rails = [first.transformed(to_local)?, second.transformed(to_local)?];
+    let rails = [
+        prepared[0].curve.transformed(to_local)?,
+        prepared[1].curve.transformed(to_local)?,
+    ];
     for row in &mut rows {
         row.curve = row.curve.transformed(to_local)?;
     }
@@ -291,8 +292,10 @@ pub fn two_rail_sweep_surface_with_options(
     let u = [*surface.domain_u().start(), *surface.domain_u().end()];
     let v = [*surface.domain_v().start(), *surface.domain_v().end()];
     let mut constraints = Vec::new();
-    for (i, (rail, v)) in [(&certificate_first, v[0]), (&certificate_second, v[1])]
-        .into_iter()
+    for (i, (rail, v)) in prepared
+        .iter()
+        .map(|rail| &rail.original)
+        .zip(v)
         .enumerate()
     {
         if let Some(clock) = &clock {
@@ -333,24 +336,65 @@ pub fn two_rail_sweep_surface_with_options(
     Ok(surface)
 }
 
-fn trim_single_rail(
-    prepared: NurbsCurve,
-    original: NurbsCurve,
-    station: f64,
-    toward_start: bool,
-) -> Result<(NurbsCurve, NurbsCurve), Error> {
-    if station == f64::from(toward_start) {
-        return Ok((prepared, original));
+fn retain_sections(
+    rails: &mut [PreparedRail; 2],
+    rows: &mut [Section],
+    orient_rails: bool,
+) -> Result<bool, Error> {
+    if let [row] = rows {
+        let [a, b] = row.stations;
+        let reverse = match (a, b) {
+            (0., 0.) | (1., 1.) => false,
+            (0., 1.) | (1., 0.) => true,
+            _ => {
+                rails[0]
+                    .curve
+                    .derivative_at(a)?
+                    .dot(rails[1].curve.derivative_at(b)?)?
+                    < 0.
+            }
+        };
+        if reverse {
+            rails[1].reverse(rows, 1)?;
+        }
+        let [a, b] = rows[0].stations;
+        let toward_start = a == 1. || b == 1.;
+        let span = |t| if toward_start { [0., t] } else { [t, 1.] };
+        rails[0].trim(span(a))?;
+        rails[1].trim(span(b))?;
+        rows[0].stations = [f64::from(toward_start); 2];
+        return Ok(span(a) != [0., 1.] || span(b) != [0., 1.]);
     }
-    let domain = original.domain();
-    let contact = domain.start() + station * (domain.end() - domain.start());
-    let interval = if toward_start {
-        *domain.start()..=contact
-    } else {
-        contact..=*domain.end()
-    };
-    let original = super::trim_curve(&original, interval)?;
-    Ok((original.try_reparameterized(0. ..=1.)?, original))
+
+    let a = rows[0].stations;
+    let b = rows.last().unwrap().stations;
+    let on_ends = (0..2).all(|i| a[i].min(b[i]) == 0. && a[i].max(b[i]) == 1.);
+    if orient_rails && !on_ends && rows.windows(2).all(|r| r[0].stations[0] > r[1].stations[0]) {
+        // For a deliberately reversed set of partial profiles, begin the
+        // shortened sweep at the first profile picked.
+        rails[0].reverse(rows, 0)?;
+    }
+    rows.sort_by(|a, b| a.stations[0].total_cmp(&b.stations[0]));
+    if orient_rails && rows[0].stations[1] > rows.last().unwrap().stations[1] {
+        rails[1].reverse(rows, 1)?;
+    }
+    if rows
+        .windows(2)
+        .any(|pair| (0..2).any(|axis| pair[1].stations[axis] - pair[0].stations[axis] <= 1e-10))
+    {
+        return Err(unsupported(
+            "requires distinct, consistently ordered contacts on both rails",
+        ));
+    }
+    let start = rows[0].stations;
+    let end = rows.last().unwrap().stations;
+    for axis in 0..2 {
+        rails[axis].trim([start[axis], end[axis]])?;
+        for row in rows.iter_mut() {
+            row.stations[axis] = (row.stations[axis] - start[axis]) / (end[axis] - start[axis]);
+        }
+    }
+    Ok(start != [0.; 2] || end != [1.; 2])
 }
 
 fn skin(rails: [&NurbsCurve; 2], rows: &[Section]) -> Result<NurbsSurface, Error> {
@@ -488,10 +532,12 @@ fn prepare_rail(
     sections: &[NurbsCurve],
     ends: SweepEndPoints,
     tolerance: Tolerance,
-    refit_rails: bool,
-) -> Result<(NurbsCurve, NurbsCurve), Error> {
+) -> Result<PreparedRail, Error> {
     if ends.is_empty() {
-        return Ok((prepare(curve, tolerance, refit_rails)?, curve.clone()));
+        return Ok(PreparedRail {
+            curve: prepare(curve, tolerance, true)?,
+            original: curve.clone(),
+        });
     }
     let [start, end] = rail_interval(curve, sections, ends, tolerance)?;
     let range = start.min(end)..=start.max(end);
@@ -503,8 +549,7 @@ fn prepare_rail(
     if end < start {
         original = original.reversed()?;
     }
-    let prepared =
-        super::knot_refinement::clamp_curve(&prepare(&original, tolerance, refit_rails)?)?;
+    let prepared = super::knot_refinement::clamp_curve(&prepare(&original, tolerance, true)?)?;
     let mut points = prepared.control_points().to_vec();
     if let Some(point) = ends.start {
         points[0] = WeightedPoint3::try_new(point, points[0].weight())?;
@@ -513,8 +558,8 @@ fn prepare_rail(
         let end = points.last_mut().unwrap();
         *end = WeightedPoint3::try_new(point, end.weight())?;
     }
-    Ok((
-        NurbsCurve::try_new_rational(prepared.degree(), points, prepared.knots().to_vec())?,
+    Ok(PreparedRail {
+        curve: NurbsCurve::try_new_rational(prepared.degree(), points, prepared.knots().to_vec())?,
         original,
-    ))
+    })
 }

@@ -137,7 +137,7 @@ fn native_two_rail_sweep_refit_maps_independent_profile_stations() {
         curve(vec![p(0., 0., 8.), p(1., 1.2, 8.), p(2., 0., 8.)]),
     ];
     let tolerance = Tolerance::DEFAULT;
-    assert!(two_rail_sweep_surface(&rails[0], &rails[1], &profiles, tolerance).is_err());
+    let automatic = two_rail_sweep_surface(&rails[0], &rails[1], &profiles, tolerance).unwrap();
     let surface = two_rail_sweep_surface_with_options(
         &rails[0],
         &rails[1],
@@ -149,6 +149,7 @@ fn native_two_rail_sweep_refit_maps_independent_profile_stations() {
         tolerance,
     )
     .unwrap();
+    assert_eq!(automatic, surface);
     assert_eq!(surface.domain_u(), 0. ..=8.);
     for (u, profile) in [0., 4.24, 8.].into_iter().zip(&profiles) {
         for v in [0., 0.25, 0.5, 0.75, 1.] {
@@ -277,18 +278,141 @@ fn native_two_rail_sweep_refit_certifies_rational_rail_images() {
         }
     }
 }
+
 #[test]
-fn native_two_rail_sweep_declines_unmatched_missing_duplicate_and_disconnected_sections() {
+fn native_two_rail_sweep_keeps_the_profile_bracket_on_curved_rails() {
+    let rails = [
+        curve(vec![p(0., 0., 0.), p(0., 3., 2.), p(1., 0., 8.)]),
+        curve(vec![p(2., 0., 0.), p(6., -1., 5.), p(4., 0., 8.)]),
+    ];
+    let profiles = [(0.2, 0.25, 0.8), (0.8, 0.85, 1.2)].map(|(u, v, h)| {
+        let a = rails[0].evaluate(u).unwrap();
+        let b = rails[1].evaluate(v).unwrap();
+        curve(vec![
+            a,
+            p(
+                a.x().midpoint(b.x()),
+                a.y().midpoint(b.y()) + h,
+                a.z().midpoint(b.z()),
+            ),
+            b,
+        ])
+    });
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1_f64.to_radians()).unwrap();
+    let surface = two_rail_sweep_surface(&rails[0], &rails[1], &profiles, tolerance).unwrap();
+    let explicit = two_rail_sweep_surface_with_options(
+        &rails[0],
+        &rails[1],
+        &profiles,
+        TwoRailSweepOptions {
+            refit_rails: true,
+            ..Default::default()
+        },
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!(surface, explicit);
+    let end = *surface.domain_u().end();
+    assert!((end - 4.9589270852607434).abs() < 2e-5);
+    for (u, profile) in [0., end].into_iter().zip(&profiles) {
+        for v in [0., 0.25, 0.5, 0.75, 1.] {
+            let reference = profile.evaluate(v).unwrap();
+            assert!(
+                surface
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(reference)
+                    .unwrap()
+                    < 1e-7
+            );
+        }
+    }
+    // Native Rhino command, default refit off. Both rails were shortened.
+    for (u, xyz) in [
+        (
+            0.25,
+            [2.1868743397099615, 0.9490370333951599, 2.8222574614962213],
+        ),
+        (
+            0.5,
+            [2.4728862414563366, 1.0590472153505524, 4.004652298436081],
+        ),
+        (
+            0.75,
+            [2.618389694517425, 1.0645071721040424, 5.2050962399910485],
+        ),
+    ] {
+        let actual = surface.evaluate(u * end, 0.5).unwrap();
+        let delta = actual.distance_to(Point3::try_from(xyz).unwrap()).unwrap();
+        assert!(delta < tolerance.absolute(), "{u}: {delta}");
+    }
+}
+
+#[test]
+fn native_two_rail_sweep_shortens_straight_rails_in_the_picked_direction() {
+    for (offset, reverse_rail, reverse_profiles) in [
+        (0., false, false),
+        (1., false, false),
+        (0., true, false),
+        (0., false, true),
+    ] {
+        let rails = [
+            curve(vec![p(0., 0., 0.), p(0., 0., 8.)]),
+            if reverse_rail {
+                curve(vec![p(2., 0., 8.), p(2., 0., 0.)])
+            } else {
+                curve(vec![p(2., 0., 0.), p(2., 0., 8.)])
+            },
+        ];
+        let mut profiles = [(2., 0.8), (6., 1.2)].map(|(z, height)| {
+            curve(vec![
+                p(0., 0., z),
+                p(1., height, z + offset / 2.),
+                p(2., 0., z + offset),
+            ])
+        });
+        if reverse_profiles {
+            profiles.reverse();
+        }
+        let surface =
+            two_rail_sweep_surface(&rails[0], &rails[1], &profiles, Tolerance::DEFAULT).unwrap();
+        assert_eq!([surface.degree_u(), surface.degree_v()], [3, 2]);
+        assert!((*surface.domain_u().end() - 4.).abs() < 1e-9);
+        for (u, profile) in [0., 4.].into_iter().zip(&profiles) {
+            for v in [0., 0.25, 0.5, 0.75, 1.] {
+                assert!(
+                    surface
+                        .evaluate(u, v)
+                        .unwrap()
+                        .distance_to(profile.evaluate(v).unwrap())
+                        .unwrap()
+                        < 1e-9
+                );
+            }
+        }
+        let actual = surface.evaluate(1., 0.5).unwrap();
+        let reference = if reverse_profiles {
+            p(1., 0.56875, 5.)
+        } else {
+            p(1., 0.43125, 3. + offset / 2.)
+        };
+        assert!(actual.distance_to(reference).unwrap() < 1e-9);
+    }
+}
+#[test]
+fn native_two_rail_sweep_rejects_missing_duplicate_off_rail_and_crossed_sections() {
     let (rails, sections) = inputs(0.);
     for invalid in [
         vec![],
         vec![sections[0].clone(), sections[0].clone()],
         vec![
             sections[0].clone(),
-            curve(vec![p(0., 0., 3.), p(2., 0., 4.)]),
+            curve(vec![p(0., 0., 3.), p(3., 0., 4.)]),
         ],
         vec![
-            curve(vec![p(0., 0., 1.), p(2., 0., 1.)]),
+            sections[0].clone(),
+            curve(vec![p(0., 0., 2.5), p(2., 0., 4.)]),
+            curve(vec![p(0., 0., 3.5), p(2., 0., 3.)]),
             sections[1].clone(),
         ],
     ] {
