@@ -88,8 +88,9 @@ distinct from the knot-spacing metric. Two sections use linear homogeneous
 handles. A matched end redirects the sampled handle offsets across the edge
 in the supporting face's tangent plane. The offsets are interpolated in the
 rational profile basis. The cubic solve preserves all intermediate section
-constraints. Unsimplified ends are sampled for angular agreement on each
-boundary span.
+constraints. Tangent planes can differ between fit stations, including on
+unsimplified edges. Unsimplified ends are sampled for positional agreement
+with the selected edge on each span.
 Closed interpolating styles use periodic cubic systems; closed Loose
 is cubic even with three sections. Open Loose uses degree `min(3, n-1)`.
 Final domains use the longest Euclidean control polygons in each direction,
@@ -124,9 +125,9 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Remaining work includes general spatial profile matching, tangent fields that
-cannot be represented in the compatible section basis, and curved-profile Refit
-simplification. Nonparallel or nonplanar closed sections keep their input order. Native parameter preservation
+Remaining work includes general spatial profile matching, supporting-face
+selection on shared edges, and curved-profile Refit simplification.
+Nonparallel or nonplanar closed sections keep their input order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
 compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when
 coarse length comparisons tie at machine precision. The command does not cap its ends.

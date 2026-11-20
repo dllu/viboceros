@@ -63,7 +63,7 @@ pub(super) fn surface(
         if let Some(support) = support
             && !simplified[side]
         {
-            validate_match(&surface, u, support, tolerance)?;
+            validate_boundary(&surface, u, support, tolerance)?;
         }
     }
     Ok(surface)
@@ -83,16 +83,16 @@ fn normal_on_support(
     Ok(support.normal_at(u, v)?.as_vector())
 }
 
-fn validate_match(
+fn validate_boundary(
     loft: &NurbsSurface,
     u: Real,
     support: &TangentSupport,
     tolerance: Tolerance,
 ) -> Result<(), GeometryError> {
-    // Check the interior of every active span. An exact knot can belong to
-    // different incident spans on the loft and on the original face.
+    // Compatibility edits must preserve the edge's image. The handle row
+    // matches directions at its fit stations, with interpolation between them.
+    let edge = support.guide.curve_ref();
     let domain = loft.domain_v();
-    let limit = tolerance.angular().min(std::f64::consts::FRAC_PI_2).sin();
     for interval in loft.knots_v().windows(2) {
         let [a, b] = [interval[0], interval[1]];
         if a >= b || a < *domain.start() || b > *domain.end() {
@@ -101,17 +101,10 @@ fn validate_match(
         for fraction in [0.0625, 0.25, 0.5, 0.75, 0.9375] {
             let v = a + fraction * (b - a);
             let point = loft.evaluate(u, v)?;
-            let edge = support.guide.curve_ref();
             let closest = edge.closest_parameter(point, tolerance)?;
             if point.distance_to(edge.evaluate(closest)?)? > tolerance.absolute() {
                 return Err(GeometryError::Degenerate {
                     context: "Loft section compatibility changed the matched boundary edge",
-                });
-            }
-            let normal = normal_on_support(&support.target.surface, point, tolerance)?;
-            if normal.cross(loft.normal_at(u, v)?.as_vector())?.length()? > limit {
-                return Err(GeometryError::Degenerate {
-                    context: "Loft could not match the supporting face within angular tolerance",
                 });
             }
         }

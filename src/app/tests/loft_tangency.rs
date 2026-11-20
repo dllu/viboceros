@@ -1,5 +1,5 @@
 use super::*;
-use viboceros_geometry::{Brep, Circle3, NurbsSurface};
+use viboceros_geometry::{Brep, Circle3, Ellipse3, NurbsSurface};
 
 fn enter(app: &mut VibocerosApp, input: &str) {
     app.command_input = input.into();
@@ -26,6 +26,15 @@ fn add_profile_edge(
         .unwrap();
     let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
     format!("Edge={id},{edge}")
+}
+
+fn review_closed_profiles(app: &mut VibocerosApp, edges: [&str; 2], middle: ObjectId) {
+    enter(app, "Loft");
+    enter(app, edges[0]);
+    enter(app, &format!("SelID={middle}"));
+    enter(app, edges[1]);
+    enter(app, "");
+    enter(app, "");
 }
 
 #[test]
@@ -188,6 +197,80 @@ fn loft_tangency_on_rebuilt_rims_follows_the_original_supports() {
     );
 }
 
+#[test]
+fn loft_tangency_on_skewed_elliptical_rims_retains_native_patch_shapes() {
+    let mut app = test_app();
+    let plane = app.viewports[0].construction_plane();
+    let tolerance = app.document.tolerance();
+    let ellipse = |[x, y, z, rx, ry]: [f64; 5]| {
+        Ellipse3::try_new(
+            point(x, y, z),
+            rx,
+            ry,
+            plane.x_axis(),
+            plane.y_axis(),
+            tolerance,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+    };
+    let [start, end] = [
+        ([0., 0., 0., 3., 1.8], [-0.8, 0.7, -2., 2.4, 1.4]),
+        ([0.3, -0.6, 6., 2.5, 1.75], [0.9, -0.4, 8., 3.4, 2.6]),
+    ]
+    .map(|(near, far)| {
+        let surface = NurbsSurface::try_ruled_from_curves(&ellipse(near), &ellipse(far)).unwrap();
+        add_profile_edge(&mut app, surface, |p| (p.z() - near[2]).abs() < 1e-9)
+    });
+    let middle = app
+        .document
+        .add_geometry(Geometry::NurbsCurve(ellipse([0.4, 0.3, 3., 3.6, 1.8])))
+        .unwrap();
+    app.document.clear_history().unwrap();
+    review_closed_profiles(&mut app, [&start, &end], middle);
+    enter(&mut app, "MatchStartTangent=Yes MatchEndTangent=Yes");
+    assert!(
+        !app.loft_prompt.as_ref().unwrap().preview_wires().is_empty(),
+        "{:?}",
+        app.command_log
+    );
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    assert!(app.loft_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.undo_label(), Some("Loft"));
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Loft B-rep");
+    };
+    assert_eq!(brep.faces().len(), 4);
+    // Rhino 8.32 samples from all four faces, away from the shared edges.
+    for [x, y, z] in [
+        [2.929295134737457, -0.9615899476662249, 3.086400396121126],
+        [1.4055001945747467, -1.5724889733774483, 4.523185162468901],
+        [-2.125070805930426, -0.9754008211782568, 3.084618274145645],
+        [
+            -0.47046258332083873,
+            -1.8163336109078367,
+            1.5439022398047277,
+        ],
+        [-2.129835061714781, 1.5576065392790062, 3.0848709515470176],
+        [-3.07333913468666, 0.5033074838913203, 1.6042498218578982],
+        [2.933764474877405, 1.543189121890091, 3.082885446564188],
+        [2.8221397487763347, 0.25764680097466025, 4.511704386295492],
+    ] {
+        let expected = point(x, y, z);
+        let (face, u, v) = brep
+            .closest_face_parameters(expected, tolerance)
+            .unwrap()
+            .unwrap();
+        let actual = brep.faces()[face].surface().evaluate(u, v).unwrap();
+        assert!(
+            actual.distance_to(expected).unwrap() < 1e-9,
+            "{actual:?} != {expected:?}"
+        );
+    }
+}
+
 fn check_round_rim_loft(
     radii: [[f64; 2]; 2],
     rebuild: Option<usize>,
@@ -202,29 +285,22 @@ fn check_round_rim_loft(
             .to_nurbs()
             .unwrap()
     };
-    let mut rims = Vec::new();
-    for ([r0, r1], (from, to, rim_z)) in radii.into_iter().zip([(-2., 0., 0.), (6., 8., 6.)]) {
-        let surface = if r0 == r1 {
-            NurbsSurface::try_cylinder(plane, r0, from, to).unwrap()
-        } else {
-            NurbsSurface::try_ruled_from_curves(&circle(r0, from), &circle(r1, to)).unwrap()
-        };
-        rims.push(add_profile_edge(&mut app, surface, |p| {
-            (p.z() - rim_z).abs() < 1e-9
-        }));
-    }
+    let [start, end] =
+        [(radii[0], -2., 0., 0.), (radii[1], 6., 8., 6.)].map(|([r0, r1], from, to, rim_z)| {
+            let surface = if r0 == r1 {
+                NurbsSurface::try_cylinder(plane, r0, from, to).unwrap()
+            } else {
+                NurbsSurface::try_ruled_from_curves(&circle(r0, from), &circle(r1, to)).unwrap()
+            };
+            add_profile_edge(&mut app, surface, |p| (p.z() - rim_z).abs() < 1e-9)
+        });
     app.commands
         .execute(&mut app.document, "Circle 0,0,3 3.6")
         .unwrap();
     let middle = app.document.objects().last().unwrap().id();
     let sources = app.document.objects().cloned().collect::<Vec<_>>();
     app.document.clear_history().unwrap();
-    enter(&mut app, "Loft");
-    enter(&mut app, &rims[0]);
-    enter(&mut app, &format!("SelID={middle}"));
-    enter(&mut app, &rims[1]);
-    enter(&mut app, "");
-    enter(&mut app, "");
+    review_closed_profiles(&mut app, [&start, &end], middle);
     enter(&mut app, "MatchStartTangent=Yes MatchEndTangent=Yes");
     let review = |app: &VibocerosApp| app.loft_prompt.as_ref().unwrap().preview_wires().to_vec();
     let matched = review(&app);
