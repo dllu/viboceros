@@ -29,7 +29,7 @@ pub(super) struct Clock<'a> {
 impl<'a> Clock<'a> {
     fn new(
         rails: [&'a NurbsCurve; 2],
-        rows: &[Section],
+        sources: &[[f64; 2]],
         tolerance: Tolerance,
     ) -> Result<Self, Error> {
         let mut samplers = [
@@ -42,16 +42,9 @@ impl<'a> Clock<'a> {
         let length = samplers[0]
             .total_length()
             .midpoint(samplers[1].total_length());
-        let mut sources = rows.iter().map(|row| row.stations).collect::<Vec<_>>();
-        if sources[0] != [0.; 2] {
-            sources.insert(0, [0.; 2]);
-        }
-        if sources.last() != Some(&[1.; 2]) {
-            sources.push([1.; 2]);
-        }
         let contacts = sources
-            .into_iter()
-            .map(|source| {
+            .iter()
+            .map(|&source| {
                 let distances = [
                     samplers[0].distance_at_parameter(source[0])?,
                     samplers[1].distance_at_parameter(source[1])?,
@@ -225,19 +218,24 @@ pub(super) struct FittedSweep<'a> {
 pub(super) fn sweep<'a>(
     rails: [&'a NurbsCurve; 2],
     rows: &[Section],
+    paired_stations: &[[f64; 2]],
     maintain_height: bool,
     tolerance: Tolerance,
 ) -> Result<FittedSweep<'a>, Error> {
-    let clock = Clock::new(rails, rows, tolerance)?;
+    let clock = Clock::new(rails, paired_stations, tolerance)?;
     let all_stations = clock.contacts.iter().map(|c| c.station).collect::<Vec<_>>();
-    let stations = if rows.len() == 1 {
-        vec![rows[0].stations[0]]
-    } else {
-        all_stations.clone()
-    };
+    let stations = rows
+        .iter()
+        .map(|row| {
+            let i = paired_stations
+                .binary_search_by(|pair| pair[0].total_cmp(&row.stations[0]))
+                .expect("profile station retained by placement");
+            all_stations[i]
+        })
+        .collect::<Vec<_>>();
     let mut spans = BTreeMap::from([(0_f64.to_bits(), 4), (1_f64.to_bits(), 4)]);
     for s in all_stations.windows(3) {
-        // Put a Greville site at each selected profile using three symmetric
+        // Put a Greville site at each paired contact using three symmetric
         // simple knots; refinement can add more support away from the contact.
         let half = (s[1] - s[0]).min(s[2] - s[1]) * 0.5;
         for t in [s[1] - half, s[1], s[1] + half] {
@@ -267,7 +265,7 @@ pub(super) fn sweep<'a>(
             return Err(unsupported("rail refit control limit"));
         }
         let mut sites = greville(&knots, DEGREE);
-        pin_sections(&mut sites, &stations)?;
+        pin_sections(&mut sites, &all_stations)?;
         let fitted = samples.interpolate(&knots, &sites)?;
         let mut add = Vec::new();
         let breaks = spans

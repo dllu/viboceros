@@ -15,7 +15,9 @@ impl VibocerosApp {
         if self.dismiss_edge_handle_operation() || self.dismiss_edge_size_input() {
             return;
         }
-        if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip() {
+        if self.cancel_offset_surface_distance() || self.cancel_offset_mesh_flip()
+            || (self.plane_prompt.is_none() && self.finish_sweep_two_rail_slashes())
+        {
             return;
         }
         if self.layer_prompt.is_some() {

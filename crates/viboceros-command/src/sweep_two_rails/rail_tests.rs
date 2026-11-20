@@ -47,13 +47,16 @@ fn sweep_two_rail_chains_match_collinear_and_kinked_rhino_fixtures() {
             Rail::chain(&doc, &path, tolerance.absolute()).unwrap()
         });
         let source = Source::with_rails(&doc, rails, &sections).unwrap();
-        let brep = source.build(ShapeOptions::default(), tolerance).unwrap();
+        let brep = source
+            .build(ShapeOptions::default(), &[], tolerance)
+            .unwrap();
         let refitted = source
             .build(
                 ShapeOptions {
                     refit_rails: true,
                     ..Default::default()
                 },
+                &[],
                 tolerance,
             )
             .unwrap();

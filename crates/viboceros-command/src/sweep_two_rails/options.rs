@@ -35,6 +35,7 @@ impl SectionFit {
 pub struct Options {
     names: Option<[String; 2]>,
     pub shape: ShapeOptions,
+    pub slashes: Vec<[Point3; 2]>,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -52,6 +53,7 @@ impl Options {
         let mut ends = SweepEndPoints::default();
         let mut maintain_height = None;
         let mut refit_rails = None;
+        let mut slashes = Vec::new();
         for arg in args {
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if let Some(index) = ["Rail1Name", "Rail2Name"]
@@ -84,6 +86,11 @@ impl Options {
                 if refit_rails.replace(Self::parse_toggle(value)?).is_some() {
                     return Err(CommandError::Usage(USAGE));
                 }
+            } else if option_name_eq(key, "Slash") {
+                if slashes.len() == MAX_SLASHES {
+                    return Err(CommandError::Usage(SLASH_USAGE));
+                }
+                slashes.push(Self::parse_slash(value)?);
             } else if fit.replace(SectionFit::parse(key, value)?).is_some() {
                 return Err(CommandError::Usage(USAGE));
             }
@@ -95,6 +102,7 @@ impl Options {
         };
         Ok(Self {
             names,
+            slashes,
             shape: ShapeOptions {
                 fit: fit.unwrap_or_default(),
                 ends,
@@ -108,6 +116,16 @@ impl Options {
         parse_yes_no(value).ok_or(CommandError::Usage("Choose Yes or No"))
     }
 
+    pub fn parse_slash(value: &str) -> Result<[Point3; 2], CommandError> {
+        let (first, second) = value
+            .split_once('/')
+            .ok_or(CommandError::Usage(SLASH_USAGE))?;
+        Ok([
+            parse_single_option_point(first, SLASH_USAGE)?,
+            parse_single_option_point(second, SLASH_USAGE)?,
+        ])
+    }
+
     pub fn explicit_rails(&self, doc: &Document) -> Result<Option<[ObjectId; 2]>, CommandError> {
         let Some([first, second]) = &self.names else {
             return Ok(None);
@@ -119,5 +137,19 @@ impl Options {
             return Err(CommandError::Usage(USAGE));
         }
         Ok(Some(rails))
+    }
+}
+
+impl ShapeOptions {
+    pub(super) fn native(
+        self,
+        slashes: &[[Point3; 2]],
+    ) -> viboceros_smlib::TwoRailSweepOptions<'_> {
+        viboceros_smlib::TwoRailSweepOptions {
+            ends: self.ends,
+            maintain_height: self.maintain_height,
+            refit_rails: self.refit_rails,
+            slashes,
+        }
     }
 }

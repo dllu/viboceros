@@ -342,38 +342,63 @@ impl VibocerosApp {
                 return false;
             }
         };
+        if self.plane_prompt.is_none()
+            && let Some(projected) = self.project_sweep_two_rail_slash_point(point)
+        {
+            return match projected {
+                Ok((rail, point)) => self.accept_drafting_slash(rail, point),
+                Err(error) => {
+                    self.push_log(format!("Error: {error}"));
+                    false
+                }
+            };
+        }
         let plane = self.viewports[self.active_viewport].construction_plane();
         if self.apply_drafting_point_with_snap(point, snap.filter(|s| s.point() == point)) {
-            self.snaps.model_override = None;
-            if self.active_command.is_some()
-                && self.arc_length_session.is_none()
-                && self.arc_extension_session.as_ref().is_none_or(|s| {
-                    !s.input.wants_center() && !s.input.sweep().is_some_and(|s| s.requests_length())
-                })
-                && self
-                    .arc_tilted_session
-                    .as_ref()
-                    .is_none_or(|s| !s.input.requests_orientation() && !s.input.requests_length())
-            {
-                self.drafting_plane.get_or_insert(plane);
-            }
-            self.last_point = Some(
-                self.line_accepted_point
-                    .take()
-                    .or_else(|| self.polyline_session.as_ref()?.input.anchor())
-                    .unwrap_or(point),
-            );
-            self.point_filter = None;
-            self.point_constraint = None;
-            self.command_input.clear();
-            if let Some(hint) = self.transform_default_hint() {
-                self.push_log(hint);
-            }
-            self.command_file_point_accepted();
+            self.record_drafting_point(plane, point);
             true
         } else {
             false
         }
+    }
+
+    pub(super) fn accept_drafting_slash(&mut self, rail: usize, point: Point3) -> bool {
+        let plane = self.viewports[self.active_viewport].construction_plane();
+        if self.accept_sweep_two_rail_slash_point(rail, point) {
+            self.record_drafting_point(plane, point);
+            true
+        } else {
+            false
+        }
+    }
+
+    fn record_drafting_point(&mut self, plane: Frame3, point: Point3) {
+        self.snaps.model_override = None;
+        if self.active_command.is_some()
+            && self.arc_length_session.is_none()
+            && self.arc_extension_session.as_ref().is_none_or(|s| {
+                !s.input.wants_center() && !s.input.sweep().is_some_and(|s| s.requests_length())
+            })
+            && self
+                .arc_tilted_session
+                .as_ref()
+                .is_none_or(|s| !s.input.requests_orientation() && !s.input.requests_length())
+        {
+            self.drafting_plane.get_or_insert(plane);
+        }
+        self.last_point = Some(
+            self.line_accepted_point
+                .take()
+                .or_else(|| self.polyline_session.as_ref()?.input.anchor())
+                .unwrap_or(point),
+        );
+        self.point_filter = None;
+        self.point_constraint = None;
+        self.command_input.clear();
+        if let Some(hint) = self.transform_default_hint() {
+            self.push_log(hint);
+        }
+        self.command_file_point_accepted();
     }
 }
 

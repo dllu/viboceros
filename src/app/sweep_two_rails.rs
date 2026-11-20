@@ -3,7 +3,7 @@ use super::{object_selection::PendingObjectCommand, *};
 use std::collections::BTreeSet;
 use viboceros_command::chain_selection::Target;
 use viboceros_command::sweep_two_rails::{
-    MAX_SECTIONS, Options, Rail, SectionFit, ShapeOptions, Source, point_count,
+    MAX_SECTIONS, MAX_SLASHES, Options, Rail, SectionFit, ShapeOptions, Source, point_count,
 };
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
@@ -11,6 +11,7 @@ use viboceros_geometry::SweepEndPoints;
 mod input;
 mod points;
 mod preview;
+mod slashes;
 use points::End;
 
 fn chain_option(word: &str) -> bool {
@@ -51,6 +52,7 @@ struct State {
     rails: Vec<Rail>,
     picks: Vec<Pick>,
     shape: ShapeOptions,
+    slashes: Vec<[Point3; 2]>,
     rebuild: usize,
     refit: f64,
     review: bool,
@@ -65,6 +67,7 @@ pub(super) struct Session {
     undo: Vec<State>,
     value: Option<&'static str>,
     picking: Option<End>,
+    slash_picker: Option<slashes::Picker>,
     preview: preview::Preview,
 }
 
@@ -116,6 +119,9 @@ impl Session {
     }
 
     pub(super) fn hint(&self) -> &'static str {
+        if let Some(picker) = &self.slash_picker {
+            return picker.hint();
+        }
         if let Some(end) = self.picking {
             return end.prompt();
         }
@@ -126,7 +132,7 @@ impl Session {
             Some("MaintainHeight") => "Maintain height? Choose Yes or No",
             Some("RefitRails") => "Refit rails? Choose Yes or No",
             _ if self.state.review => {
-                "Simplify / Rebuild / Refit / RefitRails / MaintainHeight / StartPoint / EndPoint / Undo. Enter creates the sweep"
+                "Simplify / Rebuild / Refit / RefitRails / MaintainHeight / AddSlash / StartPoint / EndPoint / Undo. Enter creates the sweep"
             }
             _ => match self.rail_count() {
                 0 => "Select the first rail or choose ChainEdges",
@@ -196,6 +202,7 @@ impl VibocerosApp {
                 rails,
                 picks,
                 shape: options.shape,
+                slashes: options.slashes.clone(),
                 rebuild: match options.shape.fit {
                     SectionFit::Rebuild(count) => count,
                     _ => 5,
@@ -212,6 +219,7 @@ impl VibocerosApp {
             undo: Vec::new(),
             value: None,
             picking: None,
+            slash_picker: None,
             preview: Default::default(),
         };
         if session.ready() && chain.is_none() && (!arguments.is_empty() || command.contains('-')) {
@@ -395,11 +403,13 @@ impl VibocerosApp {
         let choice = |enabled| if enabled { "Yes" } else { "No" };
         let height = choice(session.state.shape.maintain_height);
         let rails = choice(session.state.shape.refit_rails);
-        self.push_log(if session.state.review && session.value.is_none() {
-            format!("Sweep2: {hint}. {fit}. MaintainHeight={height}. RefitRails={rails}")
-        } else {
-            format!("Sweep2: {hint}")
-        });
+        self.push_log(
+            if session.state.review && session.value.is_none() && session.slash_picker.is_none() {
+                format!("Sweep2: {hint}. {fit}. MaintainHeight={height}. RefitRails={rails}")
+            } else {
+                format!("Sweep2: {hint}")
+            },
+        );
     }
 
     pub(super) fn validate_sweep_two_rails(&mut self) -> bool {

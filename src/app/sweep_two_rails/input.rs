@@ -9,6 +9,9 @@ impl VibocerosApp {
             return false;
         };
         let name = input.trim_start_matches(['_', '-']);
+        if session.slash_picker.is_some() {
+            return self.continue_sweep_two_rail_slashes(name);
+        }
         if name.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
         } else if name.eq_ignore_ascii_case("Undo") {
@@ -46,9 +49,13 @@ impl VibocerosApp {
         } else if let Some((option, value)) = name.split_once('=') {
             if let Some(end) = End::from_name(option) {
                 self.set_sweep_two_rail_point_argument(end, name);
+            } else if option.eq_ignore_ascii_case("Slash") {
+                self.set_sweep_two_rail_slash_argument(value);
             } else {
                 self.set_sweep_two_rail_option(option, value);
             }
+        } else if name.eq_ignore_ascii_case("AddSlash") {
+            self.begin_sweep_two_rail_slashes();
         } else if let Some(option) = [
             "Simplify",
             "Rebuild",

@@ -2,10 +2,25 @@ use super::*;
 use viboceros_geometry::{Brep, NurbsCurve};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+pub(super) enum Provisional {
+    End(End, Point3),
+    Slash([Point3; 2]),
+}
+
+impl Provisional {
+    fn point_end(self) -> Option<End> {
+        match self {
+            Self::End(end, _) => Some(end),
+            Self::Slash(_) => None,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct Request {
     revision: u64,
     tolerance: Tolerance,
-    provisional: Option<(End, Point3)>,
+    provisional: Option<Provisional>,
 }
 
 #[derive(Debug)]
@@ -31,14 +46,14 @@ impl Preview {
         self.worker.clear_result();
     }
 
-    pub(super) fn accept_point(&mut self, end: End, point: Point3, tolerance: Tolerance) {
-        let previous = self.request(tolerance, Some((end, point)));
+    pub(super) fn accept_provisional(&mut self, provisional: Provisional, tolerance: Tolerance) {
+        let previous = self.request(tolerance, Some(provisional));
         self.revision = self.revision.wrapping_add(1);
         self.worker
             .retain_as(&previous, self.request(tolerance, None));
     }
 
-    fn request(&self, tolerance: Tolerance, provisional: Option<(End, Point3)>) -> Request {
+    fn request(&self, tolerance: Tolerance, provisional: Option<Provisional>) -> Request {
         Request {
             revision: self.revision,
             tolerance,
@@ -61,6 +76,7 @@ impl VibocerosApp {
     pub(in crate::app) fn update_sweep_two_rail_preview(
         &mut self,
         point: Option<Point3>,
+        slash_point: Option<(usize, Point3)>,
         context: &egui::Context,
     ) {
         let Some(session) = &self.sweep_two_rails else {
@@ -69,9 +85,17 @@ impl VibocerosApp {
         if session.rail_count() < 2 || session.section_count() == 0 {
             return;
         }
-        let provisional = session.picking.zip(point);
+        let provisional = session
+            .picking
+            .zip(point)
+            .map(|(end, point)| Provisional::End(end, point))
+            .or_else(|| {
+                slash_point
+                    .and_then(|pick| session.provisional_slash(pick))
+                    .map(Provisional::Slash)
+            });
         let mut shape = session.state.shape;
-        if let Some((end, point)) = provisional {
+        if let Some(Provisional::End(end, point)) = provisional {
             end.set(&mut shape.ends, point);
         }
         let ready = session.picking.is_none() || provisional.is_some();
@@ -84,19 +108,23 @@ impl VibocerosApp {
             |previous, current| {
                 previous.revision == current.revision
                     && previous.tolerance == current.tolerance
-                    && previous.provisional.map(|(end, _)| end)
-                        == current.provisional.map(|(end, _)| end)
+                    && previous.provisional.and_then(Provisional::point_end)
+                        == current.provisional.and_then(Provisional::point_end)
             },
             |_| {
                 let source = session.state.capture(&self.document);
+                let mut slashes = session.state.slashes.clone();
+                if let Some(Provisional::Slash(pair)) = provisional {
+                    slashes.push(pair);
+                }
                 move || {
                     Some(
                         source
                             .and_then(|source| {
-                                if provisional.is_some() {
+                                if matches!(provisional, Some(Provisional::End(..))) {
                                     source.validate_point_ends(shape.ends, tolerance)?;
                                 }
-                                source.build(shape, tolerance)
+                                source.build(shape, &slashes, tolerance)
                             })
                             .map(|brep| {
                                 let wires = draft_worker::wireframe(&brep, tolerance);
@@ -109,6 +137,7 @@ impl VibocerosApp {
         );
         if session.state.review
             && session.picking.is_none()
+            && provisional.is_none()
             && session.preview.reported != Some(request)
             && let Some(Err(error)) = session.preview.worker.latest()
         {
@@ -131,7 +160,9 @@ impl VibocerosApp {
             session
                 .state
                 .capture(&self.document)
-                .and_then(|source| source.build(session.state.shape, tolerance))
+                .and_then(|source| {
+                    source.build(session.state.shape, &session.state.slashes, tolerance)
+                })
                 .map_err(|error| error.to_string())
         };
         let brep = match result {

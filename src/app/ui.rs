@@ -1452,6 +1452,9 @@ impl VibocerosApp {
         } else {
             &[]
         };
+        let sweep_slash = self.sweep_two_rails.as_ref()
+            .filter(|_| edge_handle_input)
+            .and_then(sweep_two_rails::Session::slash_input);
         let seam_markers = curve_seam_editor.map(curve_seam::Editor::markers)
             .or_else(|| loft.map(loft::Prompt::seam_markers));
         let surface_seam = self.surface_seam_session.as_ref()
@@ -1924,6 +1927,7 @@ impl VibocerosApp {
                                     .or_else(|| loft?.seam_overlay(markers, index))
                             }),
                             surface_draft_wires,
+                            sweep_slash,
                             surface_seam,
                             current_end_marker,
                             end_marker_color,
@@ -2086,7 +2090,14 @@ impl VibocerosApp {
         self.update_loft_pole_preview(apex_hover, ui.ctx());
         if edge_handle_input {
             self.update_sweep_preview(apex_hover, ui.ctx());
-            self.update_sweep_two_rail_preview(apex_hover, ui.ctx());
+            let slash_point = viewport_outputs.iter()
+                .filter_map(|output| output.sweep_slash_point)
+                .max_by_key(|pick| pick.accept);
+            self.update_sweep_two_rail_preview(
+                apex_hover,
+                slash_point.map(|pick| (pick.rail, pick.point)),
+                ui.ctx(),
+            );
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());
@@ -2177,8 +2188,9 @@ impl VibocerosApp {
             if !handled_action && !menu_consumed {
                 let direction_click = output.direction_click.is_some();
                 let edge_size_input = output.edge_blend_handle.is_some();
+                let slash_pick = output.sweep_slash_point.is_some_and(|pick| pick.accept);
                 handled_action = self.handle_viewport_action(output);
-                if handled_action && (direction_click || edge_size_input) {
+                if handled_action && (direction_click || edge_size_input || slash_pick) {
                     ui.ctx().request_repaint();
                 }
             }

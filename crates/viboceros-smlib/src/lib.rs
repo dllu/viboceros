@@ -49,8 +49,8 @@ pub use native::{
     surface_intersection_events, surface_isocurve, surface_single_span_patches, surface_tweens,
     surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_model_with_point_ends,
     sweep_surface, trim_blend_parent, trim_curve, trim_surface, trim_surface_direction,
-    two_rail_point_stations, two_rail_sweep_surface, two_rail_sweep_surface_with_options,
-    two_rail_sweep_surface_with_point_ends,
+    two_rail_point_stations, two_rail_slash_paths, two_rail_sweep_surface,
+    two_rail_sweep_surface_with_options, two_rail_sweep_surface_with_point_ends,
 };
-pub use native::{EdgeBlendProfile, EdgeBlendSizes, TwoRailSweepOptions};
+pub use native::{EdgeBlendProfile, EdgeBlendSizes, MAX_TWO_RAIL_SLASHES, TwoRailSweepOptions};
 use viboceros_opennurbs as _;

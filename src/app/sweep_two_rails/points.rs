@@ -37,11 +37,9 @@ impl VibocerosApp {
         if self.plane_prompt.is_some() {
             return false;
         }
-        let Some(session) = self
-            .sweep_two_rails
-            .as_ref()
-            .filter(|session| session.picking.is_none() && session.value.is_none())
-        else {
+        let Some(session) = self.sweep_two_rails.as_ref().filter(|session| {
+            session.picking.is_none() && session.value.is_none() && session.slash_picker.is_none()
+        }) else {
             return false;
         };
         let name = input.trim_start_matches(['_', '-']);
@@ -130,7 +128,9 @@ impl VibocerosApp {
         session.state.shape.ends = ends;
         session.state.review |= end == End::Finish;
         session.picking = None;
-        session.preview.accept_point(end, point, tolerance);
+        session
+            .preview
+            .accept_provisional(preview::Provisional::End(end, point), tolerance);
         self.finish_sweep_two_rail_point_getter();
         self.log_sweep_two_rails();
         true

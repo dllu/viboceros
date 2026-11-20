@@ -145,6 +145,8 @@ mod blend_curve;
 mod tangent;
 pub use tangent::TangentPreview;
 mod edge_point;
+mod sweep_slash;
+pub(crate) use sweep_slash::{SweepSlashInput, SweepSlashPoint};
 mod insert_point;
 use curve_sampling::ViewportCurve;
 pub use edge_picking::EdgePick;
@@ -395,6 +397,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) curve_seams: Option<curve_seam::Overlay<'a>>,
     pub(crate) surface_draft_wires: &'a [NurbsCurve],
+    pub(crate) sweep_slash: Option<SweepSlashInput<'a>>,
     pub(crate) surface_seam: Option<surface_seam::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
     pub(crate) surface_extrusion: Option<surface_extrusion::SurfaceExtrusionPreview<'a>>,
@@ -591,6 +594,7 @@ impl Default for ViewportInput<'_> {
             direction: None,
             curve_seams: None,
             surface_draft_wires: &[],
+            sweep_slash: None,
             surface_seam: None,
             surface_apex: None,
             surface_extrusion: None,
@@ -790,6 +794,7 @@ pub struct ViewportOutput {
     pub component_window: Option<ComponentWindow>,
     pub control_point_selection: Option<ControlPointSelection>,
     pub picked_point: Option<Point3>,
+    pub(crate) sweep_slash_point: Option<SweepSlashPoint>,
     pub square_box_pick: bool,
     /// Snap attached to this accepted point, never a stale hover candidate.
     pub picked_snap: Option<viboceros_drafting::ObjectSnap>,
@@ -2099,6 +2104,7 @@ impl Viewport {
             let _ = self.refresh_clipping_with_preview(document, rect, previous_preview);
         }
         let mut drafting_cursor = if drafting.active
+            && input.sweep_slash.is_none()
             && !component_input
             && !input.zoom_window
             && input.zoom_target.is_none()
@@ -2726,6 +2732,9 @@ impl Viewport {
                 painter.line_segment(segment, stroke);
             }
         }
+        let sweep_slash_point = input.sweep_slash.and_then(|slash| {
+            self.paint_sweep_slash(&painter, rect, &response, slash, document, drafting)
+        });
         let curve_seam_event = input
             .curve_seams
             .and_then(|seams| self.curve_seam_event(&painter, rect, &response, seams));
@@ -3871,6 +3880,7 @@ impl Viewport {
                 && (input.face_pick.is_none() || face_point_fallback))
                 .then(|| drafting_cursor.map(|cursor| cursor.source_point))
                 .flatten(),
+            sweep_slash_point,
             square_box_pick: square_box && response.clicked_by(PointerButton::Primary),
             picked_snap: (response.clicked_by(PointerButton::Primary)
                 && input.insert_edges.is_none()

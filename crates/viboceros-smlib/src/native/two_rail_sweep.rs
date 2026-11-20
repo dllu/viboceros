@@ -2,55 +2,27 @@
 use super::*;
 use viboceros_geometry::{AffineTransform3, NurbsCurve2, Point2, SweepEndPoints};
 
+mod placement;
 mod refit;
 mod transport;
+pub use placement::two_rail_point_stations;
+use placement::{Placement, prepare_placement};
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
-pub struct TwoRailSweepOptions {
+pub struct TwoRailSweepOptions<'a> {
     pub ends: SweepEndPoints,
     pub maintain_height: bool,
     pub refit_rails: bool,
+    /// One point on each rail, in rail selection order.
+    pub slashes: &'a [[Point3; 2]],
 }
+
+pub const MAX_TWO_RAIL_SLASHES: usize = 32;
 
 struct Section {
     stations: [f64; 2],
     curve: NurbsCurve,
     original: NurbsCurve,
-}
-
-struct PreparedRail {
-    curve: NurbsCurve,
-    original: NurbsCurve,
-}
-
-impl PreparedRail {
-    fn reverse(&mut self, rows: &mut [Section], axis: usize) -> Result<(), Error> {
-        self.curve = self.curve.reversed()?.try_reparameterized(0. ..=1.)?;
-        self.original = self.original.reversed()?;
-        for row in rows {
-            row.stations[axis] = 1. - row.stations[axis];
-        }
-        Ok(())
-    }
-
-    fn trim(&mut self, [start, end]: [f64; 2]) -> Result<(), Error> {
-        if [start, end] == [0., 1.] {
-            return Ok(());
-        }
-        let domain = self.original.domain();
-        let at = |t: f64| {
-            if t == 0. {
-                *domain.start()
-            } else if t == 1. {
-                *domain.end()
-            } else {
-                (1. - t).mul_add(*domain.start(), t * domain.end())
-            }
-        };
-        self.original = super::trim_curve(&self.original, at(start)..=at(end))?;
-        self.curve = super::trim_curve(&self.curve, start..=end)?.try_reparameterized(0. ..=1.)?;
-        Ok(())
-    }
 }
 
 unsafe extern "C" {
@@ -68,55 +40,6 @@ unsafe extern "C" {
 
 fn unsupported(message: &str) -> Error {
     Error::Kernel(format!("Two-rail sweep: {message}"))
-}
-
-fn prepare(
-    curve: &NurbsCurve,
-    tolerance: Tolerance,
-    allow_rational: bool,
-) -> Result<NurbsCurve, Error> {
-    if curve.degree() > 16 || curve.control_points().len() > 128 {
-        return Err(unsupported(
-            "requires degree at most 16 and at most 128 controls per input curve",
-        ));
-    }
-    if !allow_rational && curve.is_rational() {
-        return Err(unsupported(
-            "requires polynomial input curves outside refitting",
-        ));
-    }
-    if curve
-        .evaluate(*curve.domain().start())?
-        .distance_to(curve.evaluate(*curve.domain().end())?)?
-        <= tolerance.absolute()
-        || curve.knots()[curve.degree() + 1..curve.control_points().len()]
-            .windows(curve.degree() + 1)
-            .any(|k| k.iter().all(|v| *v == k[0]))
-    {
-        return Err(unsupported(
-            "requires open, continuous, noncollapsed curves",
-        ));
-    }
-    if curve.is_rational() {
-        return Ok(curve.try_reparameterized(0. ..=1.)?);
-    }
-    Ok(NurbsCurve::try_new(
-        curve.degree(),
-        curve.control_points().iter().map(|p| p.point()).collect(),
-        curve.knots().to_vec(),
-    )?
-    .try_reparameterized(0. ..=1.)?)
-}
-
-fn contact(rail: &NurbsCurve, point: Point3, tolerance: Tolerance) -> Result<Option<f64>, Error> {
-    let domain = rail.domain();
-    for t in [*domain.start(), *domain.end()] {
-        if rail.evaluate(t)?.distance_to(point)? <= tolerance.absolute() {
-            return Ok(Some(t));
-        }
-    }
-    let t = rail.closest_parameter(point, tolerance)?;
-    Ok((rail.evaluate(t)?.distance_to(point)? <= tolerance.absolute()).then_some(t))
 }
 
 /// Construct an open two-rail sweep from 1–32 open polynomial sections.
@@ -160,100 +83,41 @@ pub fn two_rail_sweep_surface_with_point_ends(
     )
 }
 
-/// Sweep an open profile along two rails, optionally decoupling profile height
-/// from rail width. Interpolate supplied profiles and retain both rail images.
+/// Return the retained rails for slash picking and validate any existing
+/// pairs using the same contact checks as the sweep builder.
+pub fn two_rail_slash_paths(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    sections: &[NurbsCurve],
+    mut options: TwoRailSweepOptions<'_>,
+    tolerance: Tolerance,
+) -> Result<[NurbsCurve; 2], Error> {
+    options.refit_rails = true;
+    let placement = prepare_placement(first, second, sections, options, tolerance)?;
+    Ok(placement.rails.map(|rail| rail.curve))
+}
+
+/// Sweep open profiles along two rails, honoring optional slash alignments.
 pub fn two_rail_sweep_surface_with_options(
     first: &NurbsCurve,
     second: &NurbsCurve,
     sections: &[NurbsCurve],
-    options: TwoRailSweepOptions,
+    options: TwoRailSweepOptions<'_>,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
+    let Placement {
+        rails: prepared,
+        mut rows,
+        paired_stations,
+        origin,
+        to_local,
+        refit_rails,
+    } = prepare_placement(first, second, sections, options, tolerance)?;
     let TwoRailSweepOptions {
         ends,
         maintain_height,
-        refit_rails,
+        ..
     } = options;
-    let point_count = usize::from(ends.start.is_some()) + usize::from(ends.end.is_some());
-    let row_count = sections.len().saturating_add(point_count);
-    if sections.is_empty()
-        || row_count > 32
-        || first.control_points().len()
-            + second.control_points().len()
-            + sections
-                .iter()
-                .map(|c| c.control_points().len())
-                .sum::<usize>()
-            + 2 * point_count
-            > 1024
-    {
-        return Err(unsupported(
-            "requires 1–32 total sections including a real profile, and at most 1024 total controls",
-        ));
-    }
-    let mut prepared = [
-        prepare_rail(first, sections, ends, tolerance)?,
-        prepare_rail(second, sections, ends, tolerance)?,
-    ];
-    let origin = prepared[0].curve.evaluate(0.)?;
-    let zero = Point3::try_new(0., 0., 0.)?;
-    let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
-    let local_rails = [
-        prepared[0].curve.transformed(to_local)?,
-        prepared[1].curve.transformed(to_local)?,
-    ];
-    let mut rows = Vec::with_capacity(row_count);
-    for section in sections {
-        let mut curve = prepare(section, tolerance, false)?;
-        let local = curve.transformed(to_local)?;
-        let endpoints = [local.evaluate(0.)?, local.evaluate(1.)?];
-        let mut matches = Vec::new();
-        for reverse in [false, true] {
-            if let (Some(a), Some(b)) = (
-                contact(&local_rails[0], endpoints[usize::from(reverse)], tolerance)?,
-                contact(&local_rails[1], endpoints[usize::from(!reverse)], tolerance)?,
-            ) {
-                matches.push((a, b, reverse));
-            }
-        }
-        let [(a, b, reverse)] = matches.as_slice() else {
-            return Err(unsupported(
-                "section endpoints must unambiguously contact the two rails",
-            ));
-        };
-        let original = if *reverse {
-            curve = curve.reversed()?;
-            section.reversed()?
-        } else {
-            section.clone()
-        };
-        rows.push(Section {
-            stations: [*a, *b],
-            curve,
-            original,
-        });
-    }
-    for (parameter, point) in [(0., ends.start), (1., ends.end)] {
-        if let Some(point) = point {
-            let curve = NurbsCurve::try_new(1, vec![point; 2], vec![0., 0., 1., 1.])?;
-            rows.push(Section {
-                stations: [parameter; 2],
-                curve: curve.clone(),
-                original: curve,
-            });
-        }
-    }
-    let single = rows.len() == 1;
-    let partial = retain_sections(&mut prepared, &mut rows, ends.is_empty())?;
-    let independent = rows
-        .iter()
-        .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10);
-    // Rhino refits automatically for shortened multi-profile sweeps and
-    // whenever exact normalized rail clocks cannot pair the profile contacts.
-    let refit_rails = refit_rails || independent || (partial && !single && ends.is_empty());
-    if !refit_rails && prepared.iter().any(|rail| rail.curve.is_rational()) {
-        return Err(unsupported("rational rails require refitting"));
-    }
     let rails = [
         prepared[0].curve.transformed(to_local)?,
         prepared[1].curve.transformed(to_local)?,
@@ -267,10 +131,10 @@ pub fn two_rail_sweep_surface_with_options(
     let interior_profiles = ends.is_empty() && rows.len() > 2;
     let rails = [&rails[0], &rails[1]];
     let (surface, stations, clock) = if refit_rails {
-        let fitted = refit::sweep(rails, &rows, maintain_height, tolerance)?;
+        let fitted = refit::sweep(rails, &rows, &paired_stations, maintain_height, tolerance)?;
         (fitted.surface, fitted.stations, Some(fitted.clock))
     } else {
-        let surface = if maintain_height || single || (affine_rails && interior_profiles) {
+        let surface = if maintain_height || rows.len() == 1 || (affine_rails && interior_profiles) {
             transport::sweep(rails, &rows, maintain_height)?
         } else {
             skin(rails, &rows)?
@@ -281,8 +145,9 @@ pub fn two_rail_sweep_surface_with_options(
             None,
         )
     };
-    let mut surface =
-        surface.transformed(AffineTransform3::from_translation(zero.vector_to(origin)?))?;
+    let mut surface = surface.transformed(AffineTransform3::from_translation(
+        Vector3::try_from(origin.to_array())?,
+    ))?;
     if !ends.is_empty() && surface.degree_u() < 3 {
         surface = super::change_surface_degree(&surface, 3, surface.degree_v(), false)?;
     }
@@ -334,67 +199,6 @@ pub fn two_rail_sweep_surface_with_options(
         }
     }
     Ok(surface)
-}
-
-fn retain_sections(
-    rails: &mut [PreparedRail; 2],
-    rows: &mut [Section],
-    orient_rails: bool,
-) -> Result<bool, Error> {
-    if let [row] = rows {
-        let [a, b] = row.stations;
-        let reverse = match (a, b) {
-            (0., 0.) | (1., 1.) => false,
-            (0., 1.) | (1., 0.) => true,
-            _ => {
-                rails[0]
-                    .curve
-                    .derivative_at(a)?
-                    .dot(rails[1].curve.derivative_at(b)?)?
-                    < 0.
-            }
-        };
-        if reverse {
-            rails[1].reverse(rows, 1)?;
-        }
-        let [a, b] = rows[0].stations;
-        let toward_start = a == 1. || b == 1.;
-        let span = |t| if toward_start { [0., t] } else { [t, 1.] };
-        rails[0].trim(span(a))?;
-        rails[1].trim(span(b))?;
-        rows[0].stations = [f64::from(toward_start); 2];
-        return Ok(span(a) != [0., 1.] || span(b) != [0., 1.]);
-    }
-
-    let a = rows[0].stations;
-    let b = rows.last().unwrap().stations;
-    let on_ends = (0..2).all(|i| a[i].min(b[i]) == 0. && a[i].max(b[i]) == 1.);
-    if orient_rails && !on_ends && rows.windows(2).all(|r| r[0].stations[0] > r[1].stations[0]) {
-        // For a deliberately reversed set of partial profiles, begin the
-        // shortened sweep at the first profile picked.
-        rails[0].reverse(rows, 0)?;
-    }
-    rows.sort_by(|a, b| a.stations[0].total_cmp(&b.stations[0]));
-    if orient_rails && rows[0].stations[1] > rows.last().unwrap().stations[1] {
-        rails[1].reverse(rows, 1)?;
-    }
-    if rows
-        .windows(2)
-        .any(|pair| (0..2).any(|axis| pair[1].stations[axis] - pair[0].stations[axis] <= 1e-10))
-    {
-        return Err(unsupported(
-            "requires distinct, consistently ordered contacts on both rails",
-        ));
-    }
-    let start = rows[0].stations;
-    let end = rows.last().unwrap().stations;
-    for axis in 0..2 {
-        rails[axis].trim([start[axis], end[axis]])?;
-        for row in rows.iter_mut() {
-            row.stations[axis] = (row.stations[axis] - start[axis]) / (end[axis] - start[axis]);
-        }
-    }
-    Ok(start != [0.; 2] || end != [1.; 2])
 }
 
 fn skin(rails: [&NurbsCurve; 2], rows: &[Section]) -> Result<NurbsSurface, Error> {
@@ -457,108 +261,4 @@ fn exact_pole_rows(
         surface.knots_u().to_vec(),
         surface.knots_v().to_vec(),
     )?)
-}
-
-/// Locate the supplied point ends on one rail, in its original parameter chart.
-pub fn two_rail_point_stations(
-    curve: &NurbsCurve,
-    ends: SweepEndPoints,
-    tolerance: Tolerance,
-) -> Result<[Option<f64>; 2], Error> {
-    let locate = |point: Option<Point3>| -> Result<_, Error> {
-        point
-            .map(|point| {
-                contact(curve, point, tolerance)?
-                    .ok_or_else(|| unsupported("point ends must lie on both rails"))
-            })
-            .transpose()
-    };
-    let stations = [locate(ends.start)?, locate(ends.end)?];
-    if let [Some(start), Some(end)] = stations
-        && start == end
-    {
-        return Err(unsupported("point ends must occupy distinct stations"));
-    }
-    Ok(stations)
-}
-
-fn rail_interval(
-    curve: &NurbsCurve,
-    sections: &[NurbsCurve],
-    ends: SweepEndPoints,
-    tolerance: Tolerance,
-) -> Result<[f64; 2], Error> {
-    let [start, end] = two_rail_point_stations(curve, ends, tolerance)?;
-    let domain = curve.domain();
-    let endpoints = [*domain.start(), *domain.end()];
-    let opposite = |station| -> Result<f64, Error> {
-        if station == endpoints[0] {
-            return Ok(endpoints[1]);
-        }
-        if station == endpoints[1] {
-            return Ok(endpoints[0]);
-        }
-        // Retain the side of the crossing containing the real profiles.
-        // The terminal profile can itself be inside that side of the rail.
-        let mut occupied = [false; 2];
-        for section in sections {
-            let section_domain = section.domain();
-            for t in [*section_domain.start(), *section_domain.end()] {
-                if let Some(location) = contact(curve, section.evaluate(t)?, tolerance)? {
-                    occupied[0] |= location < station;
-                    occupied[1] |= location > station;
-                }
-            }
-        }
-        match occupied {
-            [true, false] => Ok(endpoints[0]),
-            [false, true] => Ok(endpoints[1]),
-            _ => Err(unsupported(
-                "cross sections must lie on one side of an interior point end",
-            )),
-        }
-    };
-    match (start, end) {
-        (Some(start), Some(end)) => Ok([start, end]),
-        (Some(start), None) => Ok([start, opposite(start)?]),
-        (None, Some(end)) => Ok([opposite(end)?, end]),
-        (None, None) => Ok(endpoints),
-    }
-}
-
-fn prepare_rail(
-    curve: &NurbsCurve,
-    sections: &[NurbsCurve],
-    ends: SweepEndPoints,
-    tolerance: Tolerance,
-) -> Result<PreparedRail, Error> {
-    if ends.is_empty() {
-        return Ok(PreparedRail {
-            curve: prepare(curve, tolerance, true)?,
-            original: curve.clone(),
-        });
-    }
-    let [start, end] = rail_interval(curve, sections, ends, tolerance)?;
-    let range = start.min(end)..=start.max(end);
-    let mut original = if range == curve.domain() {
-        curve.clone()
-    } else {
-        curve.try_trimmed(range)?
-    };
-    if end < start {
-        original = original.reversed()?;
-    }
-    let prepared = super::knot_refinement::clamp_curve(&prepare(&original, tolerance, true)?)?;
-    let mut points = prepared.control_points().to_vec();
-    if let Some(point) = ends.start {
-        points[0] = WeightedPoint3::try_new(point, points[0].weight())?;
-    }
-    if let Some(point) = ends.end {
-        let end = points.last_mut().unwrap();
-        *end = WeightedPoint3::try_new(point, end.weight())?;
-    }
-    Ok(PreparedRail {
-        curve: NurbsCurve::try_new_rational(prepared.degree(), points, prepared.knots().to_vec())?,
-        original,
-    })
 }

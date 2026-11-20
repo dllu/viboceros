@@ -3,6 +3,10 @@ use super::*;
 
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
+        if let Some(pick) = output.sweep_slash_point.filter(|pick| pick.accept) {
+            self.accept_drafting_slash(pick.rail, pick.point);
+            return true;
+        }
         if let Some(gesture) = output.edge_blend_handle.take()
             && self.edit_edge_blend_handle(gesture)
         {

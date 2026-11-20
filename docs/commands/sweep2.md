@@ -2,6 +2,7 @@
 
 `Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance]`
 `[MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
+`[Slash=x,y,z/x,y,z ...]`
 
 Pick the first rail, the second rail, and then the cross-section curves.
 As soon as the inputs define a valid surface, Sweep2 draws a wire
@@ -47,6 +48,15 @@ each rail. Sweep2 fits the rails automatically for shortened sweeps and when
 interior contacts have different normalized parameters. The fitted boundaries
 are checked against the retained rail intervals at the document tolerance.
 
+In review, choose `AddSlash` to pair points between the two retained rails.
+Pick or type near either rail, then pick or type the point for the opposite
+rail. The points are projected onto the rails. The guide and the sweep
+preview follow the second point. Add more pairs or use local `Undo`, then
+press Enter to return to review. Escape discards an
+unfinished pair and returns to review. The pairs must follow the same order
+on both rails, including the profile contacts. Scripts can repeat
+`Slash=x,y,z/x,y,z`, with one point per rail in selection order.
+
 For example, in a new document:
 
 ```text
@@ -69,9 +79,9 @@ The solver requires open rails and open polynomial sections. Rail refitting
 accepts rational rails, and Rebuild can prepare polynomial sections from
 rational profiles. Section endpoints must contact both rails. With multiple
 sections, contacts must progress in order on both rails. The unrefitted native
-skin requires more sections than the maximum rail degree. Closed sweeps,
-slash guides and surface-edge continuity remain unsupported. Failures leave
-the document and history unchanged.
+skin requires more sections than the maximum rail degree. Closed sweeps and
+surface-edge continuity remain unsupported. Failures leave the document and
+history unchanged.
 
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
@@ -79,7 +89,7 @@ certificate checks each retained rail interval and cross section against the
 surface in world coordinates. An inconclusive certificate rejects the result.
 Kinks in an accepted tensor are split into connected B-rep faces.
 
-Limits are 32 sections, degree 16, 128 controls per input curve and 1,024 total
+Limits are 32 sections, 32 slash pairs, degree 16, 128 controls per input curve and 1,024 total
 input controls. A conservative compatibility control-net limit and the shared
 native transfer limits bound output allocation; command output is limited to
 4,096 faces.

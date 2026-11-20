@@ -1,13 +1,14 @@
 //! Two ordered rail picks followed by cross sections, or explicit named rails.
 use super::*;
 
-use std::borrow::Cow;
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] [Slash=x,y,z/x,y,z ...] (select two rails, then cross sections)";
+const SLASH_USAGE: &str = "Sweep2 accepts up to 32 options of the form Slash=x,y,z/x,y,z";
 pub const MAX_SECTIONS: usize = 32;
+pub const MAX_SLASHES: usize = viboceros_smlib::MAX_TWO_RAIL_SLASHES;
 
 mod options;
 mod rail;
@@ -39,7 +40,7 @@ impl Command for SweepTwoRailsCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let options = Options::parse(args)?;
         let source = Source::capture(doc, &selected_ids(doc)?, &options)?;
-        let brep = source.build(options.shape, doc.tolerance())?;
+        let brep = source.build(options.shape, &options.slashes, doc.tolerance())?;
         let message = result_message(source.sections.len(), brep.faces().len());
         doc.add_geometry(Geometry::Brep(brep))?;
         Ok(message)
@@ -129,48 +130,70 @@ impl Source {
         Ok(())
     }
 
-    pub fn build(&self, shape: ShapeOptions, tolerance: Tolerance) -> Result<Brep, CommandError> {
-        let row_count = self.sections.len() + point_count(shape.ends);
-        if self.sections.is_empty() || row_count > MAX_SECTIONS {
-            return Err(CommandError::Usage(USAGE));
-        }
-        let rails = [self.rails[0].curve(), self.rails[1].curve()];
+    fn fitted_profiles(
+        &self,
+        fit: SectionFit,
+        tolerance: Tolerance,
+    ) -> Result<Vec<NurbsCurve>, CommandError> {
         let sections = self
             .sections
             .iter()
             .map(Self::curve)
             .collect::<Result<Vec<_>, _>>()?;
-        let fitted = match shape.fit {
-            SectionFit::Unchanged => Cow::Borrowed(sections.as_slice()),
-            SectionFit::Rebuild(count @ 2..=128) => Cow::Owned(
-                sections
-                    .iter()
-                    .map(|curve| {
-                        viboceros_smlib::rebuild_curve(
-                            CurveRef::NurbsCurve(curve),
-                            count,
-                            3.min(count - 1),
-                            false,
-                            tolerance,
-                        )
-                        .map_err(knot_refinement::native_geometry_error)
-                    })
-                    .collect::<Result<Vec<_>, _>>()?,
-            ),
-            SectionFit::Rebuild(_) => return Err(CommandError::Usage(USAGE)),
-            SectionFit::Refit(distance) => Cow::Owned(
+        match fit {
+            SectionFit::Unchanged => Ok(sections),
+            SectionFit::Rebuild(count @ 2..=128) => sections
+                .iter()
+                .map(|curve| {
+                    viboceros_smlib::rebuild_curve(
+                        CurveRef::NurbsCurve(curve),
+                        count,
+                        3.min(count - 1),
+                        false,
+                        tolerance,
+                    )
+                    .map_err(knot_refinement::native_geometry_error)
+                })
+                .collect(),
+            SectionFit::Rebuild(_) => Err(CommandError::Usage(USAGE)),
+            SectionFit::Refit(distance) => Ok(
                 viboceros_geometry::try_prepare_refitted_loft_sections(&sections, distance)?,
             ),
-        };
+        }
+    }
+
+    pub fn slash_paths(
+        &self,
+        shape: ShapeOptions,
+        slashes: &[[Point3; 2]],
+        tolerance: Tolerance,
+    ) -> Result<[NurbsCurve; 2], CommandError> {
+        let sections = self.fitted_profiles(shape.fit, tolerance)?;
+        Ok(viboceros_smlib::two_rail_slash_paths(
+            self.rails[0].curve(),
+            self.rails[1].curve(),
+            &sections,
+            shape.native(slashes),
+            tolerance,
+        )?)
+    }
+
+    pub fn build(
+        &self,
+        shape: ShapeOptions,
+        slashes: &[[Point3; 2]],
+        tolerance: Tolerance,
+    ) -> Result<Brep, CommandError> {
+        let row_count = self.sections.len() + point_count(shape.ends);
+        if self.sections.is_empty() || row_count > MAX_SECTIONS {
+            return Err(CommandError::Usage(USAGE));
+        }
+        let sections = self.fitted_profiles(shape.fit, tolerance)?;
         let surface = viboceros_smlib::two_rail_sweep_surface_with_options(
-            rails[0],
-            rails[1],
-            &fitted,
-            viboceros_smlib::TwoRailSweepOptions {
-                ends: shape.ends,
-                maintain_height: shape.maintain_height,
-                refit_rails: shape.refit_rails,
-            },
+            self.rails[0].curve(),
+            self.rails[1].curve(),
+            &sections,
+            shape.native(slashes),
             tolerance,
         )?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;
@@ -193,3 +216,6 @@ mod point_tests;
 
 #[cfg(test)]
 mod rail_tests;
+
+#[cfg(test)]
+mod slash_tests;
