@@ -339,3 +339,56 @@ fn sweep_miter_review_wraps_the_rail_and_updates_both_seam_modes() {
     enter(&mut app, "Undo");
     assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
 }
+
+#[test]
+fn sweep_miter_review_updates_an_inferred_corner_when_blending_changes() {
+    let mut app = test_app();
+    for input in [
+        "Polyline 0,0,0 3,0,0 3,7,0",
+        "Line 0,0,0 0,1.5,1",
+        "Line 3,7,0 0,7,2",
+    ] {
+        enter(&mut app, input);
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1 UntrimmedMiters=Yes");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    let has_section_end = |wires: &[NurbsCurve], target: Point3| {
+        wires.iter().any(|wire| {
+            let domain = wire.domain();
+            [*domain.start(), *domain.end()]
+                .into_iter()
+                .any(|t| wire.evaluate(t).unwrap().distance_to(target).unwrap() < 1e-8)
+        })
+    };
+    let local = wait_for_wires(&mut app, &context, |wires| {
+        has_section_end(wires, point(1.176, 1.824, 1.216))
+    });
+    enter(&mut app, "_ShapeBlending");
+    enter(&mut app, "_Global");
+    let global = wait_for_wires(&mut app, &context, |wires| {
+        has_section_end(wires, point(1.05, 1.95, 1.3))
+    });
+    assert_ne!(local, global);
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == local);
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "ShapeBlending=Global");
+    wait_for_wires(&mut app, &context, |wires| wires == global);
+    enter(&mut app, "");
+    let Geometry::Brep(sweep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected an inferred miter: {:?}", app.command_log);
+    };
+    assert_eq!((sweep.faces().len(), sweep.edges().len()), (2, 7));
+    assert_eq!(sweep.wireframe_curves(1, tolerance).unwrap(), global);
+    assert!((sweep.area(tolerance).unwrap() - 21.63183573).abs() < 2e-4);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}

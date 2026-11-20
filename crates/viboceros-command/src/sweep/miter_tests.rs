@@ -243,3 +243,151 @@ fn sweep_miters_sew_an_untrimmed_polygonal_loop_at_a_smooth_seam() {
     );
     assert!((brep.area(document.tolerance()).unwrap() - 22.62741700).abs() < 5e-5);
 }
+
+#[test]
+fn sweep_miters_infer_sections_for_spatial_and_partly_authored_rails() {
+    for (input, faces, hinges, expected_area) in [
+        (
+            &[
+                "Polyline 0,0,0 4,0,0 4,3,0 4,3,5 10,3,5",
+                "Line 0,0,0 0,1.5,1",
+                "Line 10,3,5 10,6,7",
+            ][..],
+            4,
+            &[
+                point(2.436899862825789, 1.563100137174211, 0.49519890260631),
+                point(2.33196159122085, 3.344307270233196, -0.344307270233196),
+                point(2.12962962962963, 4.962962962962963, 6.87037037037037),
+            ][..],
+            46.2940862,
+        ),
+        (
+            &[
+                "Polyline 0,0,0 4,0,0 4,3,0 10,3,0",
+                "Line 0,0,0 0,1.5,1",
+                "Line 4,3,0 3,4,1.5",
+                "Line 10,3,0 10,6,2",
+            ][..],
+            3,
+            &[point(3.2320057, 1.6255917, 1.3032070), point(3., 4., 1.5)][..],
+            29.0098133,
+        ),
+        (
+            &[
+                "Polyline 0,0,0 5,0,0 5,5,0",
+                "Line 0,0,0 0,1.5,1",
+                "Line 2,0,0 2,1.25,1.5",
+                "Line 5,2,0 3,2,1.5",
+                "Line 5,5,0 2,5,2",
+            ][..],
+            2,
+            &[point(3.264, 1.736, 1.5)][..],
+            20.2827423,
+        ),
+    ] {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in input {
+            registry.execute(&mut document, command).unwrap();
+        }
+        let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "Sweep1 UntrimmedMiters=Yes")
+            .unwrap();
+        let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+            panic!("expected a Sweep1 BRep");
+        };
+        assert_eq!(brep.faces().len(), faces);
+        assert_eq!(
+            brep.edge_use_counts()
+                .iter()
+                .filter(|&&count| count == 2)
+                .count(),
+            hinges.len()
+        );
+        for (face, expected) in brep.faces().iter().zip(hinges) {
+            let surface = face.surface();
+            let actual = surface
+                .evaluate(*surface.domain_u().end(), *surface.domain_v().end())
+                .unwrap();
+            assert!(
+                actual.distance_to(*expected).unwrap() < 2e-6,
+                "{actual:?} != {expected:?}"
+            );
+        }
+        let area = brep.area(document.tolerance()).unwrap();
+        assert!(
+            (area - expected_area).abs() < 2e-4,
+            "{area} != {expected_area} for {input:?}"
+        );
+    }
+}
+
+#[test]
+fn sweep_miters_trim_matching_profiles_across_an_unauthored_corner() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    for command in [
+        "Polyline 0,0,0 5,0,0 5,5,0",
+        "Line 0,0,0 0,1.5,1",
+        "Line 5,5,0 3.5,5,1",
+    ] {
+        registry.execute(&mut document, command).unwrap();
+    }
+    let ids = document.objects().map(|o| o.id()).collect::<Vec<_>>();
+    document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut document, "Sweep1 UntrimmedMiters=No")
+        .unwrap();
+    let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+        panic!("expected a Sweep1 BRep");
+    };
+    assert_eq!((brep.faces().len(), brep.edges().len()), (2, 7));
+    assert!((brep.area(document.tolerance()).unwrap() - 15.3235929).abs() < 1e-7);
+}
+
+#[test]
+fn sweep_miters_infer_a_rational_miter_between_circular_profiles() {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::default();
+    registry
+        .execute(&mut document, "Polyline 0,0,0 5,0,0 5,5,0")
+        .unwrap();
+    let rail = document.objects().last().unwrap().id();
+    let first = add_circle(&mut document, point(0., 0., 0.), 1., 0., 1.);
+    let last = add_circle(&mut document, point(5., 5., 0.), 0., 1., 1.5);
+    document
+        .select_objects_direct([rail, first, last], SelectionMode::Replace)
+        .unwrap();
+    registry
+        .execute(&mut document, "Sweep1 UntrimmedMiters=Yes")
+        .unwrap();
+    let Geometry::Brep(brep) = document.objects().last().unwrap().geometry() else {
+        panic!("expected a Sweep1 BRep");
+    };
+    assert_eq!(
+        (
+            brep.faces().len(),
+            brep.edges().len(),
+            brep.vertices().len()
+        ),
+        (2, 5, 3)
+    );
+    let surface = brep.faces()[0].surface();
+    let miter = surface.isocurve_v(*surface.domain_u().end()).unwrap();
+    assert_eq!(miter.degree(), 2);
+    assert!(miter.is_closed().unwrap());
+    for (v, expected) in [
+        (0., point(3.75, 1.25, 0.)),
+        (0.25, point(5., 0., 1.25)),
+        (0.50, point(6.25, -1.25, 0.)),
+    ] {
+        assert!(miter.evaluate(v).unwrap().distance_to(expected).unwrap() < 1e-8);
+    }
+    assert!((brep.area(document.tolerance()).unwrap() - 78.6891927).abs() < 3e-4);
+}

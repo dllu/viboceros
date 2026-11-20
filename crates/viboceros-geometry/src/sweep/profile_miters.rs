@@ -2,6 +2,7 @@
 use super::*;
 use crate::Brep;
 
+mod inferred;
 mod seam;
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -14,8 +15,7 @@ pub struct SweepProfileMiterOptions {
 }
 
 impl Sweep1 {
-    /// Sweep a polygonal interval with a real section at each active corner.
-    /// Every leg shares the same V basis and its neighbors' endpoint section.
+    /// Sweep a polygonal interval with shared cross sections at the active corners.
     /// Return None when the interval can use the ordinary smooth-rail path.
     pub fn try_profile_miters_with<E: From<GeometryError>>(
         rail: CurveRef<'_>,
@@ -23,7 +23,7 @@ impl Sweep1 {
         options: SweepProfileMiterOptions,
         tolerance: Tolerance,
         prepare: &mut impl FnMut(&[NurbsCurve], usize, GeometryError) -> Result<Vec<NurbsCurve>, E>,
-        surface: &mut impl FnMut(&Sweep1) -> Result<NurbsSurface, E>,
+        operations: &mut SweepSurfaceOperations<'_, E>,
     ) -> Result<Option<Brep>, E> {
         let SweepProfileMiterOptions {
             ends,
@@ -83,11 +83,6 @@ impl Sweep1 {
             )
             .into());
         }
-        if blend == SweepBlend::Global {
-            return Err(
-                invalid("profiled rail miters currently require Local shape blending").into(),
-            );
-        }
         if closed
             && (!ends.is_empty()
                 || !source.is_closed()?
@@ -101,14 +96,16 @@ impl Sweep1 {
         }
         let hinges = kinks
             .iter()
-            .map(|t| {
-                parameters
-                    .binary_search_by(|p| p.total_cmp(t))
-                    .map_err(|_| {
-                        invalid("Local sweep miters require a section at each rail corner")
-                    })
-            })
-            .collect::<Result<Vec<_>, _>>()?;
+            .map(|t| parameters.binary_search_by(|p| p.total_cmp(t)).ok())
+            .collect::<Vec<_>>();
+        let inferred = hinges.iter().any(Option::is_none);
+        if blend == SweepBlend::Global && (!inferred || closed || sections.len() + pole_count != 2)
+        {
+            return Err(invalid(
+                "Global blending for polygonal miters requires two profiles bracketing the corners",
+            )
+            .into());
+        }
         let curves = sections.iter().map(|s| s.curve.clone()).collect::<Vec<_>>();
         if curves
             .iter()
@@ -125,8 +122,14 @@ impl Sweep1 {
             MAX_SECTION_CONTROLS,
             invalid("section control budget exceeded"),
         )?;
-        if curves.len() != sections.len() {
-            return Err(invalid("section preparation lost a supplied profile").into());
+        if curves.len() != sections.len()
+            || curves.iter().any(|curve| {
+                curve.degree() != curves[0].degree()
+                    || curve.knots() != curves[0].knots()
+                    || curve.control_points().len() > MAX_SECTION_CONTROLS
+            })
+        {
+            return Err(invalid("section preparation produced inconsistent bases").into());
         }
         let mut sections = parameters
             .into_iter()
@@ -143,14 +146,45 @@ impl Sweep1 {
         } else {
             None
         };
+        if inferred {
+            let model = inferred::Model::new(
+                &source,
+                start..=finish,
+                &kinks,
+                &hinges,
+                sections,
+                options,
+                tolerance,
+            )?;
+            if untrimmed {
+                return Ok(Some(join_panels(&model.fit(operations)?, tolerance)?));
+            }
+            if !closed
+                && ends.is_empty()
+                && let Some(profile) = model.constant_profile()?
+            {
+                return Ok(Self::try_polyline_miters(
+                    CurveRef::NurbsCurve(&source),
+                    profile,
+                    start..=finish,
+                    style,
+                    false,
+                    tolerance,
+                )?);
+            }
+            return Err(invalid(
+                "use UntrimmedMiters=Yes when varying profiles span a rail corner",
+            )
+            .into());
+        }
         let mut panels = Vec::with_capacity(kinks.len() + 3);
         let mut first = 0;
         let mut rail_start = start;
         let mut length = 0.;
         let mut count = 1;
-        let mut cuts = Vec::with_capacity(kinks.len() + 2);
         for (last, rail_end) in hinges
             .into_iter()
+            .flatten()
             .zip(kinks)
             .chain([(sections.len() - 1, finish)])
         {
@@ -168,18 +202,11 @@ impl Sweep1 {
                 tolerance,
                 &mut |curves, _, _| Ok::<_, E>(curves.to_vec()),
             )?;
-            let panel = surface(&sweep)?;
+            let panel = sweep.to_surface_with_operations(operations)?;
             count += panel.control_point_count_u() - 1;
-            if count > MAX_AXIS_CONTROLS
-                || count * panel.control_point_count_v() > MAX_SURFACE_CONTROLS
-            {
-                return Err(invalid("mitered sweep control budget exceeded").into());
-            }
+            check_control_budget(count, panel.control_point_count_v())?;
             let end = length + (panel.domain_u().end() - panel.domain_u().start());
             panels.push(panel.try_reparameterized(length..=end, panel.domain_v())?);
-            if rail_end < finish {
-                cuts.push(end);
-            }
             length = end;
             first = last;
             rail_start = rail_end;
@@ -187,17 +214,11 @@ impl Sweep1 {
         if !untrimmed && let Some(seam) = seam {
             let [start, finish] = seam.extensions(&sections[0].curve, length, tolerance)?;
             count += start.control_point_count_u() + finish.control_point_count_u() - 2;
-            if count > MAX_AXIS_CONTROLS
-                || count * start.control_point_count_v() > MAX_SURFACE_CONTROLS
-            {
-                return Err(invalid("mitered sweep control budget exceeded").into());
-            }
+            check_control_budget(count, start.control_point_count_v())?;
             panels.insert(0, start);
             panels.push(finish);
-            cuts.insert(0, 0.);
-            cuts.push(length);
         }
-        Ok(Some(join_panels(&panels, count, &cuts, tolerance)?))
+        Ok(Some(join_panels(&panels, tolerance)?))
     }
 }
 
@@ -216,15 +237,15 @@ fn snap_to_kink(t: Real, kinks: &[Real], roundoff: Real) -> Real {
         .unwrap_or(t)
 }
 
-fn join_panels(
-    panels: &[NurbsSurface],
-    count: usize,
-    cuts: &[Real],
-    tolerance: Tolerance,
-) -> Result<Brep, GeometryError> {
+fn join_panels(panels: &[NurbsSurface], tolerance: Tolerance) -> Result<Brep, GeometryError> {
     let first = &panels[0];
     let p = first.degree_u();
     let width = first.control_point_count_v();
+    let count = 1 + panels
+        .iter()
+        .map(|panel| panel.control_point_count_u() - 1)
+        .sum::<usize>();
+    check_control_budget(count, width)?;
     let mut knots = Vec::with_capacity(count + p + 1);
     for (i, panel) in panels.iter().enumerate() {
         if panel.degree_u() != p
@@ -265,5 +286,16 @@ fn join_panels(
         first.knots_v().to_vec(),
     )?;
     let [_, v] = surface.sampled_kink_parameters(tolerance.angular())?;
-    Brep::try_surface_grid(&surface, cuts, &v, tolerance)
+    let cuts = panels[1..]
+        .iter()
+        .map(|panel| *panel.domain_u().start())
+        .collect::<Vec<_>>();
+    Brep::try_surface_grid(&surface, &cuts, &v, tolerance)
+}
+
+fn check_control_budget(u: usize, v: usize) -> Result<(), GeometryError> {
+    if u > MAX_AXIS_CONTROLS || u * v > MAX_SURFACE_CONTROLS {
+        return Err(invalid("mitered sweep control budget exceeded"));
+    }
+    Ok(())
 }

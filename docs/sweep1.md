@@ -91,12 +91,16 @@ produces a native one-face solid.
 | `ShapeBlending=Local` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
 | `ShapeBlending=Global` | Refitted open sweeps blend linearly in arc length between neighboring profiles. Retained bases and smooth closed sweeps use Local blending in the measured cases. `GlobalShapeBlending=Yes|No` also works. |
 
-For a Local sweep around a polygonal loop, supply a profile at every corner.
-The return face uses the first profile transported into the final rail frame.
-Untrimmed mode shows that profile directly and sews the seam if the two copies
-coincide. For an open profile at a corner seam, trimmed mode shows the two
-extension faces observed in Rhino. Use `UntrimmedMiters=Yes` for a closed
-seam profile or a seam on a straight leg.
+Use `UntrimmedMiters=Yes` to infer corner sections between varying profiles on
+straight rail segments. Local blending uses the neighboring profiles. Global
+blending is available when two profiles bracket the corners on an open sweep.
+Matching perpendicular profiles can also produce trimmed miters.
+
+On a Local polygonal loop, the return face uses the first profile transported
+into the final rail frame. Untrimmed mode sews the seam if the two copies
+coincide. The trimmed loop with profiles at all corners and an open seam
+profile shows the two extension faces observed in Rhino. Use
+`UntrimmedMiters=Yes` for a closed seam profile or a seam on a straight leg.
 
 For two profiles at native stations 0 and 5, select them in that order and use
 `Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes`. The refitted model preserves
@@ -117,7 +121,8 @@ Native builds reuse usd-brep/SMLib for section preparation and interpolation.
 
 The [validation guide](sweep1/validation.md) keeps current complete-image checks,
 the certified spatial gap, historical oracle comparisons, and performance limits
-together. Closed-rail holonomy, curved rail miters, multi-profile miters with
-Global blending or missing corner profiles, and general branch and seam
+together. Closed-rail holonomy, curved rail miters, Global blending on
+polygonal rails with three or more profiles or an authored corner, trimmed
+miters across varying profiles without a corner section, and branch and seam
 choices remain unfinished. If an extension cut cannot be resolved at model tolerance, the
 sweep retains its valid trimmed face without that partition.

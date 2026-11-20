@@ -130,14 +130,16 @@ pub fn sweep_profile_miters(
     options: SweepProfileMiterOptions,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, Error> {
-    Sweep1::try_profile_miters_with(
-        rail,
-        sections,
-        options,
-        tolerance,
-        &mut prepare_sweep_sections,
-        &mut |sweep| sweep_surface(sweep, true),
-    )
+    with_sweep_operations(|operations| {
+        Sweep1::try_profile_miters_with(
+            rail,
+            sections,
+            options,
+            tolerance,
+            &mut prepare_sweep_sections,
+            operations,
+        )
+    })
 }
 
 pub fn refit_closed_sweep(sweep: &viboceros_geometry::Sweep1) -> Result<NurbsSurface, Error> {
@@ -145,11 +147,9 @@ pub fn refit_closed_sweep(sweep: &viboceros_geometry::Sweep1) -> Result<NurbsSur
         .refit_closed_with_solver(&mut |input, shift| solve_interpolation(input, None, Some(shift)))
 }
 
-fn with_sweep_operations(
-    run: impl FnOnce(
-        &mut viboceros_geometry::SweepSurfaceOperations<'_, Error>,
-    ) -> Result<NurbsSurface, Error>,
-) -> Result<NurbsSurface, Error> {
+fn with_sweep_operations<T>(
+    run: impl FnOnce(&mut viboceros_geometry::SweepSurfaceOperations<'_, Error>) -> Result<T, Error>,
+) -> Result<T, Error> {
     let mut clamp = clamp_curve;
     let mut refine = insert_curve_knot;
     let mut fit = fit_curve;

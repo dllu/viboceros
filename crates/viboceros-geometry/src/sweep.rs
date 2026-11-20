@@ -64,6 +64,25 @@ enum BlendCoordinates {
     Euclidean,
 }
 
+fn blend_control(
+    a: WeightedPoint3,
+    b: WeightedPoint3,
+    fraction: Real,
+    coordinates: BlendCoordinates,
+) -> ([Real; 3], Real) {
+    let weight = a.weight().mul_add(1.0 - fraction, b.weight() * fraction);
+    let (wa, wb, divisor) = match coordinates {
+        BlendCoordinates::Homogeneous => (a.weight(), b.weight(), weight),
+        BlendCoordinates::Euclidean => (1.0, 1.0, 1.0),
+    };
+    let a = a.point().to_array().map(|x| x * wa);
+    let b = b.point().to_array().map(|x| x * wb);
+    (
+        std::array::from_fn(|i| a[i].mul_add(1.0 - fraction, b[i] * fraction) / divisor),
+        weight,
+    )
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct SweepSection {
     pub parameter: Real,
@@ -421,15 +440,7 @@ impl Sweep1 {
                     .iter()
                     .zip(&self.local[next])
                     .map(|(a, b)| {
-                        let weight = a.weight().mul_add(1.0 - f, b.weight() * f);
-                        let (wa, wb, divisor) = match coordinates {
-                            BlendCoordinates::Homogeneous => (a.weight(), b.weight(), weight),
-                            BlendCoordinates::Euclidean => (1.0, 1.0, 1.0),
-                        };
-                        let a = a.point().to_array().map(|x| x * wa);
-                        let b = b.point().to_array().map(|x| x * wb);
-                        let coordinates: [Real; 3] =
-                            std::array::from_fn(|i| a[i].mul_add(1.0 - f, b[i] * f) / divisor);
+                        let (coordinates, weight) = blend_control(*a, *b, f, coordinates);
                         let axes = frame.axes().map(|a| a.as_vector().to_array());
                         let delta = Vector3::try_from(std::array::from_fn(|i| {
                             axes[0][i].mul_add(

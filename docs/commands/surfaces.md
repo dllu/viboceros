@@ -146,10 +146,13 @@ a perpendicular profile and compatible frames across each corner.
 For an open Local sweep on straight rail segments, place a cross section at
 each rail corner. The preview shows the shared profile at each joint in both
 miter modes. You can add sections between corners or use a point end.
+Turn on `UntrimmedMiters` to infer missing corner sections with varying
+profiles. If two profiles bracket the corners on an open sweep, switching
+between Local and Global blending updates the inferred sections in the preview.
 
-A Local sweep around a polygonal loop uses profiles at all the corners.
-Turning on `Closed` previews the final leg. At a corner seam with an open
-profile, switch `UntrimmedMiters` to show or hide the two seam extensions.
+A Local sweep around a polygonal loop previews the final leg when `Closed`
+is enabled. When every corner has a profile and the corner seam profile is
+open, switch `UntrimmedMiters` to show or hide the two seam extensions.
 Use untrimmed mode for a closed seam profile or a seam on a straight leg.
 
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,
@@ -177,8 +180,9 @@ Use `Style` then `Roadlike`, or `SetAxis`, to pick the axis with a live preview.
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular
 rail with one profile. General closed-rail holonomy correction, curved rail
-miters, multi-profile miters with Global blending or missing corner profiles,
-and general branch and seam choices remain unimplemented.
+miters, Global blending on polygonal rails with three or more profiles or an
+authored corner, trimmed miters across varying profiles without a corner
+section, and general branch and seam choices remain unimplemented.
 Automatic placement follows the qualified interval and direction
 policy linked above.
 

@@ -155,6 +155,14 @@ common chart. Separate checks cover circular profiles and point-ended faces.
 Rhino produced different intermediate geometry with Global blending. Its
 trimmed point-ended result also includes zero-length edges at the poles.
 
+When profiles bracket a polygonal rail corner, Rhino's untrimmed sweep
+interpolates the cross section by arc length and tilts the section plane toward
+the miter bisector. The regression checks planar and spatial miters, mixed
+authored and inferred corners, profiles inside a rail leg, and live switching
+between Local and Global for two profiles. Trimmed mode leaves separate
+extended pieces in the tapered fixtures and joins matching profiles in the
+constant-width fixture.
+
 On polygonal loops with a profile at each corner, Rhino rotates the return
 profile using the transported rail frame. The planar and spatial fixtures
 check the seam geometry, topology, and area. In trimmed mode, Rhino reports
@@ -165,9 +173,10 @@ length also changed with the neighboring profile radii.
 
 ## Remaining work and performance
 
-General closed-rail holonomy correction, curved rail miters, multi-profile
-miters with Global blending or missing corner profiles, trimmed polygonal
-loops with a closed seam profile, complete unrefitted multi-profile compatibility, automatic
+General closed-rail holonomy correction, curved rail miters, Global miters
+with three or more profiles or an authored corner, trimmed miters across
+varying profiles without a corner section, trimmed loops with a closed seam
+profile, complete unrefitted multi-profile compatibility, automatic
 branch and seam alignment, and further Rhino section-refit options remain open.
 Section rebuilding now has
 [separate complete-image checks](rebuilding.md). These are explicit limits,

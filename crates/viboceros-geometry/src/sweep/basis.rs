@@ -167,7 +167,7 @@ pub(super) fn rail_basis<E: From<GeometryError>>(
     Ok(surface)
 }
 
-fn parameters_near(a: Real, b: Real, domain: RangeInclusive<Real>) -> bool {
+pub(super) fn parameters_near(a: Real, b: Real, domain: RangeInclusive<Real>) -> bool {
     let scale = domain.start().abs().max(domain.end().abs());
     (a - b).abs() <= 64.0 * Real::EPSILON * scale
 }
@@ -182,7 +182,7 @@ fn is_station(rail: &NurbsCurve, t: Real) -> bool {
 /// Insert a small symmetric knot neighborhood when an interior section is
 /// not already a Greville site. Process sections in order, respecting existing
 /// knots and the next section so earlier interpolation sites remain intact.
-fn with_section_stations<E: From<GeometryError>>(
+pub(super) fn with_section_stations<E: From<GeometryError>>(
     mut rail: NurbsCurve,
     stations: &[Real],
     operations: &mut SweepSurfaceOperations<'_, E>,
