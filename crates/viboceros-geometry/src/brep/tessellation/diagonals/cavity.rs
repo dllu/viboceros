@@ -6,13 +6,13 @@ use super::{
 
 mod hexagon;
 
-type Adjacency = HashMap<Edge, [usize; 2]>;
+pub(super) type Adjacency = HashMap<Edge, [usize; 2]>;
 
 fn directed_edges([a, b, c]: Triangle) -> [Edge; 3] {
     [[a, b], [b, c], [c, a]]
 }
 
-fn neighbors(i: usize, faces: &[Triangle], adjacent: &Adjacency) -> [Option<usize>; 3] {
+pub(super) fn neighbors(i: usize, faces: &[Triangle], adjacent: &Adjacency) -> [Option<usize>; 3] {
     directed_edges(faces[i]).map(|[a, b]| {
         let [first, second] = adjacent[&edge(a, b)];
         let other = if first == i { second } else { first };
@@ -20,7 +20,7 @@ fn neighbors(i: usize, faces: &[Triangle], adjacent: &Adjacency) -> [Option<usiz
     })
 }
 
-fn boundary<const N: usize, const B: usize>(faces: [Triangle; N]) -> Option<[u32; B]> {
+pub(super) fn boundary<const N: usize, const B: usize>(faces: [Triangle; N]) -> Option<[u32; B]> {
     let edges = faces.map(directed_edges).into_iter().flatten();
     let outer: [Edge; B] = edges
         .clone()
@@ -46,22 +46,34 @@ fn install<const N: usize>(
     replacement: [Triangle; N],
 ) {
     for i in indices {
-        for [a, b] in directed_edges(faces[i]) {
-            let key = edge(a, b);
-            let pair = adjacent.get_mut(&key).expect("edge of an installed face");
-            pair[usize::from(pair[0] != i)] = NO_FACE;
-            if *pair == [NO_FACE; 2] {
-                adjacent.remove(&key);
-            }
-        }
+        detach(adjacent, i, faces[i]);
     }
     for (i, face) in indices.into_iter().zip(replacement) {
         faces[i] = face;
-        for [a, b] in directed_edges(face) {
-            let pair = adjacent.entry(edge(a, b)).or_insert([NO_FACE; 2]);
-            pair[usize::from(pair[0] != NO_FACE)] = i;
+        attach(adjacent, i, face);
+    }
+}
+
+pub(super) fn detach(adjacent: &mut Adjacency, i: usize, face: Triangle) {
+    for [a, b] in directed_edges(face) {
+        let key = edge(a, b);
+        let pair = adjacent.get_mut(&key).expect("edge of an installed face");
+        pair[usize::from(pair[0] != i)] = NO_FACE;
+        if *pair == [NO_FACE; 2] {
+            adjacent.remove(&key);
         }
     }
+}
+
+pub(super) fn attach(adjacent: &mut Adjacency, i: usize, face: Triangle) -> bool {
+    for [a, b] in directed_edges(face) {
+        let pair = adjacent.entry(edge(a, b)).or_insert([NO_FACE; 2]);
+        if !pair.contains(&NO_FACE) {
+            return false;
+        }
+        pair[usize::from(pair[0] != NO_FACE)] = i;
+    }
+    true
 }
 
 struct SurfaceMesh<'a> {
