@@ -188,6 +188,7 @@ struct SceneKey {
     camera: CameraSnapshot,
     mode: DisplayMode,
     draw_surface_edges: bool,
+    draw_surface_isocurves: bool,
     rect: Rect,
     objects: Vec<DisplayObject>,
 }
@@ -669,6 +670,7 @@ impl Viewport {
             camera: self.camera_snapshot(),
             mode: self.display_mode,
             draw_surface_edges: self.draw_surface_edges,
+            draw_surface_isocurves: self.draw_surface_isocurves,
             rect,
             objects,
         };
@@ -679,6 +681,7 @@ impl Viewport {
             }
             if previous.key.mode == key.mode
                 && previous.key.draw_surface_edges == key.draw_surface_edges
+                && previous.key.draw_surface_isocurves == key.draw_surface_isocurves
                 && previous.key.objects == key.objects
                 && (!previous.scene.geometry.transparent || self.kind.is_parallel())
                 && let Some(uniform) = previous
@@ -838,7 +841,12 @@ impl Viewport {
                     {
                         continue;
                     }
-                    for &[a, b] in display.wires() {
+                    let boundary_only = !self.draw_surface_isocurves
+                        && matches!(
+                            &*display.geometry,
+                            Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                        );
+                    let mut draw_wire = |&[a, b]: &[Point3; 2]| {
                         if let (Some(a), Some(b)) =
                             (object.display_point(a), object.display_point(b))
                         {
@@ -849,6 +857,11 @@ impl Viewport {
                                 scene.overlay_lines.push(line);
                             }
                         }
+                    };
+                    if boundary_only {
+                        display.edges().iter().flatten().for_each(&mut draw_wire);
+                    } else {
+                        display.wires().iter().for_each(draw_wire);
                     }
                 }
             }

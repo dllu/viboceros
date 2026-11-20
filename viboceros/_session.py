@@ -356,7 +356,7 @@ class Session:
         self, path: PathLike, *, view: View | None = None, mode: str = "Shaded",
         size: tuple[int, int] = (1200, 800), fit: bool = True,
         background: tuple[int, int, int, int] = (255, 255, 255, 255),
-        camera: Camera | None = None, show_edges: bool = True,
+        camera: Camera | None = None, show_edges: bool = True, show_isocurves: bool = True,
         lighting: Literal["viewport", "diffuse"] = "viewport",
     ) -> Path:
         """Write a PNG using a viewport, named view, or standard view direction."""
@@ -364,6 +364,6 @@ class Session:
         self._request(
             "screenshot", path=str(path), view=view, mode=mode, size=size,
             fit=fit, background=background, camera=None if camera is None else camera._payload(),
-            show_edges=show_edges, lighting=lighting,
+            show_edges=show_edges, show_isocurves=show_isocurves, lighting=lighting,
         )
         return path

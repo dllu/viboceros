@@ -15,6 +15,8 @@ pub(super) struct Screenshot {
     background: [u8; 4],
     #[serde(default = "show_edges")]
     show_edges: bool,
+    #[serde(default = "show_edges")]
+    show_isocurves: bool,
     #[serde(default)]
     lighting: Lighting,
 }
@@ -59,6 +61,7 @@ impl Session {
         };
         viewport.display_mode = DisplayMode::parse(&options.mode).ok_or("unknown display mode")?;
         viewport.draw_surface_edges = options.show_edges;
+        viewport.draw_surface_isocurves = options.show_isocurves;
         viewport.diffuse_lighting = matches!(options.lighting, Lighting::Diffuse);
         let [width, height] = options.size;
         let rect =

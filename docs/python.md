@@ -117,8 +117,9 @@ and an RGBA `background`. Rendering requires a wgpu adapter. A software Vulkan
 adapter works without a desktop session.
 
 Pass `camera=Camera(eye=(...), target=(...))` for a custom perspective and
-`show_edges=False` to hide tessellated object wires in shaded captures.
-Standalone model curves remain visible.
+`show_edges=False` to hide surface wires in shaded captures. Pass
+`show_isocurves=False` to keep the topological edges and hide interior
+surface isocurves. Standalone model curves remain visible.
 `lighting="diffuse"` shades the model colors with a directional light and
 ambient fill. The default `lighting="viewport"` uses the desktop shading.
 
