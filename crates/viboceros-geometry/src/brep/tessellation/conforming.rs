@@ -566,6 +566,15 @@ impl Brep {
                     &mut face_mesh.triangles,
                     height,
                 );
+                let limit = (face_mesh.points.len() + remaining).min(MAX_CONSTRAINED_TRIM_VERTICES);
+                diagonals::repair_remaining(
+                    &face.surface,
+                    &mut face_mesh.parameters,
+                    &mut face_mesh.points,
+                    &mut face_mesh.triangles,
+                    height,
+                    limit,
+                );
             }
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;

@@ -1,6 +1,9 @@
 //! Repair lifted triangles that face against a smooth display chart.
 mod cavity;
+mod fan;
 mod vertex_fit;
+
+pub(super) use fan::repair_remaining;
 
 use super::*;
 use std::collections::HashMap;
@@ -36,6 +39,7 @@ struct SurfaceSample {
     uv: Point2,
     center: Point3,
     surface_point: Point3,
+    normal: Vector3,
     alignment: Real,
     plane_distance: Real,
     twice_area: Real,
@@ -47,12 +51,23 @@ fn sample(
     parameters: &[Point2],
     triangle: Triangle,
 ) -> Option<SurfaceSample> {
-    let [p, q, r] = triangle.map(|i| points[i as usize]);
     let [a, b, c] = triangle.map(|i| parameters[i as usize]);
     let winding = wound_side([a, b, c]);
     if winding == 0. {
         return None;
     }
+    sample_in_winding(surface, points, parameters, triangle, winding)
+}
+
+fn sample_in_winding(
+    surface: &NurbsSurface,
+    points: &[Point3],
+    parameters: &[Point2],
+    triangle: Triangle,
+    winding: Real,
+) -> Option<SurfaceSample> {
+    let [p, q, r] = triangle.map(|i| points[i as usize]);
+    let [a, b, c] = triangle.map(|i| parameters[i as usize]);
     let geometric_normal = p.vector_to(q).ok()?.cross(p.vector_to(r).ok()?).ok()?;
     let model_normal = geometric_normal.normalized_nonzero().ok()?.as_vector();
     let uv = Point2::try_new(
@@ -72,6 +87,7 @@ fn sample(
         uv,
         center,
         surface_point,
+        normal: model_normal,
         alignment: winding * model_normal.dot(surface_normal.as_vector()).ok()?,
         plane_distance: p
             .vector_to(surface_point)
@@ -104,6 +120,14 @@ fn center_distance(
     sample: &SurfaceSample,
     contains: impl Fn(Point2) -> bool,
 ) -> Option<Real> {
+    center_witness(surface, sample, contains).map(|(_, distance)| distance)
+}
+
+fn center_witness(
+    surface: &NurbsSurface,
+    sample: &SurfaceSample,
+    contains: impl Fn(Point2) -> bool,
+) -> Option<(Point2, Real)> {
     let (u, v) = (surface.domain_u(), surface.domain_v());
     let mut uv = sample.uv;
     let mut distance = sample.center.distance_to(sample.surface_point).ok()?;
@@ -142,7 +166,7 @@ fn center_distance(
         uv = candidate;
         distance = next;
     }
-    Some(distance)
+    Some((uv, distance))
 }
 
 struct Flip {
@@ -509,6 +533,34 @@ mod tests {
         );
         assert!(triangles.iter().all(|&face| {
             sample(&surface, &positions, &uv, face).is_some_and(|s| s.alignment > 0.)
+        }));
+    }
+
+    #[test]
+    fn inserts_a_surface_vertex_without_changing_the_cavity_perimeter() {
+        let surface = shear();
+        let mut uv = [(0.2, 0.4), (0.65, 0.2), (0.95, 0.35), (0.6, 0.55)]
+            .map(|(u, v)| Point2::try_new(u, v).unwrap())
+            .to_vec();
+        let mut points = uv
+            .iter()
+            .map(|site| surface.evaluate(site.x(), site.y()).unwrap())
+            .collect::<Vec<_>>();
+        let mut faces = vec![[0, 1, 2], [0, 2, 3]];
+        assert!(sample(&surface, &points, &uv, faces[1]).is_some_and(|s| s.alignment < 0.));
+        let boundary = points.clone();
+
+        repair_remaining(&surface, &mut uv, &mut points, &mut faces, 3., 5);
+
+        assert_eq!(points.len(), 5);
+        assert_eq!(points[..4], boundary);
+        assert_eq!(faces.len(), 4);
+        assert_eq!(points[4], surface.evaluate(uv[4].x(), uv[4].y()).unwrap());
+        for i in 0..4 {
+            assert!(faces.contains(&[i, (i + 1) % 4, 4]));
+        }
+        assert!(faces.iter().all(|&face| {
+            sample(&surface, &points, &uv, face).is_some_and(|s| s.alignment > 0.)
         }));
     }
 }
