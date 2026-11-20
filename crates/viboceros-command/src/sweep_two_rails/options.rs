@@ -34,9 +34,15 @@ impl SectionFit {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub struct Options {
     names: Option<[String; 2]>,
+    pub shape: ShapeOptions,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct ShapeOptions {
     pub fit: SectionFit,
     pub ends: SweepEndPoints,
     pub maintain_height: bool,
+    pub refit_rails: bool,
 }
 
 impl Options {
@@ -45,6 +51,7 @@ impl Options {
         let mut fit = None;
         let mut ends = SweepEndPoints::default();
         let mut maintain_height = None;
+        let mut refit_rails = None;
         for arg in args {
             let (key, value) = arg.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             if let Some(index) = ["Rail1Name", "Rail2Name"]
@@ -68,9 +75,13 @@ impl Options {
                 }
             } else if option_name_eq(key, "MaintainHeight") {
                 if maintain_height
-                    .replace(Self::parse_height(value)?)
+                    .replace(Self::parse_toggle(value)?)
                     .is_some()
                 {
+                    return Err(CommandError::Usage(USAGE));
+                }
+            } else if option_name_eq(key, "RefitRails") {
+                if refit_rails.replace(Self::parse_toggle(value)?).is_some() {
                     return Err(CommandError::Usage(USAGE));
                 }
             } else if fit.replace(SectionFit::parse(key, value)?).is_some() {
@@ -84,14 +95,17 @@ impl Options {
         };
         Ok(Self {
             names,
-            fit: fit.unwrap_or_default(),
-            ends,
-            maintain_height: maintain_height.unwrap_or_default(),
+            shape: ShapeOptions {
+                fit: fit.unwrap_or_default(),
+                ends,
+                maintain_height: maintain_height.unwrap_or_default(),
+                refit_rails: refit_rails.unwrap_or_default(),
+            },
         })
     }
 
-    pub fn parse_height(value: &str) -> Result<bool, CommandError> {
-        parse_yes_no(value).ok_or(CommandError::Usage("MaintainHeight=Yes|No"))
+    pub fn parse_toggle(value: &str) -> Result<bool, CommandError> {
+        parse_yes_no(value).ok_or(CommandError::Usage("Choose Yes or No"))
     }
 
     pub fn explicit_rails(&self, doc: &Document) -> Result<Option<[ObjectId; 2]>, CommandError> {

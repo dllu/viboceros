@@ -1,7 +1,9 @@
 use viboceros_geometry::{
     AffineTransform3, NurbsCurve, NurbsSurface, Point3, Tolerance, Vector3, WeightedPoint3,
 };
-use viboceros_smlib::{two_rail_sweep_surface, two_rail_sweep_surface_with_options};
+use viboceros_smlib::{
+    TwoRailSweepOptions, two_rail_sweep_surface, two_rail_sweep_surface_with_options,
+};
 
 fn p(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
@@ -93,8 +95,10 @@ fn native_two_rail_sweep_transports_one_arch_along_curved_and_skew_rails() {
             &curved[0],
             &curved[1],
             std::slice::from_ref(&profile),
-            Default::default(),
-            maintain,
+            TwoRailSweepOptions {
+                maintain_height: maintain,
+                ..Default::default()
+            },
             Tolerance::DEFAULT,
         )
         .unwrap();
@@ -117,6 +121,161 @@ fn native_two_rail_sweep_transports_one_arch_along_curved_and_skew_rails() {
     let middle_control = surface.control_point(1, 1).unwrap().point();
     let expected = p(1.2032920118407415, 2.5934159763185169, 6.1621169578302464);
     assert!(middle_control.distance_to(expected).unwrap() < 1e-8);
+}
+
+#[test]
+fn native_two_rail_sweep_refit_maps_independent_profile_stations() {
+    let rails = [
+        curve(vec![p(0., 0., 0.), p(0., 0., 8.)]),
+        curve(vec![p(2., 0., 8.), p(2., 0., 0.)])
+            .try_reparameterized(-2. ..=7.)
+            .unwrap(),
+    ];
+    let profiles = [
+        curve(vec![p(0., 0., 0.), p(1., 0.8, 0.), p(2., 0., 0.)]),
+        curve(vec![p(0., 0., 3.2), p(1., 1.5, 4.24), p(2., 0., 5.28)]),
+        curve(vec![p(0., 0., 8.), p(1., 1.2, 8.), p(2., 0., 8.)]),
+    ];
+    let tolerance = Tolerance::DEFAULT;
+    assert!(two_rail_sweep_surface(&rails[0], &rails[1], &profiles, tolerance).is_err());
+    let surface = two_rail_sweep_surface_with_options(
+        &rails[0],
+        &rails[1],
+        &profiles,
+        TwoRailSweepOptions {
+            refit_rails: true,
+            ..Default::default()
+        },
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!(surface.domain_u(), 0. ..=8.);
+    for (u, profile) in [0., 4.24, 8.].into_iter().zip(&profiles) {
+        for v in [0., 0.25, 0.5, 0.75, 1.] {
+            let reference = profile.evaluate(v).unwrap();
+            assert!(
+                surface
+                    .evaluate(u, v)
+                    .unwrap()
+                    .distance_to(reference)
+                    .unwrap()
+                    < 1e-9
+            );
+        }
+    }
+    // Rhino 8.32, document absolute tolerance 0.001.
+    for (u, y) in [
+        (1., 0.42815116020261246),
+        (4., 0.7408997519081474),
+        (7., 0.6044386433718247),
+    ] {
+        let actual = surface.evaluate(u, 0.5).unwrap();
+        assert!(
+            actual.distance_to(p(1., y, u)).unwrap() < 1e-8,
+            "{actual:?}"
+        );
+    }
+}
+
+#[test]
+fn native_two_rail_sweep_refit_matches_curved_rhino_fixture_within_model_tolerance() {
+    let rails = [
+        curve(vec![p(0., 0., 0.), p(0., 3., 2.), p(1., 0., 8.)]),
+        curve(vec![p(2., 0., 0.), p(6., -1., 5.), p(4., 0., 8.)]),
+    ];
+    let profiles = [
+        curve(vec![p(0., 0., 0.), p(1., 0.8, 0.), p(2., 0., 0.)]),
+        curve(vec![p(1., 0., 8.), p(2.5, 1.2, 8.), p(4., 0., 8.)]),
+    ];
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1_f64.to_radians()).unwrap();
+    let surface = two_rail_sweep_surface_with_options(
+        &rails[0],
+        &rails[1],
+        &profiles,
+        TwoRailSweepOptions {
+            refit_rails: true,
+            ..Default::default()
+        },
+        tolerance,
+    )
+    .unwrap();
+    assert_eq!(surface.degree_u(), 3);
+    let dz = *surface.domain_u().end();
+    assert!((dz - 8.871950897010286).abs() < 2e-5);
+    for (t, point) in [
+        (
+            0.125,
+            [1.5406735845574164, 0.8474975176649883, 0.7782109536474813],
+        ),
+        (
+            0.375,
+            [2.398524350492659, 1.2425154634872606, 2.775444742670522],
+        ),
+        (
+            0.625,
+            [2.879416524857919, 1.1461089387741645, 4.90287651044745],
+        ),
+        (
+            0.875,
+            [2.7999163695429656, 0.8260814488784234, 7.0206808510504795],
+        ),
+    ] {
+        let actual = surface.evaluate(dz * t, 0.5).unwrap();
+        let distance = actual
+            .distance_to(Point3::try_from(point).unwrap())
+            .unwrap();
+        assert!(distance < tolerance.absolute(), "{t}: {distance}");
+    }
+}
+
+#[test]
+fn native_two_rail_sweep_refit_certifies_rational_rail_images() {
+    let rails = [0., 2.].map(|x| {
+        NurbsCurve::try_new_rational(
+            2,
+            [
+                (p(x, 1., 0.), 1.),
+                (p(x, 1., 1.), std::f64::consts::FRAC_1_SQRT_2),
+                (p(x, 0., 1.), 1.),
+            ]
+            .into_iter()
+            .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+            .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap()
+    });
+    let profile = curve(vec![p(0., 1., 0.), p(1., 1.2, 0.), p(2., 1., 0.)]);
+    let surface = two_rail_sweep_surface_with_options(
+        &rails[0],
+        &rails[1],
+        std::slice::from_ref(&profile),
+        TwoRailSweepOptions {
+            refit_rails: true,
+            ..Default::default()
+        },
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(surface.degree_u(), 3);
+    let end = *surface.domain_u().end();
+    assert!((end - std::f64::consts::FRAC_PI_2).abs() < 1e-10);
+    let v = 0.5;
+    assert!(
+        surface
+            .evaluate(0., v)
+            .unwrap()
+            .distance_to(profile.evaluate(v).unwrap())
+            .unwrap()
+            < 1e-9
+    );
+    for u in [0.2, 0.5, 0.8] {
+        for (i, v) in [0., 1.].into_iter().enumerate() {
+            let point = surface.evaluate(u * end, v).unwrap();
+            let expected = p(2. * i as f64, (u * end).cos(), (u * end).sin());
+            assert!(point.distance_to(expected).unwrap() < 1e-9);
+        }
+    }
 }
 #[test]
 fn native_two_rail_sweep_declines_unmatched_missing_duplicate_and_disconnected_sections() {

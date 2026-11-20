@@ -113,6 +113,70 @@ fn wait_for_draft(app: &mut VibocerosApp, context: &egui::Context) -> Vec<NurbsC
 }
 
 #[test]
+fn sweep_two_rail_refit_review_and_script_use_the_same_draft() {
+    let mut app = test_app();
+    for input in ["Line 0,0,0 0,0,8", "Line 1,0,0 5,0,8"] {
+        enter(&mut app, input);
+    }
+    for (width, z, height) in [(1., 0., 0.8), (5., 8., 1.)] {
+        let arch = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0., 0., z),
+                point(width / 2., height, z),
+                point(width, 0., z),
+            ],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        app.document
+            .add_geometry(Geometry::NurbsCurve(arch))
+            .unwrap();
+    }
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    let ids = before.iter().map(|o| o.id()).collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    app.document
+        .select_objects_direct(ids.clone(), SelectionMode::Replace)
+        .unwrap();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep2");
+    let unchanged = wait_for_draft(&mut app, &context);
+    enter(&mut app, "RefitRails");
+    assert_eq!(app.command_hint(), "Refit rails? Choose Yes or No");
+    enter(&mut app, "Yes");
+    let fitted = wait_for_draft(&mut app, &context);
+    assert_ne!(unchanged, fitted);
+    enter(&mut app, "RefitRails=No");
+    assert_eq!(wait_for_draft(&mut app, &context), unchanged);
+    enter(&mut app, "Undo");
+    assert_eq!(wait_for_draft(&mut app, &context), fitted);
+    assert_eq!(app.document.undo_label(), None);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    enter(&mut app, "");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a Sweep2 B-rep");
+    };
+    let tolerance = app.document.tolerance();
+    assert_eq!(brep.wireframe_curves(1, tolerance).unwrap(), fitted);
+    let area = brep.area(tolerance).unwrap();
+    assert!((area - 27.281218625057083).abs() < 1e-5, "{area}");
+    assert_eq!(app.document.undo_label(), Some("Sweep2"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    app.document
+        .select_objects_direct(ids, SelectionMode::Replace)
+        .unwrap();
+    enter(&mut app, "_-Sweep2 _RefitRails=_Yes");
+    assert!(app.command_line_idle(), "{:?}", app.command_log);
+    let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Expected a scripted Sweep2 B-rep");
+    };
+    assert_eq!(brep.wireframe_curves(1, tolerance).unwrap(), fitted);
+}
+
+#[test]
 fn sweep_two_rail_single_profile_height_updates_preview_and_local_undo() {
     let mut app = test_app();
     for input in ["Line 0,0,0 0,0,6", "Line 2,0,0 6,0,6"] {

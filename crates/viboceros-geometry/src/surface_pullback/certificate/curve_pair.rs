@@ -9,6 +9,36 @@ mod projected;
 mod tests;
 
 impl NurbsCurve {
+    /// Bound both oriented curve images by certifying a continuous, monotone
+    /// correspondence. Optional normalized pairs can seed the fit at knots
+    /// of `other`. Affine and projection proposals precede adaptive
+    /// correspondence fitting. A missing result is inconclusive.
+    pub fn curve_image_deviation_bound(
+        &self,
+        other: &NurbsCurve,
+        span_correspondence: &[[Real; 2]],
+        limit: Real,
+    ) -> Result<Option<Real>, GeometryError> {
+        // Projecting the nonlinear chart onto the simpler target is useful
+        // when only one of the boundaries was reparameterized.
+        match other.monotone_projected_curve_deviation_bound(self, limit) {
+            Ok(Some(bound)) => return Ok(Some(bound)),
+            Ok(None) | Err(GeometryError::CurveApproximationLimit) => {}
+            Err(error) => return Err(error),
+        }
+        if !span_correspondence.is_empty()
+            && let Some(bound) = crate::curve_fit::g1::deviation_bound_at_pairs(
+                self,
+                other,
+                limit,
+                span_correspondence,
+            )?
+        {
+            return Ok(Some(bound));
+        }
+        crate::curve_fit::g1::deviation_bound(self, other, limit)
+    }
+
     /// Bounds `self(t) - other(t)` over their complete, affinely normalized
     /// domains. `Some(bound)` proves Euclidean distance at most `limit` at every
     /// parameter, including both limits of an interior knot. `None` is outside

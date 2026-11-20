@@ -46,7 +46,7 @@ impl VibocerosApp {
         };
         let name = input.trim_start_matches(['_', '-']);
         let end = if name.eq_ignore_ascii_case("Point") {
-            if session.section_count() == 0 && session.state.ends.start.is_none() {
+            if session.section_count() == 0 && session.state.shape.ends.start.is_none() {
                 End::Start
             } else {
                 End::Finish
@@ -91,11 +91,8 @@ impl VibocerosApp {
     pub(super) fn set_sweep_two_rail_point_argument(&mut self, end: End, argument: &str) {
         match Options::parse(&[argument]) {
             Ok(options) => {
-                let point = options
-                    .ends
-                    .start
-                    .or(options.ends.end)
-                    .expect("parsed Sweep2 point");
+                let ends = options.shape.ends;
+                let point = ends.start.or(ends.end).expect("parsed Sweep2 point");
                 self.apply_sweep_two_rail_point(end, point);
             }
             Err(error) => self.push_log(format!("Error: {error}")),
@@ -107,7 +104,7 @@ impl VibocerosApp {
             return false;
         }
         let session = self.sweep_two_rails.as_ref().unwrap();
-        let mut ends = session.state.ends;
+        let mut ends = session.state.shape.ends;
         end.set(&mut ends, point);
         if session.section_count() + point_count(ends) > MAX_SECTIONS {
             self.push_log(format!(
@@ -130,7 +127,7 @@ impl VibocerosApp {
         }
         let session = self.sweep_two_rails.as_mut().unwrap();
         session.undo.push(session.state.clone());
-        session.state.ends = ends;
+        session.state.shape.ends = ends;
         session.state.review |= end == End::Finish;
         session.picking = None;
         session.preview.accept_point(end, point, tolerance);

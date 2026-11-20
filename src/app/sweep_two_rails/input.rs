@@ -49,9 +49,15 @@ impl VibocerosApp {
             } else {
                 self.set_sweep_two_rail_option(option, value);
             }
-        } else if let Some(option) = ["Simplify", "Rebuild", "Refit", "MaintainHeight"]
-            .into_iter()
-            .find(|option| option.eq_ignore_ascii_case(name))
+        } else if let Some(option) = [
+            "Simplify",
+            "Rebuild",
+            "Refit",
+            "MaintainHeight",
+            "RefitRails",
+        ]
+        .into_iter()
+        .find(|option| option.eq_ignore_ascii_case(name))
         {
             self.sweep_two_rails.as_mut().unwrap().value = Some(option);
             self.log_sweep_two_rails();
@@ -80,17 +86,25 @@ impl VibocerosApp {
     }
 
     fn set_sweep_two_rail_option(&mut self, option: &str, value: &str) {
-        if !option.eq_ignore_ascii_case("MaintainHeight") {
+        let height = option.eq_ignore_ascii_case("MaintainHeight");
+        if !height && !option.eq_ignore_ascii_case("RefitRails") {
             self.set_sweep_two_rail_fit(option, value);
             return;
         }
-        match Options::parse_height(value) {
-            Ok(height) => {
+        match Options::parse_toggle(value) {
+            Ok(enabled) => {
                 let session = self.sweep_two_rails.as_mut().unwrap();
                 session.value = None;
-                if height != session.state.maintain_height {
+                let mut next = session.state.shape;
+                let toggle = if height {
+                    &mut next.maintain_height
+                } else {
+                    &mut next.refit_rails
+                };
+                if enabled != *toggle {
+                    *toggle = enabled;
                     session.undo.push(session.state.clone());
-                    session.state.maintain_height = height;
+                    session.state.shape = next;
                     session.preview.invalidate();
                 }
                 self.log_sweep_two_rails();
@@ -113,9 +127,9 @@ impl VibocerosApp {
         match fit {
             Ok(fit) => {
                 session.value = None;
-                if fit != session.state.fit {
+                if fit != session.state.shape.fit {
                     session.undo.push(session.state.clone());
-                    session.state.fit = fit;
+                    session.state.shape.fit = fit;
                     match fit {
                         SectionFit::Rebuild(count) => session.state.rebuild = count,
                         SectionFit::Refit(distance) => session.state.refit = distance,

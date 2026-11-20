@@ -70,16 +70,14 @@ impl VibocerosApp {
             return;
         }
         let provisional = session.picking.zip(point);
-        let mut ends = session.state.ends;
+        let mut shape = session.state.shape;
         if let Some((end, point)) = provisional {
-            end.set(&mut ends, point);
+            end.set(&mut shape.ends, point);
         }
         let ready = session.picking.is_none() || provisional.is_some();
         let session = self.sweep_two_rails.as_mut().unwrap();
         let tolerance = self.document.tolerance();
         let request = session.preview.request(tolerance, provisional);
-        let fit = session.state.fit;
-        let maintain_height = session.state.maintain_height;
         session.preview.worker.update(
             ready.then_some(request),
             context,
@@ -96,9 +94,9 @@ impl VibocerosApp {
                         source
                             .and_then(|source| {
                                 if provisional.is_some() {
-                                    source.validate_point_ends(ends, tolerance)?;
+                                    source.validate_point_ends(shape.ends, tolerance)?;
                                 }
-                                source.build(fit, ends, maintain_height, tolerance)
+                                source.build(shape, tolerance)
                             })
                             .map(|brep| {
                                 let wires = draft_worker::wireframe(&brep, tolerance);
@@ -133,14 +131,7 @@ impl VibocerosApp {
             session
                 .state
                 .capture(&self.document)
-                .and_then(|source| {
-                    source.build(
-                        session.state.fit,
-                        session.state.ends,
-                        session.state.maintain_height,
-                        tolerance,
-                    )
-                })
+                .and_then(|source| source.build(session.state.shape, tolerance))
                 .map_err(|error| error.to_string())
         };
         let brep = match result {

@@ -1,7 +1,7 @@
 # Sweep2
 
 `Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance]`
-`[MaintainHeight=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
+`[MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z]`
 
 Pick the first rail, the second rail, and then the cross-section curves.
 As soon as the inputs define a valid surface, Sweep2 draws a wire
@@ -39,6 +39,12 @@ height independently of rail width. The height is measured across the rail
 pair, perpendicular to the width and average sweep direction. Watch the
 preview while changing the option, or use local `Undo` to restore it.
 
+Choose `RefitRails=Yes` to fit both rails in a shared cubic basis. Between
+profile contacts the sweep pairs the rails by relative distance traveled.
+This supports profiles meeting the rails at different normalized parameters.
+The fitted boundaries are checked against the original rails at the document
+tolerance. The review preview updates for both choices.
+
 For example, in a new document:
 
 ```text
@@ -57,15 +63,14 @@ case-insensitive and currently cannot contain whitespace in this command.
 Sections may be selected in either order and either direction. The second rail
 is reversed automatically when necessary to align the section contacts.
 
-The solver requires open polynomial rails and open polynomial sections. Rebuild
-can also prepare polynomial sections from rational profile curves. Section
-endpoints must contact both rails. With multiple sections, the terminal
-sections must span the rails and interior sections must meet them at matching
-normalized parameters. The default native skin requires more sections than
-the maximum rail degree. Closed sweeps, rational rails, independent station
-parameterizations for multiple sections, rail refitting, slash guides and
-surface-edge continuity remain unsupported. Failures leave the document and
-history unchanged.
+The solver requires open rails and open polynomial sections. Rail refitting
+accepts rational rails, and Rebuild can prepare polynomial sections from
+rational profiles. Section endpoints must contact both rails. With multiple
+sections, the terminal sections must span the rails. Without rail refitting,
+the interior contacts must have matching normalized parameters. The default
+native skin requires more sections than the maximum rail degree. Closed
+sweeps, slash guides and surface-edge continuity remain unsupported.
+Failures leave the document and history unchanged.
 
 Construction uses either usd-brep's rail-constrained skin or a transported
 profile in a shared rail basis. An independent continuous deviation
@@ -96,6 +101,10 @@ the constrained skin used here.
 Tapered straight-rail captures cover one, two, and three profiles with
 `MaintainHeight`, including a single interior profile. On curved or skew
 rails the local transport can differ from Rhino's interior shape.
+
+The `RefitRails` captures cover tapered straight rails, an interior profile
+paired across different stations, and curved rails. Curved-rail fitting can
+choose different knots from Rhino.
 
 Validation and raw reference observations are retained in the
 [qualification record](../sweep2-qualification.json). The public SDK reference

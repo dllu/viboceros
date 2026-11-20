@@ -47,17 +47,21 @@ fn sweep_two_rail_chains_match_collinear_and_kinked_rhino_fixtures() {
             Rail::chain(&doc, &path, tolerance.absolute()).unwrap()
         });
         let source = Source::with_rails(&doc, rails, &sections).unwrap();
-        let brep = source
+        let brep = source.build(ShapeOptions::default(), tolerance).unwrap();
+        let refitted = source
             .build(
-                SectionFit::Unchanged,
-                SweepEndPoints::default(),
-                false,
+                ShapeOptions {
+                    refit_rails: true,
+                    ..Default::default()
+                },
                 tolerance,
             )
             .unwrap();
         assert_eq!(brep.faces().len(), face_count);
+        assert_eq!(refitted.faces().len(), face_count);
         assert_eq!(brep.edges().len(), if bend == 0. { 4 } else { 7 });
         assert!((brep.area(tolerance).unwrap() - area).abs() < 1e-8);
+        assert!((refitted.area(tolerance).unwrap() - area).abs() < 1e-8);
         // Rhino's two captured outputs are rectangles on their source
         // planes. Validate the result across both parameter directions.
         for face in brep.faces() {

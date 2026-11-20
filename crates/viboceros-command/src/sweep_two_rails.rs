@@ -6,13 +6,13 @@ use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
 
 const NAME: &str = "Sweep2";
-const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
+const USAGE: &str = "Sweep2 [Rail1Name=name Rail2Name=name] [Rebuild=point-count|Refit=tolerance] [MaintainHeight=Yes|No] [RefitRails=Yes|No] [StartPoint=x,y,z] [EndPoint=x,y,z] (select two rails, then cross sections)";
 pub const MAX_SECTIONS: usize = 32;
 
 mod options;
 mod rail;
 use crate::chain_selection::Target;
-pub use options::{Options, SectionFit};
+pub use options::{Options, SectionFit, ShapeOptions};
 pub use rail::Rail;
 pub(super) struct SweepTwoRailsCommand;
 
@@ -39,12 +39,7 @@ impl Command for SweepTwoRailsCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let options = Options::parse(args)?;
         let source = Source::capture(doc, &selected_ids(doc)?, &options)?;
-        let brep = source.build(
-            options.fit,
-            options.ends,
-            options.maintain_height,
-            doc.tolerance(),
-        )?;
+        let brep = source.build(options.shape, doc.tolerance())?;
         let message = result_message(source.sections.len(), brep.faces().len());
         doc.add_geometry(Geometry::Brep(brep))?;
         Ok(message)
@@ -134,14 +129,8 @@ impl Source {
         Ok(())
     }
 
-    pub fn build(
-        &self,
-        fit: SectionFit,
-        ends: SweepEndPoints,
-        maintain_height: bool,
-        tolerance: Tolerance,
-    ) -> Result<Brep, CommandError> {
-        let row_count = self.sections.len() + point_count(ends);
+    pub fn build(&self, shape: ShapeOptions, tolerance: Tolerance) -> Result<Brep, CommandError> {
+        let row_count = self.sections.len() + point_count(shape.ends);
         if self.sections.is_empty() || row_count > MAX_SECTIONS {
             return Err(CommandError::Usage(USAGE));
         }
@@ -151,7 +140,7 @@ impl Source {
             .iter()
             .map(Self::curve)
             .collect::<Result<Vec<_>, _>>()?;
-        let fitted = match fit {
+        let fitted = match shape.fit {
             SectionFit::Unchanged => Cow::Borrowed(sections.as_slice()),
             SectionFit::Rebuild(count @ 2..=128) => Cow::Owned(
                 sections
@@ -177,8 +166,11 @@ impl Source {
             rails[0],
             rails[1],
             &fitted,
-            ends,
-            maintain_height,
+            viboceros_smlib::TwoRailSweepOptions {
+                ends: shape.ends,
+                maintain_height: shape.maintain_height,
+                refit_rails: shape.refit_rails,
+            },
             tolerance,
         )?;
         let [u, v] = surface.sampled_kink_parameters(tolerance.angular())?;

@@ -52,5 +52,5 @@ pub use native::{
     two_rail_point_stations, two_rail_sweep_surface, two_rail_sweep_surface_with_options,
     two_rail_sweep_surface_with_point_ends,
 };
-pub use native::{EdgeBlendProfile, EdgeBlendSizes};
+pub use native::{EdgeBlendProfile, EdgeBlendSizes, TwoRailSweepOptions};
 use viboceros_opennurbs as _;

@@ -2,7 +2,15 @@
 use super::*;
 use viboceros_geometry::{AffineTransform3, NurbsCurve2, Point2, SweepEndPoints};
 
+mod refit;
 mod transport;
+
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct TwoRailSweepOptions {
+    pub ends: SweepEndPoints,
+    pub maintain_height: bool,
+    pub refit_rails: bool,
+}
 
 struct Section {
     stations: [f64; 2],
@@ -27,10 +35,19 @@ fn unsupported(message: &str) -> Error {
     Error::Kernel(format!("Two-rail sweep: {message}"))
 }
 
-fn prepare(curve: &NurbsCurve, tolerance: Tolerance) -> Result<NurbsCurve, Error> {
-    if curve.degree() > 16 || curve.control_points().len() > 128 || curve.is_rational() {
+fn prepare(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+    allow_rational: bool,
+) -> Result<NurbsCurve, Error> {
+    if curve.degree() > 16 || curve.control_points().len() > 128 {
         return Err(unsupported(
-            "requires polynomial curves of degree at most 16 with at most 128 controls",
+            "requires degree at most 16 and at most 128 controls per input curve",
+        ));
+    }
+    if !allow_rational && curve.is_rational() {
+        return Err(unsupported(
+            "requires polynomial input curves outside refitting",
         ));
     }
     if curve
@@ -44,6 +61,9 @@ fn prepare(curve: &NurbsCurve, tolerance: Tolerance) -> Result<NurbsCurve, Error
         return Err(unsupported(
             "requires open, continuous, noncollapsed curves",
         ));
+    }
+    if curve.is_rational() {
+        return Ok(curve.try_reparameterized(0. ..=1.)?);
     }
     Ok(NurbsCurve::try_new(
         curve.degree(),
@@ -93,7 +113,16 @@ pub fn two_rail_sweep_surface_with_point_ends(
     ends: SweepEndPoints,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
-    two_rail_sweep_surface_with_options(first, second, sections, ends, false, tolerance)
+    two_rail_sweep_surface_with_options(
+        first,
+        second,
+        sections,
+        TwoRailSweepOptions {
+            ends,
+            ..Default::default()
+        },
+        tolerance,
+    )
 }
 
 /// Sweep an open profile along two rails, optionally decoupling profile height
@@ -102,10 +131,14 @@ pub fn two_rail_sweep_surface_with_options(
     first: &NurbsCurve,
     second: &NurbsCurve,
     sections: &[NurbsCurve],
-    ends: SweepEndPoints,
-    maintain_height: bool,
+    options: TwoRailSweepOptions,
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, Error> {
+    let TwoRailSweepOptions {
+        ends,
+        maintain_height,
+        refit_rails,
+    } = options;
     let point_count = usize::from(ends.start.is_some()) + usize::from(ends.end.is_some());
     let row_count = sections.len().saturating_add(point_count);
     if sections.is_empty()
@@ -123,15 +156,17 @@ pub fn two_rail_sweep_surface_with_options(
             "requires 1–32 total sections including a real profile, and at most 1024 total controls",
         ));
     }
-    let (mut first, mut certificate_first) = prepare_rail(first, sections, ends, tolerance)?;
-    let (mut second, mut certificate_second) = prepare_rail(second, sections, ends, tolerance)?;
+    let (mut first, mut certificate_first) =
+        prepare_rail(first, sections, ends, tolerance, refit_rails)?;
+    let (mut second, mut certificate_second) =
+        prepare_rail(second, sections, ends, tolerance, refit_rails)?;
     let origin = first.evaluate(0.)?;
     let zero = Point3::try_new(0., 0., 0.)?;
     let to_local = AffineTransform3::from_translation(origin.vector_to(zero)?);
     let local_rails = [first.transformed(to_local)?, second.transformed(to_local)?];
     let mut rows = Vec::with_capacity(row_count);
     for section in sections {
-        let mut curve = prepare(section, tolerance)?;
+        let mut curve = prepare(section, tolerance, false)?;
         let local = curve.transformed(to_local)?;
         let endpoints = [local.evaluate(0.)?, local.evaluate(1.)?];
         let mut matches = Vec::new();
@@ -196,20 +231,29 @@ pub fn two_rail_sweep_surface_with_options(
         (second, certificate_second) =
             trim_single_rail(second, certificate_second, b, toward_start)?;
         rows[0].stations = [f64::from(toward_start); 2];
-    } else if rows[0].stations[0] != 0. || rows.last().unwrap().stations[0] != 1. {
+    } else if rows[0].stations[0] != 0.
+        || rows.last().unwrap().stations[0] != 1.
+        || (refit_rails && (rows[0].stations[1] != 0. || rows.last().unwrap().stations[1] != 1.))
+    {
         return Err(unsupported(
             "first and last sections must contact the rail ends",
         ));
     }
-    if rows
-        .iter()
-        .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10)
-        || rows
-            .windows(2)
-            .any(|r| r[1].stations[0] - r[0].stations[0] <= 1e-10)
+    let unordered = rows
+        .windows(2)
+        .any(|pair| (0..2).any(|axis| pair[1].stations[axis] - pair[0].stations[axis] <= 1e-10));
+    if unordered {
+        return Err(unsupported(
+            "requires distinct, consistently ordered contacts on both rails",
+        ));
+    }
+    if !refit_rails
+        && rows
+            .iter()
+            .any(|r| (r.stations[0] - r.stations[1]).abs() > 1e-10)
     {
         return Err(unsupported(
-            "requires distinct sections at matching normalized rail parameters",
+            "requires matching normalized rail parameters or RefitRails=Yes",
         ));
     }
     let rails = [first.transformed(to_local)?, second.transformed(to_local)?];
@@ -220,10 +264,21 @@ pub fn two_rail_sweep_surface_with_options(
         .iter()
         .all(|rail| rail.degree() == 1 && rail.control_points().len() == 2);
     let interior_profiles = ends.is_empty() && rows.len() > 2;
-    let surface = if maintain_height || single || (affine_rails && interior_profiles) {
-        transport::sweep([&rails[0], &rails[1]], &rows, maintain_height)?
+    let rails = [&rails[0], &rails[1]];
+    let (surface, stations, clock) = if refit_rails {
+        let fitted = refit::sweep(rails, &rows, maintain_height, tolerance)?;
+        (fitted.surface, fitted.stations, Some(fitted.clock))
     } else {
-        skin([&rails[0], &rails[1]], &rows)?
+        let surface = if maintain_height || single || (affine_rails && interior_profiles) {
+            transport::sweep(rails, &rows, maintain_height)?
+        } else {
+            skin(rails, &rows)?
+        };
+        (
+            surface,
+            rows.iter().map(|row| row.stations[0]).collect(),
+            None,
+        )
     };
     let mut surface =
         surface.transformed(AffineTransform3::from_translation(zero.vector_to(origin)?))?;
@@ -235,12 +290,24 @@ pub fn two_rail_sweep_surface_with_options(
     }
     let u = [*surface.domain_u().start(), *surface.domain_u().end()];
     let v = [*surface.domain_v().start(), *surface.domain_v().end()];
-    let mut constraints = vec![
-        (&certificate_first, [[u[0], v[0]], [u[1], v[0]]]),
-        (&certificate_second, [[u[0], v[1]], [u[1], v[1]]]),
-    ];
-    for row in &rows {
-        let s = u[0] + row.stations[0] * (u[1] - u[0]);
+    let mut constraints = Vec::new();
+    for (i, (rail, v)) in [(&certificate_first, v[0]), (&certificate_second, v[1])]
+        .into_iter()
+        .enumerate()
+    {
+        if let Some(clock) = &clock {
+            let edge = surface.isocurve_u(v)?;
+            if !clock.certify_rail(i, rail, &edge, tolerance.absolute())? {
+                return Err(unsupported(
+                    "could not certify the refitted rail within tolerance",
+                ));
+            }
+        } else {
+            constraints.push((rail, [[u[0], v], [u[1], v]]));
+        }
+    }
+    for (row, station) in rows.iter().zip(stations) {
+        let s = u[0] + station * (u[1] - u[0]);
         constraints.push((&row.original, [[s, v[0]], [s, v[1]]]));
     }
     for (curve, endpoints) in constraints {
@@ -421,9 +488,10 @@ fn prepare_rail(
     sections: &[NurbsCurve],
     ends: SweepEndPoints,
     tolerance: Tolerance,
+    refit_rails: bool,
 ) -> Result<(NurbsCurve, NurbsCurve), Error> {
     if ends.is_empty() {
-        return Ok((prepare(curve, tolerance)?, curve.clone()));
+        return Ok((prepare(curve, tolerance, refit_rails)?, curve.clone()));
     }
     let [start, end] = rail_interval(curve, sections, ends, tolerance)?;
     let range = start.min(end)..=start.max(end);
@@ -435,20 +503,18 @@ fn prepare_rail(
     if end < start {
         original = original.reversed()?;
     }
-    let prepared = super::knot_refinement::clamp_curve(&prepare(&original, tolerance)?)?;
-    let mut points = prepared
-        .control_points()
-        .iter()
-        .map(|control| control.point())
-        .collect::<Vec<_>>();
+    let prepared =
+        super::knot_refinement::clamp_curve(&prepare(&original, tolerance, refit_rails)?)?;
+    let mut points = prepared.control_points().to_vec();
     if let Some(point) = ends.start {
-        points[0] = point;
+        points[0] = WeightedPoint3::try_new(point, points[0].weight())?;
     }
     if let Some(point) = ends.end {
-        *points.last_mut().unwrap() = point;
+        let end = points.last_mut().unwrap();
+        *end = WeightedPoint3::try_new(point, end.weight())?;
     }
     Ok((
-        NurbsCurve::try_new(prepared.degree(), points, prepared.knots().to_vec())?,
+        NurbsCurve::try_new_rational(prepared.degree(), points, prepared.knots().to_vec())?,
         original,
     ))
 }

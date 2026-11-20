@@ -3,7 +3,7 @@ use super::{object_selection::PendingObjectCommand, *};
 use std::collections::BTreeSet;
 use viboceros_command::chain_selection::Target;
 use viboceros_command::sweep_two_rails::{
-    MAX_SECTIONS, Options, Rail, SectionFit, Source, point_count,
+    MAX_SECTIONS, Options, Rail, SectionFit, ShapeOptions, Source, point_count,
 };
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::SweepEndPoints;
@@ -50,9 +50,7 @@ impl Pick {
 struct State {
     rails: Vec<Rail>,
     picks: Vec<Pick>,
-    fit: SectionFit,
-    ends: SweepEndPoints,
-    maintain_height: bool,
+    shape: ShapeOptions,
     rebuild: usize,
     refit: f64,
     review: bool,
@@ -126,8 +124,9 @@ impl Session {
             Some("Rebuild") => "Enter the cross-section control point count",
             Some("Refit") => "Enter the cross-section refit tolerance",
             Some("MaintainHeight") => "Maintain height? Choose Yes or No",
+            Some("RefitRails") => "Refit rails? Choose Yes or No",
             _ if self.state.review => {
-                "Simplify / Rebuild / Refit / MaintainHeight / StartPoint / EndPoint / Undo. Enter creates the sweep"
+                "Simplify / Rebuild / Refit / RefitRails / MaintainHeight / StartPoint / EndPoint / Undo. Enter creates the sweep"
             }
             _ => match self.rail_count() {
                 0 => "Select the first rail or choose ChainEdges",
@@ -196,14 +195,12 @@ impl VibocerosApp {
             state: State {
                 rails,
                 picks,
-                fit: options.fit,
-                ends: options.ends,
-                maintain_height: options.maintain_height,
-                rebuild: match options.fit {
+                shape: options.shape,
+                rebuild: match options.shape.fit {
                     SectionFit::Rebuild(count) => count,
                     _ => 5,
                 },
-                refit: match options.fit {
+                refit: match options.shape.fit {
                     SectionFit::Refit(distance) => distance,
                     _ => self.document.tolerance().absolute(),
                 },
@@ -222,7 +219,7 @@ impl VibocerosApp {
             self.execute_command(input);
             return true;
         }
-        if session.section_count() + point_count(session.state.ends) > MAX_SECTIONS {
+        if session.section_count() + point_count(session.state.shape.ends) > MAX_SECTIONS {
             self.push_log(format!(
                 "Sweep2 accepts at most {MAX_SECTIONS} cross sections"
             ));
@@ -263,7 +260,7 @@ impl VibocerosApp {
         else {
             return;
         };
-        let limit = MAX_SECTIONS - point_count(session.state.ends);
+        let limit = MAX_SECTIONS - point_count(session.state.shape.ends);
         let mut next = session.state.clone();
         let removable = if mode == SelectionMode::Toggle {
             next.picks.len()
@@ -390,18 +387,16 @@ impl VibocerosApp {
     pub(in crate::app) fn log_sweep_two_rails(&mut self) {
         let session = self.sweep_two_rails.as_ref().unwrap();
         let hint = session.hint();
-        let fit = match session.state.fit {
+        let fit = match session.state.shape.fit {
             SectionFit::Unchanged => "Cross sections unchanged".to_owned(),
             SectionFit::Rebuild(count) => format!("Rebuild={count}"),
             SectionFit::Refit(distance) => format!("Refit={distance}"),
         };
-        let height = if session.state.maintain_height {
-            "Yes"
-        } else {
-            "No"
-        };
+        let choice = |enabled| if enabled { "Yes" } else { "No" };
+        let height = choice(session.state.shape.maintain_height);
+        let rails = choice(session.state.shape.refit_rails);
         self.push_log(if session.state.review && session.value.is_none() {
-            format!("Sweep2: {hint}. {fit}. MaintainHeight={height}")
+            format!("Sweep2: {hint}. {fit}. MaintainHeight={height}. RefitRails={rails}")
         } else {
             format!("Sweep2: {hint}")
         });
