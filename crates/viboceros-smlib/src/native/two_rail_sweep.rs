@@ -498,24 +498,23 @@ fn rail_interval(
         if station == endpoints[1] {
             return Ok(endpoints[0]);
         }
-        // With an interior pole, the remaining real terminal section chooses
-        // which side of the crossing to keep. Reject picks that straddle it.
-        let world = [curve.evaluate(endpoints[0])?, curve.evaluate(endpoints[1])?];
-        let mut contacted = [false; 2];
+        // Retain the side of the crossing containing the real profiles.
+        // The terminal profile can itself be inside that side of the rail.
+        let mut occupied = [false; 2];
         for section in sections {
             let section_domain = section.domain();
             for t in [*section_domain.start(), *section_domain.end()] {
-                let point = section.evaluate(t)?;
-                for i in 0..2 {
-                    contacted[i] |= world[i].distance_to(point)? <= tolerance.absolute();
+                if let Some(location) = contact(curve, section.evaluate(t)?, tolerance)? {
+                    occupied[0] |= location < station;
+                    occupied[1] |= location > station;
                 }
             }
         }
-        match contacted {
+        match occupied {
             [true, false] => Ok(endpoints[0]),
             [false, true] => Ok(endpoints[1]),
             _ => Err(unsupported(
-                "an interior point needs a cross section at the remaining rail end",
+                "cross sections must lie on one side of an interior point end",
             )),
         }
     };

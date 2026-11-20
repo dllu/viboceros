@@ -126,3 +126,53 @@ fn sweep_two_rail_two_point_ends_certify_original_rails_and_reject_off_rail_poin
         assert!(brep.vertices().iter().any(|vertex| vertex.point() == point));
     }
 }
+
+#[test]
+fn sweep_two_rail_point_and_interior_profile_trim_both_boundaries() {
+    let pole = p(0., 0., 0.);
+    let profile = [p(-1.25, 0., 5.), p(0., 0.5, 5.5), p(1.25, 0., 5.)];
+    let registry = CommandRegistry::with_builtins();
+    for crossing in [false, true] {
+        let mut doc = Document::default();
+        let [a, b] = if crossing {
+            [p(2., 0., -8.), p(-2., 0., -8.)]
+        } else {
+            [pole; 2]
+        };
+        let ids = [
+            add_curve(&mut doc, vec![a, p(-2., 0., 8.)]),
+            add_curve(&mut doc, vec![p(2., 0., 8.), b]),
+            add_curve(&mut doc, profile.to_vec()),
+        ];
+        doc.select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        doc.clear_history().unwrap();
+        let before = doc.objects().cloned().collect::<Vec<_>>();
+        registry
+            .execute(&mut doc, "Sweep2 StartPoint=0,0,0")
+            .unwrap();
+        let Geometry::Brep(brep) = doc.objects().last().unwrap().geometry() else {
+            panic!("Expected a Sweep2 B-rep");
+        };
+        assert_eq!(brep.faces().len(), 1);
+        assert_eq!(brep.edges().len(), 3);
+        // Rhino 8.32 produced the same cubic for a terminal pole and a pole
+        // at an interior crossing. Test its complete control net.
+        let surface = brep.faces()[0].surface();
+        assert_eq!(surface.control_point_count_u(), 4);
+        for u in 0..4 {
+            for (v, end) in profile.into_iter().enumerate() {
+                let expected = pole
+                    .translated(pole.vector_to(end).unwrap().scaled(u as f64 / 3.).unwrap())
+                    .unwrap();
+                let actual = surface.control_point(u, v).unwrap().point();
+                assert!(actual.distance_to(expected).unwrap() < 1e-9);
+            }
+        }
+        let area = brep.area(doc.tolerance()).unwrap();
+        assert!((area - 6.831194353237493).abs() < 1e-5);
+        assert_eq!(doc.undo_label(), Some("Sweep2"));
+        registry.execute(&mut doc, "Undo").unwrap();
+        assert_eq!(doc.objects().cloned().collect::<Vec<_>>(), before);
+    }
+}

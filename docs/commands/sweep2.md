@@ -21,7 +21,8 @@ private joined rails and leaves their pieces intact.
 With converging rails, choose `Point` before the first profile or after the
 last profile. `StartPoint` and `EndPoint` name either end directly. Click or
 type a point within model tolerance of both rails. If the rails cross away
-from their endpoints, the terminal profile determines which side to keep.
+from their endpoints, pick profiles on one side of the crossing. The sweep
+can end at a profile within that retained rail interval.
 Once a profile is available, the preview follows the snapped cursor. Picking
 the last point opens review. A point end counts as a section, and at least
 one real profile is required. Scripts can use `StartPoint=` and `EndPoint=`.
