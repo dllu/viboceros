@@ -80,12 +80,13 @@ pub(super) fn refinement_weight(
 ) -> Result<u64, GeometryError> {
     const PROBE_TRIANGLES: usize = 96;
     let stride = triangles.len().div_ceil(PROBE_TRIANGLES).max(1);
+    let mut evaluate = surface.point_evaluator();
     let mut work = 0.;
     for &[a, b, c] in triangles.iter().step_by(stride) {
         for [i, j] in [[a, b], [b, c], [c, a]] {
             let [i, j] = [i, j].map(|index| index as usize);
             let [u, v] = [parameters[i], parameters[j]];
-            let point = surface.evaluate(u.x().midpoint(v.x()), u.y().midpoint(v.y()))?;
+            let point = evaluate(u.x().midpoint(v.x()), u.y().midpoint(v.y()))?;
             let ratio = distance_to_chord(point, points[i], points[j])? / chord_height;
             if ratio > 1. {
                 // A smooth arc's deviation decreases quadratically as
@@ -105,7 +106,7 @@ struct InteriorProbe {
 }
 
 fn probe_interior_edge(
-    surface: &NurbsSurface,
+    evaluate: &mut impl FnMut(Real, Real) -> Result<Point3, GeometryError>,
     [ua, ub]: [Point2; 2],
     [a, b]: [Point3; 2],
     height: Real,
@@ -115,7 +116,7 @@ fn probe_interior_edge(
     if uv == ua || uv == ub {
         return Ok(None);
     }
-    let point = surface.evaluate(uv.x(), uv.y())?;
+    let point = evaluate(uv.x(), uv.y())?;
     if locations.contains(&vertex_location(point)) {
         return Ok(None);
     }
@@ -140,6 +141,7 @@ pub(super) fn refine_interior(
     } else {
         0
     };
+    let mut evaluate = surface.point_evaluator();
     let mut probes = HashMap::new();
     loop {
         let mut edges = triangles
@@ -160,7 +162,7 @@ pub(super) fn refine_interior(
                 saved
             } else {
                 let probe = probe_interior_edge(
-                    surface,
+                    &mut evaluate,
                     [parameters[a], parameters[b]],
                     [points[a], points[b]],
                     chord_height,
