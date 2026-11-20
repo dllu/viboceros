@@ -2,7 +2,7 @@
 use super::*;
 use crate::CommandError;
 use viboceros_geometry::{Curve3, Real};
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct CurvePortion {
     parameters: [Real; 2],
     wrap: bool,

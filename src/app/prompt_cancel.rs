@@ -27,7 +27,11 @@ impl VibocerosApp {
         if self.discard_surface_interpolation_plane() {
             return;
         }
-        if self.discard_curve_boolean_subcurve() {
+        if self.discard_curve_boolean_subcurve()
+            || (self.selection_menu.is_none()
+                && self.plane_prompt.is_none()
+                && self.discard_divide_subcurve())
+        {
             return;
         }
         if self.cancel_blend_curve_adjustment() {

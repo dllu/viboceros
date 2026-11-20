@@ -4,24 +4,32 @@ use crate::viewport::curve_seam::Event;
 use std::collections::BTreeMap;
 use std::sync::Arc;
 use viboceros_command::CommandError;
-use viboceros_command::divide::{self, Specification, Traversal, prompt::Prompt};
+use viboceros_command::divide::{self, Source, Specification, Traversal, prompt::Prompt};
 use viboceros_document::GeometrySnapshot;
+
+mod portions;
+pub(super) use portions::Inputs;
 
 #[derive(Clone, Debug, PartialEq)]
 pub(in crate::app) struct Session {
     prompt: Prompt,
-    sources: Vec<(ObjectId, GeometrySnapshot)>,
+    sources: Vec<Source>,
+    snapshots: BTreeMap<ObjectId, GeometrySnapshot>,
+    selection: Vec<ObjectId>,
     tolerance: Tolerance,
     seam: Option<curve_seam::Editor>,
     seam_id_pending: bool,
-    traversals: BTreeMap<ObjectId, Traversal>,
     points: Option<Arc<[Point3]>>,
 }
 
 impl Session {
-    fn new(doc: &Document, prompt: Prompt) -> Result<Self, CommandError> {
+    fn new(doc: &Document, prompt: Prompt, inputs: &Inputs) -> Result<Self, CommandError> {
+        let sources = inputs.sources(doc)?;
+        let mut snapshots = inputs
+            .snapshots()
+            .map(|(id, snapshot)| (id, snapshot.clone()))
+            .collect::<BTreeMap<_, _>>();
         let mut closed = Vec::new();
-        let mut sources = Vec::new();
         for object in doc.selected_objects() {
             let curve = object
                 .geometry()
@@ -30,7 +38,7 @@ impl Session {
             if curve.is_closed()? {
                 closed.push(object.id());
             }
-            sources.push((object.id(), object.geometry_snapshot().clone()));
+            snapshots.insert(object.id(), object.geometry_snapshot().clone());
         }
         let seam = (!closed.is_empty())
             .then(|| curve_seam::Editor::capture(doc, closed, false, true))
@@ -38,10 +46,11 @@ impl Session {
         let mut session = Self {
             prompt,
             sources,
+            snapshots,
+            selection: doc.selected_object_ids().collect(),
             tolerance: doc.tolerance(),
             seam,
             seam_id_pending: false,
-            traversals: BTreeMap::new(),
             points: None,
         };
         if session.seam.is_none() {
@@ -69,13 +78,17 @@ impl Session {
             }
         } else if self.picking_direction() {
             "Enter a distance or pick a curve to flip its direction. NumberSegments returns to count. Enter accepts, Esc cancels"
+        } else if !matches!(self.prompt.options.specification, Specification::Count(_)) {
+            "Enter a distance. NumberSegments returns to count. Enter accepts, Esc cancels"
         } else {
             "Enter a count or choose Length, EqualChordLength or output options. Enter creates the previewed result, Esc cancels"
         }
     }
 
     fn picking_direction(&self) -> bool {
-        self.seam.is_none() && matches!(self.prompt.options.specification, Specification::Length(_))
+        self.seam.is_none()
+            && matches!(self.prompt.options.specification, Specification::Length(_))
+            && self.sources.iter().any(|source| source.portion.is_none())
     }
 
     pub(in crate::app) fn seam_editor(&self, doc: &Document) -> Option<&curve_seam::Editor> {
@@ -83,26 +96,30 @@ impl Session {
     }
 
     fn refresh_points(&mut self, doc: &Document) -> Result<(), CommandError> {
-        self.points = Some(
-            divide::preview_points_with_traversals(doc, self.prompt.options, &self.traversals)?
-                .into(),
-        );
+        self.points =
+            Some(divide::preview_source_points(doc, self.prompt.options, &self.sources)?.into());
         Ok(())
     }
 
     fn accept_seams(&mut self, doc: &Document) -> Result<(), CommandError> {
         let editor = self.seam.take().unwrap();
+        let mut placements = BTreeMap::new();
         for (source, (parameter, flip_seam)) in editor.sources().zip(editor.placements()) {
             let seam = (parameter != *source.curve_ref().domain().start()).then_some(parameter);
-            if seam.is_some() || flip_seam {
-                self.traversals.insert(
-                    source.object_id(),
-                    Traversal {
-                        seam,
-                        flip_seam,
-                        ..Traversal::default()
-                    },
-                );
+            placements.insert(
+                source.object_id(),
+                Traversal {
+                    seam,
+                    flip_seam,
+                    ..Traversal::default()
+                },
+            );
+        }
+        for source in &mut self.sources {
+            if source.portion.is_none()
+                && let Some(traversal) = placements.get(&source.object)
+            {
+                source.traversal = *traversal;
             }
         }
         self.seam_id_pending = false;
@@ -110,14 +127,28 @@ impl Session {
     }
 
     fn matches_document(&self, doc: &Document) -> bool {
-        self.tolerance == doc.tolerance()
-            && doc
-                .selected_object_ids()
-                .eq(self.sources.iter().map(|s| s.0))
-            && self.sources.iter().all(|(id, snapshot)| {
-                doc.object(*id)
-                    .is_some_and(|o| snapshot.shares_storage_with(o.geometry_snapshot()))
+        if self.tolerance != doc.tolerance()
+            || !doc.selected_object_ids().eq(self.selection.iter().copied())
+        {
+            return false;
+        }
+        if self.snapshots.len() > 16 {
+            doc.selectable_objects()
+                .filter(|object| {
+                    self.snapshots.get(&object.id()).is_some_and(|snapshot| {
+                        snapshot.shares_storage_with(object.geometry_snapshot())
+                    })
+                })
+                .count()
+                == self.snapshots.len()
+        } else {
+            self.snapshots.iter().all(|(id, snapshot)| {
+                doc.is_object_selectable(*id)
+                    && doc
+                        .object(*id)
+                        .is_some_and(|o| snapshot.shares_storage_with(o.geometry_snapshot()))
             })
+        }
     }
 }
 
@@ -151,7 +182,14 @@ impl VibocerosApp {
         let session = self
             .divide_session()
             .filter(|_| self.picking_divide_direction())?;
-        Some(session.sources.iter().map(|(id, _)| *id).collect())
+        Some(
+            session
+                .sources
+                .iter()
+                .filter(|s| s.portion.is_none())
+                .map(|s| s.object)
+                .collect(),
+        )
     }
 
     pub(in crate::app) fn picking_divide_direction(&self) -> bool {
@@ -172,18 +210,16 @@ impl VibocerosApp {
             return false;
         };
         if session.picking_direction()
-            && let Some(id) = id
-            && session.sources.iter().any(|(source, _)| *source == id)
+            && let Some(index) = session
+                .sources
+                .iter()
+                .position(|source| source.portion.is_none() && Some(source.object) == id)
         {
             if !self.check_divide_sources() {
                 return true;
             }
             let mut session = self.divide_session().unwrap().clone();
-            session
-                .traversals
-                .entry(id)
-                .or_default()
-                .reverse_measurement ^= true;
+            session.sources[index].traversal.reverse_measurement ^= true;
             match session.refresh_points(&self.document) {
                 Ok(()) => self.object_prompt.as_mut().unwrap().divide = Some(session),
                 Err(error) => self.push_log(format!("Error: {error}")),
@@ -192,13 +228,13 @@ impl VibocerosApp {
         true
     }
 
-    pub(in crate::app) fn initialize_divide_prompt(&mut self) {
+    pub(in crate::app) fn initialize_divide_prompt(&mut self) -> bool {
         let Some(pending) = self
             .object_prompt
             .as_ref()
             .filter(|p| p.description.command == "Divide" && p.phase == ObjectPromptPhase::Options)
         else {
-            return;
+            return false;
         };
         let postselected = pending.postselected;
         let before = self.document.selected_object_ids().collect::<Vec<_>>();
@@ -217,16 +253,24 @@ impl VibocerosApp {
                 .select_objects_direct(curves, SelectionMode::Replace)
             {
                 self.push_log(format!("Error: {error}"));
-                return;
+                return false;
             }
         }
-        match Session::new(&self.document, self.commands.divide_prompt_default()) {
+        match Session::new(
+            &self.document,
+            self.commands.divide_prompt_default(),
+            &self.object_prompt.as_ref().unwrap().divide_inputs,
+        ) {
             Ok(session) => {
                 let pending = self.object_prompt.as_mut().unwrap();
                 pending.command_override = Some(session.prompt.command_line());
                 pending.divide = Some(session);
+                true
             }
-            Err(error) => self.push_log(format!("Error: {error}")),
+            Err(error) => {
+                self.push_log(format!("Error: {error}"));
+                false
+            }
         }
     }
 
@@ -303,7 +347,7 @@ impl VibocerosApp {
             match self.commands.finish_divide_prompt(
                 &mut self.document,
                 session.prompt,
-                &session.traversals,
+                &session.sources,
             ) {
                 Ok(message) => {
                     self.object_prompt = None;
@@ -320,11 +364,12 @@ impl VibocerosApp {
             let picked = session
                 .sources
                 .iter()
-                .filter_map(|(id, geometry)| {
-                    let curve = geometry.curve_ref()?;
+                .filter(|source| source.portion.is_none())
+                .filter_map(|source| {
+                    let curve = session.snapshots.get(&source.object)?.curve_ref()?;
                     let parameter = curve.closest_parameter(point, session.tolerance).ok()?;
                     let distance = curve.evaluate(parameter).ok()?.distance_to(point).ok()?;
-                    (distance <= session.tolerance.absolute()).then_some((*id, distance))
+                    (distance <= session.tolerance.absolute()).then_some((source.object, distance))
                 })
                 .min_by(|a, b| a.1.total_cmp(&b.1));
             if let Some((id, _)) = picked {

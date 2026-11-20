@@ -1,5 +1,6 @@
 //! Curve division with staged point/split outputs and source-domain intervals.
 use super::*;
+use crate::curve_reference::CurvePortion;
 use viboceros_geometry::CurveDivisionPoint;
 pub mod prompt;
 #[cfg(test)]
@@ -27,6 +28,33 @@ pub struct Traversal {
     pub seam: Option<Real>,
     pub flip_seam: bool,
     pub reverse_measurement: bool,
+}
+
+/// One selected whole curve or a privately prepared portion of a curve or edge.
+#[derive(Clone, Debug, PartialEq)]
+pub struct Source {
+    pub object: ObjectId,
+    pub portion: Option<std::sync::Arc<CurvePortion>>,
+    pub traversal: Traversal,
+}
+
+impl Source {
+    pub fn whole(object: ObjectId) -> Self {
+        Self {
+            object,
+            portion: None,
+            traversal: Traversal::default(),
+        }
+    }
+
+    fn curve<'a>(&'a self, geometry: &'a Geometry) -> Result<CurveRef<'a>, CommandError> {
+        if let Some(portion) = &self.portion {
+            return Ok(portion.curve_ref());
+        }
+        geometry
+            .curve_ref()
+            .ok_or(CommandError::UnsupportedDivideGeometry)
+    }
 }
 
 impl Options {
@@ -132,11 +160,11 @@ impl CommandRegistry {
         &self,
         doc: &mut Document,
         prompt: prompt::Prompt,
-        traversals: &BTreeMap<ObjectId, Traversal>,
+        sources: &[Source],
     ) -> Result<String, CommandError> {
         let options = prompt.options;
         let message = run_command_transaction(doc, "Divide", |doc| {
-            prepare(doc, options, traversals)?.apply(doc, options)
+            prepare(doc, options, sources)?.apply(doc, options)
         })?;
         self.divide_preferences.set(prompt.with_options(options));
         Ok(message)
@@ -185,14 +213,15 @@ impl Command for DivideCommand {
     fn run(&self, doc: &mut Document, args: &[&str]) -> Result<String, CommandError> {
         let preferences = self.0.get();
         let options = Options::parse_with_defaults(args, preferences.options)?;
-        let message = prepare(doc, options, &BTreeMap::new())?.apply(doc, options)?;
+        let message = prepare(doc, options, &selected_sources(doc))?.apply(doc, options)?;
         self.0.set(preferences.with_options(options));
         Ok(message)
     }
 }
 
 struct Prepared {
-    source_ids: Vec<ObjectId>,
+    source_count: usize,
+    replaced_sources: Vec<ObjectId>,
     output: Vec<(Geometry, ObjectAttributes)>,
     batches: Vec<usize>,
 }
@@ -200,15 +229,16 @@ struct Prepared {
 impl Prepared {
     fn apply(self, doc: &mut Document, options: Options) -> Result<String, CommandError> {
         let Self {
-            source_ids,
+            source_count,
+            replaced_sources,
             output,
             batches,
         } = self;
         if output.is_empty() {
             return Err(CommandError::NoCurveDivisionPoints);
         }
-        if options.split {
-            doc.delete_objects(source_ids.iter().copied())?;
+        if !replaced_sources.is_empty() {
+            doc.delete_objects(replaced_sources)?;
         }
         let ids = output
             .into_iter()
@@ -226,7 +256,7 @@ impl Prepared {
         replace_selection(doc, ids.iter().copied())?;
         Ok(format!(
             "Divided {} curve(s), adding {} {}",
-            source_ids.len(),
+            source_count,
             ids.len(),
             if options.split {
                 "curve(s)"
@@ -240,15 +270,15 @@ impl Prepared {
 /// Read-only station markers from the same output preparation as execution.
 /// Split markers show each piece's boundaries, including a retained remainder.
 pub fn preview_points(doc: &Document, options: Options) -> Result<Vec<Point3>, CommandError> {
-    preview_points_with_traversals(doc, options, &BTreeMap::new())
+    preview_source_points(doc, options, &selected_sources(doc))
 }
 
-pub fn preview_points_with_traversals(
+pub fn preview_source_points(
     doc: &Document,
     options: Options,
-    traversals: &BTreeMap<ObjectId, Traversal>,
+    sources: &[Source],
 ) -> Result<Vec<Point3>, CommandError> {
-    let prepared = prepare(doc, options, traversals)?;
+    let prepared = prepare(doc, options, sources)?;
     let mut points = Vec::new();
     for (geometry, _) in prepared.output {
         match geometry {
@@ -265,26 +295,40 @@ pub fn preview_points_with_traversals(
     Ok(points)
 }
 
-fn prepare(
-    doc: &Document,
-    options: Options,
-    traversals: &BTreeMap<ObjectId, Traversal>,
-) -> Result<Prepared, CommandError> {
-    let sources = doc
-        .selected_objects()
-        .map(|o| (o.id(), o.geometry().clone(), o.attributes().clone()))
-        .collect::<Vec<_>>();
+fn selected_sources(doc: &Document) -> Vec<Source> {
+    doc.selected_objects()
+        .map(|object| Source::whole(object.id()))
+        .collect()
+}
+
+fn prepare(doc: &Document, options: Options, sources: &[Source]) -> Result<Prepared, CommandError> {
     if sources.is_empty() {
         return Err(CommandError::NoObjectsSelected);
     }
     let mut output = Vec::new();
     let mut batches = Vec::new();
+    let mut replaced_sources = Vec::new();
     let tolerance = doc.tolerance();
-    for (id, geometry, attributes) in &sources {
-        let curve = geometry
-            .curve_ref()
-            .ok_or(CommandError::UnsupportedDivideGeometry)?;
-        let traversal = traversals.get(id).copied().unwrap_or_default();
+    let point_attributes = ObjectAttributes::on_layer(doc.current_layer_id());
+    let indexed = (sources.len() > 16).then(|| {
+        let ids = sources
+            .iter()
+            .map(|source| source.object)
+            .collect::<BTreeSet<_>>();
+        doc.objects()
+            .filter(|object| ids.contains(&object.id()))
+            .map(|object| (object.id(), object))
+            .collect::<BTreeMap<_, _>>()
+    });
+    for source in sources {
+        let object = match &indexed {
+            Some(objects) => objects.get(&source.object).copied(),
+            None => doc.object(source.object),
+        }
+        .ok_or(DocumentError::ObjectNotFound(source.object))?;
+        let attributes = object.attributes();
+        let curve = source.curve(object.geometry())?;
+        let traversal = source.traversal;
         let adjusted = traversal
             .seam
             .map(|parameter| prepare_curve_seam(&curve.to_owned(), parameter))
@@ -301,6 +345,9 @@ fn prepare(
         let measured = reversed.as_ref().map_or(curve, Curve3::as_ref);
         let mut stations = stations(measured, options.specification, tolerance)?;
         if options.split {
+            if source.portion.is_none() {
+                replaced_sources.push(source.object);
+            }
             let end = *measured.domain().end();
             // Rhino omits the leading partial piece after reversing Length.
             // If there are no interior stations it can still retain the whole curve.
@@ -361,11 +408,10 @@ fn prepare(
             if measured_backwards {
                 stations.reverse();
             }
-            let attributes = ObjectAttributes::on_layer(doc.current_layer_id());
             output.extend(
                 stations
                     .into_iter()
-                    .map(|s| (Geometry::Point(s.point), attributes.clone())),
+                    .map(|s| (Geometry::Point(s.point), point_attributes.clone())),
             );
         }
         if output.len() > MAX_CURVE_DIVISION_POINTS {
@@ -377,7 +423,8 @@ fn prepare(
         batches.push(output.len());
     }
     Ok(Prepared {
-        source_ids: sources.iter().map(|s| s.0).collect(),
+        source_count: sources.len(),
+        replaced_sources,
         output,
         batches,
     })

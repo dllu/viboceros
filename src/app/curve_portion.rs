@@ -1,11 +1,14 @@
-//! Shared transient SubCrv getter for blend commands; model history stays untouched.
+//! Shared SubCrv picker for temporary curve portions.
 use super::*;
 use viboceros_command::{
     curve_reference::{CapturedCurve, PortionBinding},
     subcurve_input,
 };
 mod input;
-#[derive(Clone, Default)]
+mod order;
+pub(in crate::app) use order::{InputOrder, OrderedInput};
+
+#[derive(Clone, Debug, Default)]
 pub(in crate::app) struct Editor {
     pub(in crate::app) reference: Option<CapturedCurve>,
     start: Option<f64>,
@@ -13,6 +16,16 @@ pub(in crate::app) struct Editor {
     hover: Option<f64>,
     locked: Option<bool>,
     preview: super::subcurve_preview::Cache,
+}
+
+impl PartialEq for Editor {
+    fn eq(&self, other: &Self) -> bool {
+        self.reference == other.reference
+            && self.start == other.start
+            && self.length == other.length
+            && self.hover == other.hover
+            && self.locked == other.locked
+    }
 }
 pub(in crate::app) enum Action {
     Pending,

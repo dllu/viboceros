@@ -254,6 +254,12 @@ impl VibocerosApp {
                 .filter(|reference| reference.source().1.is_none())
                 .map(|reference| reference.object_id()),
         );
+        selection_preview_ids.extend(
+            self.divide_subcurve_editor()
+                .and_then(|editor| editor.reference.as_ref())
+                .filter(|reference| reference.source().1.is_none() && reference.current(&self.document))
+                .map(|reference| reference.object_id()),
+        );
         selection_preview_ids.extend(self.surface_offset_selected_points());
         selection_preview_ids.extend(
             self.refinement_prompt
@@ -452,6 +458,7 @@ impl VibocerosApp {
         let extend_source_pick = self.picking_curve_extend_source();
         let loft_edge_pick = self.picking_loft_edges();
         let sweep_rail_edge_pick = self.picking_sweep_edges() || self.picking_sweep_two_rail_edges();
+        let divide_subcurve_pick = self.picking_divide_subcurve_source();
         let edge_pick = (extend_source_pick || loft_edge_pick || sweep_rail_edge_pick || self
             .edge_prompt
             .as_ref()
@@ -467,6 +474,7 @@ impl VibocerosApp {
             || self.picking_face_edge()
             || self.picking_curve_match_edge()
             || self.picking_subcurve_edge()
+            || divide_subcurve_pick
             || (self.picking_orient_curve()
                 || self.picking_orient_edge()
                 || self.picking_surface_offset_curve())
@@ -597,6 +605,11 @@ impl VibocerosApp {
                 && self.point_filter.is_none()
                 && self.point_constraint.is_none())
             .then_some(reference.curve())
+        });
+        let edge_curve = edge_curve.or_else(|| {
+            let reference = self.object_prompt.as_ref()?.divide_inputs.editor()?.reference.as_ref()?;
+            (model_input_active && self.plane_prompt.is_none() && reference.current(&self.document))
+                .then_some(reference.curve())
         });
         let surface_path = self.surface_path_prompt.as_ref().filter(|_| {
             model_input_active
@@ -900,6 +913,7 @@ impl VibocerosApp {
             && (self.picking_line_normal() || self.selecting_move_normal_reference());
         let curve_or_edge_pick = edge_pick
             && (extend_source_pick || loft_edge_pick || sweep_rail_edge_pick || self.picking_subcurve_edge()
+                || divide_subcurve_pick
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
                     || self.picking_surface_offset_curve())
@@ -1471,6 +1485,9 @@ impl VibocerosApp {
         let sweep_slash = self.sweep_two_rails.as_ref()
             .filter(|_| edge_handle_input)
             .and_then(sweep_two_rails::Session::slash_input);
+        let divide_portions = self.object_prompt.as_ref()
+            .filter(|_| model_input_active)
+            .map_or_else(Vec::new, |pending| pending.divide_inputs.curves(&self.document).collect());
         let seam_markers = curve_seam_editor.map(curve_seam::Editor::markers)
             .or_else(|| sweep.and_then(sweep::Session::alignment_markers))
             .or_else(|| loft.map(loft::Prompt::seam_markers));
@@ -1945,6 +1962,7 @@ impl VibocerosApp {
                                     .or_else(|| loft?.seam_overlay(markers, index))
                             }),
                             surface_draft_wires,
+                            curve_portions: &divide_portions,
                             sweep_slash,
                             surface_seam,
                             current_end_marker,
@@ -2032,12 +2050,13 @@ impl VibocerosApp {
         ) {
             ui.ctx().request_repaint();
         }
-        self.update_surface_path_boundary_preview(
-            viewport_outputs
-                .iter()
-                .find_map(|output| output.edge_hover_parameter),
-            ui.ctx(),
-        );
+        let edge_hover = viewport_outputs
+            .iter()
+            .find_map(|output| output.edge_hover_parameter);
+        if let Some(parameter) = edge_hover {
+            self.hover_divide_subcurve(parameter);
+        }
+        self.update_surface_path_boundary_preview(edge_hover, ui.ctx());
         let drafting_hover = viewport_outputs
             .iter()
             .enumerate()

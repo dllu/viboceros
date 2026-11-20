@@ -9,6 +9,14 @@ options. The original preselection is restored on cancellation when Divide
 temporarily excludes noncurve objects. Complete argument lines still execute
 directly or after curve picking.
 
+Type `SubCrv` at curve selection or start with `Divide SubCrv`. Pick a curve
+or surface edge, then its temporary start and end. Typed points work on the
+chosen source. To enter a length, type it after the start and use the cursor
+or a typed point to confirm the direction. `Direction=Locked` holds the
+current side and `Direction=Free` releases it. Escape leaves the portion
+getter and returns to source selection. Accepted portions stay highlighted
+and can be mixed with whole-curve picks. `SelNone` clears both kinds of input.
+
 Count is remembered separately from a shared Length/EqualChordLength distance.
 New invocations recall [session preferences](divide-preferences.md) in count mode.
 Boolean output options accept explicit Yes/No settings or a bare
@@ -42,8 +50,12 @@ emitted splits in increasing shifted parameter order. Picking a length-10
 line in Length mode with a step of 3 yielded stations at 1, 4, 7 and 10.
 Split preserved the increasing source intervals and omitted the leading
 partial piece with either remainder setting. EqualChordLength used the
-relocated seam and kept the curve's natural direction. SubCrv input, native
-preview styling and disk-persisted defaults remain unimplemented.
+relocated seam and kept the curve's natural direction. Native SubCrv
+captures covered repeated portions of a single curve, ordered whole and
+partial inputs, reversed split intervals, surface-edge input, and numeric
+length wrapping around a closed seam. Only whole-curve picks responded to
+Length direction flips. Current coverage includes geometry and interaction.
+Native preview styling and disk-persisted defaults remain open.
 
 [Numeric-prompt provenance](divide-input-provenance.json) records the initial
 prompt implementation and validation.

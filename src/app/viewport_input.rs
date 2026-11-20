@@ -389,6 +389,11 @@ impl VibocerosApp {
             }
             return true;
         } else if let Some(picks) = output.edge_click {
+            if let Some(pick) = picks.first()
+                && self.pick_divide_subcurve(Some(pick.object), Some(pick.edge))
+            {
+                return true;
+            }
             if self.pick_curve_extend_edge(&output.edge_contacts) {
                 return true;
             }
@@ -460,7 +465,8 @@ impl VibocerosApp {
                 self.accept_edge_click(picks);
             }
         } else if let Some(parameter) = output.edge_parameter {
-            if self.accept_curve_match_parameter(parameter)
+            if self.accept_divide_subcurve_parameter(parameter)
+                || self.accept_curve_match_parameter(parameter)
                 || self.accept_surface_path_parameter(parameter)
                 || self.accept_temporary_subcurve_parameter(parameter)
                 || self.accept_surface_offset_parameter(parameter)

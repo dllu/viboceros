@@ -75,6 +75,7 @@ pub(super) struct PendingObjectCommand {
     pub(super) cloud_action_target: Option<ObjectId>,
     pub(super) special_selection: Option<BTreeSet<ObjectId>>,
     pub(super) divide: Option<divide::Session>,
+    pub(super) divide_inputs: divide::Inputs,
     pub(super) modify_radius: Option<modify_radius::Session>,
     pub(super) reduce_polyline: Option<reduce_polyline::Session>,
     pub(super) mesh_conversion: Option<mesh_conversion::Session>,
@@ -106,6 +107,7 @@ impl PendingObjectCommand {
             cloud_action_target: None,
             special_selection: None,
             divide: None,
+            divide_inputs: Default::default(),
             modify_radius: None,
             reduce_polyline: None,
             mesh_conversion: None,
@@ -123,6 +125,9 @@ impl PendingObjectCommand {
     }
 
     pub(super) fn label(&self) -> &'static str {
+        if self.divide_inputs.editor().is_some() {
+            return "SubCrv";
+        }
         if let Some(session) = &self.mesh_conversion {
             return session.label();
         }
@@ -238,10 +243,13 @@ impl PendingObjectCommand {
             return session.hint();
         }
         if self.description.command == "Divide" && self.phase == ObjectPromptPhase::Selecting {
+            if let Some(hint) = self.divide_inputs.hint() {
+                return hint;
+            }
             return if self.description.workflow == ObjectSelectionWorkflow::OptionsDuringSelection {
                 "Select curves. Enter divides, Esc cancels"
             } else {
-                "Select curves. Enter continues, Esc cancels"
+                "Select curves or choose SubCrv. Enter continues, Esc cancels"
             };
         }
         if self.description.command == "BooleanUnion" {
@@ -725,6 +733,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_start_object_prompt(&mut self, input: &str) -> bool {
+        if self.try_start_divide_subcurve(input) {
+            return true;
+        }
         // Move's Normal descriptor describes its later read-only reference
         // prompt. Source selection must still use the transform workflow.
         let words = input.split_whitespace().collect::<Vec<_>>();
@@ -794,6 +805,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: Some(BTreeSet::new()),
                 divide: None,
+                divide_inputs: Default::default(),
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_conversion: None,
@@ -848,6 +860,7 @@ impl VibocerosApp {
                 cloud_action_target: Some(target),
                 special_selection: None,
                 divide: None,
+                divide_inputs: Default::default(),
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_conversion: None,
@@ -887,6 +900,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                divide_inputs: Default::default(),
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_conversion: None,
@@ -931,6 +945,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                divide_inputs: Default::default(),
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_conversion: None,
@@ -1123,6 +1138,7 @@ impl VibocerosApp {
                         cloud_action_target: None,
                         special_selection: None,
                         divide: None,
+                        divide_inputs: Default::default(),
                         modify_radius: None,
                         reduce_polyline: None,
                         mesh_conversion: None,
@@ -1227,6 +1243,7 @@ impl VibocerosApp {
                 cloud_action_target: None,
                 special_selection: None,
                 divide: None,
+                divide_inputs: Default::default(),
                 modify_radius: None,
                 reduce_polyline: None,
                 mesh_conversion: None,
@@ -1374,7 +1391,7 @@ impl VibocerosApp {
         if self.continue_rebuild_options(input) {
             return true;
         }
-        if self.continue_divide_prompt(input) {
+        if self.continue_divide_subcurves(input) || self.continue_divide_prompt(input) {
             return true;
         }
         if self.continue_smooth_options(input) {
@@ -2456,6 +2473,9 @@ impl VibocerosApp {
         match result {
             Ok(count) => self.push_log(format!("Selected {count} object(s); Enter continues")),
             Err(error) => self.push_log(format!("Error: {error}")),
+        }
+        if let Some(pending) = self.object_prompt.as_mut() {
+            pending.divide_inputs.sync_order(&self.document);
         }
         self.record_curve_offset_whole_sources();
         if self.picking_nurbs_edges() {

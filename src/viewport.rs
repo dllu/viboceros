@@ -397,6 +397,7 @@ pub struct ViewportInput<'a> {
     pub(crate) direction: Option<direction::Overlay<'a>>,
     pub(crate) curve_seams: Option<curve_seam::Overlay<'a>>,
     pub(crate) surface_draft_wires: &'a [NurbsCurve],
+    pub(crate) curve_portions: &'a [&'a NurbsCurve],
     pub(crate) sweep_slash: Option<SweepSlashInput<'a>>,
     pub(crate) surface_seam: Option<surface_seam::Overlay<'a>>,
     pub(crate) surface_apex: Option<&'a surface_apex::SurfaceApexDraft>,
@@ -594,6 +595,7 @@ impl Default for ViewportInput<'_> {
             direction: None,
             curve_seams: None,
             surface_draft_wires: &[],
+            curve_portions: &[],
             sweep_slash: None,
             surface_seam: None,
             surface_apex: None,
@@ -2728,6 +2730,16 @@ impl Viewport {
                 self.add_projected_nurbs_curve(&mut projected, rect, curve);
             }
             let stroke = Stroke::new(2., Color32::from_rgb(20, 115, 190));
+            for segment in projected.segments {
+                painter.line_segment(segment, stroke);
+            }
+        }
+        if !input.curve_portions.is_empty() {
+            let mut projected = ProjectedPrimitives::default();
+            for &curve in input.curve_portions {
+                self.add_projected_nurbs_curve(&mut projected, rect, curve);
+            }
+            let stroke = Stroke::new(2., SELECTED_COLOR);
             for segment in projected.segments {
                 painter.line_segment(segment, stroke);
             }

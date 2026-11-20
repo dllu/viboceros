@@ -84,6 +84,10 @@ impl Editor {
                 Ok(Action::Pending)
             };
         }
+        let last_point = self
+            .start
+            .and_then(|start| c.evaluate(start).ok())
+            .or(last_point);
         let point = viboceros_drafting::PointInput::parse_with_units(text, doc.units())
             .and_then(Result::ok)
             .and_then(|p| p.resolve(plane, last_point).ok())

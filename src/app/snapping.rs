@@ -94,9 +94,13 @@ impl VibocerosApp {
                 || session.input.active_handle().is_some()
                 || session.cursor_curve().is_some();
         }
-        self.refinement_prompt
-            .as_ref()
-            .is_some_and(refinement::Prompt::wants_point)
+        self.divide_subcurve_editor()
+            .and_then(|editor| editor.reference.as_ref())
+            .is_some_and(|reference| reference.current(&self.document))
+            || self
+                .refinement_prompt
+                .as_ref()
+                .is_some_and(refinement::Prompt::wants_point)
             || self
                 .edge_prompt
                 .as_ref()

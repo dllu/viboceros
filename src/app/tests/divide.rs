@@ -3,6 +3,8 @@ use super::curve_fillet::enter;
 use super::curve_match::click_world;
 use super::*;
 
+mod portions;
+
 fn assert_points(actual: &[Point3], expected: &[Point3]) {
     assert_eq!(actual.len(), expected.len(), "{actual:?}");
     for (actual, expected) in actual.iter().zip(expected) {

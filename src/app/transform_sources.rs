@@ -78,6 +78,7 @@ impl VibocerosApp {
             cloud_action_target: None,
             special_selection: None,
             divide: None,
+            divide_inputs: Default::default(),
             modify_radius: None,
             reduce_polyline: None,
             mesh_conversion: None,

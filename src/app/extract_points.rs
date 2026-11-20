@@ -3,7 +3,7 @@ use super::object_selection::ObjectPromptPhase;
 use super::*;
 use viboceros_command::ComponentSelectionKind;
 mod input_order;
-pub(super) use input_order::InputOrder;
+pub(super) use super::curve_portion::InputOrder;
 
 pub(super) fn component_kind(kind: ComponentSelectionKind) -> Option<&'static str> {
     match kind {

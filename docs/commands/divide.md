@@ -12,7 +12,8 @@ Divide Length 2.5 Split=Yes DeleteRemainder=Yes
 Complete argument lines also gather curve objects when no eligible source is
 selected. `Div` remains an alias. Every invocation stages all results before
 document mutation and forms one Undo step. Inputs remain when point objects are
-created; Split replaces the inputs with trimmed curve pieces.
+created. Split replaces selected whole curves and creates pieces from temporary
+portions, preserving any parent selected only through `SubCrv`.
 
 Entering bare `Divide` gathers curves. If any are closed, drag their seam
 markers or use `Flip`, `Automatic` or `Natural`, then press Enter for the
@@ -23,6 +24,11 @@ Enter accepts the preview and Escape cancels it. `NumberSegments` returns to
 count mode. The count and a shared Length/EqualChordLength distance are
 remembered across invocations. Each invocation starts in count mode. The
 initial local count and distance are 1.
+
+At curve selection, type `SubCrv` to pick part of a curve or surface edge.
+Pick the start, then pick the end or enter a length and confirm its direction.
+The highlighted portion joins the Divide inputs in pick order. Repeat
+`SubCrv` to add more portions, including from the same parent.
 Output flags survive cancellation and Undo, and omitted flags use the remembered
 values. Preferences last for the application session. See
 [native preference evidence](../divide-preferences.md).
@@ -64,5 +70,4 @@ The [native fixture](../../tools/rhino_oracle/fixtures/divide_command.json) cove
 30 line, circle and polyline recipes, including source metadata, groups, split
 domains and remainder deletion. Detailed [qualification](../divide-command.md)
 records the result and limits. See [interactive input and preview](../divide-input.md)
-for headless UI coverage. SubCrv selection and disk-persisted defaults remain
-work in progress.
+for headless UI coverage. Preferences currently last for the application session.
