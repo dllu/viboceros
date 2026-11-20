@@ -120,7 +120,16 @@ fn probe_interior_edge(
     if locations.contains(&vertex_location(point)) {
         return Ok(None);
     }
-    let error = distance_to_chord(point, a, b)?;
+    let mut error = distance_to_chord(point, a, b)?;
+    // A long edge can cross an inflection with its midpoint on the chord.
+    // Probe both halves before accepting it, and bisect at the midpoint so
+    // each of the two new edges addresses a different part of the bend.
+    if error <= height && a.distance_to(b)? > 32. * height {
+        for end in [ua, ub] {
+            let sample = evaluate(end.x().midpoint(uv.x()), end.y().midpoint(uv.y()))?;
+            error = error.max(distance_to_chord(sample, a, b)?);
+        }
+    }
     Ok((error > height).then_some(InteriorProbe { error, uv, point }))
 }
 
@@ -476,5 +485,49 @@ mod tests {
                 .collect::<Vec<_>>(),
             [[0, 1], [0, 3], [1, 2], [2, 3]]
         );
+    }
+
+    #[test]
+    fn interior_chord_detects_an_inflection_whose_midpoint_is_on_the_chord() {
+        let net = [0., 2.]
+            .into_iter()
+            .flat_map(|z| {
+                [[0., 0.], [2., 5.], [4., -5.], [6., 0.]]
+                    .map(move |[x, y]| Point3::try_new(x, y, z).unwrap())
+            })
+            .collect();
+        let surface = NurbsSurface::try_new(
+            3,
+            1,
+            4,
+            2,
+            net,
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+            vec![0., 0., 1., 1.],
+        )
+        .unwrap();
+        let mut uv = [[0., 0.], [1., 0.], [1., 1.], [0., 1.]]
+            .map(|[u, v]| Point2::try_new(u, v).unwrap())
+            .to_vec();
+        let mut points: Vec<_> = uv
+            .iter()
+            .map(|p| surface.evaluate(p.x(), p.y()).unwrap())
+            .collect();
+        let midpoint = surface.evaluate(0.5, 0.5).unwrap();
+        assert!(distance_to_chord(midpoint, points[0], points[2]).unwrap() < 1e-12);
+        let mut locations = points.iter().copied().map(vertex_location).collect();
+        let mut triangles = vec![[0, 1, 2], [0, 2, 3]];
+        refine_interior(
+            &surface,
+            &mut uv,
+            &mut points,
+            &mut triangles,
+            0.1,
+            5,
+            &mut locations,
+        )
+        .unwrap();
+        assert_eq!(points[4], midpoint);
+        assert_eq!(triangles, [[2, 4, 1], [4, 0, 1], [0, 4, 3], [4, 2, 3]]);
     }
 }
