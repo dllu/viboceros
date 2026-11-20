@@ -1,5 +1,6 @@
 //! Repair lifted triangles that face against a smooth display chart.
 mod cavity;
+mod vertex_fit;
 
 use super::*;
 use std::collections::HashMap;
@@ -13,13 +14,18 @@ fn edge(a: u32, b: u32) -> Edge {
 }
 
 fn wound_side([a, b, c]: [Point2; 3]) -> Real {
+    let area = signed_area([a, b, c]);
+    if area == 0. { 0. } else { area.signum() }
+}
+
+fn signed_area([a, b, c]: [Point2; 3]) -> Real {
     let positive = (b.x() - a.x()) * (c.y() - a.y());
     let negative = (b.y() - a.y()) * (c.x() - a.x());
     let determinant = positive - negative;
     // Leave roundoff-scale and collinear cases to the original triangulator.
     let roundoff = 8. * Real::EPSILON * (positive.abs() + negative.abs());
     if determinant.is_finite() && determinant.abs() > roundoff.max(Real::MIN_POSITIVE) {
-        determinant.signum()
+        determinant
     } else {
         0.
     }
@@ -32,6 +38,7 @@ struct SurfaceSample {
     surface_point: Point3,
     alignment: Real,
     plane_distance: Real,
+    twice_area: Real,
 }
 
 fn sample(
@@ -46,14 +53,8 @@ fn sample(
     if winding == 0. {
         return None;
     }
-    let model_normal = p
-        .vector_to(q)
-        .ok()?
-        .cross(p.vector_to(r).ok()?)
-        .ok()?
-        .normalized_nonzero()
-        .ok()?
-        .as_vector();
+    let geometric_normal = p.vector_to(q).ok()?.cross(p.vector_to(r).ok()?).ok()?;
+    let model_normal = geometric_normal.normalized_nonzero().ok()?.as_vector();
     let uv = Point2::try_new(
         a.x() + (b.x() - a.x()) / 3. + (c.x() - a.x()) / 3.,
         a.y() + (b.y() - a.y()) / 3. + (c.y() - a.y()) / 3.,
@@ -78,6 +79,7 @@ fn sample(
             .dot(model_normal)
             .ok()?
             .abs(),
+        twice_area: geometric_normal.length().ok()?,
     })
 }
 
@@ -161,8 +163,8 @@ impl Flip {
 
 pub(super) fn repair(
     surface: &NurbsSurface,
-    parameters: &[Point2],
-    points: &[Point3],
+    parameters: &mut [Point2],
+    points: &mut [Point3],
     triangles: &mut [Triangle],
     height: Real,
 ) {
@@ -322,6 +324,9 @@ pub(super) fn repair(
         &inverted,
         &mut adjacent,
     );
+    vertex_fit::relocate(
+        surface, parameters, points, triangles, height, &inverted, &adjacent,
+    );
 }
 
 #[cfg(test)]
@@ -351,9 +356,9 @@ mod tests {
     #[test]
     fn replaces_the_inverted_lift_of_a_triangle_in_a_convex_parameter_quad() {
         let surface = shear();
-        let parameters = [(0.2, 0.4), (0.95, 0.35), (0.6, 0.55), (0.65, 0.2)]
+        let mut parameters = [(0.2, 0.4), (0.95, 0.35), (0.6, 0.55), (0.65, 0.2)]
             .map(|(u, v)| Point2::try_new(u, v).unwrap());
-        let points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
+        let mut points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
         let mut faces = [[0, 1, 2], [1, 0, 3]];
         assert!(
             sample(&surface, &points, &parameters, faces[0])
@@ -362,7 +367,7 @@ mod tests {
                 < 0.
         );
 
-        repair(&surface, &parameters, &points, &mut faces, 3.);
+        repair(&surface, &mut parameters, &mut points, &mut faces, 3.);
 
         assert_eq!(faces, [[0, 3, 2], [3, 1, 2]]);
         assert!(faces.iter().all(|&face| {
@@ -429,7 +434,7 @@ mod tests {
     #[test]
     fn repairs_a_sheared_hexagon_when_no_smaller_partition_can_fix_it() {
         let surface = shear();
-        let parameters = [
+        let mut parameters = [
             (0.09, 0.28),
             (0.08, 0.25),
             (0.77, 0.65),
@@ -438,15 +443,17 @@ mod tests {
             (0.33, 0.82),
         ]
         .map(|(u, v)| Point2::try_new(u, v).unwrap());
-        let points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
+        let mut points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
         let mut faces = [[1, 2, 3], [0, 1, 3], [3, 4, 5], [0, 3, 5]];
-        let outward =
-            |face| sample(&surface, &points, &parameters, face).is_some_and(|s| s.alignment > 0.);
-        assert!(faces.iter().any(|&face| !outward(face)));
+        assert!(faces.iter().any(|&face| {
+            sample(&surface, &points, &parameters, face).is_some_and(|s| s.alignment < 0.)
+        }));
 
-        repair(&surface, &parameters, &points, &mut faces, 3.);
+        repair(&surface, &mut parameters, &mut points, &mut faces, 3.);
 
-        assert!(faces.iter().copied().all(outward));
+        assert!(faces.iter().all(|&face| {
+            sample(&surface, &points, &parameters, face).is_some_and(|s| s.alignment > 0.)
+        }));
         for a in 0..6 {
             let b = (a + 1) % 6;
             assert_eq!(
@@ -457,5 +464,51 @@ mod tests {
                 1
             );
         }
+    }
+
+    #[test]
+    fn relocates_an_interior_vertex_on_a_sheared_chart_with_fixed_boundary() {
+        let surface = shear();
+        let mut uv = [(0.1, 0.1), (0.9, 0.1), (0.9, 0.95), (0.1, 0.95), (0.5, 0.2)]
+            .map(|(u, v)| Point2::try_new(u, v).unwrap());
+        let mut positions = uv.map(|p| surface.evaluate(p.x(), p.y()).unwrap());
+        let triangles = [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]];
+        let adjacent = HashMap::from([
+            ([0, 1], [0, NO_FACE]),
+            ([1, 2], [1, NO_FACE]),
+            ([2, 3], [2, NO_FACE]),
+            ([0, 3], [3, NO_FACE]),
+            ([0, 4], [3, 0]),
+            ([1, 4], [0, 1]),
+            ([2, 4], [1, 2]),
+            ([3, 4], [2, 3]),
+        ]);
+        assert!(
+            sample(&surface, &positions, &uv, triangles[0])
+                .unwrap()
+                .alignment
+                < 0.
+        );
+        let old_uv = uv;
+        let old_positions = positions;
+        vertex_fit::relocate(
+            &surface,
+            &mut uv,
+            &mut positions,
+            &triangles,
+            3.,
+            &[0],
+            &adjacent,
+        );
+        assert_ne!(uv[4], old_uv[4]);
+        assert_eq!(uv[..4], old_uv[..4]);
+        assert_eq!(positions[..4], old_positions[..4]);
+        assert_eq!(
+            positions[4],
+            surface.evaluate(uv[4].x(), uv[4].y()).unwrap()
+        );
+        assert!(triangles.iter().all(|&face| {
+            sample(&surface, &positions, &uv, face).is_some_and(|s| s.alignment > 0.)
+        }));
     }
 }
