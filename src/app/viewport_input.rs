@@ -388,6 +388,9 @@ impl VibocerosApp {
             if self.pick_curve_extend_edge(&output.edge_contacts) {
                 return true;
             }
+            if self.select_loft_edge_click(&picks, &output.edge_contacts, output.edge_click_modifiers) {
+                return true;
+            }
             if self.pick_curve_match_edge(&picks) {
                 return true;
             }

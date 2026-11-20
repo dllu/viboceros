@@ -449,7 +449,8 @@ impl VibocerosApp {
         }
         .filter(|_| plane_object_pick || model_input_active && self.plane_prompt.is_none());
         let extend_source_pick = self.picking_curve_extend_source();
-        let edge_pick = (extend_source_pick || self
+        let loft_edge_pick = self.picking_loft_edges();
+        let edge_pick = (extend_source_pick || loft_edge_pick || self
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
@@ -662,6 +663,9 @@ impl VibocerosApp {
             .as_ref()
             .map_or_else(Vec::new, edge_commands::EdgePrompt::highlights);
         edge_highlights.extend(self.pipe_edge_highlights());
+        if let Some(prompt) = &self.loft_prompt {
+            edge_highlights.extend(prompt.edge_highlights());
+        }
         if let Some(guide) = self.curve_match_guide()
             && let Some(edge) = guide.source().1
         {
@@ -893,7 +897,7 @@ impl VibocerosApp {
         let selecting_normal = model_input_active
             && (self.picking_line_normal() || self.selecting_move_normal_reference());
         let curve_or_edge_pick = edge_pick
-            && (extend_source_pick || self.picking_subcurve_edge()
+            && (extend_source_pick || loft_edge_pick || self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
                     || self.picking_surface_offset_curve())
@@ -1863,7 +1867,7 @@ impl VibocerosApp {
                             raw_mesh_face_highlights: Some(&raw_mesh_face_highlights),
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
-                            edge_contact_pick: extend_source_pick || matches!(
+                            edge_contact_pick: extend_source_pick || loft_edge_pick || matches!(
                                 self.edge_prompt,
                                 Some(edge_commands::EdgePrompt::Match(_))
                             ),

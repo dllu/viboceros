@@ -478,3 +478,148 @@ fn open_loft_accepts_end_alignment_with_an_updated_preview() {
     assert_eq!(app.document.selected_object_count(), 0);
     assert_eq!(app.document.undo_label(), Some("Loft"));
 }
+
+#[test]
+fn loft_picks_two_edges_of_one_surface_without_selecting_the_whole_object() {
+    use super::circle_preview::viewport_frame;
+    use super::curve_match::click_world;
+    use crate::viewport::ComponentPick;
+    use viboceros_command::ComponentSelectionKind;
+    use viboceros_geometry::Brep;
+
+    let mut app = test_app();
+    app.execute_command("SrfPt 0,0,0 6,0,0 6,3,3 0,3,3");
+    let surface_id = app.document.objects().next().unwrap().id();
+    let Geometry::NurbsSurface(surface) = app.document.object(surface_id).unwrap().geometry()
+    else {
+        panic!("expected a NURBS surface");
+    };
+    let tol = app.document.tolerance();
+    let brep = Brep::try_surface_face(surface.clone(), tol).unwrap();
+    let points = [point(3., 0., 0.), point(3., 3., 3.)];
+    let refs = points.map(|point| {
+        brep.edges()
+            .iter()
+            .position(|edge| {
+                let domain = edge.curve().domain();
+                edge.curve()
+                    .evaluate(domain.start().midpoint(*domain.end()))
+                    .is_ok_and(|candidate| candidate.is_near(point, tol))
+            })
+            .expect("surface edge midpoint")
+    });
+    app.document
+        .replace_object_geometries([(surface_id, Geometry::Brep(brep))])
+        .unwrap();
+    let original = app
+        .document
+        .object(surface_id)
+        .unwrap()
+        .geometry_snapshot()
+        .clone();
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+
+    enter(&mut app, "Loft");
+    for p in points {
+        click_world(&mut app, &context, p);
+    }
+    let edges = app
+        .loft_prompt
+        .as_ref()
+        .unwrap()
+        .edge_highlights()
+        .map(|pick| (pick.object, pick.edge))
+        .collect::<Vec<_>>();
+    assert_eq!(edges, refs.map(|edge| (surface_id, edge)));
+    assert_eq!(app.document.selected_object_count(), 0);
+    enter(&mut app, "");
+    assert!(!app.loft_prompt.as_ref().unwrap().preview_wires().is_empty());
+    assert!(!viewport_frame(&mut app, &context, vec![]).is_empty());
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    assert_eq!(app.document.objects().len(), 2);
+    assert_eq!(app.document.undo_label(), Some("Loft"));
+    assert!(
+        original.shares_storage_with(app.document.object(surface_id).unwrap().geometry_snapshot())
+    );
+
+    app.document.undo().unwrap();
+    let preselection = refs
+        .map(|index| ComponentPick {
+            object: surface_id,
+            index,
+            kind: ComponentSelectionKind::BrepEdge,
+        })
+        .to_vec();
+    app.component_selection
+        .replace(&app.document, preselection.clone())
+        .unwrap();
+    enter(&mut app, "Loft Type=Straight");
+    assert!(!app.loft_prompt.as_ref().unwrap().preview_wires().is_empty());
+    enter(&mut app, "Cancel");
+    assert_eq!(
+        app.component_selection
+            .checked_picks(&app.document)
+            .unwrap(),
+        preselection
+    );
+    assert_eq!(app.document.objects().len(), 1);
+    assert!(app.document.can_redo());
+}
+
+#[test]
+fn loft_can_move_the_seam_of_one_typed_edge_without_editing_the_owner() {
+    use viboceros_geometry::{Brep, NurbsSurface};
+
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    let cylinder =
+        NurbsSurface::try_cylinder(app.viewports[0].construction_plane(), 2., 0., 7.).unwrap();
+    let brep = Brep::try_surface_face(cylinder, tolerance).unwrap();
+    let edges = [0., 7.].map(|z| {
+        brep.edges()
+            .iter()
+            .position(|edge| {
+                let curve = edge.curve();
+                curve.is_closed().unwrap()
+                    && (curve.evaluate(*curve.domain().start()).unwrap().z() - z).abs() < 1e-8
+            })
+            .unwrap()
+    });
+    let id = app.document.add_geometry(Geometry::Brep(brep)).unwrap();
+    let original = app.document.object(id).unwrap().geometry_snapshot().clone();
+    app.document.clear_history().unwrap();
+    enter(&mut app, "Loft");
+    for edge in edges {
+        enter(&mut app, &format!("Edge={id},{edge}"));
+    }
+    enter(&mut app, "");
+    assert_eq!(app.loft_prompt.as_ref().unwrap().seam_markers().len(), 2);
+    enter(&mut app, "Natural");
+    enter(&mut app, &format!("Edge={id},{}", edges[1]));
+    enter(&mut app, "w0,2,7");
+    let expected = point(0., 2., 7.);
+    let [_, upper] = app
+        .loft_prompt
+        .as_ref()
+        .unwrap()
+        .seam_markers()
+        .try_into()
+        .unwrap();
+    assert!(upper.point.distance_to(expected).unwrap() < 1e-8);
+    enter(&mut app, "");
+    assert!(!app.loft_prompt.as_ref().unwrap().preview_wires().is_empty());
+    enter(&mut app, "");
+    let Geometry::Brep(out) = app.document.objects().last().unwrap().geometry() else {
+        panic!("Loft B-rep")
+    };
+    assert!(
+        out.vertices()
+            .iter()
+            .any(|vertex| vertex.point().distance_to(expected).unwrap() < 1e-8)
+    );
+    assert!(original.shares_storage_with(app.document.object(id).unwrap().geometry_snapshot()));
+}

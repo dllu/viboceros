@@ -1,4 +1,5 @@
 use super::*;
+use viboceros_command::curve_reference::parse_edge;
 use viboceros_drafting::PointInput;
 
 impl VibocerosApp {
@@ -71,7 +72,7 @@ impl VibocerosApp {
         p.picking = None;
         self.active_command = None;
         self.drafting_plane = None;
-        if matches!(end, End::Finish) && !p.scripted {
+        if matches!(end, End::Finish) && !p.uses_script() {
             self.finish_loft();
         } else {
             self.log_loft();
@@ -99,12 +100,8 @@ impl VibocerosApp {
         } else if p.review.as_ref().is_some_and(|review| review.aligning) {
             if input.is_empty() || name.eq_ignore_ascii_case("Enter") {
                 self.finish_loft();
-            } else if let Some(id) = name
-                .split_once(char::is_whitespace)
-                .filter(|(option, _)| option.eq_ignore_ascii_case("SelID"))
-                .and_then(|(_, value)| value.trim().parse::<ObjectId>().ok())
-            {
-                self.flip_loft_id(id);
+            } else if let Some(key) = typed_section(name) {
+                self.flip_loft_source(key);
             } else {
                 self.log_loft();
             }
@@ -118,13 +115,19 @@ impl VibocerosApp {
                 .collect::<Vec<_>>();
             self.select_loft_curves(ids, SelectionMode::Add);
         } else if p.selecting() && name.eq_ignore_ascii_case("SelNone") {
-            let ids = p
+            let keys = p
                 .state
                 .sources
                 .iter()
-                .map(|source| source.id)
+                .map(|section| (section_key(&section.source), None))
                 .collect::<Vec<_>>();
-            self.select_loft_curves(ids, SelectionMode::Remove);
+            self.apply_loft_picks(keys, SelectionMode::Remove);
+        } else if p.selecting() && edge_value(name).is_some() {
+            if let Some(key) = typed_section(name) {
+                self.apply_loft_picks([(key, None)], SelectionMode::Add);
+            } else {
+                self.push_log("Enter Edge=object,index to select a Loft section".into());
+            }
         } else if p.selecting() && (p.profile_id_pending || sel_id(name).is_some()) {
             let value = sel_id(name).unwrap_or(name);
             let waiting =
@@ -191,7 +194,11 @@ impl VibocerosApp {
             return;
         }
         let editor = &mut p.seams.as_mut().unwrap().editor;
-        if p.seam_id_pending || sel_id(name).is_some() {
+        if edge_value(name).is_some() {
+            if let Some(key) = typed_section(name) {
+                editor.select_source(self.active_viewport, key);
+            }
+        } else if p.seam_id_pending || sel_id(name).is_some() {
             let value = sel_id(name).unwrap_or(name);
             p.seam_id_pending = value.is_empty();
             if let Ok(id) = value.parse::<ObjectId>() {
@@ -318,8 +325,25 @@ impl VibocerosApp {
 }
 
 fn sel_id(input: &str) -> Option<&str> {
+    named_value(input, "SelID")
+}
+
+fn edge_value(input: &str) -> Option<&str> {
+    named_value(input, "Edge")
+}
+
+fn named_value<'a>(input: &'a str, option: &str) -> Option<&'a str> {
     let (name, value) = input
         .split_once(|c: char| c == '=' || c.is_whitespace())
         .unwrap_or((input, ""));
-    name.eq_ignore_ascii_case("SelID").then(|| value.trim())
+    name.eq_ignore_ascii_case(option).then(|| value.trim())
+}
+
+fn typed_section(input: &str) -> Option<SectionKey> {
+    if let Some(value) = edge_value(input) {
+        let (object, edge) = parse_edge(value)?;
+        Some((object, Some(edge)))
+    } else {
+        Some((sel_id(input)?.parse().ok()?, None))
+    }
 }

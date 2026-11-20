@@ -1,6 +1,6 @@
 //! Ordered Loft selection and pole getters; geometry stays in the command layer.
 use super::*;
-use viboceros_command::{CommandError, loft::Options};
+use viboceros_command::{CommandError, curve_reference::CapturedCurve, loft::Options};
 use viboceros_geometry::LoftStyle;
 
 use super::curve_seam::Editor;
@@ -19,11 +19,16 @@ enum End {
     Finish,
 }
 
+type SectionKey = (ObjectId, Option<usize>);
+
 #[derive(Clone, Debug)]
 struct Section {
-    id: ObjectId,
-    geometry: viboceros_document::GeometrySnapshot,
+    source: CapturedCurve,
     reversed: Option<bool>,
+}
+
+fn section_key(source: &CapturedCurve) -> SectionKey {
+    (source.object_id(), source.source().1)
 }
 
 #[derive(Clone, Debug)]
@@ -77,8 +82,24 @@ impl Prompt {
                 "Choose loft options (Type Simplify RebuildCount RefitTolerance Closed SplitAtTangents AlignCurves). Press Enter to create the loft"
             }
             _ if self.seams.is_some() => self.seams.as_ref().unwrap().editor.hint(),
-            _ => "Select curves in order or use Point for a pole. Press Enter to continue",
+            _ => {
+                "Select curves or surface edges in order, or use Point for a pole. Press Enter to continue"
+            }
         }
+    }
+
+    pub(super) fn edge_highlights(&self) -> impl Iterator<Item = crate::viewport::EdgePick> + '_ {
+        self.state.sources.iter().filter_map(|section| {
+            let (object, edge) = section_key(&section.source);
+            Some(crate::viewport::EdgePick {
+                object,
+                edge: edge?,
+            })
+        })
+    }
+
+    fn uses_script(&self) -> bool {
+        self.scripted && self.edge_highlights().next().is_none()
     }
 
     pub(super) fn seam_markers(&self) -> Vec<Marker> {
@@ -149,13 +170,25 @@ impl VibocerosApp {
                     .is_some_and(|o| o.geometry().curve_ref().is_some())
             })
             .collect::<Vec<_>>();
-        if arguments.is_empty() && (sources.len() < 3 || point_option.is_some()) {
+        let edges = self
+            .component_selection
+            .valid_picks(&self.document)
+            .into_iter()
+            .filter(|pick| pick.kind == viboceros_command::ComponentSelectionKind::BrepEdge)
+            .map(|pick| (pick.object, Some(pick.index)))
+            .collect::<Vec<_>>();
+        let source_count = sources.len() + edges.len();
+        if arguments.is_empty() && (source_count < 3 || point_option.is_some()) {
             options.closed = false;
         }
         let required = required_sections(options);
         let scripted = !arguments.is_empty() && point_option.is_none();
         // Fully specified scripts retain their immediate execution behavior.
-        if scripted && sources.len() >= required && sources.len() == before.len() {
+        if scripted
+            && edges.is_empty()
+            && sources.len() >= required
+            && sources.len() == before.len()
+        {
             return false;
         }
         self.cancel_interactive_command(false);
@@ -175,13 +208,24 @@ impl VibocerosApp {
             seam_id_pending: false,
             profile_id_pending: false,
         });
-        self.select_loft_curves(sources, SelectionMode::Add);
+        self.apply_loft_picks(
+            sources
+                .into_iter()
+                .map(|id| (id, None))
+                .chain(edges)
+                .map(|key| (key, None)),
+            SelectionMode::Add,
+        );
         self.loft_prompt.as_mut().unwrap().undo.clear();
         if let Some(option) = point_option {
             self.begin_loft_point(option);
         }
         self.push_log(format!("> {input}"));
-        if point_option.is_none() && !scripted && sources_ready(self.loft_prompt.as_ref().unwrap())
+        if point_option.is_none()
+            && self
+                .loft_prompt
+                .as_ref()
+                .is_some_and(|prompt| !prompt.uses_script() && sources_ready(prompt))
         {
             self.finish_loft();
         } else {
@@ -192,7 +236,7 @@ impl VibocerosApp {
 
     fn remember_loft_options(&mut self) {
         let prompt = self.loft_prompt.as_ref().unwrap();
-        if !prompt.scripted {
+        if !prompt.uses_script() {
             self.loft_options = Options {
                 ends: Default::default(),
                 natural_seams: false,
@@ -231,7 +275,7 @@ impl VibocerosApp {
             self.push_log(format!("Loft needs at least {required} curve section(s)"));
             return;
         }
-        if prompt.scripted {
+        if prompt.uses_script() {
             self.finish_scripted_loft();
         } else if prompt.review.is_some() {
             self.accept_loft_preview();
@@ -256,14 +300,12 @@ impl VibocerosApp {
         let Some(prompt) = &self.loft_prompt else {
             return false;
         };
-        if prompt.state.sources.iter().any(|source| {
-            !self.document.is_object_selectable(source.id)
-                || !self.document.object(source.id).is_some_and(|object| {
-                    source
-                        .geometry
-                        .shares_storage_with(object.geometry_snapshot())
-                })
-        }) {
+        if prompt
+            .state
+            .sources
+            .iter()
+            .any(|section| !section.source.current(&self.document))
+        {
             self.cancel_interactive_command(false);
             self.push_log("Loft sources changed; select them again".into());
             return false;

@@ -6,7 +6,7 @@ use viboceros_geometry::{Brep, CurveRef, LoftProfiles, NurbsCurve};
 
 #[derive(Debug)]
 pub(super) struct Profiles {
-    ids: Vec<ObjectId>,
+    sources: Vec<CapturedCurve>,
     curves: Vec<NurbsCurve>,
     oriented: bool,
 }
@@ -115,13 +115,8 @@ impl VibocerosApp {
                 .state
                 .sources
                 .iter()
-                .map(|source| {
-                    source
-                        .geometry
-                        .nurbs_curve_representation()?
-                        .ok_or(CommandError::LoftRequiresCurves)
-                })
-                .collect::<Result<Vec<_>, _>>()?;
+                .map(|section| section.source.curve().clone())
+                .collect::<Vec<_>>();
             let closed = curves
                 .iter()
                 .map(NurbsCurve::is_closed)
@@ -132,17 +127,17 @@ impl VibocerosApp {
                 ));
             }
             let (order, oriented) = Brep::loft_profile_order(&curves, tolerance)?;
-            let ids = order
+            let sources = order
                 .iter()
-                .map(|&index| prompt.state.sources[index].id)
+                .map(|&index| prompt.state.sources[index].source.clone())
                 .collect::<Vec<_>>();
             if closed.iter().all(|closed| *closed) {
-                let editor = Editor::capture(
-                    &self.document,
-                    ids,
+                let editor = Editor::from_sources(
+                    sources,
+                    tolerance,
                     self.loft_snap_to_knots,
                     prompt.state.options.natural_seams,
-                )?;
+                );
                 return Ok((Some(Seams { editor, oriented }), None));
             }
             let mut curves = order
@@ -164,7 +159,7 @@ impl VibocerosApp {
             Ok((
                 None,
                 Some(Profiles {
-                    ids,
+                    sources,
                     curves,
                     oriented,
                 }),
@@ -185,10 +180,10 @@ impl VibocerosApp {
         let seams = self.loft_prompt.as_ref().unwrap().seams.as_ref().unwrap();
         match seams.editor.profiles(self.document.tolerance()) {
             Ok(curves) => {
-                let ids = seams.editor.source_ids().collect();
+                let sources = seams.editor.sources().cloned().collect();
                 self.begin_loft_preview(Profiles {
                     curves,
-                    ids,
+                    sources,
                     oriented: seams.oriented,
                 });
             }
@@ -250,9 +245,14 @@ impl VibocerosApp {
         self.log_loft();
     }
 
-    pub(super) fn flip_loft_id(&mut self, id: ObjectId) {
+    pub(super) fn flip_loft_source(&mut self, key: SectionKey) {
         let review = self.loft_prompt.as_ref().unwrap().review.as_ref().unwrap();
-        if let Some(index) = review.profiles.ids.iter().position(|&source| source == id) {
+        if let Some(index) = review
+            .profiles
+            .sources
+            .iter()
+            .position(|source| section_key(source) == key)
+        {
             self.flip_loft_profile(index);
         }
     }

@@ -17,8 +17,7 @@ struct Seam {
 }
 
 impl Seam {
-    fn capture(document: &Document, id: ObjectId) -> Result<Self, CommandError> {
-        let source = CapturedCurve::capture(document, id, None)?;
+    fn from_source(source: CapturedCurve) -> Self {
         let curve = source.curve_ref();
         let domain = curve.domain();
         let knots = match curve {
@@ -36,12 +35,12 @@ impl Seam {
                 .collect(),
             _ => Vec::new(),
         };
-        Ok(Self {
+        Self {
             source,
             knots,
             parameter: *domain.start(),
             reversed: false,
-        })
+        }
     }
 
     fn curve(&self) -> CurveRef<'_> {
@@ -154,10 +153,28 @@ impl Editor {
         snap_to_knots: bool,
         natural: bool,
     ) -> Result<Self, CommandError> {
-        let seams = ids
+        let sources = ids
             .into_iter()
-            .map(|id| Seam::capture(document, id))
+            .map(|id| CapturedCurve::capture(document, id, None))
             .collect::<Result<Vec<_>, _>>()?;
+        Ok(Self::from_sources(
+            sources,
+            document.tolerance(),
+            snap_to_knots,
+            natural,
+        ))
+    }
+
+    pub(super) fn from_sources(
+        sources: impl IntoIterator<Item = CapturedCurve>,
+        tolerance: Tolerance,
+        snap_to_knots: bool,
+        natural: bool,
+    ) -> Self {
+        let seams = sources
+            .into_iter()
+            .map(Seam::from_source)
+            .collect::<Vec<_>>();
         let target = (seams.len() == 1).then_some(0);
         let mut editor = Self {
             seams,
@@ -165,9 +182,9 @@ impl Editor {
             ..Self::empty(snap_to_knots)
         };
         if !natural {
-            editor.automatic(document.tolerance());
+            editor.automatic(tolerance);
         }
-        Ok(editor)
+        editor
     }
 
     pub(super) fn hint(&self) -> &'static str {
@@ -184,8 +201,8 @@ impl Editor {
         self.snap_to_knots
     }
 
-    pub(super) fn source_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
-        self.seams.iter().map(|seam| seam.source.object_id())
+    pub(super) fn sources(&self) -> impl Iterator<Item = &CapturedCurve> {
+        self.seams.iter().map(|seam| &seam.source)
     }
 
     pub(super) fn profiles(&self, tolerance: Tolerance) -> Result<Vec<NurbsCurve>, CommandError> {
@@ -234,10 +251,18 @@ impl Editor {
     }
 
     pub(super) fn select_id(&mut self, viewport: usize, id: ObjectId) -> bool {
+        self.select_source(viewport, (id, None))
+    }
+
+    pub(super) fn select_source(
+        &mut self,
+        viewport: usize,
+        source: (ObjectId, Option<usize>),
+    ) -> bool {
         let Some(index) = self
             .seams
             .iter()
-            .position(|seam| seam.source.object_id() == id)
+            .position(|seam| (seam.source.object_id(), seam.source.source().1) == source)
         else {
             return false;
         };

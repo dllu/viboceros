@@ -95,8 +95,10 @@ global `CreaseSplitting` preference; `Natural` retains supplied profile seams.
 `StartPoint=x,y,z` and `EndPoint=x,y,z` add [point poles](../loft-points.md),
 including a single closed profile with two poles.
 `Rebuild=6` adds [section rebuilding](../loft-rebuild.md).
-Run `Loft` with preselected profiles or select them at the prompt. Pick open
-curves near corresponding ends or use `Point` to pick a pole with snapping.
+Run `Loft` with preselected profiles or pick curves and surface edges at the
+prompt. `Edge=object,index` selects a specific surface edge during the command.
+Pick open profiles near corresponding ends or use `Point` to pick a pole with
+snapping.
 For closed profiles, drag the seam markers or use `Flip`, `Automatic`,
 `Natural`, and `SnapToKnots`. Enter opens the options preview. Change the style,
 simplification, closure, or tangent splitting while previewing the result.

@@ -110,8 +110,8 @@ overflow and world-offset cancellation. Coincident consecutive compatible
 control polygons are rejected. No general self-intersection, denominator-pole,
 or continuous approximation certificate is claimed.
 
-Remaining work includes general spatial profile matching, surface-edge
-profiles with start/end tangent matching, and curved-profile Refit
+Remaining work includes general spatial profile matching, start/end tangent
+matching on surface-edge profiles, and curved-profile Refit
 simplification. Nonparallel or nonplanar closed sections keep their input order. Native parameter preservation
 of analytic input curves is not promised: loft deliberately builds a normalized
 compatible basis. Nearly symmetric profiles can select a different boundary from Rhino when

@@ -202,7 +202,8 @@ impl ComponentSelection {
 
 impl VibocerosApp {
     pub(super) fn component_preselection_available(&self) -> bool {
-        self.direction_session.is_none()
+        self.loft_prompt.is_none()
+            && self.direction_session.is_none()
             && self.active_command.is_none()
             && self.curve_connect_session.is_none()
             && self.curve_extend_session.is_none()
