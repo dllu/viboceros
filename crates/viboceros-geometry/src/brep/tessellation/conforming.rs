@@ -514,16 +514,37 @@ impl Brep {
             let highest = deferred.first().map_or(1., |item| item.0);
             let priority = |shortfall: Real| ((4096. * shortfall / highest).ceil() as u64).max(1);
             let mut pending_priority = deferred.iter().map(|item| priority(item.0)).sum::<u64>();
+            let mut residuals = Vec::new();
             for (shortfall, index, height) in deferred {
                 let weight = priority(shortfall);
                 let allowance = ((remaining as u64 * weight).div_ceil(pending_priority)) as usize;
                 pending_priority -= weight;
                 let face_mesh = &mut face_meshes[index];
                 let coarse = face_mesh.points.len();
-                let _ = face_mesh.refine(
+                if let Some(error) = face_mesh.refine(
                     &frames[index].face.surface,
                     height,
                     allowance,
+                    &mut locations,
+                )? {
+                    residuals.push((error, index, height));
+                }
+                remaining -= face_mesh.points.len() - coarse;
+            }
+            // Spend spare vertices on the largest remaining errors. A common
+            // height keeps this last pass focused on the biggest deviations.
+            residuals.sort_unstable_by(|a, b| b.0.total_cmp(&a.0).then_with(|| a.1.cmp(&b.1)));
+            let height_floor = residuals.first().map_or(0., |(error, _, _)| error * 0.5);
+            for (error, index, height) in residuals {
+                if remaining == 0 || error <= height_floor {
+                    break;
+                }
+                let face_mesh = &mut face_meshes[index];
+                let coarse = face_mesh.points.len();
+                face_mesh.refine(
+                    &frames[index].face.surface,
+                    height.max(height_floor),
+                    remaining,
                     &mut locations,
                 )?;
                 remaining -= face_mesh.points.len() - coarse;
