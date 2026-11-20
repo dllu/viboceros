@@ -8,6 +8,7 @@ use viboceros_command::{CommandError, ObjectSelectionFilter, prepare_curve_seam}
 use viboceros_geometry::{Curve3, CurveRef, NurbsCurve, Real, wrap_closed_curve_parameter};
 
 mod input;
+mod profiles;
 
 #[derive(Clone, Debug)]
 struct Seam {
@@ -592,6 +593,7 @@ impl VibocerosApp {
     pub(super) fn apply_curve_seam_event(&mut self, viewport: usize, event: Event) -> bool {
         let Some(session) = &mut self.curve_seam_session else {
             return self.apply_loft_seam_event(viewport, event)
+                || self.apply_sweep_one_seam_event(viewport, event)
                 || self.apply_sweep_two_rail_seam_event(viewport, event);
         };
         let changed = session.editor.apply(viewport, event);

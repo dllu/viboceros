@@ -1,8 +1,6 @@
 use super::*;
 use crate::viewport::curve_seam::Event;
 use viboceros_command::{CommandError, curve_reference::CapturedCurve};
-use viboceros_drafting::PointInput;
-use viboceros_geometry::Real;
 
 impl State {
     pub(super) fn prepare_seams(
@@ -102,58 +100,22 @@ impl VibocerosApp {
         if !self.validate_sweep_two_rails() {
             return;
         }
-        let (name, value) = input
-            .split_once(|c: char| c == '=' || c.is_whitespace())
-            .map_or((input, ""), |(name, value)| (name, value.trim()));
+        let point = self.profile_seam_point(input);
+        let viewport = self.active_viewport;
+        let tolerance = self.document.tolerance();
         let session = self.sweep_two_rails.as_mut().unwrap();
         let before = session.state.clone();
         let editor = session.state.seams.as_mut().unwrap();
-        let tolerance = self.document.tolerance();
-        if session.seam_id_pending || name.eq_ignore_ascii_case("SelID") {
-            let id = if session.seam_id_pending {
-                input
-            } else {
-                value
-            };
-            session.seam_id_pending = id.is_empty();
-            if !session.seam_id_pending
-                && !id
-                    .parse::<ObjectId>()
-                    .is_ok_and(|id| editor.select_id(self.active_viewport, id))
-            {
-                self.push_log("Select a closed Sweep2 profile by object ID".into());
-                return;
-            }
-        } else if let Some(result) = editor.option(input, tolerance) {
-            match result {
-                Ok(()) => session.undo.push(before),
-                Err(error) => {
-                    self.push_log(error.into());
-                    return;
-                }
-            }
-        } else {
-            let parameter = name
-                .eq_ignore_ascii_case("Parameter")
-                .then(|| value.parse::<Real>().ok())
-                .flatten()
-                .filter(|value| value.is_finite());
-            let point = PointInput::parse_with_units(input, self.document.units())
-                .and_then(Result::ok)
-                .and_then(|point| {
-                    point
-                        .resolve(
-                            self.viewports[self.active_viewport].construction_plane(),
-                            self.last_point,
-                        )
-                        .ok()
-                });
-            if !point
-                .is_some_and(|point| editor.flip_at_point(self.active_viewport, point, tolerance))
-                && editor.relocate_target(parameter, point, tolerance)
-            {
-                session.undo.push(before);
-            }
+        match editor.edit_profile(
+            input,
+            &mut session.seam_id_pending,
+            viewport,
+            point,
+            tolerance,
+        ) {
+            Ok(true) => session.undo.push(before),
+            Ok(false) => {}
+            Err(error) => self.push_log(error.into()),
         }
         self.log_sweep_two_rails();
     }

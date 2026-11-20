@@ -269,6 +269,27 @@ impl Sweep1 {
         Ok(())
     }
 
+    /// Compare matched profiles in their rail frames, allowing for a common
+    /// scale of the homogeneous weights.
+    pub fn sections_vary_in_frame(&self) -> bool {
+        let first = &self.local[0];
+        self.local[1..].iter().any(|section| {
+            first.iter().zip(section).any(|(a, b)| {
+                let same_position = a
+                    .point()
+                    .to_array()
+                    .into_iter()
+                    .zip(b.point().to_array())
+                    .all(|(left, right)| self.tolerance.approx_eq(left, right));
+                let left = a.weight() / first[0].weight();
+                let right = b.weight() / section[0].weight();
+                let same_weight =
+                    (left - right).abs() <= self.tolerance.relative() * left.abs().max(right.abs());
+                !same_position || !same_weight
+            })
+        })
+    }
+
     /// Extend a single anchored profile across the complete active rail. The
     /// profile remains constrained at its original station; frame transport
     /// starts at the rail's start. The entire new interval is checked for

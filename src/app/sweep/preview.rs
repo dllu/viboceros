@@ -1,13 +1,14 @@
 //! Sweep drafts use the normal command solver and keep the document immutable.
 use super::*;
 use std::sync::Arc;
-use viboceros_geometry::{Brep, NurbsCurve};
+use viboceros_geometry::{Brep, NurbsCurve, Real};
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct Request {
     revision: u64,
     tolerance: Tolerance,
     pole: Option<(End, Point3)>,
+    seams: Vec<(Real, bool)>,
 }
 
 #[derive(Debug)]
@@ -33,6 +34,22 @@ impl Preview {
 
     pub(super) fn clear_wires(&mut self) {
         self.worker.clear_result();
+    }
+
+    fn request(
+        &self,
+        tolerance: Tolerance,
+        pole: Option<(End, Point3)>,
+        stage: &ProfileStage,
+    ) -> Request {
+        Request {
+            revision: self.revision,
+            tolerance,
+            pole,
+            seams: stage
+                .seams()
+                .map_or_else(Vec::new, |editor| editor.placements().collect()),
+        }
     }
 }
 
@@ -67,20 +84,18 @@ impl VibocerosApp {
         let pole = p.picking.zip(point);
         // During a point getter, dropping the resolved cursor also hides the
         // provisional shape. Outside the getter, show the accepted settings.
-        let request = (p.picking.is_none() || pole.is_some()).then_some(Request {
-            revision: p.preview.revision,
-            tolerance,
-            pole,
-        });
+        let request = (p.picking.is_none() || pole.is_some())
+            .then(|| p.preview.request(tolerance, pole, &p.state.stage));
         p.preview.worker.update(
             request,
             context,
             |previous, current| {
                 previous.revision == current.revision
                     && previous.tolerance == current.tolerance
+                    && previous.seams.len() == current.seams.len()
                     && previous.pole.map(|(end, _)| end) == current.pole.map(|(end, _)| end)
             },
-            |&request| {
+            |request| {
                 let source = p
                     .preview
                     .source
@@ -92,8 +107,11 @@ impl VibocerosApp {
                 if let Some((end, point)) = request.pole {
                     end.set_point(&mut options, point);
                 }
+                let editor = p.state.stage.seams().cloned();
                 move || {
-                    let (brep, sections) = source?.build(&options, tolerance).ok()?;
+                    let source =
+                        seams::with_seam_profiles(source?, editor.as_ref(), tolerance).ok()?;
+                    let (brep, sections) = source.build(&options, tolerance).ok()?;
                     let wires = draft_worker::wireframe(&brep, tolerance);
                     Some(Draft {
                         brep,
@@ -108,11 +126,9 @@ impl VibocerosApp {
     pub(super) fn commit_sweep_preview(&mut self) {
         let session = self.sweep_session.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = Request {
-            revision: session.preview.revision,
-            tolerance,
-            pole: None,
-        };
+        let request = session
+            .preview
+            .request(tolerance, None, &session.state.stage);
         let result =
             if let Some(Draft { brep, sections, .. }) = session.preview.worker.take(&request) {
                 Ok((brep, sections))
@@ -120,6 +136,13 @@ impl VibocerosApp {
                 session
                     .state
                     .capture_source(&self.document)
+                    .and_then(|source| {
+                        seams::with_seam_profiles(
+                            Arc::new(source),
+                            session.state.stage.seams(),
+                            tolerance,
+                        )
+                    })
                     .and_then(|source| source.build(&session.state.options, tolerance))
             };
         let (brep, sections) = match result {

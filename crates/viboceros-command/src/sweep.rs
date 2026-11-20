@@ -4,7 +4,7 @@ pub use crate::sweep_rail::{Rail, RailReference};
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [GlobalShapeBlending=Yes|No] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -91,10 +91,11 @@ impl Command for SweepCommand {
 
 /// Capture the ordered inputs once so drafting and command execution can use
 /// the same sweep construction without preview edits to the document.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Source {
     rail: Rail,
-    profiles: Vec<GeometrySnapshot>,
+    profiles: Vec<(ObjectId, GeometrySnapshot)>,
+    seam_profiles: usize,
 }
 
 impl Source {
@@ -137,7 +138,7 @@ impl Source {
                 document
                     .object(id)
                     .filter(|object| object.geometry().curve_ref().is_some())
-                    .map(|object| object.geometry_snapshot().clone())
+                    .map(|object| (id, object.geometry_snapshot().clone()))
                     .ok_or(CommandError::Usage(USAGE))
             })
             .collect::<Result<Vec<_>, _>>()?;
@@ -149,7 +150,70 @@ impl Source {
         {
             return Err(CommandError::Usage(USAGE));
         }
-        Ok(Self { rail, profiles })
+        Ok(Self {
+            rail,
+            profiles,
+            seam_profiles: 0,
+        })
+    }
+
+    pub fn closed_profile_ids(&self) -> Result<Vec<ObjectId>, CommandError> {
+        let mut ids = Vec::new();
+        for (id, profile) in &self.profiles {
+            if profile
+                .curve_ref()
+                .ok_or(CommandError::Usage(USAGE))?
+                .is_closed()?
+            {
+                ids.push(*id);
+            }
+        }
+        Ok(ids)
+    }
+
+    /// Reject explicit stations that collide with a pole before entering the seam editor.
+    pub fn validate_point_end_stations(&self, options: &Options) -> Result<(), CommandError> {
+        if let Some((first, last)) = options
+            .parameters
+            .as_ref()
+            .and_then(|parameters| parameters.first().zip(parameters.last()))
+            && !options.ends.is_empty()
+        {
+            let domain = self.rail.curve_ref().domain();
+            if (options.ends.start.is_some() && first <= domain.start())
+                || (options.ends.end.is_some() && last >= domain.end())
+            {
+                return Err(CommandError::Usage(
+                    "Sweep1 profile parameters must lie inside the point ends",
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    /// Replace captured profiles by ID while preserving section order and the rail.
+    pub fn with_profile_curves(
+        mut self,
+        profiles: impl IntoIterator<Item = (ObjectId, NurbsCurve)>,
+    ) -> Result<Self, CommandError> {
+        let mut edits = std::collections::BTreeMap::new();
+        for (id, curve) in profiles {
+            if edits.insert(id, curve).is_some() {
+                return Err(CommandError::Usage("Duplicate Sweep1 profile edit"));
+            }
+        }
+        self.seam_profiles = edits.len();
+        for (id, profile) in &mut self.profiles {
+            if let Some(curve) = edits.remove(id) {
+                *profile = Geometry::NurbsCurve(curve).into();
+            }
+        }
+        if !edits.is_empty() {
+            return Err(CommandError::Usage(
+                "Sweep1 profile edits must match the selected profiles",
+            ));
+        }
+        Ok(self)
     }
 
     /// Produce the exact sweep and the number of real profiles used.
@@ -158,6 +222,7 @@ impl Source {
         options: &Options,
         tolerance: Tolerance,
     ) -> Result<(Brep, usize), CommandError> {
+        self.validate_point_end_stations(options)?;
         let Options {
             parameters,
             roadlike,
@@ -173,7 +238,7 @@ impl Source {
         let curves = self
             .profiles
             .iter()
-            .map(|profile| {
+            .map(|(_, profile)| {
                 let curve = profile
                     .nurbs_curve_representation()?
                     .ok_or(CommandError::Usage(USAGE))?;
@@ -225,6 +290,11 @@ impl Source {
             SweepFrameStyle::Freeform
         };
         let rail = automatic_rail.as_ref().map_or(rail, CurveRef::NurbsCurve);
+        let linear_rail = match rail {
+            CurveRef::Line(_) => true,
+            CurveRef::NurbsCurve(curve) => curve.degree() == 1 && curve.control_points().len() == 2,
+            _ => false,
+        };
         let sections = if *rebuild_point_count > 1 {
             rebuild_sections(&sections, *rebuild_point_count, tolerance)?
         } else {
@@ -247,10 +317,18 @@ impl Source {
         if full_rail_anchor {
             sweep = sweep.try_on_full_rail()?;
         }
+        // A pair of closed sections with different local correspondence needs
+        // interior stations to carry the blend. Identical sections can keep
+        // the straight rail's linear basis.
+        let closed_section_blend = self.seam_profiles == 2
+            && sections.len() == 2
+            && linear_rail
+            && sweep.sections_vary_in_frame();
         let surface = surface(
             &sweep,
             refit.unwrap_or(false)
                 || options.surface_aligned
+                || closed_section_blend
                 || automatic_partial
                 || !ends.is_empty(),
         )?;

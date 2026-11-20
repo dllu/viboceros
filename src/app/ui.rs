@@ -1445,6 +1445,9 @@ impl VibocerosApp {
         let curve_seam_editor = self.curve_seam_session.as_ref()
             .filter(|session| edge_handle_input && !session.selecting())
             .map(|session| &session.editor)
+            .or_else(|| self.sweep_session.as_ref()
+                .filter(|_| edge_handle_input)
+                .and_then(sweep::Session::seam_editor))
             .or_else(|| self.sweep_two_rails.as_ref()
                 .filter(|_| edge_handle_input)
                 .and_then(sweep_two_rails::Session::seam_editor));

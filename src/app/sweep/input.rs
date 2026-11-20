@@ -3,10 +3,9 @@ impl VibocerosApp {
     pub(in crate::app) fn continue_sweep_point_option(&mut self, input: &str) -> bool {
         if self.plane_prompt.is_some()
             || self.chain_prompt.is_some()
-            || !self
-                .sweep_session
-                .as_ref()
-                .is_some_and(|p| p.picking.is_none() && p.value.is_none())
+            || !self.sweep_session.as_ref().is_some_and(|p| {
+                p.picking.is_none() && p.value.is_none() && p.seam_editor().is_none()
+            })
             || !["Point", "StartPoint", "EndPoint"]
                 .iter()
                 .any(|n| input.trim_start_matches('_').eq_ignore_ascii_case(n))
@@ -69,8 +68,8 @@ impl VibocerosApp {
         let p = self.sweep_session.as_mut().unwrap();
         p.undo.push(p.state.clone());
         end.set_point(&mut p.state.options, point);
-        if end == End::Finish {
-            p.state.finished = true;
+        if end == End::Finish && p.state.stage.seams().is_none() {
+            p.state.stage = ProfileStage::PointEndPicked;
         }
         p.picking = None;
         self.active_command = None;
@@ -89,7 +88,8 @@ impl VibocerosApp {
         let name = input.trim_start_matches(['_', '-']);
         if name.eq_ignore_ascii_case("Undo") {
             let p = self.sweep_session.as_mut().unwrap();
-            if p.picking.take().is_none()
+            if !std::mem::take(&mut p.seam_id_pending)
+                && p.picking.take().is_none()
                 && p.value.take().is_none()
                 && let Some(state) = p.undo.pop()
             {
@@ -102,17 +102,19 @@ impl VibocerosApp {
             self.point_constraint = None;
             self.sync_sweep_selection();
             self.log_sweep_input();
-        } else if name.eq_ignore_ascii_case("Cancel") {
+        } else if name.eq_ignore_ascii_case("Cancel") || name == "!" {
             self.cancel_interactive_command(true);
         } else if p.picking.is_some() {
             return false;
+        } else if (name.is_empty() || name.eq_ignore_ascii_case("Enter")) && p.value.is_none() {
+            self.finish_sweep_input();
+        } else if p.seam_editor().is_some() {
+            self.continue_sweep_seams(name);
         } else if p.value.is_none()
             && let (name, options) = name.split_once(char::is_whitespace).unwrap_or((name, ""))
             && super::rail_picks::is_chain_option(name)
         {
             self.start_sweep_one_rail_chain(options);
-        } else if input.is_empty() && p.value.is_none() {
-            self.finish_sweep_input();
         } else if name.eq_ignore_ascii_case("SelAll") && p.selecting() {
             let ids = self
                 .document
@@ -141,6 +143,8 @@ impl VibocerosApp {
                 } else {
                     "Sweep1 style options are Freeform and Roadlike".into()
                 }
+            } else if option == "ShapeBlending" {
+                "Sweep1 shape blending options are Local and Global".into()
             } else {
                 format!("Sweep1: enter {option}")
             };
@@ -197,6 +201,14 @@ impl VibocerosApp {
                             return;
                         }
                     }
+                }
+                if next.stage.seams().is_some()
+                    && (replace_rail
+                        || (next.rail.is_none()
+                            && next.options.parameters.is_some()
+                                != p.state.options.parameters.is_some()))
+                {
+                    next.stage = ProfileStage::Selecting;
                 }
                 if next.options.surface_aligned
                     && (next

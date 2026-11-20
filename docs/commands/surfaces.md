@@ -124,6 +124,10 @@ the rail and select only profiles. `Point` picks a
 changes to profiles, options, and the pole under the cursor.
 See [automatic placement](../sweep1-placement.md) for interval and direction choices.
 
+After selecting closed profiles, drag the seam markers or use `Flip`,
+`Automatic`, `Natural`, and `SnapToKnots`. Enter opens a review of the
+draft. Adjust the sweep options there and press Enter again to create the surface.
+
 Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous
 policy: without an explicit rail reference, the last selected curve is the rail. Supply
 one native rail parameter per profile. `RefitRail=No` (default) uses the shared
@@ -138,7 +142,7 @@ can change later multi-span profiles when endpoint weight ratios differ.
 `Style=AlignWithSurface` follows the changing normals along an edge with a
 supporting face and uses the refitted rail basis. `FrameStyle=Freeform|Roadlike`,
 `Axis=x,y,z` (Roadlike only), and
-`GlobalShapeBlending=Yes|No` select the frame and blend model. Inputs and selection
+`ShapeBlending=Local|Global` select the frame and blend model. Inputs and selection
 are retained; one unselected B-rep is added on the current layer with atomic undo.
 See [sweep construction and compatibility gaps](../sweep1.md): smooth closed
 rails can close when their generated seam matches, including a full circular

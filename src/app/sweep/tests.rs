@@ -22,6 +22,59 @@ fn pick(app: &mut VibocerosApp, id: ObjectId) {
         mode: SelectionMode::Replace,
     });
 }
+
+fn accept_closed_sweep(app: &mut VibocerosApp) {
+    enter(app, "");
+    assert!(app.command_hint().starts_with("Drag seam points"));
+    enter(app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
+    enter(app, "");
+}
+
+#[test]
+fn sweep_one_preselection_opens_closed_seams_and_script_dispatch_remains_direct() {
+    let (mut app, ids) = setup();
+    app.restore_curve_selection(ids[..2].to_vec());
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    enter(&mut app, "Sweep1");
+    assert!(app.command_hint().starts_with("Drag seam points"));
+    assert_eq!(
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .seam_editor()
+            .unwrap()
+            .markers()
+            .len(),
+        1
+    );
+    enter(&mut app, "_Flip");
+    assert!(app.command_hint().contains("flip"));
+    enter(&mut app, "_Enter");
+    assert!(app.command_hint().starts_with("Drag seam points"));
+    app.cancel_current_prompt_or_selection();
+    assert!(app.command_line_idle());
+    assert_eq!(
+        app.document.selected_object_ids().collect::<Vec<_>>(),
+        &ids[..2]
+    );
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(
+        &mut app,
+        &format!("-Sweep1 RailId={} Parameters=2.5", ids[0]),
+    );
+    assert!(app.command_line_idle());
+    assert_eq!(
+        app.document.objects().count(),
+        before.len() + 1,
+        "{:?}",
+        app.command_log
+    );
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+}
+
 #[test]
 fn rebuilding_sections_uses_shared_value_getters_local_undo_and_model_undo() {
     let (mut app, ids) = setup();
@@ -66,7 +119,7 @@ fn rebuilding_sections_uses_shared_value_getters_local_undo_and_model_undo() {
             .rebuild_point_count,
         5
     );
-    enter(&mut app, "");
+    accept_closed_sweep(&mut app);
     assert!(app.sweep_session.is_none(), "{:?}", app.command_log);
     for source in &before {
         assert_eq!(app.document.object(source.id()), Some(source));
@@ -104,7 +157,7 @@ fn sweep_picked_poles_use_snapping_filters_units_and_one_model_undo() {
     assert!(app.accept_filtered_drafting_point(point(0., 0., 5.), false));
     assert!(app.snaps.model_override.is_none());
     assert_eq!(app.document.undo_label(), None);
-    enter(&mut app, "");
+    accept_closed_sweep(&mut app);
     assert!(app.sweep_session.is_none(), "{:?}", app.command_log);
     let Geometry::Brep(b) = app
         .document
@@ -176,12 +229,13 @@ fn sweep_failed_build_retains_editable_sources_and_options() {
     enter(&mut app, "w0,0,0");
     enter(&mut app, "");
     assert!(app.sweep_session.is_some());
+    assert!(app.sweep_session.as_ref().unwrap().seam_editor().is_none());
     assert_eq!(app.document.undo_label(), None);
     enter(&mut app, "Parameters");
     enter(&mut app, "2.5");
     enter(&mut app, "EndPoint");
     enter(&mut app, "w0,0,5");
-    enter(&mut app, "");
+    accept_closed_sweep(&mut app);
     assert!(app.sweep_session.is_none(), "{:?}", app.command_log);
     assert_eq!(app.document.undo_label(), Some("Sweep1"));
 }
@@ -332,7 +386,7 @@ fn sweep_named_rail_uses_command_case_aliases_and_rejects_case_ambiguous_names()
     pick(&mut app, ids[1]);
     enter(&mut app, "Point");
     enter(&mut app, "w0,0,5");
-    enter(&mut app, "");
+    accept_closed_sweep(&mut app);
     assert!(app.sweep_session.is_none(), "{:?}", app.command_log);
     assert!(
         app.document

@@ -27,6 +27,7 @@ impl Options {
         "Style",
         "Axis",
         "GlobalShapeBlending",
+        "ShapeBlending",
         "RefitRail",
         "Rebuild",
         "RebuildPointCount",
@@ -98,6 +99,16 @@ impl Options {
                 }
                 "globalshapeblending" => {
                     result.global = Some(parse_yes_no(value).ok_or(CommandError::Usage(USAGE))?);
+                    16
+                }
+                "shapeblending" => {
+                    result.global = Some(
+                        match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
+                            "local" => false,
+                            "global" => true,
+                            _ => return Err(CommandError::Usage(USAGE)),
+                        },
+                    );
                     16
                 }
                 "refitrail" => {
@@ -236,13 +247,18 @@ impl Options {
         if let Some(axis) = self.axis {
             words.push(format!("Axis={}", coordinates(axis.as_vector().to_array())));
         }
-        for (name, value) in [
-            ("GlobalShapeBlending", self.global),
-            ("RefitRail", self.refit),
-        ] {
-            if let Some(value) = value {
-                words.push(format!("{name}={}", if value { "Yes" } else { "No" }));
-            }
+        if let Some(global) = self.global {
+            words.push(
+                if global {
+                    "ShapeBlending=Global"
+                } else {
+                    "ShapeBlending=Local"
+                }
+                .into(),
+            );
+        }
+        if let Some(refit) = self.refit {
+            words.push(format!("RefitRail={}", if refit { "Yes" } else { "No" }));
         }
         for (name, value) in [("StartPoint", self.ends.start), ("EndPoint", self.ends.end)] {
             if let Some(value) = value {
@@ -330,6 +346,7 @@ mod tests {
             &["RailName=A", "RailId=bad"],
             &["StartPoint=NaN,0,0"],
             &["Unknown=No"],
+            &["GlobalShapeBlending=Yes", "ShapeBlending=Local"],
         ] {
             assert!(source.updated(bad).is_err());
             assert_eq!(source, copy);

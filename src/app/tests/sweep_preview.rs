@@ -68,7 +68,7 @@ fn hover_pole(
 
 #[test]
 fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
-    for (command, profile, getter, height, rail_first) in [
+    for (command, profile_command, getter, height, rail_first) in [
         ("Sweep1", "Line 0,0,2.5 2,0,2.5", "StartPoint", 0., true),
         (
             "Sweep1 Parameters=2.5 FrameStyle=Roadlike Axis=0,1,0",
@@ -79,7 +79,7 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
         ),
     ] {
         let pole = point(1.5, 0., height);
-        let (mut app, [rail, profile, _]) = setup(profile, pole);
+        let (mut app, [rail, profile, _]) = setup(profile_command, pole);
         let before = app.document.objects().cloned().collect::<Vec<_>>();
         let context = egui::Context::default();
         enter(&mut app, command);
@@ -120,6 +120,12 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
         assert!(app.snaps.model_override.is_none());
         wait_for_wires(&mut app, &context, |wires| wires == hovered);
         enter(&mut app, "");
+        if profile_command.starts_with("Circle") {
+            assert!(app.command_hint().starts_with("Drag seam points"));
+            enter(&mut app, "");
+            wait_for_wires(&mut app, &context, |wires| wires == hovered);
+            enter(&mut app, "");
+        }
 
         let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
             panic!("expected Sweep1 B-rep: {:?}", app.command_log);
@@ -133,6 +139,147 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
         enter(&mut app, "Undo");
         assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
     }
+}
+
+#[test]
+fn sweep_one_closed_profiles_preview_drag_flip_reset_and_native_seam_geometry() {
+    let mut app = test_app();
+    let tolerance = app.document.tolerance();
+    for command in ["Line 1,0,0 1,0,6", "Circle 0,0,0 1", "Circle 0,0,6 1"] {
+        enter(&mut app, command);
+    }
+    let upper = app.document.objects().last().unwrap();
+    let upper_id = upper.id();
+    let curve = upper
+        .geometry_snapshot()
+        .nurbs_curve_representation()
+        .unwrap()
+        .unwrap();
+    let shifted = viboceros_command::prepare_curve_seam(
+        &viboceros_geometry::Curve3::NurbsCurve(curve.clone()),
+        curve.parameter_at(0.25).unwrap(),
+    )
+    .unwrap();
+    app.document
+        .replace_object_geometries([(upper_id, Geometry::from(shifted))])
+        .unwrap();
+    let before = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
+    app.viewports[0] = Viewport::new(ViewKind::Top);
+    app.maximized_viewport = Some(0);
+    let context = egui::Context::default();
+    let markers = |app: &VibocerosApp| {
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .seam_editor()
+            .unwrap()
+            .markers()
+    };
+
+    enter(&mut app, "Sweep1");
+    for object in &before {
+        enter(&mut app, &object.id().to_string());
+    }
+    enter(&mut app, "");
+    assert_eq!(markers(&app).len(), 2);
+    assert!(app.command_hint().contains("SnapToKnots=Yes"));
+    let automatic = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    assert!(
+        markers(&app)[1]
+            .point
+            .distance_to(point(1., 0., 6.))
+            .unwrap()
+            < 1e-8
+    );
+
+    enter(&mut app, "Natural");
+    let original = point(0., 1., 6.);
+    assert!(markers(&app)[1].point.distance_to(original).unwrap() < 1e-8);
+    let natural = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != automatic
+    });
+    let from = screen_point(&app, original);
+    let destination = point(0., -1., 6.);
+    let to = screen_point(&app, destination);
+    let button = |position, pressed| egui::Event::PointerButton {
+        pos: position,
+        pressed,
+        button: egui::PointerButton::Primary,
+        modifiers: egui::Modifiers::NONE,
+    };
+    viewport_frame(
+        &mut app,
+        &context,
+        vec![egui::Event::PointerMoved(from), button(from, true)],
+    );
+    viewport_frame(&mut app, &context, vec![egui::Event::PointerMoved(to)]);
+    assert!(markers(&app)[1].point.distance_to(destination).unwrap() < 1e-8);
+    wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != natural
+    });
+    viewport_frame(&mut app, &context, vec![button(to, false)]);
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == natural);
+
+    let tangent = markers(&app)[1].tangent.unwrap();
+    enter(&mut app, "Flip");
+    enter(&mut app, &format!("SelID {upper_id}"));
+    assert!(markers(&app)[1].tangent.unwrap().dot(tangent).unwrap() < -0.99);
+    enter(&mut app, "Natural");
+    enter(&mut app, "SnapToKnots=No");
+    enter(&mut app, &format!("SelID {upper_id}"));
+    let quarter = std::f64::consts::FRAC_1_SQRT_2;
+    enter(&mut app, &format!("w{quarter},{quarter},6"));
+    assert!(
+        markers(&app)[1]
+            .point
+            .distance_to(point(quarter, quarter, 6.))
+            .unwrap()
+            < 1e-8
+    );
+    enter(&mut app, "SnapToKnots=Yes");
+    enter(&mut app, "Automatic");
+    wait_for_wires(&mut app, &context, |wires| wires == automatic);
+    enter(&mut app, "Natural");
+    wait_for_wires(&mut app, &context, |wires| wires == natural);
+
+    enter(&mut app, "");
+    assert!(app.command_hint().starts_with("Review the sweep"));
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "ShapeBlending");
+    enter(&mut app, "Global");
+    wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != natural
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == natural);
+    enter(&mut app, "");
+
+    let Geometry::Brep(result) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected Sweep1 surface: {:?}", app.command_log);
+    };
+    assert_eq!((result.faces().len(), result.edges().len()), (1, 3));
+    assert_eq!(result.wireframe_curves(1, tolerance).unwrap(), natural);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    let face = result.faces()[0].surface();
+    assert!(face.is_closed_v().unwrap());
+    assert_eq!([face.degree_u(), face.degree_v()], [3, 2]);
+    let seam = face
+        .evaluate(*face.domain_u().end(), *face.domain_v().start())
+        .unwrap();
+    assert!(seam.distance_to(original).unwrap() < 1e-8);
+    let inner_seam = face.evaluate(2., *face.domain_v().start()).unwrap();
+    assert!(
+        inner_seam
+            .distance_to(point(20. / 27., 7. / 27., 2.))
+            .unwrap()
+            < 1e-8
+    );
+    let area = result.area(tolerance).unwrap();
+    assert!((area - 32.446010095173506).abs() < 1e-5, "{area}");
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
 }
 
 #[test]

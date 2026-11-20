@@ -31,6 +31,15 @@ rail from connected curves and edges. See
 [automatic placement](sweep1-placement.md) for direction, interval choices and
 qualification limits.
 
+For closed profiles, Enter opens the seam editor. Drag the markers, or use
+`SelID id` followed by a point or `Parameter=value`. `Flip` reverses a chosen
+profile, `Automatic` aligns successive seams, and `Natural` restores their
+original locations and directions. Turn `SnapToKnots` off to move freely.
+The sweep preview follows the seam edits. Accept them to review the draft and
+press Enter again to create it. A complete scripted sweep uses its supplied
+profile seams. On a straight rail, two edited closed profiles that differ in
+their rail frames use a cubic rail basis for the blend.
+
 For scripts using `Parameters=` without an explicit rail reference, the **last**
 selected curve is the rail. Supply one finite, strictly
 increasing native rail parameter per profile. These are not normalized fractions
@@ -63,8 +72,8 @@ command and kernel tests; a circular profile produces a native one-face solid.
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
 | `FrameStyle=Roadlike Axis=0,0,1` | Use a fixed axis; default to the planar rail's normal, otherwise world Z. `Axis` overrides it. See [Roadlike frames](sweep1/roadlike.md). |
 | `Style=AlignWithSurface` | Orient frames using the supporting face's normal along a single edge and use the cubic arc-length rail basis. Specify an adjacent face in `RailEdge` for shared edges. |
-| `GlobalShapeBlending=No` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
-| `GlobalShapeBlending=Yes` | Refitted path: linear arc-length blending between neighboring profiles (three-plus-profile compatibility remains incomplete). Retained path: Local blending, as in the measured Rhino commands. |
+| `ShapeBlending=Local` (default) | Local cubic smoothstep between neighboring profiles, in rational rail parameters if retained, arc length if refitted. |
+| `ShapeBlending=Global` | Refitted path: linear arc-length blending between neighboring profiles (three-plus-profile compatibility remains incomplete). Retained path: Local blending, as in the measured Rhino commands. `GlobalShapeBlending=Yes|No` also works. |
 
 For two profiles at native stations 0 and 5, select them in that order and use
 `Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes`. The refitted model preserves

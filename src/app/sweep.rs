@@ -1,4 +1,5 @@
 //! Sweep1 curve selection and point ends share the ordinary drafting pipeline.
+use super::curve_seam::Editor;
 use super::object_selection::PendingObjectCommand;
 use super::*;
 use viboceros_command::{
@@ -11,6 +12,7 @@ use viboceros_document::GeometrySnapshot;
 mod input;
 mod preview;
 mod rail_picks;
+mod seams;
 mod selection;
 #[cfg(test)]
 mod tests;
@@ -34,7 +36,23 @@ struct State {
     sources: Vec<(ObjectId, GeometrySnapshot)>,
     rail: Option<Rail>,
     reference: Option<RailReference>,
-    finished: bool,
+    stage: ProfileStage,
+}
+
+#[derive(Clone, Debug)]
+enum ProfileStage {
+    Selecting,
+    PointEndPicked,
+    Seams { editor: Editor, editing: bool },
+}
+
+impl ProfileStage {
+    fn seams(&self) -> Option<&Editor> {
+        match self {
+            Self::Seams { editor, .. } => Some(editor),
+            _ => None,
+        }
+    }
 }
 
 impl State {
@@ -54,19 +72,41 @@ pub(super) struct Session {
     undo: Vec<State>,
     picking: Option<End>,
     value: Option<&'static str>,
+    seam_id_pending: bool,
     preview: preview::Preview,
     pub(super) chain_auto: bool,
 }
 impl Session {
     pub(super) fn selecting(&self) -> bool {
-        self.picking.is_none() && self.value.is_none() && !self.state.finished
+        self.picking.is_none()
+            && self.value.is_none()
+            && matches!(self.state.stage, ProfileStage::Selecting)
     }
     pub(super) fn hint(&self) -> &'static str {
-        match (self.picking, self.value, self.state.finished) {
+        match (self.picking, self.value, &self.state.stage) {
             (Some(End::Start), _, _) => "Pick the Sweep1 start point; Esc cancels",
             (Some(End::Finish), _, _) => "Pick the Sweep1 end point; Esc cancels",
             (_, Some(_), _) => "Enter the Sweep1 option value; Undo returns, Esc cancels",
-            (_, _, true) => "Enter creates the sweep; StartPoint/EndPoint/Undo; Esc cancels",
+            (
+                _,
+                _,
+                ProfileStage::Seams {
+                    editor,
+                    editing: true,
+                },
+            ) => {
+                if self.seam_id_pending {
+                    "Enter a closed profile object ID"
+                } else {
+                    editor.hint()
+                }
+            }
+            (_, _, ProfileStage::PointEndPicked) => {
+                "Enter accepts the profiles and point ends. StartPoint / EndPoint / Undo"
+            }
+            (_, _, ProfileStage::Seams { editing: false, .. }) => {
+                "Review the sweep. Style / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+            }
             _ if self.state.rail.is_none()
                 && !self.state.options.has_explicit_rail()
                 && self.state.options.parameters.is_some()
@@ -149,11 +189,12 @@ impl VibocerosApp {
                 sources,
                 rail,
                 reference,
-                finished: false,
+                stage: ProfileStage::Selecting,
             },
             undo: vec![],
             picking: None,
             value: None,
+            seam_id_pending: false,
             preview: Default::default(),
             chain_auto: true,
         });
@@ -225,13 +266,16 @@ impl VibocerosApp {
         self.object_prompt.as_mut().unwrap().command_override = Some(text);
         self.restore_curve_selection(ids);
     }
-    fn finish_sweep_input(&mut self) {
+    pub(super) fn finish_sweep_input(&mut self) {
         let p = self.sweep_session.as_ref().unwrap();
         if p.profiles() == 0 {
             self.push_log("Select a rail and at least one Sweep1 profile".into());
             return;
         }
         if !self.validate_sweep_sources() {
+            return;
+        }
+        if self.advance_sweep_seams() {
             return;
         }
         self.commit_sweep_preview();
@@ -256,7 +300,12 @@ impl VibocerosApp {
             .rail
             .as_ref()
             .is_none_or(|rail| rail.current(&self.document));
-        if !valid || !same_reference || !current_rail {
+        let current_seams = p.state.stage.seams().is_none_or(|editor| {
+            editor
+                .sources()
+                .all(|source| source.current(&self.document))
+        });
+        if !valid || !same_reference || !current_rail || !current_seams {
             self.cancel_object_prompt(false);
             self.push_log("Sweep1 sources changed; select them again".into());
             return false;
