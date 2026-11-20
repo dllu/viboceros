@@ -115,6 +115,8 @@ shaded mode and fits visible geometry by default. Set `mode="Wireframe"` or
 `mode="Ghosted"`, `fit=False` to keep the camera, or supply `size=(width, height)`
 and an RGBA `background`. Rendering requires a wgpu adapter. A software Vulkan
 adapter works without a desktop session.
+Pass `msaa_samples=4` for antialiased edges on adapters that support
+four-sample color and depth. The PNG retains the requested dimensions.
 
 Pass `camera=Camera(eye=(...), target=(...))` for a custom perspective and
 `show_edges=False` to hide surface wires in shaded captures. Pass
