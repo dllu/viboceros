@@ -1,4 +1,6 @@
 //! Repair lifted triangles that face against a smooth display chart.
+mod cavity;
+
 use super::*;
 use std::collections::HashMap;
 
@@ -92,12 +94,12 @@ fn chord_deviation(
     chords::distance_to_chord(mid, left, right).ok()
 }
 
-/// Find a nearby surface witness for the triangle's center. A replacement
-/// witness must stay inside the original pair's parameter quadrilateral.
+/// Find a nearby surface witness for the triangle's center. Replacement
+/// witnesses are constrained to the affected triangles' parameter region.
 fn center_distance(
     surface: &NurbsSurface,
     sample: &SurfaceSample,
-    region: Option<([Point2; 4], Real)>,
+    contains: impl Fn(Point2) -> bool,
 ) -> Option<Real> {
     let (u, v) = (surface.domain_u(), surface.domain_v());
     let mut uv = sample.uv;
@@ -121,10 +123,7 @@ fn center_distance(
                 (uv.y() + step * step_v).clamp(*v.start(), *v.end()),
             )
             .ok()?;
-            if region.is_some_and(|(boundary, winding)| {
-                (0..4)
-                    .any(|i| wound_side([boundary[i], boundary[(i + 1) % 4], candidate]) != winding)
-            }) {
+            if !contains(candidate) {
                 continue;
             }
             let point = surface.evaluate(candidate.x(), candidate.y()).ok()?;
@@ -190,7 +189,7 @@ pub(super) fn repair(
             }
         }
     }
-    for i in inverted {
+    for &i in &inverted {
         let triangle = triangles[i];
         let Some(old) = sample(triangle).filter(|s| s.alignment < 0.) else {
             continue;
@@ -277,11 +276,14 @@ pub(super) fn repair(
             }
             // The old center can have a much closer witness beyond the quad.
             // Include it in the comparison to avoid inflating the allowance.
-            let distance =
-                |sample, region| center_distance(surface, sample, region).unwrap_or(Real::INFINITY);
-            let prior = distance(&old, None).max(distance(&old_other, None));
-            let region = Some((boundary, winding));
-            let updated = distance(&new_left, region).max(distance(&new_right, region));
+            let previous_distance =
+                |sample| center_distance(surface, sample, |_| true).unwrap_or(Real::INFINITY);
+            let prior = previous_distance(&old).max(previous_distance(&old_other));
+            let inside_quad =
+                |p| (0..4).all(|i| wound_side([boundary[i], boundary[(i + 1) % 4], p]) == winding);
+            let new_distance =
+                |sample| center_distance(surface, sample, inside_quad).unwrap_or(Real::INFINITY);
+            let updated = new_distance(&new_left).max(new_distance(&new_right));
             if !prior.is_finite() || updated > prior.max(height / 24.) {
                 continue;
             }
@@ -310,23 +312,30 @@ pub(super) fn repair(
             triangles[neighbor] = right;
         }
     }
+    cavity::repair(
+        surface,
+        parameters,
+        points,
+        triangles,
+        height,
+        &inverted,
+        &mut adjacent,
+    );
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    #[test]
-    fn replaces_the_inverted_lift_of_a_triangle_in_a_convex_parameter_quad() {
-        // A regular shear, S(u,v) = (u, v + 2u², 0). Straight chords of
-        // one UV diagonal produce a reversed model-space triangle.
+    // A regular shear, S(u,v) = (u, v + 2u², 0).
+    fn shear() -> NurbsSurface {
         let net = [0., 1.]
             .into_iter()
             .flat_map(|v| {
                 [(0., v), (0.5, v), (1., v + 2.)].map(|(x, y)| Point3::try_new(x, y, 0.).unwrap())
             })
             .collect();
-        let surface = NurbsSurface::try_new(
+        NurbsSurface::try_new(
             2,
             1,
             3,
@@ -335,7 +344,12 @@ mod tests {
             vec![0., 0., 0., 1., 1., 1.],
             vec![0., 0., 1., 1.],
         )
-        .unwrap();
+        .unwrap()
+    }
+
+    #[test]
+    fn replaces_the_inverted_lift_of_a_triangle_in_a_convex_parameter_quad() {
+        let surface = shear();
         let parameters = [(0.2, 0.4), (0.95, 0.35), (0.6, 0.55), (0.65, 0.2)]
             .map(|(u, v)| Point2::try_new(u, v).unwrap());
         let points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
@@ -356,5 +370,58 @@ mod tests {
                 .alignment
                 > 0.
         }));
+    }
+
+    #[test]
+    fn retriangulates_three_faces_while_preserving_the_five_boundary_edges() {
+        let surface = shear();
+        let parameters = [
+            (0.26, 0.45),
+            (0.63, 0.25),
+            (0.81, 0.8),
+            (0.65, 0.8),
+            (0.36, 0.59),
+        ]
+        .map(|(u, v)| Point2::try_new(u, v).unwrap());
+        let points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
+        let mut faces = [[0, 1, 2], [0, 2, 3], [0, 3, 4]];
+        let alignment = |face| {
+            sample(&surface, &points, &parameters, face)
+                .unwrap()
+                .alignment
+        };
+        assert!(alignment(faces[1]) < 0. && alignment(faces[2]) < 0.);
+        let mut adjacent = HashMap::from([
+            ([0, 1], [0, NO_FACE]),
+            ([1, 2], [0, NO_FACE]),
+            ([2, 3], [1, NO_FACE]),
+            ([3, 4], [2, NO_FACE]),
+            ([0, 4], [2, NO_FACE]),
+            ([0, 2], [0, 1]),
+            ([0, 3], [1, 2]),
+        ]);
+        cavity::repair(
+            &surface,
+            &parameters,
+            &points,
+            &mut faces,
+            3.,
+            &[1, 2],
+            &mut adjacent,
+        );
+
+        assert!(faces.into_iter().all(|face| alignment(face) > 0.));
+        assert_eq!(adjacent.len(), 7);
+        assert!(!adjacent.contains_key(&[0, 2]) && !adjacent.contains_key(&[0, 3]));
+        for a in 0..5 {
+            let b = (a + 1) % 5;
+            assert_eq!(
+                faces
+                    .iter()
+                    .filter(|face| face.contains(&a) && face.contains(&b))
+                    .count(),
+                1
+            );
+        }
     }
 }
