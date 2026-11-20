@@ -234,30 +234,43 @@ fn keep_nondegenerate_cuts(
     for &triangle in triangles {
         let edges = triangle_edges(triangle);
         let mids = edges.map(|key| cuts.get(&key).copied());
-        let active = usize::from(mids[0].is_some())
+        let mut active = usize::from(mids[0].is_some())
             | usize::from(mids[1].is_some()) << 1
             | usize::from(mids[2].is_some()) << 2;
         if active == 0 {
             continue;
         }
-        let mut preserves_topology = valid(points, triangle, tolerance)?;
+        if !valid(points, triangle, tolerance)? {
+            for key in edges {
+                cuts.remove(&key);
+            }
+            continue;
+        }
         // A neighboring triangle may reject a shared cut. Check each
         // possible subset so its removal cannot leave an invalid split.
         for mask in 1..=active {
-            if mask & active != mask || !preserves_topology {
+            if mask & active != mask {
                 continue;
             }
             children.clear();
             let selected =
                 std::array::from_fn(|i| if mask & (1 << i) != 0 { mids[i] } else { None });
             split(points, triangle, selected, &mut children)?;
+            let mut preserves_topology = true;
             for &child in &children {
                 preserves_topology &= valid(points, child, tolerance)?;
             }
-        }
-        if !preserves_topology {
-            for key in edges {
-                cuts.remove(&key);
+            if !preserves_topology {
+                // The provisional vertices are ordered by descending chord
+                // error. Remove the lowest-priority cut in the bad subset.
+                let (slot, _) = selected
+                    .into_iter()
+                    .enumerate()
+                    .filter_map(|(slot, index)| index.map(|index| (slot, index)))
+                    .max_by_key(|&(_, index)| index)
+                    .expect("nonempty active split subset");
+                active &= !(1 << slot);
+                cuts.remove(&edges[slot]);
             }
         }
     }
@@ -320,6 +333,15 @@ fn split(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn bad_cut_leaves_a_valid_cut_on_the_same_triangle() {
+        let points = [[0., 0.], [1., 0.], [0., 1.], [0.5, 0.], [0.75, 0.]]
+            .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+        let mut cuts = BTreeMap::from([([0, 1], 3), ([1, 2], 4)]);
+        keep_nondegenerate_cuts(&points, &[[0, 1, 2]], &mut cuts).unwrap();
+        assert_eq!(cuts, BTreeMap::from([([0, 1], 3)]));
+    }
 
     #[test]
     fn display_refines_curved_seam_chords_and_retains_existing_stations() {
