@@ -142,23 +142,14 @@ pub(super) fn refine_interior(
     limit: usize,
     locations: &mut HashSet<[u64; 3]>,
 ) -> Result<Option<Real>, GeometryError> {
-    const CACHED_EDGE_LIMIT: usize = 65_536;
-    // Vertex indices and UV values are stable during refinement. Reuse probes
-    // for edges that survive several rounds, especially on large supports.
-    let cache_limit = if triangles.len() >= 512 {
-        CACHED_EDGE_LIMIT
-    } else {
-        0
-    };
     let mut evaluate = surface.point_evaluator();
+    let mut edges = triangles
+        .iter()
+        .flat_map(|&triangle| triangle_edges(triangle))
+        .collect::<Vec<_>>();
     let mut probes = HashMap::new();
     loop {
-        let mut edges = triangles
-            .iter()
-            .flat_map(|&[a, b, c]| [edge(a, b), edge(b, c), edge(c, a)])
-            .collect::<Vec<_>>();
         edges.sort_unstable();
-        let mut proposals = Vec::new();
         for incidence in edges.chunk_by(|a, b| a == b) {
             // A one-sided edge is an installed face boundary. Inserting a
             // vertex there would make a T-junction on the mating face.
@@ -167,27 +158,22 @@ pub(super) fn refine_interior(
             }
             let key = incidence[0];
             let [a, b] = key.map(|i| i as usize);
-            let probe = if let Some(&saved) = probes.get(&key) {
-                saved
-            } else {
-                let probe = probe_interior_edge(
-                    &mut evaluate,
-                    [parameters[a], parameters[b]],
-                    [points[a], points[b]],
-                    chord_height,
-                    locations,
-                )?;
-                if probes.len() < cache_limit {
-                    probes.insert(key, probe);
-                }
-                probe
-            };
-            if let Some(probe) = probe
-                && !locations.contains(&vertex_location(probe.point))
-            {
-                proposals.push((probe.error, key, probe.uv, probe.point));
+            if let Some(probe) = probe_interior_edge(
+                &mut evaluate,
+                [parameters[a], parameters[b]],
+                [points[a], points[b]],
+                chord_height,
+                locations,
+            )? {
+                probes.insert(key, probe);
             }
         }
+        edges.clear();
+        probes.retain(|_, probe| !locations.contains(&vertex_location(probe.point)));
+        let mut proposals = probes
+            .iter()
+            .map(|(&key, probe)| (probe.error, key, probe.uv, probe.point))
+            .collect::<Vec<_>>();
         if proposals.is_empty() {
             return Ok(None);
         }
@@ -219,6 +205,7 @@ pub(super) fn refine_interior(
         cuts.clear();
         for (_, key, uv, point) in proposals {
             cuts.insert(key, parameters.len() as u32);
+            probes.remove(&key);
             parameters.push(uv);
             points.push(point);
             locations.insert(vertex_location(point));
@@ -227,7 +214,20 @@ pub(super) fn refine_interior(
         triangles.reserve(original.len() + cuts.len() * 2);
         for triangle in original {
             let mids = triangle_edges(triangle).map(|key| cuts.get(&key).copied());
+            if mids == [None; 3] {
+                triangles.push(triangle);
+                continue;
+            }
+            let first_child = triangles.len();
             split(points, triangle, mids, triangles)?;
+            // An unsplit edge keeps its endpoints and incidence. The only
+            // edges needing fresh surface probes touch a new midpoint.
+            edges.extend(
+                triangles[first_child..]
+                    .iter()
+                    .flat_map(|&child| triangle_edges(child))
+                    .filter(|[_, b]| *b as usize >= coarse),
+            );
         }
     }
 }
