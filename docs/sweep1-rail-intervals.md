@@ -17,8 +17,10 @@ The regressions cover a translated exact quadratic parabola and a translated
 rational arc, forward and reversed. They retain the requested interval and
 check fitted surface samples against independent parabola/circle equations.
 These sampled fit checks are separate from the complete-image arc comparisons.
-Genuine corners still fail even with one floating-point step of incoming span
-left. Corners exactly at an interval boundary are excluded; extending that
+The continuous sweep model rejects genuine corners even with one floating-point
+step of incoming span left. The command builds separate miter faces for a single
+cross section on a straight-segment rail. Corners exactly at an interval boundary
+are excluded. Extending that
 interval to the full rail checks them again. Closed-rail seam validation is
 retained.
 

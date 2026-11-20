@@ -160,10 +160,10 @@ impl Session {
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. })
                 if self.can_close() =>
             {
-                "Review the sweep. Closed / Style / SetAxis / ShapeBlending / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
+                "Review the sweep. Closed / Style / SetAxis / ShapeBlending / UntrimmedMiters / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
             }
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. }) => {
-                "Review the sweep. Style / SetAxis / ShapeBlending / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
+                "Review the sweep. Style / SetAxis / ShapeBlending / UntrimmedMiters / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
             }
             _ if self.state.rail.is_none()
                 && !self.state.options.has_explicit_rail()

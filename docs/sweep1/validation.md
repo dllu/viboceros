@@ -148,7 +148,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/sweep1_we
 
 ## Remaining work and performance
 
-General closed-rail holonomy correction, rail miters,
+General closed-rail holonomy correction, curved and multi-profile rail miters,
 complete unrefitted multi-profile compatibility,
 automatic branch/seam alignment and remaining
 Rhino section-refit options are not implemented. Section rebuilding now has

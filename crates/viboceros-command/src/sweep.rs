@@ -5,7 +5,7 @@ use std::collections::BTreeSet;
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [UntrimmedMiters=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -353,6 +353,27 @@ impl Source {
         } else {
             sections
         };
+        if ends.is_empty()
+            && !options.surface_aligned
+            && let [profile] = sections.as_slice()
+        {
+            let rail_domain = rail.domain();
+            let start = if full_rail_anchor {
+                *rail_domain.start()
+            } else {
+                profile.parameter
+            };
+            if let Some(brep) = Sweep1::try_polyline_miters(
+                rail,
+                profile,
+                start..=*rail_domain.end(),
+                style,
+                options.untrimmed_miters.unwrap_or_default(),
+                tolerance,
+            )? {
+                return Ok((brep, 1));
+            }
+        }
         let blend = if global.unwrap_or(false) {
             SweepBlend::Global
         } else {

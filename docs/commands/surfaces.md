@@ -136,6 +136,12 @@ On a closed rail with two or more profiles, `Closed=Yes` wraps the sweep from
 the last profile back to the first. The review preview reflects the change.
 Each sweep starts with `Closed=No`.
 
+With one cross section on a straight-segment rail, Sweep1 joins faces at the
+rail corners. Set `UntrimmedMiters=Yes` in review to build natural-domain
+faces, or `UntrimmedMiters=No` to cut the faces at the miter planes. The wire
+preview reflects the chosen face boundaries. Natural faces currently require
+a perpendicular profile and compatible frames across each corner.
+
 Sweep1 remembers the frame style and axis, shape blending, rail refitting,
 and section rebuilding options for the application session. Cancel discards
 draft edits in normal review. A scripted `-Sweep1` retains accepted settings

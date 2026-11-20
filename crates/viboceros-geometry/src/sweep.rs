@@ -9,6 +9,7 @@ use std::sync::Arc;
 
 mod basis;
 mod fit;
+mod miter;
 mod point_ends;
 pub use point_ends::SweepEndPoints;
 mod periodic;

@@ -5,6 +5,7 @@ use std::time::{Duration, Instant};
 use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface};
 
 mod alignment;
+mod miters;
 
 fn setup(profile: &str, pole: Point3) -> (VibocerosApp, [ObjectId; 3]) {
     let mut app = test_app();

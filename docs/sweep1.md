@@ -71,16 +71,18 @@ B-rep uses the current layer; profile creases split into shared-topology faces.
 The operation is one undo step. Invalid options/construction do not modify the
 document. Closed profiles are supported. A smooth closed rail can produce a
 closed seam when the swept interval covers its full loop and the generated
-surface closes in the rail direction. The command rejects an open seam instead
-of adding a slit B-rep; a corner at the rail seam requires a miter and is
-rejected. The circular rail with one profile is covered by
-command and kernel tests; a circular profile produces a native one-face solid.
+surface closes in the rail direction. For a straight-segment rail with one
+profile, trimmed miters sew a closed rail seam. Untrimmed miters keep the two
+end sections at a polygonal seam, as in the native command. The circular rail
+with one profile is covered by command and kernel tests. A circular profile
+produces a native one-face solid.
 
 | Option | Implemented behavior |
 | --- | --- |
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
 | `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
+| `UntrimmedMiters=Yes\|No` | Choose natural faces or trimmed faces at straight-segment corners with one profile. The review updates the wire preview. |
 | `Closed=Yes` | Sweep the full circuit of a closed rail. Open profiles at rail knots retain the rational basis, with faces split at fully multiple knots. Closed profiles, explicit refitting, and profiles between knots use a periodic cubic arc-length surface. |
 | `StartPoint=x,y,z`, `EndPoint=x,y,z` | Collapse the corresponding rail end to a point; see [point ends](sweep1/point-ends.md). |
 | `FrameStyle=Freeform` (default) | Shared rotation-minimizing frame transport. |
@@ -108,5 +110,7 @@ Native builds reuse usd-brep/SMLib for section preparation and interpolation.
 
 The [validation guide](sweep1/validation.md) keeps current complete-image checks,
 the certified spatial gap, historical oracle comparisons, and performance limits
-together. Closed-rail holonomy, miters, general branch/seam choices, and complete
-Rhino multi-profile blending remain unfinished.
+together. Closed-rail holonomy, miters on curved or multi-profile sweeps,
+general branch/seam choices, and complete Rhino multi-profile blending remain
+unfinished. Native sweeps can split trimmed extension faces and rational miter
+edges further.

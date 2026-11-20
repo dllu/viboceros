@@ -72,6 +72,7 @@ impl VibocerosApp {
             axis: options.axis,
             global: options.global,
             refit: options.refit,
+            untrimmed_miters: options.untrimmed_miters,
             rebuild_point_count: options.rebuild_point_count,
             saved_rebuild_count: options.saved_rebuild_count,
             ..Default::default()

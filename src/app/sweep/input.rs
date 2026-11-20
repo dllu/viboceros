@@ -204,6 +204,8 @@ impl VibocerosApp {
                 }
             } else if option == "ShapeBlending" {
                 "Sweep1 shape blending options are Local and Global".into()
+            } else if option == "UntrimmedMiters" {
+                "Use natural-domain faces at rail corners? Choose Yes or No".into()
             } else if option == "Simplify" {
                 "Choose None or Rebuild for the cross sections".into()
             } else if option == "RebuildCount" {
