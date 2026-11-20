@@ -550,8 +550,22 @@ impl Brep {
                 remaining -= face_mesh.points.len() - coarse;
             }
         }
-        for (index, (frame, face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
+        for (index, (frame, mut face_mesh)) in frames.iter().zip(face_meshes).enumerate() {
             let face = frame.face.as_ref();
+            if sampling.display_edge_samples.is_some()
+                && frames.len() == 1
+                && !self.is_solid()
+                && let Some(height) = face_mesh.chord_height
+                && creases::parameters(&face.surface).iter().all(Vec::is_empty)
+            {
+                diagonals::repair(
+                    &face.surface,
+                    &face_mesh.parameters,
+                    &face_mesh.points,
+                    &mut face_mesh.triangles,
+                    height,
+                );
+            }
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             if retain_parameters {

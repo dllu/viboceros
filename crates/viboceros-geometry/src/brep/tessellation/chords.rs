@@ -8,7 +8,11 @@ fn edge(a: u32, b: u32) -> [u32; 2] {
     [a.min(b), a.max(b)]
 }
 
-fn distance_to_chord(point: Point3, a: Point3, b: Point3) -> Result<Real, GeometryError> {
+pub(super) fn distance_to_chord(
+    point: Point3,
+    a: Point3,
+    b: Point3,
+) -> Result<Real, GeometryError> {
     let axis = a.vector_to(b)?;
     let length_squared = axis.dot(axis)?;
     if length_squared == 0. {
