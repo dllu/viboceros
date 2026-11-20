@@ -60,7 +60,10 @@ impl VibocerosApp {
             }
         };
         let session = self.sweep_session.as_mut().unwrap();
-        if session.state.options.surface_aligned && !rail.supports_alignment() {
+        if session.state.options.surface_aligned
+            && !session.state.inherited_surface_style
+            && !rail.supports_alignment()
+        {
             self.push_log(
                 "Sweep1 AlignWithSurface requires an edge with one supporting face".into(),
             );

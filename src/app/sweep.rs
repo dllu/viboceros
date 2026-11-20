@@ -14,6 +14,7 @@ use viboceros_geometry::UnitVector3;
 mod alignment;
 mod axis;
 mod input;
+mod preferences;
 mod preview;
 mod rail_picks;
 mod seams;
@@ -64,6 +65,7 @@ impl DraftChange {
 #[derive(Clone, Debug)]
 struct State {
     options: Options,
+    inherited_surface_style: bool,
     sources: Vec<(ObjectId, GeometrySnapshot)>,
     rail: Option<Rail>,
     reference: Option<RailReference>,
@@ -257,8 +259,7 @@ impl VibocerosApp {
         {
             return;
         }
-        let Ok(options) = Options::parse(&input.split_whitespace().skip(1).collect::<Vec<_>>())
-        else {
+        let Ok((options, inherited_surface_style)) = self.initial_sweep_options(input) else {
             return;
         };
         let sources = self
@@ -281,6 +282,7 @@ impl VibocerosApp {
         self.sweep_session = Some(Session {
             state: State {
                 options,
+                inherited_surface_style,
                 sources,
                 rail,
                 reference,
@@ -360,7 +362,7 @@ impl VibocerosApp {
             self.push_log(format!(
                 "Sweep1: {}. {}",
                 p.hint(),
-                p.state.options.arguments()
+                p.state.effective_options().arguments()
             ));
         }
     }
@@ -373,7 +375,7 @@ impl VibocerosApp {
         let state = &self.sweep_session.as_ref().unwrap().state;
         let ids = state.sources.iter().map(|(id, _)| *id).collect();
         self.object_prompt.as_mut().unwrap().command_override =
-            Some(format!("Sweep1 {}", state.options.arguments()));
+            Some(format!("Sweep1 {}", state.effective_options().arguments()));
         self.restore_curve_selection(ids);
     }
     pub(super) fn finish_sweep_input(&mut self) {
@@ -423,7 +425,12 @@ impl VibocerosApp {
         true
     }
     pub(super) fn clear_sweep_input(&mut self) {
-        self.sweep_session = None;
+        if let Some(session) = self.sweep_session.take()
+            && !session.review_open_profiles
+            && session.profiles() > 0
+        {
+            self.remember_sweep_options(&session.state.effective_options());
+        }
         if self.active_command == Some(InteractiveCommand::SweepPoint) {
             self.active_command = None;
             self.drafting_plane = None;

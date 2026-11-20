@@ -1,5 +1,7 @@
 use super::*;
 use crate::app::tests::test_app;
+
+mod preferences;
 fn point(x: f64, y: f64, z: f64) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

@@ -150,8 +150,13 @@ impl VibocerosApp {
             return false;
         } else if p.alignment.is_some() {
             self.continue_sweep_alignment(name);
-        } else if (name.is_empty() || name.eq_ignore_ascii_case("Enter")) && p.value.is_none() {
-            self.finish_sweep_input();
+        } else if name.is_empty() || name.eq_ignore_ascii_case("Enter") {
+            if p.value.is_some() {
+                self.sweep_session.as_mut().unwrap().value = None;
+                self.log_sweep_input();
+            } else {
+                self.finish_sweep_input();
+            }
         } else if p.seam_editor().is_some() {
             self.continue_sweep_seams(name);
         } else if p.value.is_none() && name.eq_ignore_ascii_case("AlignCrossSections") {
@@ -201,6 +206,11 @@ impl VibocerosApp {
                 "Sweep1 shape blending options are Local and Global".into()
             } else if option == "Simplify" {
                 "Choose None or Rebuild for the cross sections".into()
+            } else if option == "RebuildCount" {
+                format!(
+                    "Enter a cross-section control-point count [{}]",
+                    p.state.options.rebuild_count()
+                )
             } else if option == "Closed" {
                 if !p.can_close() && p.state.options.closed != Some(true) {
                     self.push_log(
@@ -256,6 +266,9 @@ impl VibocerosApp {
                     });
                 let mut next = p.state.clone();
                 next.options = options;
+                if preferences::selects_frame_style(input) {
+                    next.inherited_surface_style = false;
+                }
                 if replace_rail {
                     match self.capture_sweep_reference(&next.options) {
                         Ok((reference, rail)) => {
@@ -278,6 +291,7 @@ impl VibocerosApp {
                     next.reversed_profiles.clear();
                 }
                 if next.options.surface_aligned
+                    && !next.inherited_surface_style
                     && (next
                         .rail
                         .as_ref()

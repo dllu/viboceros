@@ -125,7 +125,7 @@ impl VibocerosApp {
                         p.state.capture_source(&self.document).ok().map(Arc::new)
                     })
                     .clone();
-                let mut options = p.state.options.clone();
+                let mut options = p.state.effective_options().into_owned();
                 if let Some(change) = request.change {
                     change.apply(&mut options);
                 }
@@ -152,6 +152,7 @@ impl VibocerosApp {
         let session = self.sweep_session.as_mut().unwrap();
         let tolerance = self.document.tolerance();
         let request = session.preview.request(tolerance, None, &session.state);
+        let options = session.state.effective_options().into_owned();
         let result =
             if let Some(Draft { brep, sections, .. }) = session.preview.worker.take(&request) {
                 Ok((brep, sections))
@@ -168,7 +169,7 @@ impl VibocerosApp {
                     })
                     .and_then(|source| {
                         source.build_with_reversed_profiles(
-                            &session.state.options,
+                            &options,
                             tolerance,
                             &request.reversed_profiles,
                         )
@@ -187,6 +188,7 @@ impl VibocerosApp {
             document.add_geometry(Geometry::Brep(brep))
         }) {
             Ok(_) => {
+                self.remember_sweep_options(&options);
                 self.sweep_session = None;
                 self.object_prompt = None;
                 self.push_log(format!(

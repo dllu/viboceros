@@ -45,8 +45,9 @@ default-axis compatibility. Original producer versions are archived with every
 capture. Rhino 8.32 produced the same reference surface when Enter was used at
 either Roadlike axis prompt. The two-point oblique axis is also covered by a
 headless preview and commit comparison. `FrameStyle=Roadlike` uses the
-rail-based default when supplied with the `Sweep1` command.
+rail-based default when supplied with the `Sweep1` command. An accepted frame
+style and custom axis carry over to subsequent sweeps in the same session.
 
-General multi-profile Roadlike compatibility, frame-style persistence, surface
-edge alignment, and parallel-axis fallback remain unqualified. Existing
+General multi-profile Roadlike compatibility, surface edge alignment, and
+parallel-axis fallback remain unqualified. Existing
 [Global blending limitations](validation.md) remain.

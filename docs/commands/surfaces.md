@@ -134,6 +134,12 @@ entering `SelID id`. The preview updates after each reversal. Enter or Escape
 returns to review with the current directions. Use Undo to reverse the last edit.
 On a closed rail with two or more profiles, `Closed=Yes` wraps the sweep from
 the last profile back to the first. The review preview reflects the change.
+Each sweep starts with `Closed=No`.
+
+Sweep1 remembers the frame style and axis, shape blending, rail refitting,
+and section rebuilding options for the application session. Cancel discards
+draft edits in normal review. A scripted `-Sweep1` retains accepted settings
+on cancellation. A saved surface frame falls back to Freeform on a loose rail.
 
 Explicit scripts such as `Sweep1 Parameters=0 RailName=Rail` retain their previous
 policy: without an explicit rail reference, the last selected curve is the rail. Supply

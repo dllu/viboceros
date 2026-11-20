@@ -466,6 +466,7 @@ pub struct VibocerosApp {
     loft_options: viboceros_command::loft::Options,
     loft_simplification: loft::SimplificationValues,
     sweep_session: Option<sweep::Session>,
+    sweep_options: viboceros_command::sweep::Options,
     sweep_two_rails: Option<sweep_two_rails::Session>,
     blend_surface_prompt: Option<blend_surface::Prompt>,
     fillet_surface_prompt: Option<fillet_surface::Prompt>,
@@ -703,6 +704,7 @@ impl VibocerosApp {
             loft_options: Default::default(),
             loft_simplification: Default::default(),
             sweep_session: None,
+            sweep_options: Default::default(),
             sweep_two_rails: None,
             blend_surface_prompt: None,
             fillet_surface_prompt: None,
@@ -1411,7 +1413,10 @@ impl VibocerosApp {
                         && value.trim_start_matches('_').eq_ignore_ascii_case("View")
                 })
         });
-        let command_input = if (draft_angle_command || project_view) && !has_view_direction {
+        let sweep_options = self.direct_sweep_options(input);
+        let command_input = if let Some(options) = &sweep_options {
+            std::borrow::Cow::Owned(format!("Sweep1 {}", options.arguments()))
+        } else if (draft_angle_command || project_view) && !has_view_direction {
             let [x, y, z] = self.viewports[self.active_viewport]
                 .viewward_direction()
                 .to_array();
@@ -1466,6 +1471,9 @@ impl VibocerosApp {
         });
         match result {
             Ok(message) => {
+                if let Some(options) = &sweep_options {
+                    self.remember_sweep_options(options);
+                }
                 if let Some(before) = previous_faces {
                     self.component_selection
                         .mark_raw_pattern_faces(&self.document, &before);

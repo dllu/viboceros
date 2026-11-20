@@ -3,11 +3,11 @@
 [Command guide](../sweep1.md) · [Construction](construction.md)
 
 `Sweep1 Rebuild=5` rebuilds real cross-sections before common-basis preparation
-and point-pole creation. Original objects, rail stations, directions and seams
-are retained. `RebuildCount` and `RebuildPointCount` are aliases. The interactive
-picker accepts these value getters; local Undo revises the option.
-`Simplify=Rebuild` chooses five points when rebuilding is disabled;
-`Simplify=None` or `Rebuild=0` disables it. Rail refitting remains independent.
+and point-pole creation. `RebuildPointCount` is an alias for `Rebuild`.
+`RebuildCount` sets the count independently of the simplification mode. The
+picker accepts these value getters and local Undo revises them.
+`Simplify=Rebuild` uses the saved count, initially five points. `Simplify=None`
+or `Rebuild=0` disables rebuilding and keeps the count available for reuse.
 
 Commands accept counts from 3 through 512. The SDK path (`command=false` in JSON)
 additionally accepts one and two: zero/one preserve the source, and two rebuild open sections to lines

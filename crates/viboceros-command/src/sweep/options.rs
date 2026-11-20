@@ -14,10 +14,18 @@ pub struct Options {
     pub refit: Option<bool>,
     pub closed: Option<bool>,
     pub rebuild_point_count: usize,
+    /// The last count selected, including when Simplify is None.
+    pub saved_rebuild_count: Option<usize>,
     pub ends: SweepEndPoints,
 }
 
 impl Options {
+    pub fn rebuild_count(&self) -> usize {
+        self.saved_rebuild_count
+            .or_else(|| (self.rebuild_point_count != 0).then_some(self.rebuild_point_count))
+            .unwrap_or(5)
+    }
+
     /// Value getters accepted by both scripted and interactive Sweep1 input.
     pub const VALUE_OPTIONS: &[&str] = &[
         "RailName",
@@ -46,13 +54,11 @@ impl Options {
         let mut result = self.clone();
         let mut seen = 0u16;
         let mut simplify = None;
+        let mut rebuild = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
-            let key = match name
-                .trim_start_matches(['_', '-'])
-                .to_ascii_lowercase()
-                .as_str()
-            {
+            let option = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+            let key = match option.as_str() {
                 "railname" if !value.is_empty() => {
                     result.rail_name = Some(value.into());
                     result.rail_id = None;
@@ -126,11 +132,20 @@ impl Options {
                     128
                 }
                 "rebuild" | "rebuildpointcount" | "rebuildcount" => {
-                    result.rebuild_point_count = value
+                    let sets_mode = option != "rebuildcount";
+                    let count = value
                         .parse::<usize>()
                         .ok()
-                        .filter(|n| (*n == 0 || *n >= 3) && *n <= Sweep1::MAX_SECTION_CONTROLS)
+                        .filter(|n| {
+                            (*n == 0 && sets_mode || *n >= 3) && *n <= Sweep1::MAX_SECTION_CONTROLS
+                        })
                         .ok_or(CommandError::Usage(USAGE))?;
+                    if count != 0 {
+                        result.saved_rebuild_count = Some(count);
+                    }
+                    if sets_mode {
+                        rebuild = Some(count != 0);
+                    }
                     256
                 }
                 "simplify" => {
@@ -157,16 +172,21 @@ impl Options {
             }
             seen |= key;
         }
-        if seen & 4 != 0 && result.roadlike == Some(false) && seen & 8 == 0 {
+        if seen & 4 != 0 && seen & 8 == 0 {
             result.axis = None;
         }
         if result.axis.is_some() && !result.roadlike.unwrap_or(false) {
             return Err(CommandError::Usage(USAGE));
         }
-        match simplify {
-            Some(false) => result.rebuild_point_count = 0,
-            Some(true) if result.rebuild_point_count == 0 => result.rebuild_point_count = 5,
-            _ => {}
+        let enabled = simplify
+            .or(rebuild)
+            .unwrap_or(self.rebuild_point_count != 0);
+        if enabled {
+            let count = result.rebuild_count();
+            result.saved_rebuild_count = Some(count);
+            result.rebuild_point_count = count;
+        } else {
+            result.rebuild_point_count = 0;
         }
         Ok(result)
     }
@@ -207,6 +227,8 @@ impl Options {
         let mut words = Vec::new();
         if self.rebuild_point_count != 0 {
             words.push(format!("Rebuild={}", self.rebuild_point_count));
+        } else if let Some(count) = self.saved_rebuild_count {
+            words.push(format!("Simplify=None RebuildCount={count}"));
         }
         if let Some(name) = &self.rail_name {
             words.push(format!("RailName={name}"));
@@ -326,6 +348,29 @@ mod tests {
         );
     }
     #[test]
+    fn rebuild_count_survives_disabling_and_can_be_edited_while_inactive() {
+        let rebuilt = Options::parse(&["Rebuild=9"]).unwrap();
+        let inactive = rebuilt.updated(&["Simplify=None"]).unwrap();
+        assert_eq!(inactive.rebuild_count(), 9);
+        assert_eq!(inactive.rebuild_point_count, 0);
+        let edited = inactive.updated(&["RebuildCount=8"]).unwrap();
+        assert_eq!(edited.rebuild_count(), 8);
+        assert_eq!(edited.rebuild_point_count, 0);
+        assert_eq!(
+            Options::parse(&edited.arguments().split_whitespace().collect::<Vec<_>>()).unwrap(),
+            edited
+        );
+        assert_eq!(
+            edited
+                .updated(&["Simplify=Rebuild"])
+                .unwrap()
+                .rebuild_point_count,
+            8
+        );
+        assert!(edited.updated(&["RebuildCount=0"]).is_err());
+    }
+
+    #[test]
     fn updating_points_preserves_other_choices_and_serializes_for_execution() {
         let source = Options::parse(&[
             "RailName=Rail",
@@ -377,6 +422,7 @@ mod tests {
         let road = Options::parse(&["FrameStyle=Roadlike", "Axis=1,0,0"]).unwrap();
         let free = road.updated(&["FrameStyle=Freeform"]).unwrap();
         assert_eq!(free.axis, None);
+        assert_eq!(road.updated(&["FrameStyle=Roadlike"]).unwrap().axis, None);
         assert!(
             road.updated(&["FrameStyle=Freeform", "Axis=0,1,0"])
                 .is_err()

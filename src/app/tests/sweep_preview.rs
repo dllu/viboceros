@@ -501,6 +501,34 @@ fn sweep_one_surface_edge_pick_previews_the_selected_frame_style() {
         app.document.objects().cloned().collect::<Vec<_>>(),
         originals
     );
+
+    let repeat_on_edge = |app: &mut VibocerosApp, expected: &[NurbsCurve]| {
+        app.restore_curve_selection(vec![]);
+        enter(app, "Sweep1");
+        viewport_click(app, &context, pick);
+        enter(app, &profile.to_string());
+        enter(app, "");
+        wait_for_wires(app, &context, |wires| wires == expected);
+        enter(app, "Cancel");
+    };
+    repeat_on_edge(&mut app, &aligned);
+
+    enter(&mut app, "Line 0,0,0 0,6,0");
+    let loose_rail = app.document.objects().last().unwrap().id();
+    app.restore_curve_selection(vec![loose_rail, profile]);
+    enter(&mut app, "Sweep1");
+    assert!(
+        app.command_log
+            .back()
+            .unwrap()
+            .contains("FrameStyle=Freeform")
+    );
+    wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+    enter(&mut app, "");
+    assert!(app.command_line_idle());
+    enter(&mut app, "Undo");
+    enter(&mut app, "Undo");
+    repeat_on_edge(&mut app, &freeform);
 }
 
 #[test]
@@ -608,6 +636,7 @@ fn sweep_one_closed_preview_toggles_the_return_span_and_matches_commit() {
     app.restore_curve_selection(originals.iter().map(|object| object.id()).collect());
     enter(&mut app, "Sweep1");
     assert!(app.command_hint().contains("Closed / Style"));
+    wait_for_wires(&mut app, &context, |wires| wires == open);
     enter(&mut app, "Cancel");
     assert!(app.command_line_idle());
     assert_eq!(
