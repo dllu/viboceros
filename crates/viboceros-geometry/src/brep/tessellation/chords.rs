@@ -303,24 +303,23 @@ fn split(
     let [a, b, c] = t;
     match mids {
         [Some(ab), Some(bc), None] => {
+            use crate::nurbs_surface::tessellation_triangle_is_nondegenerate as valid;
             let [pa, pab, pbc, pc] = [a, ab, bc, c].map(|index| points[index as usize]);
-            let alternate = [[a, ab, bc], [a, bc, c]];
-            if pa.distance_to(pbc)? < pab.distance_to(pc)?
-                && crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
-                    points,
-                    alternate[0],
-                    Tolerance::MESH_VALIDATION,
-                )?
-                && crate::nurbs_surface::tessellation_triangle_is_nondegenerate(
-                    points,
-                    alternate[1],
-                    Tolerance::MESH_VALIDATION,
-                )?
-            {
-                // Select the shorter interior diagonal of the split quad.
-                output.extend(alternate);
+            let forward = [[a, ab, c], [ab, bc, c]];
+            let backward = [[a, ab, bc], [a, bc, c]];
+            let [preferred, other] = if pa.distance_to(pbc)? < pab.distance_to(pc)? {
+                [backward, forward]
             } else {
-                output.extend([[a, ab, c], [ab, bc, c]]);
+                [forward, backward]
+            };
+            // Use the shorter diagonal when both lifted triangles are valid.
+            // If it collapses a triangle, try the other diagonal before
+            // letting the topology checks reject either shared cut.
+            let tolerance = Tolerance::MESH_VALIDATION;
+            if valid(points, preferred[0], tolerance)? && valid(points, preferred[1], tolerance)? {
+                output.extend(preferred);
+            } else {
+                output.extend(other);
             }
             output.push([ab, b, bc]);
         }
@@ -396,6 +395,18 @@ mod tests {
     fn two_cuts_choose_the_shorter_physical_diagonal() {
         let points = [[0., 0.], [4., 0.], [3., 5.], [2., 0.], [3.5, 2.5]]
             .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+        let mut children = Vec::new();
+        split(&points, [0, 1, 2], [Some(3), Some(4), None], &mut children).unwrap();
+        assert_eq!(children, [[0, 3, 4], [0, 4, 2], [3, 1, 4]]);
+    }
+
+    #[test]
+    fn two_cuts_keep_the_valid_diagonal_when_the_shorter_one_collapses() {
+        let points = [[-1., 0.], [4., 0.], [2., 3.], [2., 0.], [2., 1.5]]
+            .map(|[x, y]| Point3::try_new(x, y, 0.).unwrap());
+        let mut cuts = BTreeMap::from([([0, 1], 3), ([1, 2], 4)]);
+        keep_nondegenerate_cuts(&points, &[[0, 1, 2]], &mut cuts).unwrap();
+        assert_eq!(cuts, BTreeMap::from([([0, 1], 3), ([1, 2], 4)]));
         let mut children = Vec::new();
         split(&points, [0, 1, 2], [Some(3), Some(4), None], &mut children).unwrap();
         assert_eq!(children, [[0, 3, 4], [0, 4, 2], [3, 1, 4]]);
