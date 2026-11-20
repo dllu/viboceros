@@ -7,7 +7,7 @@ use viboceros_geometry::{
     Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepProfileMiterOptions, SweepSection,
 };
 
-const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [UntrimmedMiters=Yes|No] [Simplify=None|Rebuild] [Rebuild=point-count] [StartPoint=x,y,z] [EndPoint=x,y,z]";
+const USAGE: &str = "Sweep1 [Parameters=native-rail-parameters] [RailName=name|RailId=id|RailEdge=id,index[,face]] [FrameStyle=Freeform|Roadlike|Surface] [Axis=x,y,z] [ShapeBlending=Local|Global] [RefitRail=Yes|No] [Closed=Yes|No] [UntrimmedMiters=Yes|No] [Simplify=None|Rebuild|Refit] [Rebuild=point-count] [Refit=distance] [StartPoint=x,y,z] [EndPoint=x,y,z]";
 
 pub(super) fn rebuild_sections(
     sections: &[SweepSection],
@@ -372,6 +372,8 @@ impl Source {
         }
         let sections = if *rebuild_point_count > 1 {
             rebuild_sections(&sections, *rebuild_point_count, tolerance)?
+        } else if let Some(distance) = options.refit_tolerance {
+            Sweep1::refit_sections(sections, distance)?
         } else {
             sections
         };
@@ -419,6 +421,12 @@ impl Source {
             return Ok((brep, sections.len()));
         }
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
+        if options.refit_tolerance.is_some()
+            && let [section] = sections.as_slice()
+            && (ends.start.is_none() || ends.end.is_none())
+        {
+            sweep = sweep.try_with_section_domain(section.curve.domain())?;
+        }
         if options.surface_aligned {
             let [support] = self.rail.supports() else {
                 return Err(CommandError::Usage(
@@ -440,11 +448,26 @@ impl Source {
             && sections.len() == 2
             && linear_rail
             && sweep.sections_vary_in_frame();
+        // Native circular sections on a straight rail use a cubic U basis,
+        // including when the explicit rail refitting option is No.
+        let fitted_circular_section = options.refit_tolerance.is_some()
+            && linear_rail
+            && sections.iter().try_fold(false, |any, section| {
+                let curve = &section.curve;
+                Ok::<_, GeometryError>(
+                    any || (curve.degree() == 3
+                        && curve.is_closed()?
+                        && curve.knots()[curve.degree() + 1..curve.control_points().len()]
+                            .chunk_by(|a, b| a == b)
+                            .all(|knots| knots.len() < curve.degree())),
+                )
+            })?;
         let refit = refit.unwrap_or(false)
             || options.surface_aligned
             || closed_refit
             || loop_profiles_closed
             || closed_section_blend
+            || fitted_circular_section
             // Manual directions use a cubic rail basis to carry the blend.
             || !reversed_profiles.is_empty()
             || automatic_partial

@@ -1,6 +1,7 @@
 //! Loft Refit with certified polygon regions and smooth cubic proposals.
 use super::*;
-use crate::exact_scalar::{Rational, rational, scalar};
+use crate::curve_fit::cubic_segment_controls as cubic_controls;
+use crate::exact_scalar::{Rational, rational};
 use num_traits::{One, Signed, Zero};
 mod adaptive;
 pub use adaptive::{
@@ -231,34 +232,6 @@ fn straight(source: &NurbsCurve, tolerance: Real) -> Result<Section, GeometryErr
         curve: NurbsCurve::try_new_rational(3, controls, vec![0., 0., 0., 0., 1., 1., 1., 1.])?,
         vertices: vec![start, end],
     })
-}
-
-fn cubic_controls(
-    start: &[Rational; 3],
-    end: &[Rational; 3],
-    tolerance: Real,
-) -> Result<Vec<WeightedPoint3>, GeometryError> {
-    let delta = std::array::from_fn::<_, 3, _>(|i| &end[i] - &start[i]);
-    let limit = rational(tolerance);
-    let mut result = Vec::with_capacity(4);
-    for index in 0..=3 {
-        let fraction = rational(f64::from(index)) / rational(3.);
-        let exact = std::array::from_fn::<_, 3, _>(|i| &start[i] + &fraction * &delta[i]);
-        let [x, y, z] = exact.each_ref().map(scalar);
-        let xyz = [x?, y?, z?];
-        // L1 bounds Euclidean distance; convex combinations bound the complete
-        // cubic against the ideal uniformly parameterized endpoint segment.
-        let error = (0..3)
-            .map(|i| (rational(xyz[i]) - &exact[i]).abs())
-            .sum::<Rational>();
-        if error > limit {
-            return Err(GeometryError::UnsupportedCurveApproximation {
-                context: "Loft Refit cubic handle rounding exceeds the requested tolerance",
-            });
-        }
-        result.push(WeightedPoint3::try_new(crate::Point3::try_from(xyz)?, 1.)?);
-    }
-    Ok(result)
 }
 
 #[cfg(test)]

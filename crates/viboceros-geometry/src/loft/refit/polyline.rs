@@ -1,5 +1,6 @@
 //! Refit certified straight regions, retaining genuine corners and reversals.
 use super::*;
+use crate::curve_fit::cubic_polygon;
 
 pub(super) fn refit(
     source: &NurbsCurve,
@@ -49,23 +50,8 @@ pub(super) fn refit(
             return Err(unsupported());
         }
     }
-    let mut controls = Vec::with_capacity(count);
-    let mut knots = vec![0.; 4];
-    let mut length = 0.;
-    for pair in vertices.windows(2) {
-        let segment = cubic_controls(&pair[0], &pair[1], tolerance)?;
-        let distance = segment[0].point().distance_to(segment[3].point())?;
-        let next = length + distance;
-        if !next.is_finite() || next <= length {
-            return Err(unsupported());
-        }
-        length = next;
-        controls.extend(segment.into_iter().skip(usize::from(!controls.is_empty())));
-        knots.extend([length; 3]);
-    }
-    knots.push(length);
     Ok(Section {
-        curve: NurbsCurve::try_new_rational(3, controls, knots)?,
+        curve: cubic_polygon(&vertices, tolerance)?,
         vertices,
     })
 }

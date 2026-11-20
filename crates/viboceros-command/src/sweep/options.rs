@@ -15,9 +15,19 @@ pub struct Options {
     pub closed: Option<bool>,
     pub untrimmed_miters: Option<bool>,
     pub rebuild_point_count: usize,
-    /// The last count selected, including when Simplify is None.
+    /// The last count selected, including when rebuilding is inactive.
     pub saved_rebuild_count: Option<usize>,
+    pub refit_tolerance: Option<Real>,
+    /// The last tolerance selected, including when fitting is inactive.
+    pub saved_refit_tolerance: Option<Real>,
     pub ends: SweepEndPoints,
+}
+
+#[derive(Clone, Copy)]
+enum Simplify {
+    None,
+    Rebuild,
+    Refit,
 }
 
 impl Options {
@@ -25,6 +35,22 @@ impl Options {
         self.saved_rebuild_count
             .or_else(|| (self.rebuild_point_count != 0).then_some(self.rebuild_point_count))
             .unwrap_or(5)
+    }
+
+    pub fn refit_tolerance(&self) -> Real {
+        self.saved_refit_tolerance
+            .or(self.refit_tolerance)
+            .unwrap_or(0.01)
+    }
+
+    fn simplification(&self) -> Simplify {
+        if self.rebuild_point_count != 0 {
+            Simplify::Rebuild
+        } else if self.refit_tolerance.is_some() {
+            Simplify::Refit
+        } else {
+            Simplify::None
+        }
     }
 
     /// Value getters accepted by both scripted and interactive Sweep1 input.
@@ -44,6 +70,8 @@ impl Options {
         "Rebuild",
         "RebuildPointCount",
         "RebuildCount",
+        "Refit",
+        "RefitTolerance",
         "Simplify",
     ];
 
@@ -56,7 +84,7 @@ impl Options {
         let mut result = self.clone();
         let mut seen = 0u16;
         let mut simplify = None;
-        let mut rebuild = None;
+        let mut mode_from_value = None;
         for argument in arguments {
             let (name, value) = argument.split_once('=').ok_or(CommandError::Usage(USAGE))?;
             let option = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
@@ -146,15 +174,37 @@ impl Options {
                         result.saved_rebuild_count = Some(count);
                     }
                     if sets_mode {
-                        rebuild = Some(count != 0);
+                        if mode_from_value.is_some() {
+                            return Err(CommandError::Usage(USAGE));
+                        }
+                        mode_from_value = Some(if count == 0 {
+                            Simplify::None
+                        } else {
+                            Simplify::Rebuild
+                        });
                     }
                     256
+                }
+                "refit" | "refittolerance" => {
+                    let tolerance = parse_finite_real(value)?;
+                    if tolerance <= 0. {
+                        return Err(CommandError::Usage(USAGE));
+                    }
+                    result.saved_refit_tolerance = Some(tolerance);
+                    if option == "refit" {
+                        if mode_from_value.is_some() {
+                            return Err(CommandError::Usage(USAGE));
+                        }
+                        mode_from_value = Some(Simplify::Refit);
+                    }
+                    4096
                 }
                 "simplify" => {
                     simplify = Some(
                         match value.trim_start_matches('_').to_ascii_lowercase().as_str() {
-                            "none" => false,
-                            "rebuild" => true,
+                            "none" => Simplify::None,
+                            "rebuild" => Simplify::Rebuild,
+                            "refit" => Simplify::Refit,
                             _ => return Err(CommandError::Usage(USAGE)),
                         },
                     );
@@ -185,15 +235,23 @@ impl Options {
         if result.axis.is_some() && !result.roadlike.unwrap_or(false) {
             return Err(CommandError::Usage(USAGE));
         }
-        let enabled = simplify
-            .or(rebuild)
-            .unwrap_or(self.rebuild_point_count != 0);
-        if enabled {
-            let count = result.rebuild_count();
-            result.saved_rebuild_count = Some(count);
-            result.rebuild_point_count = count;
-        } else {
-            result.rebuild_point_count = 0;
+        let mode = simplify
+            .or(mode_from_value)
+            .unwrap_or(self.simplification());
+        let count = result.rebuild_count();
+        let tolerance = result.refit_tolerance();
+        result.rebuild_point_count = 0;
+        result.refit_tolerance = None;
+        match mode {
+            Simplify::None => {}
+            Simplify::Rebuild => {
+                result.saved_rebuild_count = Some(count);
+                result.rebuild_point_count = count;
+            }
+            Simplify::Refit => {
+                result.saved_refit_tolerance = Some(tolerance);
+                result.refit_tolerance = Some(tolerance);
+            }
         }
         Ok(result)
     }
@@ -232,10 +290,25 @@ impl Options {
     /// Canonical command arguments for the shared command executor.
     pub fn arguments(&self) -> String {
         let mut words = Vec::new();
-        if self.rebuild_point_count != 0 {
-            words.push(format!("Rebuild={}", self.rebuild_point_count));
-        } else if let Some(count) = self.saved_rebuild_count {
-            words.push(format!("Simplify=None RebuildCount={count}"));
+        match self.simplification() {
+            Simplify::Rebuild => words.push(format!("Rebuild={}", self.rebuild_point_count)),
+            Simplify::Refit => words.push(format!("Refit={}", self.refit_tolerance())),
+            Simplify::None
+                if self.saved_rebuild_count.is_some() || self.saved_refit_tolerance.is_some() =>
+            {
+                words.push("Simplify=None".into());
+            }
+            Simplify::None => {}
+        }
+        if self.rebuild_point_count == 0
+            && let Some(count) = self.saved_rebuild_count
+        {
+            words.push(format!("RebuildCount={count}"));
+        }
+        if self.refit_tolerance.is_none()
+            && let Some(tolerance) = self.saved_refit_tolerance
+        {
+            words.push(format!("RefitTolerance={tolerance}"));
         }
         if let Some(name) = &self.rail_name {
             words.push(format!("RailName={name}"));
@@ -338,7 +411,7 @@ mod tests {
             "Rebuild=513",
             "Rebuild=-1",
             "Rebuild=NaN",
-            "Simplify=Refit",
+            "Simplify=Other",
             "Rebuild=5 RebuildCount=6",
         ] {
             assert!(
@@ -381,6 +454,43 @@ mod tests {
             8
         );
         assert!(edited.updated(&["RebuildCount=0"]).is_err());
+    }
+
+    #[test]
+    fn refit_options_retain_both_simplification_values_and_independent_rail_refit() {
+        let rebuilt =
+            Options::parse(&["Rebuild=8", "RefitRail=No", "RefitTolerance=0.04"]).unwrap();
+        assert_eq!(rebuilt.rebuild_point_count, 8);
+        assert_eq!(rebuilt.refit_tolerance, None);
+        let refitted = rebuilt.updated(&["Simplify=_Refit"]).unwrap();
+        assert_eq!(refitted.rebuild_point_count, 0);
+        assert_eq!(refitted.refit_tolerance, Some(0.04));
+        assert_eq!(refitted.refit, Some(false));
+        let off = refitted.updated(&["Simplify=None"]).unwrap();
+        assert_eq!(off.refit_tolerance, None);
+        assert_eq!(off.refit_tolerance(), 0.04);
+        assert_eq!(off.rebuild_count(), 8);
+        for options in [rebuilt, refitted, off] {
+            assert_eq!(
+                Options::parse(&options.arguments().split_whitespace().collect::<Vec<_>>())
+                    .unwrap(),
+                options
+            );
+            for bad in [
+                "Refit=-1",
+                "RefitTolerance=0",
+                "RefitTolerance=NaN",
+                "RefitTolerance=inf",
+                "Refit=0.01 RefitTolerance=0.02",
+                "Refit=0.01 Rebuild=5",
+            ] {
+                assert!(
+                    options
+                        .updated(&bad.split_whitespace().collect::<Vec<_>>())
+                        .is_err()
+                );
+            }
+        }
     }
 
     #[test]

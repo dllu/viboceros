@@ -1,6 +1,9 @@
 use super::curve_join_close::CurveInput;
 use super::*;
-use viboceros_geometry::{SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
+use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
+
+#[cfg(test)]
+mod refit_tests;
 
 #[cfg(test)]
 mod tests {
@@ -139,6 +142,8 @@ pub struct SweepFixture {
     #[serde(default)]
     pub refit_rail: bool,
     #[serde(default)]
+    pub refit_tolerance: Option<f64>,
+    #[serde(default)]
     pub start_point: Option<[f64; 3]>,
     #[serde(default)]
     pub end_point: Option<[f64; 3]>,
@@ -150,6 +155,11 @@ pub(super) fn run(
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let rail = fixture.rail.geometry()?;
+    if fixture.refit_tolerance.is_some() && fixture.rebuild_point_count != 0 {
+        return Err(ProbeError::FixtureInvariant(
+            "Sweep1 Refit and Rebuild are mutually exclusive",
+        ));
+    }
     if fixture.closed {
         return Err(ProbeError::FixtureInvariant(
             "closed sweep closure is not implemented",
@@ -189,7 +199,9 @@ pub(super) fn run(
         if fixture.command {
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
-            let rebuilt = if fixture.rebuild_point_count > 1 {
+            let simplified = if let Some(distance) = fixture.refit_tolerance {
+                Some(Sweep1::refit_sections(sections.clone(), distance)?)
+            } else if fixture.rebuild_point_count > 1 {
                 Some(
                     viboceros_smlib::rebuild_sweep_sections(
                         &sections,
@@ -201,8 +213,8 @@ pub(super) fn run(
             } else {
                 None
             };
-            let sections = rebuilt.as_deref().unwrap_or(&sections);
-            let model = viboceros_smlib::sweep_model_with_point_ends(
+            let sections = simplified.as_deref().unwrap_or(&sections);
+            let mut model = viboceros_smlib::sweep_model_with_point_ends(
                 rail.as_ref(),
                 sections,
                 ends,
@@ -211,6 +223,12 @@ pub(super) fn run(
                 tolerance,
             )
             .map_err(CommandError::from)?;
+            if fixture.refit_tolerance.is_some()
+                && let [section] = sections
+                && (ends.start.is_none() || ends.end.is_none())
+            {
+                model = model.try_with_section_domain(section.curve.domain())?;
+            }
             let surface =
                 viboceros_smlib::sweep_surface(&model, true).map_err(CommandError::from)?;
             Ok(vec![surface])
@@ -286,6 +304,9 @@ fn command_surfaces(
     }
     if fixture.rebuild_point_count != 0 {
         text.push_str(&format!(" Rebuild={}", fixture.rebuild_point_count));
+    }
+    if let Some(distance) = fixture.refit_tolerance {
+        text.push_str(&format!(" Refit={distance}"));
     }
     for (name, point) in [
         ("StartPoint", fixture.start_point),

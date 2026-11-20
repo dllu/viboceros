@@ -75,6 +75,8 @@ impl VibocerosApp {
             untrimmed_miters: options.untrimmed_miters,
             rebuild_point_count: options.rebuild_point_count,
             saved_rebuild_count: options.saved_rebuild_count,
+            refit_tolerance: options.refit_tolerance,
+            saved_refit_tolerance: options.saved_refit_tolerance,
             ..Default::default()
         };
     }

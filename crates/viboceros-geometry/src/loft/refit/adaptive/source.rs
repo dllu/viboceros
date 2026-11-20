@@ -1,4 +1,5 @@
 use super::*;
+use crate::exact_scalar::scalar;
 
 /// Exact straight-region extraction proves equality of complete images, even
 /// for nonlinear rational clocks. Require exactly representable proxy vertices;

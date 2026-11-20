@@ -9,7 +9,9 @@ pub(crate) mod g1;
 mod interpolate;
 use interpolate::interpolate_fit;
 mod sampler;
+mod straight;
 use sampler::{FitKink, FitSampler};
+pub(crate) use straight::{cubic_polygon, cubic_segment_controls};
 
 /// Largest degree accepted by Rhino's `FitCrv` command.
 pub const MAX_CURVE_FIT_DEGREE: usize = 11;

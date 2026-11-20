@@ -42,5 +42,5 @@ regressions check interior-row changes, weight coupling, refinement and gauge.
 Rebuilding intentionally approximates the input profiles according to point
 count. The comparison above measures agreement with Rhino's rebuilt output, not
 error against the original curves. Existing Global blending, general curved-rail
-refit, rail miters and seam/alignment limitations remain. Section refitting by
-tolerance is still pending.
+refit, rail miters and seam/alignment limitations remain. See
+[section Refit](refitting.md) for the tolerance-based simplification option.

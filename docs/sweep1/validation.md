@@ -184,7 +184,7 @@ General closed-rail holonomy correction, curved rail miters, Global miters
 with three or more profiles or an authored corner, exact fit parity for
 equal-radius circular loops, general intersection selection for complex
 miters, complete unrefitted multi-profile compatibility, automatic
-branch and seam alignment, and further Rhino section-refit options remain open.
+branch and seam alignment, and general adaptive section refitting remain open.
 Section rebuilding now has
 [separate complete-image checks](rebuilding.md). These are explicit limits,
 not evidence that the overall project goal is complete. Performance is also
@@ -192,9 +192,9 @@ unfinished: short release timings for the spatial refitter are tracked separatel
 from geometry comparisons; dense-to-banded solving alone did not remove the
 cost of repeated accurate arc-length inversion.
 
-Cross-section Refit remains in development. The [Refit notes](refitting.md)
-cover its frozen native cases, fitting-pass experiments, and a certified nominal
-tolerance counterexample. Complete geometry comparison remains unfinished.
+[Cross-section Refit](refitting.md) has complete-surface checks for qualifying
+straight, circular, and open cubic fits. The remaining cases include adaptive
+and smooth rational fits.
 
 An exact-key, bounded sample cache reduced single-profile spatial timings from
 about 43 ms to 25 ms, versus 15 ms Freeform and 12 ms Roadlike in Rhino under

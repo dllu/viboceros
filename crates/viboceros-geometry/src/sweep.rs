@@ -17,6 +17,7 @@ mod profile_miters;
 pub use profile_miters::SweepProfileMiterOptions;
 mod rail;
 mod rebuild;
+mod refit;
 mod roadlike;
 use rail::validate_rail_interval;
 #[cfg(test)]

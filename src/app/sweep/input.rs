@@ -207,11 +207,16 @@ impl VibocerosApp {
             } else if option == "UntrimmedMiters" {
                 "Use natural-domain faces at rail corners? Choose Yes or No".into()
             } else if option == "Simplify" {
-                "Choose None or Rebuild for the cross sections".into()
+                "Choose None, Rebuild, or Refit for the cross sections".into()
             } else if option == "RebuildCount" {
                 format!(
                     "Enter a cross-section control-point count [{}]",
                     p.state.options.rebuild_count()
+                )
+            } else if ["Refit", "RefitTolerance"].contains(&option) {
+                format!(
+                    "Enter a cross-section fitting tolerance [{}]",
+                    p.state.options.refit_tolerance()
                 )
             } else if option == "Closed" {
                 if !p.can_close() && p.state.options.closed != Some(true) {

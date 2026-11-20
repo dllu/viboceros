@@ -70,6 +70,55 @@ fn hover_pole(
 }
 
 #[test]
+fn sweep_section_refit_updates_preview_and_commits_the_reviewed_geometry() {
+    let (mut app, [rail, profile, _]) =
+        setup("Curve 0,0,0 1,2,0 3,0,0 Degree=2", point(9., 9., 9.));
+    let tolerance = app.document.tolerance();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1");
+    for id in [rail, profile] {
+        enter(&mut app, &id.to_string());
+    }
+    enter(&mut app, "");
+    let initial = wait_for_wires(&mut app, &context, |wires| !wires.is_empty());
+
+    enter(&mut app, "Simplify");
+    enter(&mut app, "Refit");
+    let fitted = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != initial
+    });
+    enter(&mut app, "RefitTolerance");
+    assert!(app.command_log.back().unwrap().contains("[0.01]"));
+    enter(&mut app, "0.1");
+    let coarse = wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != fitted && wires != initial
+    });
+    assert_ne!(fitted, coarse);
+    enter(&mut app, "Undo");
+    wait_for_wires(&mut app, &context, |wires| wires == fitted);
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+    assert_eq!(app.document.undo_label(), None);
+
+    enter(&mut app, "");
+    let Geometry::Brep(output) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected the refitted Sweep1 draft to commit");
+    };
+    assert_eq!(output.wireframe_curves(1, tolerance).unwrap(), fitted);
+    let surface = output.faces()[0].surface();
+    assert_eq!((surface.degree_u(), surface.degree_v()), (1, 3));
+    let native = point(0.7967266525831762, 1.5934533051663524, 0.);
+    let handle = surface.control_point(0, 1).unwrap().point();
+    assert!(handle.distance_to(native).unwrap() < 1e-7);
+    assert_eq!(app.document.undo_label(), Some("Sweep1"));
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+    enter(&mut app, "Sweep1");
+    enter(&mut app, "RefitTolerance");
+    assert!(app.command_log.back().unwrap().contains("[0.01]"));
+}
+
+#[test]
 fn sweep_roadlike_axis_uses_the_snapped_cursor_and_commits_the_draft() {
     let mut app = test_app();
     let tolerance = app.document.tolerance();
@@ -204,7 +253,12 @@ fn sweep_point_preview_tracks_the_snapped_pole_and_committed_geometry() {
             enter(&mut app, "");
         }
         enter(&mut app, "Simplify");
-        assert!(app.command_log.back().unwrap().contains("None or Rebuild"));
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("None, Rebuild, or Refit")
+        );
         enter(&mut app, "Rebuild");
         wait_for_wires(&mut app, &context, |wires| {
             !wires.is_empty() && wires != initial

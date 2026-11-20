@@ -81,6 +81,7 @@ produces a native one-face solid.
 | --- | --- |
 | `RefitRail=No` (default) | Interpolate profiles in the existing rational rail basis when their stations are already Greville sites; otherwise refit before inserting interior stations. |
 | `Rebuild=5`, `Simplify=None` / `Simplify=Rebuild` | Rebuild real sections before sweeping; see [section rebuilding](sweep1/rebuilding.md). |
+| `Simplify=Refit`, `RefitTolerance=0.01` | Fit the cross sections to cubics and update the live draft. See [supported profiles and comparisons](sweep1/refitting.md). |
 | `RefitRail=Yes` | Refit the rail to cubic arc-length form, then interpolate profiles in that fixed basis. |
 | `UntrimmedMiters=Yes\|No` | Choose natural or trimmed faces at straight-segment corners with one profile. Trimmed miters split extension faces at the original rail stations and split shared miter edges at profile knots. With Local blending and a profile at every active corner of an open sweep, the profiles define the shared boundaries in both modes. The review shows the resulting wires. |
 | `Closed=Yes` | Sweep the full circuit of a closed rail. Smooth rails can retain their rational basis or use a periodic cubic arc-length surface. Profiled polygonal loops use separate cubic faces along the rail. |
