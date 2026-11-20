@@ -270,6 +270,34 @@ class PythonApiTests(unittest.TestCase):
                 self.assertEqual(set(model.run("Undo").added), set(parts))
                 self.assertEqual(model.run("Redo").added, (joined,))
 
+    def test_sew_untrimmed_surface_to_trimmed_brep(self):
+        model = self.model
+        knots = (0, 0, 1, 1)
+        support = NurbsSurface(1, 1, knots, knots,
+                               (((0, 0, 0), (0, 1, 0)), ((1, 0, 0), (1, 1, 1))))
+        left = model.add_nurbs_surface(support, domain=((0, .5), (0, 1)), name="Untrimmed skin")
+        corners = ((.5, 0), (1, 0), (1, 1), (.5, 1))
+        rim = [TrimCurve.line(a, b) for a, b in zip(corners, corners[1:] + corners[:1])]
+        right = model.add_nurbs_surface(support, trim_loops=[rim])
+        self.assertEqual(model.object(left).kind, "nurbs_surface")
+
+        def seam(owner):
+            edge, = (part for part in model.components(owner)
+                     if part.kind == "brep_edge" and all(point[0] == .5 for point in part.points))
+            return edge
+
+        first, second = seam(left), seam(right)
+        definitions = [model.surface_definition(left), model.surface_definition(right)]
+        joined = model.sew_brep_edges((second, first, first.points == second.points[::-1]), anchor=left)
+        self.assertEqual(model.object(joined).name, "Untrimmed skin")
+        faces = [part for part in model.components(joined) if part.kind == "brep_face"]
+        self.assertEqual(len(faces), 2)
+        self.assertEqual(len(set(faces[0].loops[0]) & set(faces[1].loops[0])), 1)
+        self.assertEqual([model.surface_definition(joined, face=face.index) for face in faces], definitions)
+        self.assertIn("1 valid, 0 invalid, 0 not checked", model.command("Check", select=[joined]).messages[-1])
+        self.assertEqual(set(model.run("Undo").added), {left, right})
+        self.assertEqual(model.object(left).kind, "nurbs_surface")
+
     def test_pullback_brep_edge_certifies_directed_trim_on_a_support(self):
         model = self.model
         knots = [0, 0, 1, 1]

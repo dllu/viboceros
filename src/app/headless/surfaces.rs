@@ -1,7 +1,7 @@
 //! Exact tensor-product surface admission, patch extraction, and native UV evaluation.
 use super::*;
-use std::collections::{BTreeMap, BTreeSet};
-use viboceros_command::ComponentSelectionKind;
+use std::collections::{BTreeMap, BTreeSet, btree_map::Entry};
+use viboceros_command::{ComponentSelectionKind, component_selection::ComponentPick};
 use viboceros_document::{ColorRgb, Geometry, ObjectAttributes};
 use viboceros_geometry::{
     Brep, GeometryError, NurbsCurve2, NurbsSurface, ParameterSide, Point2, WeightedPoint2,
@@ -199,54 +199,58 @@ pub(super) fn sew_edges(
     let mut sources = Vec::new();
     let mut parts = Vec::new();
     let mut edge_count = 0usize;
-    let pick_edge = |reference: ComponentRef| -> Result<_> {
+    let pick_edge = |reference: ComponentRef| -> Result<ComponentPick> {
         let pick = reference.pick(|id| model::revision(document, id))?;
         if pick.kind != ComponentSelectionKind::BrepEdge {
             return Err("sewing requires B-rep edge references".into());
         }
-        let object = document
-            .object(pick.object)
-            .ok_or_else(|| format!("unknown object {}", pick.object))?;
-        let Geometry::Brep(brep) = object.geometry() else {
-            return Err("sewing requires B-rep objects".into());
-        };
-        if pick.index >= brep.edges().len() {
-            return Err("B-rep edge index is out of range".into());
-        }
-        Ok((pick, brep))
+        Ok(pick)
     };
     let picks = pairs
         .into_iter()
         .map(|(a, b, reversed)| Ok((pick_edge(a)?, pick_edge(b)?, reversed)))
         .collect::<Result<Vec<_>>>()?;
-    let mut add_source = |id, brep: &Brep| {
-        *offsets.entry(id).or_insert_with(|| {
-            sources.push(id);
-            parts.push(brep.clone());
-            let offset = edge_count;
-            edge_count += brep.edges().len();
-            offset
-        })
+    let mut combined_edge = |pick: ComponentPick| -> Result<usize> {
+        let (offset, count) = match offsets.entry(pick.object) {
+            Entry::Occupied(entry) => *entry.get(),
+            Entry::Vacant(entry) => {
+                let object = document
+                    .object(pick.object)
+                    .ok_or_else(|| format!("unknown object {}", pick.object))?;
+                let part = match object.geometry() {
+                    Geometry::Brep(brep) => brep.clone(),
+                    // Use the same edge numbering as the SDK component query.
+                    Geometry::NurbsSurface(surface) => {
+                        Brep::try_surface_face(surface.clone(), tolerance)?
+                    }
+                    _ => return Err("sewing requires B-rep or NURBS surface objects".into()),
+                };
+                let count = part.edges().len();
+                let offset = edge_count;
+                edge_count += count;
+                sources.push(pick.object);
+                parts.push(part);
+                *entry.insert((offset, count))
+            }
+        };
+        if pick.index >= count {
+            return Err("B-rep edge index is out of range".into());
+        }
+        Ok(offset + pick.index)
     };
     if let Some(anchor) = anchor {
         let id = model::object_id(anchor)?;
-        let (_, brep) = picks
+        let pick = picks
             .iter()
             .flat_map(|(a, b, _)| [a, b])
-            .find(|(pick, _)| pick.object == id)
+            .find(|pick| pick.object == id)
             .ok_or("the orientation anchor must supply at least one paired edge")?;
-        add_source(id, brep);
+        combined_edge(*pick)?;
     }
     let edge_pairs = picks
         .iter()
-        .map(|((a, a_brep), (b, b_brep), reversed)| {
-            (
-                add_source(a.object, a_brep) + a.index,
-                add_source(b.object, b_brep) + b.index,
-                *reversed,
-            )
-        })
-        .collect::<Vec<_>>();
+        .map(|&(a, b, reversed)| Ok((combined_edge(a)?, combined_edge(b)?, reversed)))
+        .collect::<Result<Vec<_>>>()?;
     let attributes = document.object(sources[0]).unwrap().attributes().clone();
     let combined = Brep::try_combine(parts, tolerance)?;
     let sewn = combined
@@ -258,7 +262,7 @@ pub(super) fn sew_edges(
         )
         .map_err(|error| -> SessionError {
             if let GeometryError::UncertifiedBrepEdgePair { pair, .. } = error {
-                let ((a, _), (b, _), _) = picks[pair];
+                let (a, b, _) = picks[pair];
                 format!(
                     "{error}; input {} edge {}, input {} edge {}",
                     a.object, a.index, b.object, b.index
