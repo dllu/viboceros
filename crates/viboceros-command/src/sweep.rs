@@ -370,9 +370,9 @@ impl Source {
                 "Reverse only selected Sweep1 cross sections",
             ));
         }
-        // A straight rail uses cubic U for refitted circles. Other closed
+        // A straight rail uses cubic U for refitted conics. Other closed
         // profiles can keep the authored rail basis when RefitRail is off.
-        let fitted_circular_section = options
+        let fitted_conic_section = options
             .refit_tolerance
             .is_some_and(|distance| distance > 2. * f64::EPSILON.sqrt())
             && linear_rail
@@ -381,15 +381,18 @@ impl Source {
                 Ok::<_, GeometryError>(
                     any || (curve.degree() == 2
                         && curve.is_closed()?
-                        && curve.circular_center(Tolerance::DEFAULT)?.is_some()),
+                        && curve.elliptical_center(Tolerance::DEFAULT)?.is_some()),
                 )
             })?;
-        let sections = if *rebuild_point_count > 1 {
-            rebuild_sections(&sections, *rebuild_point_count, tolerance)?
+        let (sections, section_domain) = if *rebuild_point_count > 1 {
+            (
+                rebuild_sections(&sections, *rebuild_point_count, tolerance)?,
+                None,
+            )
         } else if let Some(distance) = options.refit_tolerance {
-            Sweep1::refit_sections(sections, distance)?
+            Sweep1::refit_sections_with_domain(sections, distance)?
         } else {
-            sections
+            (sections, None)
         };
         if ends.is_empty()
             && !options.surface_aligned
@@ -435,11 +438,10 @@ impl Source {
             return Ok((brep, sections.len()));
         }
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
-        if options.refit_tolerance.is_some()
-            && let [section] = sections.as_slice()
+        if let Some(domain) = section_domain.clone()
             && (ends.start.is_none() || ends.end.is_none())
         {
-            sweep = sweep.try_with_section_domain(section.curve.domain())?;
+            sweep = sweep.try_with_section_domain(domain)?;
         }
         if options.surface_aligned {
             let [support] = self.rail.supports() else {
@@ -455,19 +457,20 @@ impl Source {
         if closed || single_loop {
             sweep = sweep.try_close_rail()?;
         }
-        // A pair of closed sections with different local correspondence needs
-        // interior stations to carry the blend. Identical sections can keep
-        // the straight rail's linear basis.
+        // A pair of closed sections with different local correspondence can
+        // need interior blend stations. Refit's matched regions already
+        // establish the correspondence and keep the selected rail basis.
         let closed_section_blend = self.seam_profiles == 2
             && sections.len() == 2
             && linear_rail
+            && section_domain.is_none()
             && sweep.sections_vary_in_frame();
         let refit = refit.unwrap_or(false)
             || options.surface_aligned
             || closed_refit
             || loop_profiles_closed
             || closed_section_blend
-            || fitted_circular_section
+            || fitted_conic_section
             // Manual directions use a cubic rail basis to carry the blend.
             || !reversed_profiles.is_empty()
             || automatic_partial

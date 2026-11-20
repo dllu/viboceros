@@ -6,20 +6,18 @@ or `Refit=0.01`. Refit accepts positive finite distances. The preview follows
 mode and tolerance changes, and Undo in review restores the prior draft.
 `Simplify=None` turns simplification off while retaining the distance.
 
-Section Refit supports straight and polygonal profiles, smooth open profiles,
-full circles, and single closed profiles with regular interior tangents.
-Adaptive cubics handle the captured rational quadratics and closed cubic loops.
-Multiple smooth profiles can share a subdivision grid, including circular
-profiles of different radii. Placement uses the original profile. Fitting
-follows seam and direction edits.
+Section Refit supports straight and polygonal profiles and smooth open and
+closed profiles. Sweeps can combine regular closed cubic loops, ellipses,
+circles, and smooth open profiles. Placement uses the original profile.
+Fitting follows seam and direction edits.
 
 For a radius-2 circle, the measured adaptive range reaches tolerance 0.00015
 for one profile and 0.0004 for a sweep with two profiles. Tighter circular
-subdivision, multiple noncircular closed profiles, and open fits requiring
-midpoints beyond the measured eight-interval lookup remain unresolved.
+subdivision and open fits requiring midpoints beyond the measured
+eight-interval lookup remain unresolved.
 
 The oracle accepts `refit_tolerance` independently of rail refitting and
-rejects simultaneous section rebuilding. Across 70 captures, the complete
+rejects simultaneous section rebuilding. Across 88 captures, the complete
 surface deviation bound is at most `1.5e-8` at epsilon `1e-7`. The comparison
 reverses the Rhino rail parameter for the two-pole capture. The public
 `Curve.Fit` diagnostics produce different controls. SDK captures preserve the
@@ -45,11 +43,21 @@ as the section domain. The [closed-profile captures](../../tools/rhino_oracle/fi
 cover tight fits of analytic and rational circles, the shared grid for unequal
 circles, and a cubic loop that retains a linear rail when RefitRail is off.
 
-In the two-profile adaptive captures, Rhino interpolates the retimed curves
-and their derivatives on a shared dyadic grid. Rebuilding each profile on
-its own grid and inserting the other profile's knots changes the geometry.
-The implementation accepts an interval with a proven pointwise bound and
-subdivides when any profile has a point proven to exceed the distance limit.
+Closed profiles with retained curvature boundaries match regions by fitted
+length before sharing a knot vector. A set mixing noncircular loops with
+circles or open profiles combines the retimed fits and takes its section
+domain from the longest source. The
+[loop captures](../../tools/rhino_oracle/fixtures/sweep1_refit_loop_pairs.json)
+include scaled profiles, unequal region counts, and a three-section sweep.
+The [mixed-profile captures](../../tools/rhino_oracle/fixtures/sweep1_refit_mixed_sections.json)
+cover open sections paired with loops and closed sections without retained
+curvature boundaries.
+
+In the shared-grid cases, Rhino interpolates the retimed curves and their
+derivatives on common dyadic intervals. The implementation accepts an
+interval with a proven pointwise bound and subdivides when any profile has a
+point proven to exceed the distance limit. Closed noncircular sets can also
+accept a complete image bound that allows different parameter speeds.
 If neither test decides an interval, review shows a fitting error and the
 tolerance stays editable. The native interval acceptance rule still needs
 qualification in that gap. For example, at scale 10 the native grid splits

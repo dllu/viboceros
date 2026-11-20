@@ -50,6 +50,81 @@ macro_rules! captures {
 }
 
 #[test]
+fn sweep1_section_refits_open_and_closed_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_mixed_sections",
+            &[
+                "open-and-cubic-loop",
+                "open-and-ellipse",
+                "long-open-and-cubic-loop",
+            ][..]
+        )],
+        3,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_unbroken_loops_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_mixed_sections",
+            &[
+                "unbroken-ellipses",
+                "near-circular-ellipses",
+                "unbroken-ellipses-tight",
+            ][..]
+        )],
+        3,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_loop_pairs_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_loop_pairs",
+            &[
+                "cubic-loops-command",
+                "scaled-cubic-loop-command",
+                "ellipses",
+                "scaled-ellipse-command",
+                "cubic-and-ellipse",
+                "cubic-and-scaled-ellipse",
+                "three-cubic-loops",
+            ][..]
+        )],
+        7,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_tight_loop_pairs_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_loop_pairs",
+            &["scaled-cubic-loop-tight", "scaled-ellipse-tight"][..]
+        )],
+        2,
+    );
+}
+
+#[test]
+fn sweep1_section_refits_conic_loops_match_native_surfaces() {
+    compare_captures(
+        [captures!(
+            "sweep1_refit_loop_pairs",
+            &[
+                "ellipse-and-circle-command",
+                "ellipse-and-small-circle",
+                "single-ellipse-command",
+            ][..]
+        )],
+        3,
+    );
+}
+
+#[test]
 fn sweep1_section_refits_closed_match_native_control_nets_and_complete_surfaces() {
     compare_captures(
         [

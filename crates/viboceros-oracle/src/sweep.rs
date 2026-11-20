@@ -199,19 +199,24 @@ pub(super) fn run(
         if fixture.command {
             command_surfaces(&rail, &sections, fixture, tolerance)
         } else {
-            let simplified = if let Some(distance) = fixture.refit_tolerance {
-                Some(Sweep1::refit_sections(sections.clone(), distance)?)
+            let (simplified, section_domain) = if let Some(distance) = fixture.refit_tolerance {
+                let (fits, domain) =
+                    Sweep1::refit_sections_with_domain(sections.clone(), distance)?;
+                (Some(fits), domain)
             } else if fixture.rebuild_point_count > 1 {
-                Some(
-                    viboceros_smlib::rebuild_sweep_sections(
-                        &sections,
-                        fixture.rebuild_point_count,
-                        tolerance,
-                    )
-                    .map_err(CommandError::from)?,
+                (
+                    Some(
+                        viboceros_smlib::rebuild_sweep_sections(
+                            &sections,
+                            fixture.rebuild_point_count,
+                            tolerance,
+                        )
+                        .map_err(CommandError::from)?,
+                    ),
+                    None,
                 )
             } else {
-                None
+                (None, None)
             };
             let sections = simplified.as_deref().unwrap_or(&sections);
             let mut model = viboceros_smlib::sweep_model_with_point_ends(
@@ -223,11 +228,10 @@ pub(super) fn run(
                 tolerance,
             )
             .map_err(CommandError::from)?;
-            if fixture.refit_tolerance.is_some()
-                && let [section] = sections
+            if let Some(domain) = section_domain
                 && (ends.start.is_none() || ends.end.is_none())
             {
-                model = model.try_with_section_domain(section.curve.domain())?;
+                model = model.try_with_section_domain(domain)?;
             }
             let surface =
                 viboceros_smlib::sweep_surface(&model, true).map_err(CommandError::from)?;

@@ -4,11 +4,11 @@ use crate::curve_fit::cubic_segment_controls as cubic_controls;
 use crate::exact_scalar::{Rational, rational};
 use num_traits::{One, Signed, Zero};
 mod adaptive;
-pub(crate) use adaptive::try_retimed_cubic_pieces;
 pub use adaptive::{
     AdaptiveLinearRefitProposal, try_propose_adaptive_linear_refit,
     try_propose_joined_linear_refit, try_propose_joined_refit,
 };
+pub(crate) use adaptive::{closed_set_cubic_proposal, try_retimed_cubic_pieces};
 mod candidate;
 mod matching;
 mod polyline;

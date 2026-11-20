@@ -2,7 +2,6 @@
 use super::*;
 
 const LENGTH_INTERVALS: usize = 8;
-const MAX_CLOSED_DEPTH: usize = 4;
 
 #[derive(Clone, Copy)]
 struct Interval {
@@ -63,7 +62,7 @@ pub(super) enum SplitClock {
     SourceLookup,
     // Sweep1's measured lookup qualifies splits whose midpoints are sampled.
     SourceLookupWithSampledMidpoints,
-    ClosedSourceLookup,
+    ClosedSourceLookup { max_depth: usize },
 }
 
 // Raw pieces are provisional. Only the caller can certify their complete
@@ -103,7 +102,7 @@ pub(super) fn construct(
     angle: Real,
     clock: SplitClock,
 ) -> Result<Option<Candidate>, GeometryError> {
-    if (source.is_closed()? && !matches!(clock, SplitClock::ClosedSourceLookup))
+    if (source.is_closed()? && !matches!(clock, SplitClock::ClosedSourceLookup { .. }))
         || super::super::super::parameterize::has_tangent_breaks(source, angle)?
     {
         return Ok(None);
@@ -112,7 +111,7 @@ pub(super) fn construct(
         SplitClock::IntervalLength => None,
         SplitClock::SourceLookup
         | SplitClock::SourceLookupWithSampledMidpoints
-        | SplitClock::ClosedSourceLookup => {
+        | SplitClock::ClosedSourceLookup { .. } => {
             let sampler =
                 ArcLengthSampler::try_new(CurveRef::NurbsCurve(source), Tolerance::DEFAULT)?;
             let fractions = std::array::from_fn::<_, { LENGTH_INTERVALS + 1 }, _>(|i| {
@@ -158,9 +157,8 @@ pub(super) fn construct(
             {
                 return Ok(None);
             }
-            // Closed Sweep1 profiles use the same lookup beyond the sampled
-            // stations. The measured profiles require at most sixteen pieces.
-            SplitClock::ClosedSourceLookup if interval.depth > MAX_CLOSED_DEPTH => {
+            // Closed Sweep1 profiles use the lookup beyond the sampled stations.
+            SplitClock::ClosedSourceLookup { max_depth } if interval.depth > max_depth => {
                 return Ok(None);
             }
             _ => {}
@@ -183,7 +181,8 @@ pub(super) fn construct(
         let last = source.evaluate(end)?;
         // A zero chord cannot construct an endpoint-frame cubic. Closed
         // profiles may return to the seam with a roundoff-sized gap.
-        if first == last || (interval.depth == 0 && matches!(clock, SplitClock::ClosedSourceLookup))
+        if first == last
+            || (interval.depth == 0 && matches!(clock, SplitClock::ClosedSourceLookup { .. }))
         {
             let Some(children) = interval.subdivide(parameters[4], source.knots()) else {
                 return Ok(None);

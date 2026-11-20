@@ -4,6 +4,12 @@ use super::*;
 const MAX_DEPTH: usize = 24;
 const MAX_INTERVALS: usize = (MAX_SECTION_CONTROLS - 2) / 2;
 
+#[derive(Clone, Copy)]
+pub(super) enum Subdivision {
+    Bracketed,
+    Image,
+}
+
 pub(super) fn needs_grid(curve: &NurbsCurve) -> Result<bool, GeometryError> {
     // Four exact quarter spans already use the common parameter grid.
     let knots = curve.interior_knot_groups();
@@ -16,6 +22,7 @@ pub(super) fn reconstruct(
     originals: &[SweepSection],
     fits: Vec<NurbsCurve>,
     tolerance: Real,
+    subdivision: Subdivision,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     let sources = fits
         .into_iter()
@@ -37,7 +44,7 @@ pub(super) fn reconstruct(
         let mut uncertain = false;
         let mut split = false;
         for source in &sources {
-            match classify(source, start, end, limit)? {
+            match classify(source, start, end, limit, subdivision)? {
                 IntervalFit::Within => {}
                 IntervalFit::Beyond => {
                     split = true;
@@ -70,10 +77,11 @@ pub(super) fn reconstruct(
             // Reconstruct all sections at every selected cut from the fitted
             // reference, including cuts introduced by a different section.
             let result = g1::hermite_cubics(source, &cuts)?;
-            if source
-                .parameter_curve_deviation_bound(&result, limit)?
-                .is_none()
-                || !g1::within_deviation(&section.curve, &result, tolerance)?
+            let reconstructed = match subdivision {
+                Subdivision::Bracketed => source.parameter_curve_deviation_bound(&result, limit)?,
+                Subdivision::Image => g1::deviation_bound_at_knots(source, &result, &cuts, limit)?,
+            };
+            if reconstructed.is_none() || !g1::within_deviation(&section.curve, &result, tolerance)?
             {
                 return Err(unsupported());
             }
@@ -93,6 +101,7 @@ fn classify(
     start: Real,
     end: Real,
     limit: Real,
+    subdivision: Subdivision,
 ) -> Result<IntervalFit, GeometryError> {
     let candidate = g1::hermite_cubics(source, &[start, end])?;
     let piece = source.try_trimmed(start..=end)?;
@@ -103,6 +112,12 @@ fn classify(
     }
     if exceeds_distance_at_station(source, start..=end, &candidate, limit)? {
         Ok(IntervalFit::Beyond)
+    } else if matches!(subdivision, Subdivision::Image)
+        && g1::within_deviation(&piece, &candidate, limit)?
+    {
+        // Closed loops can retain the interval even when the fitted chart
+        // moves faster across it than the Hermite candidate.
+        Ok(IntervalFit::Within)
     } else {
         Ok(IntervalFit::Unresolved)
     }

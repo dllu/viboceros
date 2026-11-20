@@ -8,11 +8,29 @@ const RADIAL_ERROR: Real = 0.000273;
 const MIN_SINGLE_RELATIVE_LIMIT: Real = 0.000075;
 const MIN_SHARED_RELATIVE_LIMIT: Real = 0.0001;
 
-pub(super) fn fit(
+pub(super) struct CircularSection {
+    center: Point3,
+    start: Point3,
+    x: Vector3,
+    y: Vector3,
+    radius: Real,
+    recognition_error: Real,
+}
+
+impl CircularSection {
+    pub(super) fn analytic_length(&self, source: &NurbsCurve) -> Option<Real> {
+        let circumference = TAU * self.radius;
+        let domain = source.domain();
+        let input_width = domain.end() - domain.start();
+        ((input_width - circumference).abs() <= circumference * (64. * Real::EPSILON))
+            .then_some(circumference)
+    }
+}
+
+pub(super) fn recognize(
     source: &NurbsCurve,
     limit: Real,
-    single: bool,
-) -> Result<Option<NurbsCurve>, GeometryError> {
+) -> Result<Option<CircularSection>, GeometryError> {
     if source.degree() != 2 {
         return Ok(None);
     }
@@ -54,10 +72,34 @@ pub(super) fn fit(
     if (turn - TAU).abs() > recognition.angular() {
         return Ok(None);
     }
-    let circumference = TAU * radius;
-    let input_width = domain.end() - domain.start();
-    let analytic = (input_width - circumference).abs() <= circumference * (64. * Real::EPSILON);
-    if radius * RADIAL_ERROR > limit - recognition.absolute() {
+    Ok(Some(CircularSection {
+        center,
+        start,
+        x,
+        y,
+        radius,
+        recognition_error: recognition.absolute(),
+    }))
+}
+
+pub(super) fn fit(
+    source: &NurbsCurve,
+    limit: Real,
+    single: bool,
+) -> Result<Option<NurbsCurve>, GeometryError> {
+    let Some(circle) = recognize(source, limit)? else {
+        return Ok(None);
+    };
+    let analytic_length = circle.analytic_length(source);
+    let CircularSection {
+        center,
+        start,
+        x,
+        y,
+        radius,
+        recognition_error,
+    } = circle;
+    if radius * RADIAL_ERROR > limit - recognition_error {
         // Below the measured ranges Rhino can choose a different subdivision
         // from either our second fit pass or the shared reconstruction.
         let minimum = if single {
@@ -68,12 +110,12 @@ pub(super) fn fit(
         if limit < radius * minimum {
             return Err(unsupported());
         }
-        return fit_closed(source, limit, single, analytic.then_some(circumference)).map(Some);
+        return fit_closed(source, limit, single, analytic_length).map(Some);
     }
     let clock = if !single {
         1.
-    } else if analytic {
-        circumference
+    } else if let Some(length) = analytic_length {
+        length
     } else {
         fit_length(source)?
     };

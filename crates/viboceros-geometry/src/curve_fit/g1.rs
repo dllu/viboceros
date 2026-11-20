@@ -9,6 +9,31 @@ pub(crate) use correspondence::within_deviation_at_pairs;
 pub(crate) use correspondence::{deviation_bound, deviation_bound_at_pairs, within_deviation};
 pub(crate) use hermite::hermite_cubics;
 
+/// Use known source stations at every knot of a proposed cubic fit.
+pub(crate) fn deviation_bound_at_knots(
+    source: &NurbsCurve,
+    fitted: &NurbsCurve,
+    source_parameters: &[crate::Real],
+    limit: crate::Real,
+) -> Result<Option<crate::Real>, GeometryError> {
+    let source_domain = source.domain();
+    let fitted_domain = fitted.domain();
+    let fraction = |t, domain: &std::ops::RangeInclusive<_>| {
+        crate::nurbs::interval_fraction(t, *domain.start(), *domain.end())
+    };
+    let pairs = source_parameters
+        .iter()
+        .zip(fitted.knots().chunk_by(|a, b| a == b))
+        .map(|(&t, knot)| {
+            Ok([
+                fraction(t, &source_domain)?,
+                fraction(knot[0], &fitted_domain)?,
+            ])
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    deviation_bound_at_pairs(source, fitted, limit, &pairs)
+}
+
 /// Initial unit-domain polynomial cubic. Each handle has length
 /// `chord_length * (2 - cos(chord, tangent)^2) / 3`. It interpolates endpoint
 /// positions and limiting tangent directions before control rounding. No

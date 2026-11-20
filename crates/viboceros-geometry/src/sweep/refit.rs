@@ -3,6 +3,7 @@ use super::*;
 use crate::ArcLengthSampler;
 use crate::curve_fit::{cubic_polygon, g1};
 mod circle;
+mod closed;
 mod shared;
 
 impl Sweep1 {
@@ -24,9 +25,17 @@ impl Sweep1 {
     /// profiles, and circular sections. Smooth fits can use adaptive cubics,
     /// with a common grid when several sections need reconstruction.
     pub fn refit_sections(
-        mut sections: Vec<SweepSection>,
+        sections: Vec<SweepSection>,
         fit_tolerance: Real,
     ) -> Result<Vec<SweepSection>, GeometryError> {
+        Self::refit_sections_with_domain(sections, fit_tolerance).map(|(sections, _)| sections)
+    }
+
+    /// Prepare fit curves and the section domain to restore after basis matching.
+    pub fn refit_sections_with_domain(
+        mut sections: Vec<SweepSection>,
+        fit_tolerance: Real,
+    ) -> Result<(Vec<SweepSection>, Option<RangeInclusive<Real>>), GeometryError> {
         if !fit_tolerance.is_finite() || fit_tolerance < 0. {
             return Err(GeometryError::InvalidTolerance);
         }
@@ -35,7 +44,8 @@ impl Sweep1 {
         }
         // Native Sweep1 preserves the original section at a negligible fit distance.
         if fit_tolerance <= 2. * Real::EPSILON.sqrt() {
-            return Ok(sections);
+            let domain = lone_section_domain(&sections);
+            return Ok((sections, domain));
         }
         let single = sections.len() == 1;
         let limit = if single {
@@ -43,24 +53,51 @@ impl Sweep1 {
         } else {
             fit_tolerance * 0.5
         };
+        if sections
+            .iter()
+            .any(|section| section.curve.control_points().len() > MAX_SECTION_CONTROLS)
+        {
+            return Err(invalid("refit source section control budget exceeded"));
+        }
+        if !single && let Some((fits, length)) = closed::fit_set(&sections, fit_tolerance)? {
+            for (section, fitted) in sections.iter_mut().zip(fits) {
+                section.curve = fitted;
+            }
+            return Ok((sections, length.map(|length| 0. ..=length)));
+        }
         let mut fits = Vec::with_capacity(sections.len());
         let mut shared_grid = false;
         for section in &sections {
-            if section.curve.control_points().len() > MAX_SECTION_CONTROLS {
-                return Err(invalid("refit source section control budget exceeded"));
-            }
             let fitted = refit(&section.curve, limit, single)?;
             shared_grid |= !single && shared::needs_grid(&fitted)?;
             fits.push(fitted);
         }
         if shared_grid {
-            fits = shared::reconstruct(&sections, fits, fit_tolerance)?;
+            fits = shared::reconstruct(
+                &sections,
+                fits,
+                fit_tolerance,
+                shared::Subdivision::Bracketed,
+            )?;
         }
         for (section, fitted) in sections.iter_mut().zip(fits) {
             section.curve = fitted;
         }
-        Ok(sections)
+        let domain = lone_section_domain(&sections);
+        Ok((sections, domain))
     }
+}
+
+fn lone_section_domain(sections: &[SweepSection]) -> Option<RangeInclusive<Real>> {
+    if let [section] = sections {
+        Some(section.curve.domain())
+    } else {
+        None
+    }
+}
+
+fn regular_degree_and_weights(curve: &NurbsCurve) -> bool {
+    curve.degree() <= 16 && curve.control_points().iter().all(|p| p.weight() > 0.)
 }
 
 fn unsupported() -> GeometryError {
@@ -76,7 +113,7 @@ fn refit(source: &NurbsCurve, limit: Real, single: bool) -> Result<NurbsCurve, G
         }
         return cubic_polygon(&vertices, limit);
     }
-    if source.degree() > 16 || source.control_points().iter().any(|c| c.weight() <= 0.) {
+    if !regular_degree_and_weights(source) {
         return Err(unsupported());
     }
     if source.is_closed()? {

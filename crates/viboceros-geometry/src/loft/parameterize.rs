@@ -34,6 +34,7 @@ pub(crate) fn prepare<'a, E: From<GeometryError>>(
         true,
         RegionPolicy::Geometric,
     )
+    .map(|(curves, _)| curves)
 }
 
 pub(super) fn prepare_refit<'a, E: From<GeometryError>>(
@@ -54,6 +55,7 @@ pub(super) fn prepare_refit<'a, E: From<GeometryError>>(
         curves.iter().all(|c| c.degree() == 1),
         RegionPolicy::Geometric,
     )
+    .map(|(curves, _)| curves)
 }
 
 /// A fitter has already retained its independent C0 region boundaries. Match
@@ -70,6 +72,26 @@ pub(super) fn prepare_fitted<'a, E: From<GeometryError>>(
         false,
         RegionPolicy::Fitted,
     )
+    .map(|(curves, _)| curves)
+}
+
+/// Match the retained fit regions and report the reference chart in model units.
+pub(crate) fn prepare_sweep_refit_regions(
+    curves: &[NurbsCurve],
+) -> Result<Option<(Vec<NurbsCurve>, Real)>, GeometryError> {
+    let (curves, length) = prepare_impl(
+        curves,
+        &mut |curve| curve.clamped_to_active_domain(),
+        1_f64.to_radians().cos(),
+        false,
+        RegionPolicy::Fitted,
+    )?;
+    if let Some(length) = length {
+        require_finite([length], "Sweep1 fitted section domain")?;
+        Ok(Some((curves.into_owned(), length)))
+    } else {
+        Ok(None)
+    }
 }
 
 fn prepare_impl<'a, E: From<GeometryError>>(
@@ -78,7 +100,7 @@ fn prepare_impl<'a, E: From<GeometryError>>(
     cosine: Real,
     preserve_matching_basis: bool,
     policy: RegionPolicy,
-) -> Result<Cow<'a, [NurbsCurve]>, E> {
+) -> Result<(Cow<'a, [NurbsCurve]>, Option<Real>), E> {
     if curves.is_empty() || curves.len() > MAX_LOFT_SECTIONS {
         return Err(GeometryError::LoftResourceLimit {
             context: "section count",
@@ -101,7 +123,7 @@ fn prepare_impl<'a, E: From<GeometryError>>(
             .iter()
             .all(|c| c.degree() == curves[0].degree() && c.knots() == curves[0].knots())
     {
-        return Ok(Cow::Borrowed(curves));
+        return Ok((Cow::Borrowed(curves), None));
     }
     // Native connected-curve queries cannot represent positional jumps. Keep
     // the existing structural correspondence for these segmented kernel curves.
@@ -112,7 +134,7 @@ fn prepare_impl<'a, E: From<GeometryError>>(
                 g[0] > *c.domain().start() && g[0] < *c.domain().end() && g.len() > c.degree()
             })
     }) {
-        return Ok(Cow::Borrowed(curves));
+        return Ok((Cow::Borrowed(curves), None));
     }
     let mut sections = Vec::with_capacity(curves.len());
     let mut remaining_steps = cash_karp::MAX_STEPS;
@@ -154,7 +176,7 @@ fn prepare_impl<'a, E: From<GeometryError>>(
     if sections.iter().all(|s| s.breaks.len() == 2) {
         // One region only needs an affine domain change, already provided by
         // the exact shared-basis pass. Avoid quadrature and knot roundoff here.
-        return Ok(Cow::Borrowed(curves));
+        return Ok((Cow::Borrowed(curves), None));
     }
     for section in &mut sections {
         for interval in section.breaks.windows(2) {
@@ -231,8 +253,8 @@ fn prepare_impl<'a, E: From<GeometryError>>(
         }
         result.push(normalized);
     }
-    consolidate_roundoff(&mut result)?;
-    Ok(Cow::Owned(result))
+    consolidate_section_knots(&mut result, 32. * Real::EPSILON)?;
+    Ok((Cow::Owned(result), Some(end * scale)))
 }
 
 // Piecewise affine knot changes preserve controls only across independent
@@ -436,7 +458,10 @@ fn match_breaks(source: &[Real], reference: &[Real]) -> Vec<Real> {
     result
 }
 
-fn consolidate_roundoff(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> {
+pub(crate) fn consolidate_section_knots(
+    curves: &mut [NurbsCurve],
+    tolerance: Real,
+) -> Result<(), GeometryError> {
     let mut knots = curves
         .iter()
         .enumerate()
@@ -444,7 +469,7 @@ fn consolidate_roundoff(curves: &mut [NurbsCurve]) -> Result<(), GeometryError> 
         .collect::<Vec<_>>();
     knots.sort_by(|a, b| a.0.total_cmp(&b.0));
     let mut replacements = vec![Vec::new(); curves.len()];
-    for group in knots.chunk_by(|a, b| (a.0 - b.0).abs() <= 32. * Real::EPSILON) {
+    for group in knots.chunk_by(|a, b| (a.0 - b.0).abs() <= tolerance) {
         let distinct = group
             .iter()
             .map(|p| p.1)

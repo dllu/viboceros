@@ -26,6 +26,18 @@ pub(super) fn retime(raw: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
 }
 
 pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, GeometryError> {
+    join_regions(raw, angle, true)
+}
+
+pub(super) fn retain_regions(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, GeometryError> {
+    join_regions(raw, angle, false)
+}
+
+fn join_regions(
+    raw: &NurbsCurve,
+    angle: Real,
+    rebuild_single_region: bool,
+) -> Result<NurbsCurve, GeometryError> {
     let cuts = raw
         .knots()
         .chunk_by(|a, b| a == b)
@@ -44,7 +56,13 @@ pub(super) fn construct(raw: &NurbsCurve, angle: Real) -> Result<NurbsCurve, Geo
     for pair in regions.windows(2) {
         let (a, b) = (pair[0], pair[1]);
         let (start, end) = (cuts[a], cuts[b]);
-        let curve = c1_region_impl(raw, &cuts, a, b, regions.len() == 2)?;
+        let curve = c1_region_impl(
+            raw,
+            &cuts,
+            a,
+            b,
+            rebuild_single_region && regions.len() == 2,
+        )?;
         controls.extend(
             curve
                 .control_points()

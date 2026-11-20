@@ -9,7 +9,9 @@ mod compatible;
 mod end_handles;
 mod interpolate;
 mod parameterize;
-pub(crate) use parameterize::prepare as prepare_section_regions;
+pub(crate) use parameterize::{
+    consolidate_section_knots, prepare as prepare_section_regions, prepare_sweep_refit_regions,
+};
 mod points;
 mod rebuild;
 mod refit;
@@ -20,13 +22,13 @@ pub use points::{
     try_loft_nurbs_curves_with_matched_ends_and_operations,
 };
 pub use rebuild::{try_loft_nurbs_curves_rebuilt, try_prepare_rebuilt_loft_sections_with};
-pub(crate) use refit::try_retimed_cubic_pieces;
 pub use refit::{
     AdaptiveLinearRefitProposal, prepare_refitted_loft_sections_with_operations,
     try_loft_nurbs_curves_refitted, try_loft_nurbs_curves_refitted_with_angle,
     try_prepare_refitted_loft_sections, try_prepare_refitted_loft_sections_with_angle,
     try_propose_adaptive_linear_refit, try_propose_joined_linear_refit, try_propose_joined_refit,
 };
+pub(crate) use refit::{closed_set_cubic_proposal, try_retimed_cubic_pieces};
 #[cfg(test)]
 mod tests;
 
