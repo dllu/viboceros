@@ -106,10 +106,14 @@ fn closed_endpoint(
         candidate.clone()
     };
     let limit = tolerance.absolute().max(edge.tolerance());
-    if surface
-        .parameter_curve_deviation_bound(&witness, edge.curve(), limit)?
-        .is_none()
-    {
+    let bound = match surface.parameter_curve_deviation_bound(&witness, edge.curve(), limit) {
+        Ok(bound) => bound,
+        // When stitching, leave this trim alone and let the caller try
+        // closing the joint on the other incident trim.
+        Err(GeometryError::SurfaceCurveCertificateWorkLimit) if !require_certification => None,
+        Err(error) => return Err(error.into()),
+    };
+    if bound.is_none() {
         if require_certification {
             return Err(Error::Kernel(
                 "Numerical native UV joint cannot be continuously certified".into(),
