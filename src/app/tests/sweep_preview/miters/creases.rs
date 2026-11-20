@@ -1,6 +1,56 @@
 use super::*;
 
 #[test]
+fn sweep_trimmed_preview_joins_intersection_spans_across_a_profile_crease() {
+    let mut app = test_app();
+    for input in [
+        "Polyline 0,0,0 5,0,0 5,5,0",
+        "Polyline 0,0,0 0,1,1 0,2,2.5",
+        "Polyline 5,5,0 4.2,5,1 3.4,5,2.5",
+    ] {
+        enter(&mut app, input);
+    }
+    app.document.clear_history().unwrap();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    assert_eq!(sources.len(), 3);
+    let tolerance = app.document.tolerance();
+    let context = egui::Context::default();
+    enter(&mut app, "Sweep1 UntrimmedMiters=No");
+    for source in &sources {
+        enter(&mut app, &source.id().to_string());
+    }
+    enter(&mut app, "");
+    let corner = point(4.127459798, 0.925910491, 1.);
+    let trimmed =
+        wait_for_wires_with_timeout(&mut app, &context, Duration::from_secs(30), |wires| {
+            wires.iter().any(|wire| {
+                let domain = wire.domain();
+                [*domain.start(), *domain.end()]
+                    .into_iter()
+                    .any(|u| wire.evaluate(u).unwrap().distance_to(corner).unwrap() < 1e-6)
+            })
+        });
+    enter(&mut app, "UntrimmedMiters=Yes");
+    wait_for_wires(&mut app, &context, |wires| {
+        !wires.is_empty() && wires != trimmed
+    });
+    enter(&mut app, "Undo");
+    wait_for_wires_with_timeout(&mut app, &context, Duration::from_secs(30), |wires| {
+        wires == trimmed
+    });
+    assert_eq!(app.document.undo_label(), None);
+    enter(&mut app, "");
+    let Geometry::Brep(result) = app.document.objects().last().unwrap().geometry() else {
+        panic!("expected a joined Sweep1 BRep: {:?}", app.command_log);
+    };
+    assert_eq!(app.document.objects().count(), 4);
+    assert_eq!((result.faces().len(), result.edges().len()), (4, 12));
+    assert_eq!(result.wireframe_curves(1, tolerance).unwrap(), trimmed);
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), sources);
+}
+
+#[test]
 fn sweep_refit_review_keeps_the_section_domain_and_ends_creases_at_the_miter() {
     let mut app = test_app();
     for input in [

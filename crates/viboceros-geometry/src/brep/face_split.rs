@@ -93,11 +93,23 @@ impl Brep {
                 } else {
                     0.
                 };
-                self.partition_face_with_budget(
+                let exact = self.partition_face_with_budget(
                     index, direction, cut, tolerance, budget, snap_limit,
-                )
-                .ok()
-                .flatten()
+                );
+                if direction == SurfaceKnotDirection::V && exact.is_err() {
+                    return self
+                        .partition_face_with_budget(
+                            index,
+                            direction,
+                            cut,
+                            tolerance,
+                            budget,
+                            tolerance.absolute() * 0.125,
+                        )
+                        .ok()
+                        .flatten();
+                }
+                exact.ok().flatten()
             };
             let mut partition = surface
                 .knots_u()
@@ -254,10 +266,15 @@ impl Brep {
         )?;
         let mut result = self.try_split_edges_at_parameters(&splits, tolerance)?;
         if sweep_snap_limit > 0. {
-            // U is signed distance on these straight extrusion surfaces. The
-            // positive trim basis bounds the whole displacement by the change
-            // in the U coordinates of the clamped end controls.
-            curves::snap_sweep_trim_ends(&mut result.faces[face], parameter, sweep_snap_limit)?;
+            // An extension's U coordinate is physical distance. For a
+            // section crease in V, certify the adjusted trims in model space.
+            curves::snap_sweep_trim_ends(
+                &mut result.faces[face],
+                axis,
+                parameter,
+                sweep_snap_limit,
+                (axis == 1).then_some((result.edges.as_slice(), tolerance, &mut *budget)),
+            )?;
         } else {
             curves::certify(self, &mut result, &splits, budget)?;
         }

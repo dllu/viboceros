@@ -159,21 +159,27 @@ fn crossing_parameters_with_snap(
 
 pub(super) fn snap_sweep_trim_ends(
     face: &mut BrepFace,
+    axis: usize,
     cut: Real,
     snap_limit: Real,
+    mut proof: Option<(&[BrepEdge], Tolerance, &mut Budget)>,
 ) -> Result<(), GeometryError> {
     for trim in face.loops.iter_mut().flat_map(|ring| &mut ring.trims) {
         let points = trim.curve.control_points();
-        let snaps =
-            |p: WeightedPoint2| p.point().x() != cut && (p.point().x() - cut).abs() <= snap_limit;
+        let snaps = |p: WeightedPoint2| {
+            let x = parameter_coordinate(p.point(), axis);
+            x != cut && (x - cut).abs() <= snap_limit
+        };
         let end = points.len() - 1;
         if snaps(points[0]) || snaps(points[end]) {
             let mut points = points.to_vec();
             for index in [0, end] {
                 let point = points[index];
                 if snaps(point) {
+                    let mut coordinates = point.point().to_array();
+                    coordinates[axis] = cut;
                     points[index] = WeightedPoint2::try_new(
-                        Point2::try_new(cut, point.point().y())?,
+                        Point2::try_new(coordinates[0], coordinates[1])?,
                         point.weight(),
                     )?;
                 }
@@ -183,6 +189,28 @@ pub(super) fn snap_sweep_trim_ends(
                 points,
                 trim.curve.knots().to_vec(),
             )?;
+            if let Some((edges, tolerance, budget)) = &mut proof {
+                let Some(edge) = trim.edge.and_then(|index| edges.get(index)) else {
+                    return invalid("crease split cannot snap a singular trim");
+                };
+                budget.charge(face.surface.control_points().len().saturating_mul(
+                    trim.curve.control_points().len() + edge.curve.control_points().len(),
+                ))?;
+                let reversed;
+                let spatial = if trim.reversed_3d {
+                    reversed = edge.curve.reversed()?;
+                    &reversed
+                } else {
+                    &edge.curve
+                };
+                if face
+                    .surface
+                    .parameter_curve_deviation_bound(&trim.curve, spatial, tolerance.absolute())?
+                    .is_none()
+                {
+                    return invalid("crease split snap leaves its shared edge");
+                }
+            }
         }
     }
     Ok(())

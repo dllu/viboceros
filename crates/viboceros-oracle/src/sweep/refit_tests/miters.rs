@@ -1,5 +1,7 @@
 use super::*;
 
+mod segmented;
+
 const LIMIT: Real = 1e-7;
 
 #[test]

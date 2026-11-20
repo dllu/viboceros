@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-06
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "inside",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              1.0
+            ],
+            [
+              0.0,
+              2.0,
+              2.5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              4.2,
+              5.0,
+              1.0
+            ],
+            [
+              3.4,
+              5.0,
+              2.5
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        10.0
+      ],
+      "command": true,
+      "untrimmed_miters": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "inspect_edges": true
+    },
+    {
+      "op": "sweep1",
+      "id": "outside",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              -1.0,
+              1.0
+            ],
+            [
+              0.0,
+              -2.0,
+              2.5
+            ]
+          ]
+        },
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              5.0,
+              5.0,
+              0.0
+            ],
+            [
+              5.8,
+              5.0,
+              1.0
+            ],
+            [
+              6.6,
+              5.0,
+              2.5
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        10.0
+      ],
+      "command": true,
+      "untrimmed_miters": false,
+      "refit_rail": false,
+      "inspect_definition": true,
+      "inspect_edges": true
+    }
+  ]
+}

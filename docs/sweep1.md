@@ -97,9 +97,10 @@ straight rail segments. Local blending uses the neighboring profiles. Global
 blending is available when two profiles bracket the corners on an open sweep.
 In trimmed mode, Sweep1 extends the adjoining surfaces and cuts them along
 a complete shared intersection. Profile creases split the sewn faces and
-their shared miter edges. If the intersection cannot be used, the
-preview retains the extended pieces. Accepting the preview adds the pieces
-as separate BReps in one undo step.
+their shared miter edges. When both supports meet at the same crease, Sweep1
+can certify the intersection one section span at a time. If the intersection
+cannot be used, the preview retains the extended pieces. Accepting the
+preview adds the pieces as separate BReps in one undo step.
 
 On a Local polygonal loop, the return face uses the first profile transported
 into the final rail frame. Untrimmed mode sews the seam if the two copies

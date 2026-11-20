@@ -27,6 +27,10 @@ The [shared miter captures](../../tools/rhino_oracle/fixtures/sweep1_shared_mite
 cover two pairs of creased profiles whose lateral offsets cancel at the rail
 corner. Both miter settings produce four faces. The comparison checks the
 complete support patches between the natural rail ends and the shared corner.
+The [unequal-profile captures](../../tools/rhino_oracle/fixtures/sweep1_segmented_miters.json)
+cover inside and outside trimmed miters whose intersections cross a crease.
+The results agree on the joined face and edge counts. Complete miter edges
+agree within `2.81e-6` after matching their parameter speeds.
 
 ## Native regressions
 

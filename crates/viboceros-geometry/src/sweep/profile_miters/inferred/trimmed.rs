@@ -85,11 +85,7 @@ pub(in crate::sweep::profile_miters) fn sew<E: From<GeometryError>>(
                 strip::Cut::at_u(second, u[1], a)?,
             ])
         } else {
-            trace::complete_trace(
-                [first, second],
-                intersect(first, second, tolerance)?,
-                tolerance,
-            )?
+            trace::find([first, second], tolerance, intersect)?
         };
         if let Some([east, west]) = pair
             && strip::ordered(first, cuts[joint.first][0].as_ref(), Some(&east))

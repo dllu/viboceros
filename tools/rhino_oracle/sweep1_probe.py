@@ -137,4 +137,10 @@ def record(host, brep, operation):
         if operation.get("inspect_definition", False):
             record["definition"] = host["_nurbs_surface_definition"](face)
         surfaces.append(record)
+    if surfaces and operation.get("inspect_edges", False):
+        surfaces[0]["edges"] = [
+            {"face_count": len(edge.AdjacentFaces()),
+             "definition": host["_nurbs_curve_definition"](edge)}
+            for edge in brep.Edges
+        ]
     return surfaces

@@ -197,9 +197,19 @@ pub(super) fn run(
         start: fixture.start_point.map(Point3::try_from).transpose()?,
         end: fixture.end_point.map(Point3::try_from).transpose()?,
     };
-    let build = || {
+    let build = || -> Result<Vec<NurbsSurface>, ProbeError> {
         if fixture.command {
-            command_surfaces(&rail, &sections, fixture, tolerance)
+            Ok(
+                command_results(&rail, &sections, fixture, tolerance, |brep| {
+                    brep.faces()
+                        .iter()
+                        .map(|face| face.surface().clone())
+                        .collect::<Vec<_>>()
+                })?
+                .into_iter()
+                .flatten()
+                .collect(),
+            )
         } else {
             let (simplified, section_domain) = if let Some(distance) = fixture.refit_tolerance {
                 let (fits, domain) =
@@ -275,12 +285,13 @@ pub(super) fn run(
     Ok((json!(records), if fixture.command { 0 } else { elapsed }))
 }
 
-fn command_surfaces(
+fn command_results<T>(
     rail: &viboceros_geometry::Curve3,
     sections: &[SweepSection],
     fixture: &SweepFixture,
     tolerance: Tolerance,
-) -> Result<Vec<NurbsSurface>, ProbeError> {
+    mut read: impl FnMut(&Brep) -> T,
+) -> Result<Vec<T>, ProbeError> {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::new(tolerance);
     // Polyline recipes record chord-length stations in the rail's NURBS chart.
@@ -337,14 +348,14 @@ fn command_surfaces(
         }
     }
     registry.execute(&mut document, &text)?;
-    let mut surfaces = Vec::new();
+    let mut results = Vec::new();
     for object in document.objects().filter(|o| !ids.contains(&o.id())) {
         let Geometry::Brep(brep) = object.geometry() else {
             return Err(ProbeError::FixtureInvariant(
                 "sweep command must create a BRep",
             ));
         };
-        surfaces.extend(brep.faces().iter().map(|f| f.surface().clone()));
+        results.push(read(brep));
     }
-    Ok(surfaces)
+    Ok(results)
 }
