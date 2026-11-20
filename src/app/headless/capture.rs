@@ -21,6 +21,8 @@ pub(super) struct Screenshot {
     show_isocurves: bool,
     #[serde(default = "default_marker_scale")]
     marker_scale: f32,
+    #[serde(default = "default_msaa_samples")]
+    msaa_samples: u32,
     #[serde(default)]
     lighting: Lighting,
 }
@@ -39,6 +41,10 @@ fn show_edges() -> bool {
 
 fn default_marker_scale() -> f32 {
     1.0
+}
+
+fn default_msaa_samples() -> u32 {
+    1
 }
 
 #[derive(Deserialize)]
@@ -91,11 +97,12 @@ impl Session {
         if self.renderer.is_none() {
             self.renderer = Some(OffscreenRenderer::try_new()?);
         }
-        let rgba =
-            self.renderer
-                .as_mut()
-                .unwrap()
-                .capture(&scene, options.size, options.background)?;
+        let rgba = self.renderer.as_mut().unwrap().capture(
+            &scene,
+            options.size,
+            options.background,
+            options.msaa_samples,
+        )?;
         let file = io::BufWriter::new(std::fs::File::create(options.path)?);
         let mut encoder = png::Encoder::new(file, width, height);
         encoder.set_color(png::ColorType::Rgba);

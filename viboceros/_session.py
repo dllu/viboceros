@@ -358,13 +358,18 @@ class Session:
         background: tuple[int, int, int, int] = (255, 255, 255, 255),
         camera: Camera | None = None, show_edges: bool = True, show_isocurves: bool = True,
         lighting: Literal["viewport", "diffuse"] = "viewport", marker_scale: float = 1.0,
+        msaa_samples: Literal[1, 4] = 1,
     ) -> Path:
-        """Write a viewport PNG. Scale line widths and point sizes with ``marker_scale``."""
+        """Write a viewport PNG. Use ``msaa_samples=4`` for antialiased coverage.
+
+        Scale line widths and point sizes with ``marker_scale``.
+        """
         path = _path(path)
         self._request(
             "screenshot", path=str(path), view=view, mode=mode, size=size,
             fit=fit, background=background, camera=None if camera is None else camera._payload(),
             show_edges=show_edges, show_isocurves=show_isocurves, lighting=lighting,
             marker_scale=marker_scale,
+            msaa_samples=msaa_samples,
         )
         return path

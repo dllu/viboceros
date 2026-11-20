@@ -11,6 +11,7 @@ pub(super) struct Composite {
 pub(super) struct ViewportImage {
     pub(super) size: [u32; 2],
     color: wgpu::TextureView,
+    multisampled_color: Option<wgpu::TextureView>,
     depth: wgpu::TextureView,
     bind_group: wgpu::BindGroup,
 }
@@ -71,8 +72,13 @@ impl Composite {
         }
     }
 
-    pub(super) fn new_image(&self, device: &wgpu::Device, size: [u32; 2]) -> ViewportImage {
-        let texture_view = |label, format, usage| {
+    pub(super) fn new_image(
+        &self,
+        device: &wgpu::Device,
+        size: [u32; 2],
+        sample_count: u32,
+    ) -> ViewportImage {
+        let texture_view = |label, format, usage, samples| {
             device
                 .create_texture(&wgpu::TextureDescriptor {
                     label: Some(label),
@@ -82,7 +88,7 @@ impl Composite {
                         depth_or_array_layers: 1,
                     },
                     mip_level_count: 1,
-                    sample_count: 1,
+                    sample_count: samples,
                     dimension: wgpu::TextureDimension::D2,
                     format,
                     usage,
@@ -94,11 +100,21 @@ impl Composite {
             "viewport color",
             self.format,
             wgpu::TextureUsages::RENDER_ATTACHMENT | wgpu::TextureUsages::TEXTURE_BINDING,
+            1,
         );
+        let multisampled_color = (sample_count > 1).then(|| {
+            texture_view(
+                "viewport multisampled color",
+                self.format,
+                wgpu::TextureUsages::RENDER_ATTACHMENT,
+                sample_count,
+            )
+        });
         let depth = texture_view(
             "viewport depth",
             DEPTH_FORMAT,
             wgpu::TextureUsages::RENDER_ATTACHMENT,
+            sample_count,
         );
         let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
             label: Some("viewport image"),
@@ -111,6 +127,7 @@ impl Composite {
         ViewportImage {
             size,
             color,
+            multisampled_color,
             depth,
             bind_group,
         }
@@ -125,16 +142,21 @@ impl Composite {
 
 impl ViewportImage {
     pub(super) fn begin(&self, encoder: &mut wgpu::CommandEncoder) -> wgpu::RenderPass<'static> {
+        let (view, resolve_target, store) = if let Some(multisampled) = &self.multisampled_color {
+            (multisampled, Some(&self.color), wgpu::StoreOp::Discard)
+        } else {
+            (&self.color, None, wgpu::StoreOp::Store)
+        };
         encoder
             .begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("viewport model pass"),
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment {
-                    view: &self.color,
+                    view,
                     depth_slice: None,
-                    resolve_target: None,
+                    resolve_target,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color::TRANSPARENT),
-                        store: wgpu::StoreOp::Store,
+                        store,
                     },
                 })],
                 depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {

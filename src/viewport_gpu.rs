@@ -168,11 +168,20 @@ struct ViewportRenderer {
     overlay_point_pipeline: wgpu::RenderPipeline,
     uniform_layout: wgpu::BindGroupLayout,
     composite: Composite,
+    sample_count: u32,
     viewports: Vec<PreparedViewport>,
 }
 
 impl ViewportRenderer {
     fn new(device: &wgpu::Device, target_format: wgpu::TextureFormat) -> Self {
+        Self::with_sample_count(device, target_format, 1)
+    }
+
+    fn with_sample_count(
+        device: &wgpu::Device,
+        target_format: wgpu::TextureFormat,
+        sample_count: u32,
+    ) -> Self {
         let shader = device.create_shader_module(wgpu::ShaderModuleDescriptor {
             label: Some("viboceros viewport shader"),
             source: wgpu::ShaderSource::Wgsl(VIEWPORT_SHADER.into()),
@@ -219,6 +228,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros opaque surface pipeline",
             "vs_triangle",
             if fragment_suffix == "linear" {
@@ -235,6 +245,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros transparent surface pipeline",
             "vs_triangle",
             if fragment_suffix == "linear" {
@@ -266,6 +277,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros depth-tested line pipeline",
             "vs_line",
             if fragment_suffix == "linear" {
@@ -291,6 +303,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros depth-tested point pipeline",
             "vs_point",
             if fragment_suffix == "linear" {
@@ -308,6 +321,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros deformation overlay line pipeline",
             "vs_line",
             if fragment_suffix == "linear" {
@@ -324,6 +338,7 @@ impl ViewportRenderer {
             &pipeline_layout,
             &shader,
             target_format,
+            sample_count,
             "viboceros deformation overlay point pipeline",
             "vs_point",
             if fragment_suffix == "linear" {
@@ -345,6 +360,7 @@ impl ViewportRenderer {
             overlay_point_pipeline,
             uniform_layout,
             composite: Composite::new(device, target_format),
+            sample_count,
             viewports: Vec::new(),
         }
     }
@@ -386,7 +402,8 @@ impl ViewportRenderer {
                 return;
             }
         } else {
-            self.viewports[viewport_index].image = Some(self.composite.new_image(device, size));
+            self.viewports[viewport_index].image =
+                Some(self.composite.new_image(device, size, self.sample_count));
         }
         let image = self.viewports[viewport_index].image.as_ref().unwrap();
         let mut pass = image.begin(encoder);
@@ -658,6 +675,7 @@ fn create_pipeline(
     layout: &wgpu::PipelineLayout,
     shader: &wgpu::ShaderModule,
     target_format: wgpu::TextureFormat,
+    sample_count: u32,
     label: &'static str,
     vertex_entry: &'static str,
     fragment_entry: &'static str,
@@ -694,7 +712,10 @@ fn create_pipeline(
             stencil: wgpu::StencilState::default(),
             bias,
         }),
-        multisample: wgpu::MultisampleState::default(),
+        multisample: wgpu::MultisampleState {
+            count: sample_count,
+            ..Default::default()
+        },
         fragment: Some(wgpu::FragmentState {
             module: shader,
             entry_point: Some(fragment_entry),
