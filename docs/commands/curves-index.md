@@ -82,6 +82,8 @@ These are independent snippets. Prepare the required sources and selection first
 replace object IDs, names and paths with values from your document. See each
 command page for supported options and limitations.
 
+See [Extend and ExtendDynamic](extend.md) for interactive picking and live previews.
+
 ```text
 Point 1,2,0
 PointGrid 0,0,0 6,4,0 XCount=7 YCount=5 ZCount=1

@@ -183,6 +183,7 @@ mod curve_array;
 mod curve_boolean;
 mod curve_chamfer;
 mod curve_connect;
+mod curve_extend;
 mod curve_match;
 mod curve_deviation;
 mod curve_extrusion;
@@ -464,6 +465,8 @@ pub struct VibocerosApp {
     fillet_corners_session: Option<fillet_corners::Session>,
     curve_chamfer_session: Option<curve_chamfer::Session>,
     curve_connect_session: Option<curve_connect::Session>,
+    curve_extend_session: Option<curve_extend::Session>,
+    curve_extend_preferences: [curve_extend::Preferences; 2],
     curve_match_session: Option<curve_match::Session>,
     curve_match_options: viboceros_command::match_curve::Options,
     curve_boolean_prompt: Option<curve_boolean::Prompt>,
@@ -691,6 +694,8 @@ impl VibocerosApp {
             fillet_corners_session: None,
             curve_chamfer_session: None,
             curve_connect_session: None,
+            curve_extend_session: None,
+            curve_extend_preferences: Default::default(),
             curve_match_session: None,
             curve_match_options: viboceros_command::match_curve::Options {
                 continuity: viboceros_geometry::CurveBlendContinuity::Curvature,
@@ -1006,6 +1011,9 @@ impl VibocerosApp {
         if self.curve_line.is_some() && self.try_continue_curve_line(&input) {
             return;
         }
+        if self.curve_extend_owns_keyword(&input) && self.continue_curve_extend(&input) {
+            return;
+        }
         if self.try_one_shot_snap(&input) {
             return;
         }
@@ -1058,6 +1066,7 @@ impl VibocerosApp {
             return;
         }
         if self.continue_curve_connect(&input)
+            || self.continue_curve_extend(&input)
             || self.continue_curve_match(&input)
             || self.continue_curve_chamfer(&input)
             || self.continue_curve_fillet(&input)
@@ -1222,6 +1231,7 @@ impl VibocerosApp {
             || self.start_reparameterize(&input)
             || self.start_curve_boolean(&input)
             || self.start_curve_connect(&input)
+            || self.start_curve_extend(&input)
             || self.start_curve_match(&input)
             || self.start_curve_chamfer(&input)
             || self.start_curve_fillet(&input)
@@ -1311,6 +1321,7 @@ impl VibocerosApp {
             || self.continue_ribbon(input)
             || self.continue_surface_point_grid(input)
             || self.continue_curve_connect(input)
+            || self.continue_curve_extend(input)
             || self.continue_curve_match(input)
             || self.continue_curve_chamfer(input)
             || self.continue_curve_fillet(input)

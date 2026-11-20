@@ -115,6 +115,7 @@ impl VibocerosApp {
                 && self.plane_prompt.as_ref().map_or_else(
                     || {
                         (self.active_command.is_some()
+                            || self.curve_extend_session.as_ref().is_some_and(curve_extend::Session::wants_point)
                             || self
                                 .curve_boolean_prompt
                                 .as_ref()
@@ -175,6 +176,7 @@ impl VibocerosApp {
                     .or_else(|| self.distribute_session.as_ref()?.anchor())
                     .or_else(|| self.offset_mesh_session.as_ref()?.anchor())
                     .or_else(|| self.polyline_session.as_ref()?.input.anchor())
+                    .or_else(|| self.curve_extend_session.as_ref()?.anchor())
                     .or_else(|| self.active_command.and_then(InteractiveCommand::anchor))
             },
             reference: if self.plane_prompt.is_some() {

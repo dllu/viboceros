@@ -46,6 +46,7 @@ impl VibocerosApp {
             && self.layer_prompt.is_none()
             && self.direction_session.is_none()
             && self.curve_connect_session.is_none()
+            && self.curve_extend_session.is_none()
             && self.curve_match_session.is_none()
             && self.end_analysis_pick.is_none()
             && self.zoom_factor_pending.is_none()
@@ -250,6 +251,8 @@ impl VibocerosApp {
             .as_ref()
             .filter(|_| self.subcurve_prompt.is_none())
         {
+            p.hint()
+        } else if let Some(p) = &self.curve_extend_session {
             p.hint()
         } else if let Some(p) = &self.curve_match_session {
             p.hint()

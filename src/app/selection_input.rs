@@ -62,6 +62,9 @@ impl VibocerosApp {
             }
             return;
         }
+        if self.pick_curve_extend(click, pick) {
+            return;
+        }
         if self.pick_curve_connect(click.object_id, pick)
             || self.pick_curve_match_viewport(click.object_id, pick)
             || self.pick_curve_chamfer(click.object_id)
@@ -433,6 +436,10 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.picking_curve_extend_boundaries() {
+            self.select_extend_boundaries(selection.object_ids, selection.mode);
+            return;
+        }
         if self.nested_length_wants_source() && self.chain_prompt.is_none() {
             self.add_nested_length_targets(
                 selection
@@ -456,6 +463,7 @@ impl VibocerosApp {
             || self.arc_blend_session.is_some()
             || self.curve_fillet_session.is_some()
             || self.curve_connect_session.is_some()
+            || self.curve_extend_session.is_some()
             || self.curve_match_session.is_some()
             || self.curve_chamfer_session.is_some())
             && self.plane_prompt.is_none()
@@ -780,6 +788,12 @@ impl VibocerosApp {
     }
 
     pub(super) fn apply_selection_region(&mut self, selection: SelectionWindow, circular: bool) {
+        if self.curve_extend_session.is_some() && self.plane_prompt.is_none() {
+            if self.picking_curve_extend_boundaries() {
+                self.select_extend_boundaries(selection.object_ids, selection.mode);
+            }
+            return;
+        }
         if self.picking_edge_blend_edit() {
             if let [id] = selection.object_ids.as_slice() {
                 self.select_edge_blend_edit_object(*id);

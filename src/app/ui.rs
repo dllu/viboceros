@@ -59,6 +59,7 @@ impl VibocerosApp {
         self.validate_fillet_surface();
         self.validate_curve_chamfer();
         self.validate_curve_connect();
+        self.validate_curve_extend();
         self.validate_curve_match();
         self.validate_curve_fillet();
         self.validate_fillet_corners();
@@ -113,6 +114,7 @@ impl VibocerosApp {
         }
         if self.active_command.is_none()
             && self.curve_connect_session.is_none()
+            && self.curve_extend_session.is_none()
             && self.curve_match_session.is_none()
             && self.nested_measurement.is_none()
             && self.selection_menu.is_none()
@@ -442,7 +444,8 @@ impl VibocerosApp {
             None
         }
         .filter(|_| plane_object_pick || model_input_active && self.plane_prompt.is_none());
-        let edge_pick = (self
+        let extend_source_pick = self.picking_curve_extend_source();
+        let edge_pick = (extend_source_pick || self
             .edge_prompt
             .as_ref()
             .is_some_and(edge_commands::EdgePrompt::picking_edge)
@@ -886,7 +889,7 @@ impl VibocerosApp {
         let selecting_normal = model_input_active
             && (self.picking_line_normal() || self.selecting_move_normal_reference());
         let curve_or_edge_pick = edge_pick
-            && (self.picking_subcurve_edge()
+            && (extend_source_pick || self.picking_subcurve_edge()
                 || (self.picking_orient_curve()
                     || self.picking_orient_edge()
                     || self.picking_surface_offset_curve())
@@ -1674,6 +1677,12 @@ impl VibocerosApp {
                                         .and_then(curve_match::Session::preview)
                                 })
                                 .or_else(|| {
+                                    self.curve_extend_session
+                                        .as_ref()
+                                        .filter(|_| model_input_active && self.plane_prompt.is_none())
+                                        .and_then(curve_extend::Session::preview)
+                                })
+                                .or_else(|| {
                                     self.face_create_session
                                         .as_ref()
                                         .map(face_create::Session::preview_curves)
@@ -1841,7 +1850,7 @@ impl VibocerosApp {
                             raw_mesh_face_highlights: Some(&raw_mesh_face_highlights),
                             component_highlight_segments: &component_highlight_segments,
                             edge_pick,
-                            edge_contact_pick: matches!(
+                            edge_contact_pick: extend_source_pick || matches!(
                                 self.edge_prompt,
                                 Some(edge_commands::EdgePrompt::Match(_))
                             ),
@@ -2015,6 +2024,7 @@ impl VibocerosApp {
         }
         self.update_tapered_extrusion_preview(apex_hover, ui.ctx());
         self.update_ribbon_preview(apex_hover, ui.ctx());
+        self.update_curve_extend_preview(apex_hover, ui.ctx());
         self.update_curve_connect_preview(
             viewport_outputs
                 .iter()

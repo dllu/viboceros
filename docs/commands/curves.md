@@ -325,48 +325,8 @@ object identity, attributes, groups, selection, and undo are preserved.
 
 ## Extension
 
-`Extend Length=value Side=Start|End|Both` extends one selected open curve;
-`Both` adds the full requested model-space length independently at each end.
-`Type=Natural` selects the source end's natural line, same-radius arc, or smooth
-continuation, while `Type=Smooth` explicitly requests curvature-continuous
-free-form extrapolation. `Type=Arc` follows the endpoint's exact osculating
-circle and falls back to a degree-matched tangent line at zero curvature;
-requests beyond one revolution use Rhino's full-circle cap while retaining the
-requested parameter-domain interval. `Type=Line` uses Rhino's straight tangent extension.
-With `Join=Merge`, line and polyline ends merge into their terminal span,
-higher-degree straight curves collapse to one line, and other curves retain
-Rhino's exact degree-matched span, knot, and rational-weight rules. A merged
-same-radius arc is rebuilt as one canonical rational arc. `Join=Yes` retains an
-explicit segment boundary, including Rhino's unit-span polyline
-parameterization and exact full-multiplicity free-form seam. `Join=No` leaves
-the source untouched and creates one or two native line, arc, or smooth
-extension curves with copied attributes but without copying source group
-membership. Rhino's post-command deselection and undo behavior are retained.
-
-`Extend point Type=Natural|Arc|Line|Smooth Join=Merge|Yes|No` extends one of
-the selected open curves to the nearest intersection with the other selected
-curve, surface, or trimmed B-rep boundaries. The point chooses the closest
-source endpoint; in the UI, omit it and pick that endpoint in a viewport after
-preselecting the source and boundaries. Exact span subdivision handles
-transverse and tangent curve-surface hits, while finite coplanar overlaps stop
-at their entry edge and B-rep trim holes are excluded. Intersections already
-on the source are ignored, multiple boundaries resolve to the first forward
-hit, and the source identity, attributes, groups, undo state, and Rhino's
-separate-output behavior are preserved.
-
-`Extend Domain=start,end` exposes exact analytic NURBS-domain extension.
-Analytic curves and polylines are promoted to exact NURBS form as needed while
-identity is preserved. The permanent length-command fixture covers all join
-modes for explicit Smooth; its `2e-8` threshold contains Rhino's approximately
-`1.2e-8` cubic length-solver variation while Viboceros resolves that case to
-machine precision. The boundary-command fixture covers every continuation
-style, all join modes, both-end extension, nearest-boundary selection,
-standalone surfaces, solid and trimmed B-reps, curved and tangent surface hits,
-coplanar overlap, and trim holes to `1e-10`. Arc cases compare a canonical
-knot parameterization because Rhino leaks its temporary boundary-search extent
-into geometrically equivalent segment domains. Arc geometry and commands
-otherwise agree to floating-point roundoff except for the same pre-existing
-Smooth length-solver variation.
+See [Extend and ExtendDynamic](extend.md) for boundary, fixed-length, and
+cursor-driven workflows.
 
 ## Corner fillets
 

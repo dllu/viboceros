@@ -74,7 +74,7 @@ fn native_error(error: viboceros_smlib::Error) -> CommandError {
 pub(super) fn curve_boundary(
     source: &NurbsCurve,
     side: CurveExtensionSide,
-    style: GeometryCurveExtensionStyle,
+    style: curve_extend::Style,
     boundaries: &[GeometryCurveExtensionBoundary],
     tolerance: Tolerance,
     joined: bool,
@@ -90,7 +90,7 @@ pub(super) fn curve_boundary(
 pub(super) fn curve_boundary_pieces(
     source: &NurbsCurve,
     side: CurveExtensionSide,
-    style: GeometryCurveExtensionStyle,
+    style: curve_extend::Style,
     boundaries: &[GeometryCurveExtensionBoundary],
     tolerance: Tolerance,
 ) -> Result<Vec<NurbsCurve>, CommandError> {

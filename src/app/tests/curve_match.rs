@@ -47,7 +47,7 @@ fn near(actual: Point3, expected: Point3, tolerance: f64) {
 
 // The command panel can gain a row between picks. Project through the laid-out
 // viewport after egui has settled its size and moved the pointer to the part.
-fn click_world(app: &mut VibocerosApp, context: &egui::Context, point: Point3) {
+pub(super) fn click_world(app: &mut VibocerosApp, context: &egui::Context, point: Point3) {
     for _ in 0..3 {
         viewport_frame(app, context, vec![]);
     }

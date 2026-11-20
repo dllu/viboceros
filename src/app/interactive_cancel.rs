@@ -66,6 +66,7 @@ impl VibocerosApp {
                 self.push_log("Cancelled Connect".into());
             }
         }
+        self.cancel_curve_extend(announce);
         if self.curve_match_session.take().is_some() {
             self.document.clear_selection();
             if announce {

@@ -546,7 +546,11 @@ impl VibocerosApp {
                 .selecting()
                 .then_some(ObjectSelectionFilter::Parametric);
         }
+        if self.picking_curve_extend_boundaries() {
+            return Some(ObjectSelectionFilter::Any);
+        }
         if self.picking_curve_connect()
+            || self.picking_curve_extend_source()
             || self.picking_curve_match()
             || self.picking_curve_chamfer()
             || self.picking_curve_fillet()
