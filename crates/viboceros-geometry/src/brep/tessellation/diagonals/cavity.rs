@@ -1,8 +1,10 @@
-//! Retriangulate a three-face neighborhood when a single flip cannot repair it.
+//! Retriangulate small neighborhoods when a single flip cannot repair them.
 use super::{
-    Edge, HashMap, NO_FACE, NurbsSurface, Point2, Point3, Real, Tolerance, Triangle,
+    Edge, HashMap, NO_FACE, NurbsSurface, Point2, Point3, Real, SurfaceSample, Tolerance, Triangle,
     center_distance, chords, edge, sample, wound_side,
 };
+
+mod hexagon;
 
 type Adjacency = HashMap<Edge, [usize; 2]>;
 
@@ -18,30 +20,30 @@ fn neighbors(i: usize, faces: &[Triangle], adjacent: &Adjacency) -> [Option<usiz
     })
 }
 
-fn boundary(faces: [Triangle; 3]) -> Option<[u32; 5]> {
+fn boundary<const N: usize, const B: usize>(faces: [Triangle; N]) -> Option<[u32; B]> {
     let edges = faces.map(directed_edges).into_iter().flatten();
-    let outer: [Edge; 5] = edges
+    let outer: [Edge; B] = edges
         .clone()
         .filter(|&[a, b]| !edges.clone().any(|other| other == [b, a]))
         .collect::<Vec<_>>()
         .try_into()
         .ok()?;
-    let mut ring = [outer[0][0]; 5];
-    for i in 1..5 {
+    let mut ring = [outer[0][0]; B];
+    for i in 1..B {
         let [_, next] = *outer.iter().find(|[a, _]| *a == ring[i - 1])?;
         if ring[..i].contains(&next) {
             return None;
         }
         ring[i] = next;
     }
-    outer.contains(&[ring[4], ring[0]]).then_some(ring)
+    outer.contains(&[ring[B - 1], ring[0]]).then_some(ring)
 }
 
-fn install(
+fn install<const N: usize>(
     faces: &mut [Triangle],
     adjacent: &mut Adjacency,
-    indices: [usize; 3],
-    replacement: [Triangle; 3],
+    indices: [usize; N],
+    replacement: [Triangle; N],
 ) {
     for i in indices {
         for [a, b] in directed_edges(faces[i]) {
@@ -69,6 +71,12 @@ struct SurfaceMesh<'a> {
     height: Real,
 }
 
+#[derive(Default)]
+struct Probes {
+    chords: HashMap<Edge, Real>,
+    triangles: HashMap<Triangle, Option<SurfaceSample>>,
+}
+
 impl SurfaceMesh<'_> {
     fn uv(&self, triangle: Triangle) -> [Point2; 3] {
         triangle.map(|i| self.parameters[i as usize])
@@ -88,29 +96,33 @@ impl SurfaceMesh<'_> {
             })
     }
 
-    fn best_partition(
+    fn best_partition<const N: usize, const B: usize>(
         &self,
-        indices: [usize; 3],
+        indices: [usize; N],
         faces: &[Triangle],
         adjacent: &Adjacency,
-        chord_errors: &mut HashMap<Edge, Real>,
-    ) -> Option<(Real, [Triangle; 3])> {
+        probes: &mut Probes,
+        templates: &[[[usize; 3]; N]],
+    ) -> Option<(Real, [Triangle; N])> {
         let old = indices.map(|i| faces[i]);
-        let ring = boundary(old)?;
+        let ring = boundary::<N, B>(old)?;
         let area = old.map(|face| self.uv(face));
         let winding = wound_side(area[0]);
         if winding == 0. || area.iter().any(|&uv| wound_side(uv) != winding) {
             return None;
         }
-        // These triangles form a disk in the conforming UV mesh. All five
-        // combinatorial partitions of its pentagon are fans. Matching the
-        // boundary and the strict winding keeps the filled UV region fixed,
-        // including in concave cases.
-        let sample = |face| sample(self.surface, self.points, self.parameters, face);
-        let [Some(a), Some(b), Some(c)] = old.map(sample) else {
-            return None;
+        // Matching the boundary and strict winding preserves the filled UV
+        // region. This also rejects invalid partitions of concave polygons.
+        let mut sample = |face| {
+            *probes
+                .triangles
+                .entry(face)
+                .or_insert_with(|| sample(self.surface, self.points, self.parameters, face))
         };
-        let previous = [a, b, c];
+        let previous = old.map(&mut sample);
+        if previous.iter().any(Option::is_none) {
+            return None;
+        }
         let inside = |p| {
             area.iter().any(|&[a, b, c]| {
                 [[a, b, p], [b, c, p], [c, a, p]]
@@ -120,13 +132,13 @@ impl SurfaceMesh<'_> {
         };
         let plane_limit = previous
             .iter()
+            .flatten()
             .map(|s| s.plane_distance)
             .fold(self.height / 12., Real::max);
         let mut distance_limit = None;
         let mut best = None;
-        for i in 0..5 {
-            let v = |j: usize| ring[(i + j) % 5];
-            let candidate = [[v(0), v(1), v(2)], [v(0), v(2), v(3)], [v(0), v(3), v(4)]];
+        for &template in templates {
+            let candidate = template.map(|face| face.map(|i| ring[i]));
             // Discard fans that leave the original UV region before evaluating
             // the surface along their proposed diagonals.
             if candidate
@@ -135,18 +147,22 @@ impl SurfaceMesh<'_> {
             {
                 continue;
             }
-            let internal = [edge(v(0), v(2)), edge(v(0), v(3))];
-            let mut error: Real = 0.;
-            for key in internal {
+            let internal = template
+                .into_iter()
+                .flat_map(|[a, b, c]| [[a, b], [b, c], [c, a]])
+                .filter(|&[a, b]| a < b && b - a > 1 && b - a < B - 1);
+            let error = internal.fold(0., |error: Real, [a, b]| {
+                let key = edge(ring[a], ring[b]);
                 let chord = match adjacent.get(&key) {
                     Some(owners) if owners.iter().all(|i| indices.contains(i)) => 0.,
                     Some(_) => Real::INFINITY,
-                    None => *chord_errors
+                    None => *probes
+                        .chords
                         .entry(key)
                         .or_insert_with(|| self.chord_error(key).unwrap_or(Real::INFINITY)),
                 };
-                error = error.max(chord);
-            }
+                error.max(chord)
+            });
             if error > self.height || best.is_some_and(|(distance, _)| error >= distance) {
                 continue;
             }
@@ -160,24 +176,22 @@ impl SurfaceMesh<'_> {
             }) {
                 continue;
             }
-            let [Some(a), Some(b), Some(c)] = candidate.map(sample) else {
-                continue;
-            };
-            let current = [a, b, c];
+            let current = candidate.map(&mut sample);
             if current
                 .iter()
-                .any(|s| s.alignment <= 0.1 || s.plane_distance > plane_limit)
+                .any(|s| s.is_none_or(|s| s.alignment <= 0.1 || s.plane_distance > plane_limit))
             {
                 continue;
             }
             let limit = *distance_limit.get_or_insert_with(|| {
                 previous
                     .iter()
+                    .flatten()
                     .map(|s| center_distance(self.surface, s, |_| true).unwrap_or(Real::INFINITY))
                     .fold(self.height / 24., Real::max)
             });
             if limit.is_finite()
-                && current.iter().all(|s| {
+                && current.iter().flatten().all(|s| {
                     center_distance(self.surface, s, inside)
                         .is_some_and(|distance| distance <= limit)
                 })
@@ -188,6 +202,21 @@ impl SurfaceMesh<'_> {
         best
     }
 }
+
+// A pentagon's five partitions are fans from its five vertices.
+const PENTAGONS: [[[usize; 3]; 3]; 5] = {
+    let mut patterns = [[[0; 3]; 3]; 5];
+    let mut i = 0;
+    while i < patterns.len() {
+        let mut j = 0;
+        while j < 3 {
+            patterns[i][j] = [i, (i + j + 1) % 5, (i + j + 2) % 5];
+            j += 1;
+        }
+        i += 1;
+    }
+    patterns
+};
 
 pub(super) fn repair(
     surface: &NurbsSurface,
@@ -204,9 +233,9 @@ pub(super) fn repair(
         points,
         height,
     };
-    // Cavities overlap, so several partitions test the same diagonal.
-    // Its samples depend only on the unchanged vertices and surface.
-    let mut chord_errors = HashMap::new();
+    // Both passes reuse probes for overlapping cavities. The vertices and
+    // surface remain fixed while partitions change the connectivity.
+    let mut probes = Probes::default();
     for &i in inverted {
         if !sample(surface, points, parameters, faces[i]).is_some_and(|s| s.alignment < 0.) {
             continue;
@@ -230,7 +259,7 @@ pub(super) fn repair(
                 }
                 tried.push(indices);
                 if let Some((error, replacement)) =
-                    mesh.best_partition(indices, faces, adjacent, &mut chord_errors)
+                    mesh.best_partition::<3, 5>(indices, faces, adjacent, &mut probes, &PENTAGONS)
                     && best.is_none_or(|(prior, _, _)| error < prior)
                 {
                     best = Some((error, indices, replacement));
@@ -241,4 +270,5 @@ pub(super) fn repair(
             install(faces, adjacent, indices, replacement);
         }
     }
+    hexagon::repair(&mesh, faces, inverted, adjacent, &mut probes);
 }

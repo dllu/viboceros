@@ -25,6 +25,7 @@ fn wound_side([a, b, c]: [Point2; 3]) -> Real {
     }
 }
 
+#[derive(Clone, Copy)]
 struct SurfaceSample {
     uv: Point2,
     center: Point3,
@@ -415,6 +416,39 @@ mod tests {
         assert!(!adjacent.contains_key(&[0, 2]) && !adjacent.contains_key(&[0, 3]));
         for a in 0..5 {
             let b = (a + 1) % 5;
+            assert_eq!(
+                faces
+                    .iter()
+                    .filter(|face| face.contains(&a) && face.contains(&b))
+                    .count(),
+                1
+            );
+        }
+    }
+
+    #[test]
+    fn repairs_a_sheared_hexagon_when_no_smaller_partition_can_fix_it() {
+        let surface = shear();
+        let parameters = [
+            (0.09, 0.28),
+            (0.08, 0.25),
+            (0.77, 0.65),
+            (0.80, 0.84),
+            (0.63, 0.87),
+            (0.33, 0.82),
+        ]
+        .map(|(u, v)| Point2::try_new(u, v).unwrap());
+        let points = parameters.map(|uv| surface.evaluate(uv.x(), uv.y()).unwrap());
+        let mut faces = [[1, 2, 3], [0, 1, 3], [3, 4, 5], [0, 3, 5]];
+        let outward =
+            |face| sample(&surface, &points, &parameters, face).is_some_and(|s| s.alignment > 0.);
+        assert!(faces.iter().any(|&face| !outward(face)));
+
+        repair(&surface, &parameters, &points, &mut faces, 3.);
+
+        assert!(faces.iter().copied().all(outward));
+        for a in 0..6 {
+            let b = (a + 1) % 6;
             assert_eq!(
                 faces
                     .iter()
