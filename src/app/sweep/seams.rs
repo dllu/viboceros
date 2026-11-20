@@ -46,10 +46,7 @@ impl VibocerosApp {
             self.log_sweep_input();
             return true;
         }
-        if matches!(
-            session.state.stage,
-            ProfileStage::Review | ProfileStage::Seams { .. }
-        ) {
+        if session.state.stage.reviewing() {
             return false;
         }
         let document = &self.document;
@@ -129,6 +126,9 @@ impl VibocerosApp {
         let Some(session) = self.sweep_session.as_mut() else {
             return false;
         };
+        if session.alignment.is_some() {
+            return matches!(event, Event::Flip(index) if self.flip_sweep_section(index));
+        }
         if session.seam_editor().is_none() || !self.validate_sweep_sources() {
             return false;
         }

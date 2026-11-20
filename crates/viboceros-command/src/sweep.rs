@@ -1,6 +1,7 @@
 use super::*;
 use crate::chain_selection::Target;
 pub use crate::sweep_rail::{Rail, RailReference};
+use std::collections::BTreeSet;
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::{Sweep1, SweepBlend, SweepEndPoints, SweepFrameStyle, SweepSection};
 
@@ -162,6 +163,17 @@ impl Source {
         })
     }
 
+    pub fn profile_curves(
+        &self,
+    ) -> impl Iterator<Item = Result<(ObjectId, NurbsCurve), CommandError>> + '_ {
+        self.profiles.iter().map(|(id, profile)| {
+            let curve = profile
+                .nurbs_curve_representation()?
+                .ok_or(CommandError::Usage(USAGE))?;
+            Ok((*id, curve))
+        })
+    }
+
     pub fn closed_profile_ids(&self) -> Result<Vec<ObjectId>, CommandError> {
         let mut ids = Vec::new();
         for (id, profile) in &self.profiles {
@@ -227,6 +239,16 @@ impl Source {
         options: &Options,
         tolerance: Tolerance,
     ) -> Result<(Brep, usize), CommandError> {
+        self.build_with_reversed_profiles(options, tolerance, &BTreeSet::new())
+    }
+
+    /// Apply direction edits after rail placement so alignment keeps profile stations.
+    pub fn build_with_reversed_profiles(
+        &self,
+        options: &Options,
+        tolerance: Tolerance,
+        reversed_profiles: &BTreeSet<ObjectId>,
+    ) -> Result<(Brep, usize), CommandError> {
         self.validate_point_end_stations(options)?;
         let Options {
             parameters,
@@ -245,14 +267,8 @@ impl Source {
         }
         let rail = self.rail.curve_ref();
         let curves = self
-            .profiles
-            .iter()
-            .map(|(_, profile)| {
-                let curve = profile
-                    .nurbs_curve_representation()?
-                    .ok_or(CommandError::Usage(USAGE))?;
-                Ok(curve)
-            })
+            .profile_curves()
+            .map(|profile| profile.map(|(_, curve)| curve))
             .collect::<Result<Vec<_>, CommandError>>()?;
         let automatic_loop = parameters.is_none() && ends.is_empty() && self.rail.is_closed();
         let single_loop = automatic_loop && curves.len() == 1;
@@ -263,7 +279,7 @@ impl Source {
                 .try_fold(true, |all, curve| -> Result<bool, GeometryError> {
                     Ok(all && curve.is_closed()?)
                 })?;
-        let (placed_rail, sections, closed_refit) = if place_loop {
+        let (placed_rail, mut sections, closed_refit) = if place_loop {
             let (rail, sections, refit) =
                 closed::sections(rail, curves, parameters.as_deref(), tolerance)?;
             (Some(rail), sections, refit)
@@ -320,6 +336,18 @@ impl Source {
             CurveRef::NurbsCurve(curve) => curve.degree() == 1 && curve.control_points().len() == 2,
             _ => false,
         };
+        let mut remaining = reversed_profiles.clone();
+        for ((id, _), section) in self.profiles.iter().zip(&mut sections) {
+            if reversed_profiles.contains(id) {
+                section.curve = section.curve.reversed()?;
+                remaining.remove(id);
+            }
+        }
+        if !remaining.is_empty() {
+            return Err(CommandError::Usage(
+                "Reverse only selected Sweep1 cross sections",
+            ));
+        }
         let sections = if *rebuild_point_count > 1 {
             rebuild_sections(&sections, *rebuild_point_count, tolerance)?
         } else {
@@ -357,6 +385,8 @@ impl Source {
             || closed_refit
             || loop_profiles_closed
             || closed_section_blend
+            // Manual directions use a cubic rail basis to carry the blend.
+            || !reversed_profiles.is_empty()
             || automatic_partial
             || !ends.is_empty();
         let surface = if closed && refit {

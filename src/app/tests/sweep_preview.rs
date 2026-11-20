@@ -4,6 +4,8 @@ use super::*;
 use std::time::{Duration, Instant};
 use viboceros_geometry::{Brep, NurbsCurve, NurbsSurface};
 
+mod alignment;
+
 fn setup(profile: &str, pole: Point3) -> (VibocerosApp, [ObjectId; 3]) {
     let mut app = test_app();
     for input in ["Line 0,0,0 0,0,5", profile] {
@@ -358,6 +360,29 @@ fn sweep_one_closed_profiles_preview_drag_flip_reset_and_native_seam_geometry() 
     enter(&mut app, "");
     assert!(app.command_hint().starts_with("Review the sweep"));
     assert_eq!(app.document.undo_label(), None);
+    let aligned_marker = |app: &VibocerosApp| {
+        app.sweep_session
+            .as_ref()
+            .unwrap()
+            .alignment_markers()
+            .unwrap()[1]
+    };
+    enter(&mut app, "AlignCrossSections");
+    let marker = aligned_marker(&app);
+    assert!(marker.point.distance_to(original).unwrap() < 1e-8);
+    enter(&mut app, &format!("SelID {upper_id}"));
+    let reversed = aligned_marker(&app);
+    assert!(reversed.point.distance_to(marker.point).unwrap() < 1e-8);
+    assert!(
+        reversed
+            .tangent
+            .unwrap()
+            .dot(marker.tangent.unwrap())
+            .unwrap()
+            < -0.99
+    );
+    enter(&mut app, "Undo");
+    enter(&mut app, "");
     enter(&mut app, "ShapeBlending");
     enter(&mut app, "Global");
     wait_for_wires(&mut app, &context, |wires| {

@@ -49,9 +49,14 @@ impl Marker {
             tangent,
         })
     }
-    pub(crate) fn endpoint(index: usize, curve: CurveRef<'_>, start: bool) -> Option<Self> {
+    pub(crate) fn endpoint(
+        index: usize,
+        curve: CurveRef<'_>,
+        start: bool,
+        reversed: bool,
+    ) -> Option<Self> {
         let domain = curve.domain();
-        let (parameter, side) = if start {
+        let (parameter, side) = if start != reversed {
             (*domain.start(), ParameterSide::Right)
         } else {
             (*domain.end(), ParameterSide::Left)
@@ -66,7 +71,14 @@ impl Marker {
                         .ok()
                         .map(|sample| sample.tangent().as_vector())
                 })
-                .flatten(),
+                .flatten()
+                .and_then(|tangent| {
+                    if reversed {
+                        tangent.scaled(-1.).ok()
+                    } else {
+                        Some(tangent)
+                    }
+                }),
         })
     }
 }
@@ -89,6 +101,18 @@ pub(crate) struct Overlay<'a> {
     pub(crate) active: Option<usize>,
     pub(crate) flipping: bool,
     pub(crate) connect: bool,
+}
+
+impl<'a> Overlay<'a> {
+    pub(crate) fn directions(markers: &'a [Marker]) -> Self {
+        Self {
+            markers,
+            drag: None,
+            active: None,
+            flipping: true,
+            connect: false,
+        }
+    }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]

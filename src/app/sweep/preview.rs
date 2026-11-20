@@ -9,6 +9,7 @@ struct Request {
     tolerance: Tolerance,
     change: Option<DraftChange>,
     seams: Vec<(Real, bool)>,
+    reversed_profiles: BTreeSet<ObjectId>,
 }
 
 #[derive(Debug)]
@@ -40,27 +41,24 @@ impl Preview {
         &mut self,
         change: DraftChange,
         tolerance: Tolerance,
-        stage: &ProfileStage,
+        state: &State,
     ) {
-        let previous = self.request(tolerance, Some(change), stage);
+        let previous = self.request(tolerance, Some(change), state);
         self.revision = self.revision.wrapping_add(1);
         self.worker
-            .retain_as(&previous, self.request(tolerance, None, stage));
+            .retain_as(&previous, self.request(tolerance, None, state));
     }
 
-    fn request(
-        &self,
-        tolerance: Tolerance,
-        change: Option<DraftChange>,
-        stage: &ProfileStage,
-    ) -> Request {
+    fn request(&self, tolerance: Tolerance, change: Option<DraftChange>, state: &State) -> Request {
         Request {
             revision: self.revision,
             tolerance,
             change,
-            seams: stage
+            seams: state
+                .stage
                 .seams()
                 .map_or_else(Vec::new, |editor| editor.placements().collect()),
+            reversed_profiles: state.reversed_profiles.clone(),
         }
     }
 }
@@ -103,7 +101,7 @@ impl VibocerosApp {
         // Keep the accepted draft until the base point is picked. A provisional
         // draft requires a resolved cursor and a usable direction.
         let ready = matches!(p.picking, None | Some(Pick::AxisStart)) || change.is_some();
-        let request = ready.then(|| p.preview.request(tolerance, change, &p.state.stage));
+        let request = ready.then(|| p.preview.request(tolerance, change, &p.state));
         p.preview.worker.update(
             request,
             context,
@@ -132,10 +130,13 @@ impl VibocerosApp {
                     change.apply(&mut options);
                 }
                 let editor = p.state.stage.seams().cloned();
+                let reversed_profiles = request.reversed_profiles.clone();
                 move || {
                     let source =
                         seams::with_seam_profiles(source?, editor.as_ref(), tolerance).ok()?;
-                    let (brep, sections) = source.build(&options, tolerance).ok()?;
+                    let (brep, sections) = source
+                        .build_with_reversed_profiles(&options, tolerance, &reversed_profiles)
+                        .ok()?;
                     let wires = draft_worker::wireframe(&brep, tolerance);
                     Some(Draft {
                         brep,
@@ -150,9 +151,7 @@ impl VibocerosApp {
     pub(super) fn commit_sweep_preview(&mut self) {
         let session = self.sweep_session.as_mut().unwrap();
         let tolerance = self.document.tolerance();
-        let request = session
-            .preview
-            .request(tolerance, None, &session.state.stage);
+        let request = session.preview.request(tolerance, None, &session.state);
         let result =
             if let Some(Draft { brep, sections, .. }) = session.preview.worker.take(&request) {
                 Ok((brep, sections))
@@ -167,7 +166,13 @@ impl VibocerosApp {
                             tolerance,
                         )
                     })
-                    .and_then(|source| source.build(&session.state.options, tolerance))
+                    .and_then(|source| {
+                        source.build_with_reversed_profiles(
+                            &session.state.options,
+                            tolerance,
+                            &request.reversed_profiles,
+                        )
+                    })
             };
         let (brep, sections) = match result {
             Ok(result) => result,

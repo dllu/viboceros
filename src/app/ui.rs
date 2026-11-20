@@ -1442,12 +1442,11 @@ impl VibocerosApp {
         };
         let edge_blend_handle_mode = self.edge_handle_mode(&edge_placement_curves);
         let show_edge_blend_handles = self.show_edge_size_handles();
+        let sweep = self.sweep_session.as_ref().filter(|_| edge_handle_input);
         let curve_seam_editor = self.curve_seam_session.as_ref()
             .filter(|session| edge_handle_input && !session.selecting())
             .map(|session| &session.editor)
-            .or_else(|| self.sweep_session.as_ref()
-                .filter(|_| edge_handle_input)
-                .and_then(sweep::Session::seam_editor))
+            .or_else(|| sweep.and_then(sweep::Session::seam_editor))
             .or_else(|| self.sweep_two_rails.as_ref()
                 .filter(|_| edge_handle_input)
                 .and_then(sweep_two_rails::Session::seam_editor));
@@ -1464,6 +1463,7 @@ impl VibocerosApp {
             .filter(|_| edge_handle_input)
             .and_then(sweep_two_rails::Session::slash_input);
         let seam_markers = curve_seam_editor.map(curve_seam::Editor::markers)
+            .or_else(|| sweep.and_then(sweep::Session::alignment_markers))
             .or_else(|| loft.map(loft::Prompt::seam_markers));
         let surface_seam = self.surface_seam_session.as_ref()
             .filter(|_| edge_handle_input)
@@ -1932,6 +1932,7 @@ impl VibocerosApp {
                             end_markers: &end_markers,
                             curve_seams: seam_markers.as_deref().and_then(|markers| {
                                 curve_seam_editor.map(|editor| editor.overlay(markers, index))
+                                    .or_else(|| sweep?.alignment_overlay(markers))
                                     .or_else(|| loft?.seam_overlay(markers, index))
                             }),
                             surface_draft_wires,

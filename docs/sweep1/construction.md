@@ -46,6 +46,8 @@ spatial sweeps can therefore have different geometry, not merely different
 control counts. Both construction paths accept multiple profiles. Public Rhino
 outputs show that even `RefitRail=No` may refit if an interior section is not
 already at a rail Greville site; the native implementation follows this rule.
+Manual cross-section reversal also uses the cubic refit path. It reverses
+the temporary section at its placed station before rebuild or basis matching.
 
 `to_surface` first uses the shared curve fitter to approximate the rail as a
 nonrational cubic, parameterized by integrated arc length, at one quarter of

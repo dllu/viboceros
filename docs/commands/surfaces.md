@@ -129,6 +129,9 @@ markers or use `Flip`, `Automatic`, `Natural`, and `SnapToKnots`, then press
 Enter to review the draft. In review, adjust the frame, shape blending, rail
 refitting, or cross-section rebuilding. Press Enter to create the surface or
 use Undo to revise the current input.
+Use `AlignCrossSections` in review to reverse a profile by clicking an end or
+entering `SelID id`. The preview updates after each reversal. Enter or Escape
+returns to review with the current directions. Use Undo to reverse the last edit.
 On a closed rail with two or more profiles, `Closed=Yes` wraps the sweep from
 the last profile back to the first. The review preview reflects the change.
 

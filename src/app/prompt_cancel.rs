@@ -138,7 +138,7 @@ impl VibocerosApp {
             // A command-owned warning consumed this Escape key.
         } else if self.plane_prompt.is_some() {
             self.cancel_plane_prompt();
-        } else if self.cancel_sweep_axis() {
+        } else if self.cancel_sweep_axis() || self.finish_sweep_alignment() {
             // Return to the sweep with the previously accepted options.
         } else if self.active_command.is_some()
             || self.curve_connect_session.is_some()

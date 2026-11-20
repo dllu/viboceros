@@ -2,6 +2,7 @@
 use super::curve_seam::Editor;
 use super::object_selection::PendingObjectCommand;
 use super::*;
+use std::collections::BTreeSet;
 use viboceros_command::{
     CommandError,
     chain_selection::Target,
@@ -10,6 +11,7 @@ use viboceros_command::{
 use viboceros_document::GeometrySnapshot;
 use viboceros_geometry::UnitVector3;
 
+mod alignment;
 mod axis;
 mod input;
 mod preview;
@@ -66,6 +68,7 @@ struct State {
     rail: Option<Rail>,
     reference: Option<RailReference>,
     stage: ProfileStage,
+    reversed_profiles: BTreeSet<ObjectId>,
 }
 
 #[derive(Clone, Debug)]
@@ -82,6 +85,10 @@ impl ProfileStage {
             Self::Seams { editor, .. } => Some(editor),
             _ => None,
         }
+    }
+
+    fn reviewing(&self) -> bool {
+        matches!(self, Self::Review | Self::Seams { editing: false, .. })
     }
 }
 
@@ -103,6 +110,7 @@ pub(super) struct Session {
     picking: Option<Pick>,
     value: Option<&'static str>,
     seam_id_pending: bool,
+    alignment: Option<alignment::Alignment>,
     preview: preview::Preview,
     review_open_profiles: bool,
     pub(super) chain_auto: bool,
@@ -124,6 +132,12 @@ impl Session {
                 "Pick the second Roadlike axis point. Automatic uses the rail. Enter uses CPlane Z"
             }
             (_, Some(_), _) => "Enter the Sweep1 option value; Undo returns, Esc cancels",
+            _ if self.alignment.is_some() && self.seam_id_pending => {
+                "Enter a cross-section object ID"
+            }
+            _ if self.alignment.is_some() => {
+                "Click a cross-section end to reverse it or use SelID. Press Enter to return to the preview"
+            }
             (
                 _,
                 _,
@@ -144,10 +158,10 @@ impl Session {
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. })
                 if self.can_close() =>
             {
-                "Review the sweep. Closed / Style / SetAxis / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+                "Review the sweep. Closed / Style / SetAxis / ShapeBlending / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
             }
             (_, _, ProfileStage::Review | ProfileStage::Seams { editing: false, .. }) => {
-                "Review the sweep. Style / SetAxis / ShapeBlending / RefitRail / Simplify / Undo. Enter creates the sweep"
+                "Review the sweep. Style / SetAxis / ShapeBlending / RefitRail / Simplify / AlignCrossSections / Undo. Enter creates the sweep"
             }
             _ if self.state.rail.is_none()
                 && !self.state.options.has_explicit_rail()
@@ -271,11 +285,13 @@ impl VibocerosApp {
                 rail,
                 reference,
                 stage: ProfileStage::Selecting,
+                reversed_profiles: BTreeSet::new(),
             },
             undo: vec![],
             picking: None,
             value: None,
             seam_id_pending: false,
+            alignment: None,
             preview: Default::default(),
             review_open_profiles: input
                 .split_whitespace()

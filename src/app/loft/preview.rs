@@ -114,19 +114,13 @@ impl Review {
                 let curve = CurveRef::NurbsCurve(curve);
                 [true, false]
                     .into_iter()
-                    .filter_map(move |start| Marker::endpoint(index, curve, start))
+                    .filter_map(move |start| Marker::endpoint(index, curve, start, false))
             })
             .collect()
     }
 
     pub(super) fn alignment_overlay<'a>(&self, markers: &'a [Marker]) -> Option<Overlay<'a>> {
-        self.aligning.then_some(Overlay {
-            markers,
-            drag: None,
-            active: None,
-            flipping: true,
-            connect: false,
-        })
+        self.aligning.then(|| Overlay::directions(markers))
     }
 }
 

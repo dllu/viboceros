@@ -4,7 +4,10 @@ impl VibocerosApp {
         if self.plane_prompt.is_some()
             || self.chain_prompt.is_some()
             || !self.sweep_session.as_ref().is_some_and(|p| {
-                p.picking.is_none() && p.value.is_none() && p.seam_editor().is_none()
+                p.picking.is_none()
+                    && p.value.is_none()
+                    && p.seam_editor().is_none()
+                    && p.alignment.is_none()
             })
             || !["Point", "StartPoint", "EndPoint"]
                 .iter()
@@ -103,7 +106,7 @@ impl VibocerosApp {
         }
         p.picking = None;
         p.preview
-            .accept_change(change, self.document.tolerance(), &p.state.stage);
+            .accept_change(change, self.document.tolerance(), &p.state);
         self.clear_sweep_point_getter();
         self.restore_sweep_picks();
         self.log_sweep_input();
@@ -128,25 +131,35 @@ impl VibocerosApp {
             return false;
         };
         if name.eq_ignore_ascii_case("Undo") {
-            let p = self.sweep_session.as_mut().unwrap();
-            if !std::mem::take(&mut p.seam_id_pending)
-                && p.picking.take().is_none()
-                && p.value.take().is_none()
-                && let Some(state) = p.undo.pop()
-            {
-                p.state = state;
+            if !self.undo_sweep_alignment() {
+                let p = self.sweep_session.as_mut().unwrap();
+                if !std::mem::take(&mut p.seam_id_pending)
+                    && p.picking.take().is_none()
+                    && p.value.take().is_none()
+                    && let Some(state) = p.undo.pop()
+                {
+                    p.state = state;
+                }
+                self.clear_sweep_point_getter();
+                self.sync_sweep_selection();
+                self.log_sweep_input();
             }
-            self.clear_sweep_point_getter();
-            self.sync_sweep_selection();
-            self.log_sweep_input();
         } else if name.eq_ignore_ascii_case("Cancel") || name == "!" {
             self.cancel_interactive_command(true);
         } else if p.picking.is_some() {
             return false;
+        } else if p.alignment.is_some() {
+            self.continue_sweep_alignment(name);
         } else if (name.is_empty() || name.eq_ignore_ascii_case("Enter")) && p.value.is_none() {
             self.finish_sweep_input();
         } else if p.seam_editor().is_some() {
             self.continue_sweep_seams(name);
+        } else if p.value.is_none() && name.eq_ignore_ascii_case("AlignCrossSections") {
+            if p.state.stage.reviewing() {
+                self.begin_sweep_alignment();
+            } else {
+                self.push_log("Accept the Sweep1 profiles before aligning cross sections".into());
+            }
         } else if (p.value.is_none() && name.eq_ignore_ascii_case("SetAxis"))
             || axis::requests_axis(name, p.value)
         {
@@ -255,13 +268,14 @@ impl VibocerosApp {
                         }
                     }
                 }
-                if next.stage.seams().is_some()
+                if (next.stage.seams().is_some() || !next.reversed_profiles.is_empty())
                     && (replace_rail
                         || (next.rail.is_none()
                             && next.options.parameters.is_some()
                                 != p.state.options.parameters.is_some()))
                 {
                     next.stage = ProfileStage::Selecting;
+                    next.reversed_profiles.clear();
                 }
                 if next.options.surface_aligned
                     && (next
