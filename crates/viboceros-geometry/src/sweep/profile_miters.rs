@@ -162,7 +162,11 @@ impl Sweep1 {
                 tolerance,
             )?;
             if untrimmed {
-                return Ok(Some(join_panels(&model.fit(operations, true)?, tolerance)?));
+                return Ok(Some(join_panels(
+                    &model.fit(operations, true)?,
+                    true,
+                    tolerance,
+                )?));
             }
             if !closed
                 && ends.is_empty()
@@ -222,7 +226,7 @@ impl Sweep1 {
             panels.insert(0, start);
             panels.push(finish);
         }
-        Ok(Some(join_panels(&panels, tolerance)?))
+        Ok(Some(join_panels(&panels, untrimmed, tolerance)?))
     }
 }
 
@@ -247,7 +251,11 @@ fn snap_to_kink(t: Real, kinks: &[Real], roundoff: Real) -> Real {
         .unwrap_or(t)
 }
 
-fn join_panels(panels: &[NurbsSurface], tolerance: Tolerance) -> Result<Brep, GeometryError> {
+fn join_panels(
+    panels: &[NurbsSurface],
+    untrimmed: bool,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
     let first = &panels[0];
     let p = first.degree_u();
     let width = first.control_point_count_v();
@@ -295,12 +303,26 @@ fn join_panels(panels: &[NurbsSurface], tolerance: Tolerance) -> Result<Brep, Ge
         knots,
         first.knots_v().to_vec(),
     )?;
-    let [_, v] = surface.sampled_kink_parameters(tolerance.angular())?;
-    let cuts = panels[1..]
+    let cuts_u = panels[1..]
         .iter()
         .map(|panel| *panel.domain_u().start())
         .collect::<Vec<_>>();
-    Brep::try_surface_grid(&surface, &cuts, &v, tolerance)
+    if !untrimmed {
+        let [_, cuts_v] = surface.sampled_kink_parameters(tolerance.angular())?;
+        return Brep::try_surface_grid(&surface, &cuts_u, &cuts_v, tolerance);
+    }
+    let cuts_v = panels
+        .iter()
+        .map(|panel| {
+            panel
+                .sampled_kink_parameters(tolerance.angular())
+                .map(|[_, v]| v)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    if cuts_v.windows(2).any(|pair| pair[0] != pair[1]) {
+        return Brep::try_surface_panels(&surface, panels, &cuts_v, tolerance);
+    }
+    Brep::try_surface_grid(&surface, &cuts_u, &cuts_v[0], tolerance)
 }
 
 fn check_control_budget(u: usize, v: usize) -> Result<(), GeometryError> {

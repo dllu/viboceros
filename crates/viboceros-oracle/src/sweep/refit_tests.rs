@@ -35,12 +35,14 @@ macro_rules! captures {
     ($family:literal, $cases:expr) => {
         (
             include_str!(concat!(
-                "../../../../tools/rhino_oracle/fixtures/",
+                env!("CARGO_MANIFEST_DIR"),
+                "/../../tools/rhino_oracle/fixtures/",
                 $family,
                 ".json"
             )),
             include_str!(concat!(
-                "../../../../tools/rhino_oracle/observations/",
+                env!("CARGO_MANIFEST_DIR"),
+                "/../../tools/rhino_oracle/observations/",
                 $family,
                 ".json"
             )),
@@ -48,6 +50,8 @@ macro_rules! captures {
         )
     };
 }
+
+mod miters;
 
 #[test]
 fn sweep1_section_refits_polygon_point_ends_match_native_surfaces() {

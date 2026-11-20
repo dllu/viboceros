@@ -92,6 +92,8 @@ def macro(operation, ids, closed_profiles=False):
         text += " _Point " + point_text(operation["end_point"])
     text += "" if "end_point" in operation else " _Enter"
     if closed_profiles:
+        if operation.get("natural_seams", False):
+            text += " _Natural"
         text += " _Enter"  # Accept the authored closed-profile seams.
     if operation.get("roadlike", False) or "roadlike_axis" in operation:
         text += " _Style=_Roadlike"
@@ -107,6 +109,8 @@ def macro(operation, ids, closed_profiles=False):
         text += " _Simplify=_Refit _RefitTolerance=%.17g" % fit
     else:
         text += " _Simplify=_Rebuild _RebuildCount=%d" % count if count else " _Simplify=_None"
+    if "untrimmed_miters" in operation:
+        text += " _UntrimmedMiters=_" + ("Yes" if operation["untrimmed_miters"] else "No")
     text += " _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
         "Global" if operation.get("blend", 0) else "Local",
         "Yes" if operation.get("refit_rail", False) else "No")

@@ -57,6 +57,18 @@ the Rhino SDK. The
 check that the matched section domain survives collapsing one or both rail
 ends when the sweep has multiple real profiles.
 
+On a polygonal rail, miter panels use cumulative rail distance in U and
+retain the matched section domain in V. With untrimmed miters, a crease can
+end at the shared edge where the neighboring panel is smooth. Trimmed
+miters carry section splits across the shared edge. The
+[right-angle captures](../../tools/rhino_oracle/fixtures/sweep1_refit_miters.json)
+include single profiles, inferred corners, and authored corner profiles.
+The four untrimmed single-profile captures agree within `7e-13` over their
+complete images. The five untrimmed mixed-profile captures use `1e-7` for
+face charts and rims and `2e-5` for complete surface correspondence.
+The trimmed authored-corner capture at an angular tolerance of `1e-10`
+includes a split at a fitted section knot that still needs to be matched.
+
 Smooth sets that mix noncircular loops with circles or open profiles can
 also use the longest source's section domain. The
 [loop captures](../../tools/rhino_oracle/fixtures/sweep1_refit_loop_pairs.json)

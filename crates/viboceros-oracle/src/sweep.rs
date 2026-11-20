@@ -142,6 +142,8 @@ pub struct SweepFixture {
     #[serde(default)]
     pub refit_rail: bool,
     #[serde(default)]
+    pub untrimmed_miters: Option<bool>,
+    #[serde(default)]
     pub refit_tolerance: Option<f64>,
     #[serde(default)]
     pub start_point: Option<[f64; 3]>,
@@ -281,8 +283,15 @@ fn command_surfaces(
 ) -> Result<Vec<NurbsSurface>, ProbeError> {
     let registry = CommandRegistry::with_builtins();
     let mut document = Document::new(tolerance);
+    // Polyline recipes record chord-length stations in the rail's NURBS chart.
+    let rail_geometry = match rail {
+        viboceros_geometry::Curve3::Polyline(polyline) => {
+            Geometry::NurbsCurve(polyline.to_nurbs()?)
+        }
+        _ => Geometry::from(rail.clone()),
+    };
     let rail_id = document.add_geometry_with_attributes(
-        Geometry::from(rail.clone()),
+        rail_geometry,
         ObjectAttributes::on_layer(document.current_layer_id()).with_name("Rail"),
     )?;
     let mut ids = vec![rail_id];
@@ -311,6 +320,13 @@ fn command_surfaces(
     }
     if let Some(distance) = fixture.refit_tolerance {
         text.push_str(&format!(" Refit={distance}"));
+    }
+    if let Some(untrimmed) = fixture.untrimmed_miters {
+        text.push_str(if untrimmed {
+            " UntrimmedMiters=Yes"
+        } else {
+            " UntrimmedMiters=No"
+        });
     }
     for (name, point) in [
         ("StartPoint", fixture.start_point),

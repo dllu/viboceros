@@ -12,6 +12,32 @@ const MAX_FACES: usize = 4096;
 const MAX_WORK: usize = 16_000_000;
 
 impl Brep {
+    /// Sew adjoining panels with distinct V partitions using the parent chart.
+    pub(crate) fn try_surface_panels(
+        surface: &NurbsSurface,
+        panels: &[NurbsSurface],
+        cuts_v: &[Vec<Real>],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let face_count = panels.len() + cuts_v.iter().map(Vec::len).sum::<usize>();
+        if face_count > MAX_FACES {
+            return Err(GeometryError::SurfaceGridResourceLimit { maximum: MAX_FACES });
+        }
+        let mut budget = MAX_WORK;
+        charge(&mut budget, surface.control_points().len())?;
+        let mut cells = Vec::with_capacity(face_count);
+        for (panel, cuts) in panels.iter().zip(cuts_v) {
+            let v = panel.domain_v();
+            let mut start = *v.start();
+            for end in cuts.iter().chain([v.end()]).copied() {
+                charge(&mut budget, panel.control_points().len().saturating_mul(4))?;
+                cells.push(panel.try_trimmed_v(start..=end)?);
+                start = end;
+            }
+        }
+        topology::build(surface, cells, tolerance, &mut budget)
+    }
+
     /// Construct a new tensor shell, splitting each restricted surface at the
     /// requested isocurve continuity breaks. The public OpenNURBS query is
     /// augmented by bounded adaptive G1 checks between its transverse samples.

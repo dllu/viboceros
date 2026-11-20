@@ -420,8 +420,11 @@ impl Source {
         } else {
             SweepBlend::Local
         };
+        // A lone profile between two poles uses a unit section chart.
+        let section_domain = section_domain
+            .filter(|_| sections.len() > 1 || ends.start.is_none() || ends.end.is_none());
         if !options.surface_aligned
-            && let Some(brep) = viboceros_smlib::sweep_profile_miters(
+            && let Some(brep) = viboceros_smlib::sweep_profile_miters_with_section_domain(
                 rail,
                 &sections,
                 SweepProfileMiterOptions {
@@ -431,6 +434,7 @@ impl Source {
                     closed,
                     untrimmed: options.untrimmed_miters.unwrap_or_default(),
                 },
+                section_domain.as_ref(),
                 tolerance,
             )
             .map_err(knot_refinement::native_geometry_error)?
@@ -438,10 +442,7 @@ impl Source {
             return Ok((brep, sections.len()));
         }
         let mut sweep = model_with_point_ends(rail, &sections, ends, style, blend, tolerance)?;
-        // A lone profile between two poles uses a unit section chart.
-        if let Some(domain) = section_domain.clone()
-            && (sections.len() > 1 || ends.start.is_none() || ends.end.is_none())
-        {
+        if let Some(domain) = section_domain.clone() {
             sweep = sweep.try_with_section_domain(domain)?;
         }
         if options.surface_aligned {

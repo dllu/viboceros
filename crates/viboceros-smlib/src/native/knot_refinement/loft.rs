@@ -130,13 +130,38 @@ pub fn sweep_profile_miters(
     options: SweepProfileMiterOptions,
     tolerance: Tolerance,
 ) -> Result<Option<Brep>, Error> {
+    sweep_profile_miters_with_section_domain(rail, sections, options, None, tolerance)
+}
+
+/// Preserve the section chart through native common-basis preparation.
+pub fn sweep_profile_miters_with_section_domain(
+    rail: CurveRef<'_>,
+    sections: &[SweepSection],
+    options: SweepProfileMiterOptions,
+    section_domain: Option<&std::ops::RangeInclusive<f64>>,
+    tolerance: Tolerance,
+) -> Result<Option<Brep>, Error> {
     with_sweep_operations(|operations| {
         Sweep1::try_profile_miters_with(
             rail,
             sections,
             options,
             tolerance,
-            &mut prepare_sweep_sections,
+            &mut |curves, maximum, limit| {
+                let curves = prepare_sweep_sections(curves, maximum, limit)?;
+                if let Some(domain) = section_domain {
+                    curves
+                        .into_iter()
+                        .map(|curve| {
+                            curve
+                                .try_reparameterized(domain.clone())
+                                .map_err(Error::from)
+                        })
+                        .collect()
+                } else {
+                    Ok(curves)
+                }
+            },
             operations,
             &mut super::super::surface_intersections::sweep_miter_intersections,
         )

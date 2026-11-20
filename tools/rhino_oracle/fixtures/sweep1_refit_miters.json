@@ -1,0 +1,1150 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-07,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "sweep1",
+      "id": "line",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "line",
+          "start": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "end": [
+            0.0,
+            1.5,
+            0.5
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "open",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "open-tight",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                0.5,
+                1.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                0.0,
+                1.5,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "polygon",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        }
+      ],
+      "parameters": [
+        0.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "inferred",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "inferred-tight",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "authored",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.398959235991435,
+                0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.601040764008565,
+                -0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "authored-tight",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.398959235991435,
+                0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.601040764008565,
+                -0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.001
+    },
+    {
+      "op": "sweep1",
+      "id": "authored-trimmed",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.398959235991435,
+                0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.601040764008565,
+                -0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": false,
+      "untrimmed_miters": false,
+      "refit_tolerance": 0.01
+    },
+    {
+      "op": "sweep1",
+      "id": "authored-refit-rail",
+      "rail": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            0.0,
+            0.0
+          ],
+          [
+            5.0,
+            5.0,
+            0.0
+          ]
+        ]
+      },
+      "sections": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.0
+            ],
+            [
+              0.0,
+              1.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.5
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.398959235991435,
+                0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.601040764008565,
+                -0.6010407640085654,
+                0.85
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                0.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "knots": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "control_points": [
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                4.3,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.7,
+                5.0,
+                0.7
+              ],
+              "weight": 1.0
+            },
+            {
+              "point": [
+                5.0,
+                5.0,
+                0.0
+              ],
+              "weight": 1.0
+            }
+          ]
+        }
+      ],
+      "parameters": [
+        0.0,
+        5.0,
+        10.0
+      ],
+      "command": true,
+      "natural_seams": true,
+      "inspect_definition": true,
+      "refit_rail": true,
+      "untrimmed_miters": true,
+      "refit_tolerance": 0.01
+    }
+  ]
+}

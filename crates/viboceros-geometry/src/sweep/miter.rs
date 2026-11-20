@@ -87,6 +87,7 @@ impl Sweep1 {
         let mut miter_joins = Vec::new();
         let mut panels: Vec<(Brep, [usize; 4])> = Vec::new();
         let mut edge_count = 0;
+        let mut distance = 0.;
         let width = pieces.len();
         for i in 0..segment_count {
             let frame = corners[i];
@@ -111,6 +112,7 @@ impl Sweep1 {
                     tangent,
                     [frame.origin(), end_point],
                     [start_normal, end_normal],
+                    distance,
                     length,
                     untrimmed,
                     tolerance,
@@ -140,6 +142,7 @@ impl Sweep1 {
                 edge_count += brep.edges().len();
                 panels.push((brep, edges));
             }
+            distance += length;
         }
         let panels = panels.into_iter().map(|(brep, _)| brep).collect();
         let first_miter = joins.len();

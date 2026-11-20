@@ -18,11 +18,12 @@ pub(super) fn build(
     tangent: Vector3,
     origins: [Point3; 2],
     normals: [Option<UnitVector3>; 2],
+    distance: Real,
     length: Real,
     untrimmed: bool,
     tolerance: Tolerance,
 ) -> Result<Panel, GeometryError> {
-    let bounds = [0., length];
+    let bounds = [distance, distance + length];
     let offsets = [
         offsets(profile, tangent, origins[0], normals[0], 0.)?,
         offsets(profile, tangent, origins[1], normals[1], length)?,
@@ -45,7 +46,10 @@ pub(super) fn build(
     let (surface, trims, iso) = if untrimmed {
         (
             surface_between(&profiles, bounds)?,
-            [iso_trim(0., v_bounds)?, iso_trim(length, v_bounds)?],
+            [
+                iso_trim(bounds[0], v_bounds)?,
+                iso_trim(bounds[1], v_bounds)?,
+            ],
             [SurfaceIso::West, SurfaceIso::East],
         )
     } else {
@@ -74,16 +78,17 @@ pub(super) fn build(
         };
         let trims = [
             if normals[0].is_some() {
-                trim_graph(profile, &offsets[0])?
+                trim_graph(profile, &offsets[0], distance)?
             } else {
-                iso_trim(0., v_bounds)?
+                iso_trim(bounds[0], v_bounds)?
             },
             if normals[1].is_some() {
-                trim_graph(profile, &offsets[1])?
+                trim_graph(profile, &offsets[1], distance)?
             } else {
-                iso_trim(length, v_bounds)?
+                iso_trim(bounds[1], v_bounds)?
             },
         ];
+        let limits = limits.map(|offset| distance + offset);
         let mut surface = surface_between(&[low?, high?], limits)?;
         for cut in bounds {
             if limits[0] < cut && cut < limits[1] {
@@ -143,12 +148,16 @@ fn iso_trim(u: Real, v: [Real; 2]) -> Result<NurbsCurve2, GeometryError> {
 /// Lift the rational scalar offset a(v) to the trim (a(v), v). On each
 /// Bézier span, elevate the first numerator and the denominator once and
 /// multiply the original denominator by the linear parameter for the second.
-fn trim_graph(profile: &NurbsCurve, offsets: &[Real]) -> Result<NurbsCurve2, GeometryError> {
+fn trim_graph(
+    profile: &NurbsCurve,
+    offsets: &[Real],
+    distance: Real,
+) -> Result<NurbsCurve2, GeometryError> {
     if profile.degree() == 1 && !profile.is_rational() {
         let points = offsets
             .iter()
             .zip(&profile.knots()[1..])
-            .map(|(&u, &v)| Point2::try_new(u, v))
+            .map(|(&u, &v)| Point2::try_new(distance + u, v))
             .collect::<Result<Vec<_>, _>>()?;
         return NurbsCurve2::try_new(1, points, profile.knots().to_vec());
     }
@@ -156,7 +165,9 @@ fn trim_graph(profile: &NurbsCurve, offsets: &[Real]) -> Result<NurbsCurve2, Geo
         .control_points()
         .iter()
         .zip(offsets)
-        .map(|(cp, &u)| WeightedPoint3::try_new(Point3::try_new(u, 0., 0.)?, cp.weight()))
+        .map(|(cp, &u)| {
+            WeightedPoint3::try_new(Point3::try_new(distance + u, 0., 0.)?, cp.weight())
+        })
         .collect::<Result<Vec<_>, _>>()?;
     let scalar =
         NurbsCurve::try_new_rational(profile.degree(), controls, profile.knots().to_vec())?;

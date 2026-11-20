@@ -99,7 +99,7 @@ pub use knot_refinement::{
     ruled_surface, split_curve, split_curve_at_parameters, split_surface, subcurve,
     subcurve_at_arc_length, surface_isocurve, surface_single_span_patches, surface_tweens,
     surface_tweens_refitted, surface_tweens_sampled, sweep_model, sweep_model_with_point_ends,
-    sweep_profile_miters,
+    sweep_profile_miters, sweep_profile_miters_with_section_domain,
     sweep_surface, trim_curve, trim_surface, trim_surface_direction,
 };
 mod coplanar_merge;
