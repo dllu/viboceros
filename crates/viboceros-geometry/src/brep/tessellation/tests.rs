@@ -483,3 +483,49 @@ fn trimmed_face_display_retries_when_knot_grid_exceeds_the_vertex_budget() {
     assert_eq!(mesh, source.tessellate(4, tolerance).unwrap());
     assert_eq!(faces, vec![0; mesh.face_count()]);
 }
+
+#[test]
+fn dense_open_display_resolves_curved_strips_between_grid_stations() {
+    let u_spans = 520;
+    let v_spans = 128;
+    let knots = |spans, degree| {
+        std::iter::repeat_n(0., degree)
+            .chain((0..=spans).map(|i| Real::from(i) / Real::from(spans)))
+            .chain(std::iter::repeat_n(1., degree))
+            .collect::<Vec<_>>()
+    };
+    let u = knots(u_spans, 3);
+    let v = knots(v_spans, 3);
+    let net = v[1..v.len() - 1]
+        .windows(3)
+        .flat_map(|span| {
+            let v = span.iter().sum::<Real>() / 3.;
+            u[1..u.len() - 1].windows(3).map(move |span| {
+                let u = span.iter().sum::<Real>() / 3.;
+                let height = 3. * (12. * std::f64::consts::PI * u).sin();
+                Point3::try_new(100. * u, 8. * v, height * (1. - v / 4.)).unwrap()
+            })
+        })
+        .collect();
+    let surface = NurbsSurface::try_new(3, 3, u.len() - 4, v.len() - 4, net, u, v).unwrap();
+    let tolerance = Tolerance::try_new(0.001, 1e-12, 1e-10).unwrap();
+    let source = Brep::try_surface_face(surface.clone(), tolerance).unwrap();
+    let display = source.display_mesh_with_normals(8, tolerance).unwrap();
+    assert!(display.mesh.topology().is_oriented());
+    let worst_gap = display
+        .mesh
+        .triangles()
+        .iter()
+        .map(|triangle| {
+            let [a, b, c] = triangle.map(|index| display.mesh.vertices()[index as usize]);
+            let x = (a.x() + b.x() + c.x()) / 3.;
+            let y = (a.y() + b.y() + c.y()) / 3.;
+            let z = (a.z() + b.z() + c.z()) / 3.;
+            let point = surface
+                .evaluate((x / 100.).clamp(0., 1.), (y / 8.).clamp(0., 1.))
+                .unwrap();
+            (point.z() - z).abs()
+        })
+        .fold(0., Real::max);
+    assert!(worst_gap < 0.25, "worst display chord gap: {worst_gap}");
+}
