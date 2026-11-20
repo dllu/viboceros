@@ -73,7 +73,11 @@ pub fn prepare_with_tangent_supports(
     let build = |curves: &[NurbsCurve], style, closed, ends| {
         let sections = simplified_sections(curves, style, closed, ends, input, tolerance)?;
         if supports.iter().any(Option::is_some) {
-            tangency::surface(&sections, style, ends, supports, tolerance)
+            let simplified = [
+                curves.first() != sections.first(),
+                curves.last() != sections.last(),
+            ];
+            tangency::surface(&sections, style, ends, supports, simplified, tolerance)
         } else if ends.is_empty() {
             surface(&sections, style, closed)
         } else {

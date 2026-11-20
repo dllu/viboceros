@@ -30,6 +30,7 @@ pub(super) fn surface(
     style: LoftStyle,
     ends: LoftEndPoints,
     supports: [Option<&TangentSupport>; 2],
+    simplified: [bool; 2],
     tolerance: Tolerance,
 ) -> Result<NurbsSurface, CommandError> {
     let surface = viboceros_smlib::loft_surface_with_matched_ends(
@@ -39,16 +40,29 @@ pub(super) fn surface(
         supports.map(|support| support.is_some()),
         |side, point, guide| {
             let support = supports[side].expect("active Loft tangent support");
+            let (point, tangent) = if simplified[side] {
+                let edge = support.guide.curve_ref();
+                let parameter = edge.closest_parameter(point, tolerance)?;
+                let contact = edge.evaluate_with_tangent(parameter)?;
+                (contact.point(), contact.tangent())
+            } else {
+                (point, guide.normalized_nonzero()?)
+            };
             let normal = normal_on_support(&support.target.surface, point, tolerance)?;
-            Ok(normal.cross(guide.normalized_nonzero()?.as_vector())?)
+            Ok(normal.cross(tangent.as_vector())?)
         },
     )
     .map_err(knot_refinement::native_geometry_error)?;
-    for (u, support) in [*surface.domain_u().start(), *surface.domain_u().end()]
+    for (side, (u, support)) in [*surface.domain_u().start(), *surface.domain_u().end()]
         .into_iter()
         .zip(supports)
+        .enumerate()
     {
-        if let Some(support) = support {
+        // A simplified profile may leave the original edge between its
+        // samples. Its handle directions are taken from the original edge.
+        if let Some(support) = support
+            && !simplified[side]
+        {
             validate_match(&surface, u, support, tolerance)?;
         }
     }

@@ -153,6 +153,7 @@ fn loft_tangency_on_two_planes_updates_the_preview_and_keeps_the_middle_profile(
 fn loft_tangency_on_cylindrical_rims_matches_the_native_preview_shape() {
     check_round_rim_loft(
         [[3., 3.], [2.5, 2.5]],
+        None,
         [
             (0.1, 3.076328336831772, 0.6861039032687677),
             (0.5, 3.5850086468978044, 3.1116938319537555),
@@ -165,6 +166,7 @@ fn loft_tangency_on_cylindrical_rims_matches_the_native_preview_shape() {
 fn loft_tangency_on_conical_rims_matches_the_native_preview_shape() {
     check_round_rim_loft(
         [[2.3, 3.], [2.5, 3.4]],
+        None,
         [
             (0.1, 3.243158846134268, 0.6572593641100615),
             (0.5, 3.5592321507563667, 3.1167230910321257),
@@ -173,7 +175,24 @@ fn loft_tangency_on_conical_rims_matches_the_native_preview_shape() {
     );
 }
 
-fn check_round_rim_loft(radii: [[f64; 2]; 2], samples: [(f64, f64, f64); 3]) {
+#[test]
+fn loft_tangency_on_rebuilt_rims_follows_the_original_supports() {
+    check_round_rim_loft(
+        [[2.3, 3.], [2.5, 3.4]],
+        Some(10),
+        [
+            (0.1, 3.2410618764369246, 0.6461814365456595),
+            (0.5, 3.573403368789612, 3.0759669366336073),
+            (0.9, 2.3961935200660816, 5.386621457804872),
+        ],
+    );
+}
+
+fn check_round_rim_loft(
+    radii: [[f64; 2]; 2],
+    rebuild: Option<usize>,
+    samples: [(f64, f64, f64); 3],
+) {
     let mut app = test_app();
     let plane = app.viewports[0].construction_plane();
     let tolerance = app.document.tolerance();
@@ -198,6 +217,8 @@ fn check_round_rim_loft(radii: [[f64; 2]; 2], samples: [(f64, f64, f64); 3]) {
         .execute(&mut app.document, "Circle 0,0,3 3.6")
         .unwrap();
     let middle = app.document.objects().last().unwrap().id();
+    let sources = app.document.objects().cloned().collect::<Vec<_>>();
+    app.document.clear_history().unwrap();
     enter(&mut app, "Loft");
     enter(&mut app, &rims[0]);
     enter(&mut app, &format!("SelID={middle}"));
@@ -205,17 +226,49 @@ fn check_round_rim_loft(radii: [[f64; 2]; 2], samples: [(f64, f64, f64); 3]) {
     enter(&mut app, "");
     enter(&mut app, "");
     enter(&mut app, "MatchStartTangent=Yes MatchEndTangent=Yes");
-    assert!(
-        !app.loft_prompt.as_ref().unwrap().preview_wires().is_empty(),
-        "{:?}",
-        app.command_log
-    );
+    let review = |app: &VibocerosApp| app.loft_prompt.as_ref().unwrap().preview_wires().to_vec();
+    let matched = review(&app);
+    assert!(!matched.is_empty(), "{:?}", app.command_log);
+    if let Some(count) = rebuild {
+        enter(&mut app, &format!("Rebuild={count}"));
+        let rebuilt = review(&app);
+        assert!(!rebuilt.is_empty(), "{:?}", app.command_log);
+        assert_ne!(rebuilt, matched);
+        enter(&mut app, "Undo");
+        assert_eq!(review(&app), matched);
+        enter(&mut app, &format!("Rebuild={count}"));
+        assert_eq!(review(&app), rebuilt);
+    }
+    assert_eq!(app.document.undo_label(), None);
     enter(&mut app, "");
     assert!(app.loft_prompt.is_none(), "{:?}", app.command_log);
+    assert_eq!(app.document.undo_label(), Some("Loft"));
+    assert!(app.document.objects().take(3).eq(&sources));
     let Geometry::Brep(brep) = app.document.objects().last().unwrap().geometry() else {
         panic!("Loft B-rep");
     };
     let surface = brep.faces()[0].surface();
+    if let Some(count) = rebuild {
+        assert_eq!(surface.control_point_count_v(), count + 1);
+        // Rebuild interpolates the edge at the fit stations. The new boundary
+        // can leave the original rim between those stations.
+        let [u, v] = [surface.domain_u(), surface.domain_v()];
+        let departure = |u: f64, radius: f64| {
+            (0..=32).fold(0.0_f64, |max, i| {
+                let station = *v.start() + (v.end() - v.start()) * f64::from(i) / 32.;
+                let point = surface.evaluate(u, station).unwrap();
+                max.max((point.x().hypot(point.y()) - radius).abs())
+            })
+        };
+        let start_height = surface.evaluate(*u.start(), *v.start()).unwrap().z();
+        let (start, end) = if start_height > 3. {
+            (*u.end(), *u.start())
+        } else {
+            (*u.start(), *u.end())
+        };
+        assert!((departure(start, 3.) - 0.0040065320630437995).abs() < 1e-7);
+        assert!((departure(end, 2.5) - 0.0033387767192034623).abs() < 1e-7);
+    }
     let domain_u = surface.domain_u();
     let domain_v = surface.domain_v();
     let mid_v = domain_v.start().midpoint(*domain_v.end());

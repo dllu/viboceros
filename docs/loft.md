@@ -31,8 +31,10 @@ on private copies. Closed profiles move each later seam to the nearest knot;
 The interactive options can match either end to the supporting face of a
 selected boundary edge. Start and end refer to the prepared section order.
 Loose, Straight and closed lofts suspend the checks while retaining their
-values for the current preview. A simplified matched profile must stay within
-the model tolerance of the edge.
+values for the current preview. With Rebuild or Refit, each simplified
+profile station takes its tangent direction from the nearest point on the
+original edge. The simplified boundary can depart from the supporting face
+between stations.
 
 `CreaseSplitting` controls tangent-break partitioning at 0.1 degrees.
 `SplitAtTangents=Yes` additionally splits curvature breaks at 1 degree,
@@ -86,7 +88,8 @@ distinct from the knot-spacing metric. Two sections use linear homogeneous
 handles. A matched end redirects the sampled handle offsets across the edge
 in the supporting face's tangent plane. The offsets are interpolated in the
 rational profile basis. The cubic solve preserves all intermediate section
-constraints. The result is sampled for angular agreement on each boundary span.
+constraints. Unsimplified ends are sampled for angular agreement on each
+boundary span.
 Closed interpolating styles use periodic cubic systems; closed Loose
 is cubic even with three sections. Open Loose uses degree `min(3, n-1)`.
 Final domains use the longest Euclidean control polygons in each direction,
