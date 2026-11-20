@@ -422,12 +422,13 @@ impl Brep {
                 trim_region::triangulate(&mut parameters, &lengths, &[])?
             }
             .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: index })?;
+            let mut evaluate = face.surface.point_evaluator();
             let points = parameters
                 .iter()
                 .enumerate()
                 .map(|(i, uv)| match boundary_points.get(i) {
                     Some(&point) => Ok(point),
-                    None => face.surface.evaluate(uv.x(), uv.y()),
+                    None => evaluate(uv.x(), uv.y()),
                 })
                 .collect::<Result<Vec<_>, _>>()?;
             let chord_height = sampling
