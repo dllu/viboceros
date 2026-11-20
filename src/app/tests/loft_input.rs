@@ -457,13 +457,15 @@ fn open_loft_accepts_end_alignment_with_an_updated_preview() {
     let context = egui::Context::default();
     enter(&mut app, "Loft");
     click_world(&mut app, &context, point(-3.85, 0., 0.));
-    click_world(&mut app, &context, point(-2.85, -0.94375, 4.));
+    click_world(&mut app, &context, point(4.85, 1.94375, 4.));
     assert_eq!(app.document.selected_object_count(), 2);
     enter(&mut app, "");
     let before = app.loft_prompt.as_ref().unwrap().preview_wires().to_vec();
     assert!(!before.is_empty(), "{:?}", app.command_log);
     enter(&mut app, "AlignCurves");
-    assert_eq!(app.loft_prompt.as_ref().unwrap().seam_markers().len(), 4);
+    let markers = app.loft_prompt.as_ref().unwrap().seam_markers();
+    assert_eq!(markers.len(), 4);
+    assert_eq!(markers[2].point, point(5., 2., 4.));
     click_world(&mut app, &context, point(5., 2., 4.));
     let after = app.loft_prompt.as_ref().unwrap().preview_wires().to_vec();
     assert!(!after.is_empty(), "{:?}", app.command_log);
