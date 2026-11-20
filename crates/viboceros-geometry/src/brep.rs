@@ -61,10 +61,10 @@ pub use inset::{
 };
 mod isocurves;
 mod join_edges;
-pub(crate) use join_edges::join_breps_with_curve_witnesses;
 pub use join_edges::{
     BrepEdgeMergeScope, BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report,
 };
+pub(crate) use join_edges::{join_breps_with_curve_witnesses, join_breps_with_preferred_trims};
 mod loft;
 pub use loft::LoftOptions;
 mod mass_properties;

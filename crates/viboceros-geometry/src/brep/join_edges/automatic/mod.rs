@@ -83,7 +83,7 @@ pub fn join_breps_with_report(
     join_distance: Real,
     tolerance: Tolerance,
 ) -> Result<BrepJoinReport, GeometryError> {
-    join_with_witnesses(sources, join_distance, tolerance, &[])
+    join(sources, join_distance, tolerance, &[], None)
 }
 
 /// Internal proof hints only: both actual curves must independently pass a
@@ -94,14 +94,37 @@ pub(crate) fn join_breps_with_curve_witnesses(
     tolerance: Tolerance,
     witnesses: &[&NurbsCurve],
 ) -> Result<Vec<BrepJoinComponent>, GeometryError> {
-    Ok(join_with_witnesses(sources, join_distance, tolerance, witnesses)?.components)
+    Ok(join(sources, join_distance, tolerance, witnesses, None)?.components)
 }
 
-fn join_with_witnesses(
+type PreferredTrim = fn(&BrepFace, &BrepTrim) -> bool;
+
+/// Join pairs of preferred trims before considering nearby alternate mates.
+/// The predicate is evaluated on the subdivided trims, so partial overlaps can
+/// leave other pieces of the same original edge available for the next pass.
+/// Naked trims within one input contribute cut parameters at their overlaps.
+/// Pairing still joins edges from separate inputs.
+pub(crate) fn join_breps_with_preferred_trims(
+    sources: &[&Brep],
+    tolerance: Tolerance,
+    preferred_trim: PreferredTrim,
+) -> Result<Vec<BrepJoinComponent>, GeometryError> {
+    Ok(join(
+        sources,
+        tolerance.absolute(),
+        tolerance,
+        &[],
+        Some(preferred_trim),
+    )?
+    .components)
+}
+
+fn join(
     sources: &[&Brep],
     join_distance: Real,
     tolerance: Tolerance,
     witnesses: &[&NurbsCurve],
+    preferred_trim: Option<PreferredTrim>,
 ) -> Result<BrepJoinReport, GeometryError> {
     require_nonnegative_finite(join_distance, "B-rep join distance")?;
     if sources.len() > MAX_SOURCES {
@@ -128,7 +151,7 @@ fn join_with_witnesses(
     let source_of_edge = edge_sources(&combined, &face_sources);
     let mut cuts = BTreeMap::<usize, Vec<Real>>::new();
     for &(a, b) in &candidates {
-        if source_of_edge[a] == source_of_edge[b] {
+        if preferred_trim.is_none() && source_of_edge[a] == source_of_edge[b] {
             continue;
         }
         let a_curve = &combined.edges[a].curve;
@@ -190,7 +213,16 @@ fn join_with_witnesses(
             matches.push((bound, a, b, reversed));
         }
     }
-    let pairs = selection::pairs(&combined, &matches, &split_edges);
+    let preferred = preferred_trim.map(|is_preferred| {
+        let mut preferred = vec![false; combined.edges.len()];
+        for usage in combined.trim_uses() {
+            if let Some(edge) = usage.trim.edge {
+                preferred[edge] |= is_preferred(&combined.faces[usage.face], usage.trim);
+            }
+        }
+        preferred
+    });
+    let pairs = selection::pairs(&combined, &matches, &split_edges, preferred.as_deref());
     let mut candidate_source_pairs = matches
         .iter()
         .map(|&(_, a, b, _)| {

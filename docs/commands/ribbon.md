@@ -67,7 +67,9 @@ On an open three-segment planar polyline, crossed inside clips can keep several
 pieces of the middle rail. With Sharp corners and coincident outer rails, the
 side pick chooses the loop at the bend or the ribbon toward the open ends.
 At a two-segment Sharp corner, a short leg can limit the other rail when the
-miter falls beyond its end.
+miter falls beyond its end. With BothSides, the original curve edges are sewn
+first where the corner ruling overlaps them. An outside pick keeps the long
+inside rail beyond that limit.
 `Trim=No` preserves the full ruled strips where they overlap. The live preview
 follows the setting. [Rhino 8 corner captures](../ribbon-trim-reference.json),
 [closed inward captures](../ribbon-global-trim-reference.json),
@@ -77,8 +79,8 @@ follows the setting. [Rhino 8 corner captures](../ribbon-trim-reference.json),
 curve fitting; sewing still uses model tolerance. Loose ignores this fit
 tolerance, Corner, and Trim. Global trimming remains incomplete for longer
 open chains, self-crossing and smooth sources, and other closed corner styles.
-BothSides on crossed open offsets and history-based regeneration remain
-unfinished. Both-sided Loose polycurves
+BothSides on crossed open offsets or nearly perpendicular short corners and
+history-based regeneration remain unfinished. Both-sided Loose polycurves
 are rejected because their native face incidence is not yet matched. Constant
 offset distance between fitting stations, winding and performance parity remain
 unqualified. These limits do not imply full Rhino command parity.

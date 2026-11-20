@@ -107,6 +107,7 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
     }
     let mut patches = Vec::new();
     let mut trimmed = Vec::new();
+    let mut short_corner = None;
     for (side, d) in [distance, -distance].into_iter().take(sides).enumerate() {
         let layout = polyline_offset_corner_layout(
             source,
@@ -116,6 +117,19 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
             corner.layout_style(),
             trim,
         )?;
+        if trim
+            && source.segment_count() == 2
+            && !source.is_closed()
+            && corner == RibbonCornerStyle::Sharp
+            && let Some(brep) =
+                open::short_corner(source, &layout, d, both_sides, side == 0, tolerance, ruled)?
+        {
+            if !both_sides {
+                return Ok(vec![brep]);
+            }
+            short_corner = Some((side, brep));
+            continue;
+        }
         if trim
             && !both_sides
             && !source.is_closed()
@@ -303,6 +317,11 @@ pub fn try_polyline_ribbon_with_pick<E: From<GeometryError>>(
     }
     if !trim {
         return Ok(vec![assembly::sew_untrimmed(patches, tolerance)?]);
+    }
+    if let Some((side, inside)) = short_corner {
+        let mut sides = assembly::sew(patches, tolerance)?;
+        sides.insert(side, inside);
+        return Ok(vec![assembly::sew_source_rails(&sides, tolerance)?]);
     }
     if trimmed.is_empty() {
         return Ok(assembly::sew(patches, tolerance)?);

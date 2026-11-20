@@ -90,6 +90,27 @@ pub(super) fn sew(patches: Vec<Patch>, tolerance: Tolerance) -> Result<Vec<Brep>
     ])
 }
 
+pub(super) fn sew_source_rails(
+    sides: &[Brep],
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    use crate::brep::join_breps_with_preferred_trims;
+    let sides = sides.iter().collect::<Vec<_>>();
+    // When a short inside strip ends along the original polyline, its
+    // ruling and the adjacent strip's source rail can cover the same span.
+    let joined = join_breps_with_preferred_trims(&sides, tolerance, |face, trim| {
+        let u = *face.surface().domain_u().start();
+        trim.curve()
+            .control_points()
+            .iter()
+            .all(|p| p.point().x() == u)
+    })?;
+    Brep::try_combine(
+        joined.into_iter().map(|part| part.brep).collect(),
+        tolerance,
+    )
+}
+
 pub(super) fn sew_untrimmed(
     patches: Vec<Patch>,
     tolerance: Tolerance,

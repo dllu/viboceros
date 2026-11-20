@@ -5,6 +5,7 @@ pub(super) fn pairs(
     brep: &Brep,
     candidates: &[(Real, usize, usize, bool)],
     split: &[bool],
+    preferred: Option<&[bool]>,
 ) -> Vec<(usize, usize, bool)> {
     let mut faces = vec![None; brep.edges.len()];
     let mut components = (0..brep.faces.len()).collect::<Vec<_>>();
@@ -19,11 +20,15 @@ pub(super) fn pairs(
     }
     let mut used = vec![false; brep.edges.len()];
     let mut chosen = Vec::new();
-    for closure in [false, true] {
+    for (preference, closure) in [(true, false), (false, false), (false, true)] {
+        if preference && preferred.is_none() {
+            continue;
+        }
         let mut best = vec![None::<(usize, bool)>; brep.edges.len()];
         for (i, &(_, a, b, _)) in candidates.iter().enumerate() {
             if used[a]
                 || used[b]
+                || (preference && preferred.is_some_and(|edges| !edges[a] || !edges[b]))
                 || (closure
                     && root(&mut components, faces[a].unwrap())
                         != root(&mut components, faces[b].unwrap()))

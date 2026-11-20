@@ -116,9 +116,6 @@ pub(super) fn build<E: From<GeometryError>>(
     tolerance: Tolerance,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
 ) -> Result<Option<Brep>, E> {
-    if source.segment_count() == 2 && corner == RibbonCornerStyle::Sharp {
-        return short_corner(source, layout, distance, tolerance, ruled);
-    }
     if source.segment_count() != 3
         || source.is_closed()
         || !layout.inside_corners[1]
@@ -281,10 +278,12 @@ fn raw_rails(
         .collect()
 }
 
-fn short_corner<E: From<GeometryError>>(
+pub(super) fn short_corner<E: From<GeometryError>>(
     source: &Polyline3,
     layout: &OffsetPolylineLayout,
     distance: Real,
+    both_sides: bool,
+    inside_first: bool,
     tolerance: Tolerance,
     ruled: &mut impl FnMut(&NurbsCurve, &NurbsCurve) -> Result<NurbsSurface, E>,
 ) -> Result<Option<Brep>, E> {
@@ -299,6 +298,19 @@ fn short_corner<E: From<GeometryError>>(
     let [a, b] = rails.as_slice() else {
         unreachable!()
     };
+    if both_sides && inside_first {
+        let cosine = a
+            .source
+            .direction(tolerance)?
+            .as_vector()
+            .dot(b.source.direction(tolerance)?.as_vector())?
+            .abs();
+        if cosine > 0. && cosine <= 64. * Real::EPSILON {
+            // A rounding-sized tilt can make Rhino retain a different
+            // component when the ruling almost coincides with the source.
+            return Ok(None);
+        }
+    }
     let q = layout.corners[1].0;
     let (u, v) = (
         a.project(q, tolerance)?.fraction,
@@ -315,14 +327,24 @@ fn short_corner<E: From<GeometryError>>(
         let Some(cap) = endpoint_cut(b.offset, a.source.start(), radius, true, tolerance)? else {
             return Ok(None);
         };
-        walk.push(a, [a.at(0.)?, a.at(1.)?], [false; 2], ruled)?;
-        walk.push(b, [b.at(0.)?, b.at(cap)?], [false; 2], ruled)?;
+        let cap = b.at(cap)?;
+        if inside_first {
+            walk.push(a, [a.at(0.)?, a.at(1.)?], [false; 2], ruled)?;
+            walk.push(b, [b.at(0.)?, cap], [false; 2], ruled)?;
+        } else {
+            walk.push(b, [cap, b.at(1.)?], [false; 2], ruled)?;
+        }
     } else if v > 1. && u > 0. && u < 1. {
         let Some(cap) = endpoint_cut(a.offset, b.source.end(), radius, false, tolerance)? else {
             return Ok(None);
         };
-        walk.push(a, [a.at(cap)?, a.at(1.)?], [false; 2], ruled)?;
-        walk.push(b, [b.at(0.)?, b.at(1.)?], [false; 2], ruled)?;
+        let cap = a.at(cap)?;
+        if inside_first {
+            walk.push(a, [cap, a.at(1.)?], [false; 2], ruled)?;
+            walk.push(b, [b.at(0.)?, b.at(1.)?], [false; 2], ruled)?;
+        } else {
+            walk.push(a, [a.at(0.)?, cap], [false; 2], ruled)?;
+        }
     } else {
         return Ok(None);
     }

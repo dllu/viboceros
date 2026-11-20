@@ -2,8 +2,8 @@
 use super::*;
 
 mod automatic;
-pub(crate) use automatic::join_breps_with_curve_witnesses;
 pub use automatic::{BrepJoinComponent, BrepJoinReport, join_breps, join_breps_with_report};
+pub(crate) use automatic::{join_breps_with_curve_witnesses, join_breps_with_preferred_trims};
 pub(super) mod certificate;
 mod merge;
 pub use merge::BrepEdgeMergeScope;
