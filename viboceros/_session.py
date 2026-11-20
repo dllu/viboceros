@@ -357,13 +357,14 @@ class Session:
         size: tuple[int, int] = (1200, 800), fit: bool = True,
         background: tuple[int, int, int, int] = (255, 255, 255, 255),
         camera: Camera | None = None, show_edges: bool = True, show_isocurves: bool = True,
-        lighting: Literal["viewport", "diffuse"] = "viewport",
+        lighting: Literal["viewport", "diffuse"] = "viewport", marker_scale: float = 1.0,
     ) -> Path:
-        """Write a PNG using a viewport, named view, or standard view direction."""
+        """Write a viewport PNG. Scale line widths and point sizes with ``marker_scale``."""
         path = _path(path)
         self._request(
             "screenshot", path=str(path), view=view, mode=mode, size=size,
             fit=fit, background=background, camera=None if camera is None else camera._payload(),
             show_edges=show_edges, show_isocurves=show_isocurves, lighting=lighting,
+            marker_scale=marker_scale,
         )
         return path
