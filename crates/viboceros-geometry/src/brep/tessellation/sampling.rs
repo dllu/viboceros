@@ -225,6 +225,7 @@ pub(super) fn append_trimmed_surface_grid_parameters(
     surface: &NurbsSurface,
     resolution: [usize; 2],
     axis_limit: Option<usize>,
+    balance_display_grid: bool,
 ) -> Result<(), GeometryError> {
     let boundary_vertex_count = loop_lengths
         .iter()
@@ -338,7 +339,24 @@ pub(super) fn append_trimmed_surface_grid_parameters(
         }
     }
     let limits = axis_limit.map(|limit| {
-        sparse_grid_axes(grid_axes([spans_u.len(), spans_v.len()], resolution), limit)
+        let wanted = grid_axes([spans_u.len(), spans_v.len()], resolution);
+        if balance_display_grid
+            && wanted.iter().all(|&count| count >= limit)
+            && let Ok(aspect) = super::metric::aspect(surface, &parameters[..loop_lengths[0]])
+            && aspect != [1.; 2]
+        {
+            // Keep the same station budget while shortening chords along
+            // the longer physical direction of the trimmed patch.
+            let short = usize::from(aspect[1] < aspect[0]);
+            let long = 1 - short;
+            let factor = aspect[short].recip().sqrt().min(2.5);
+            let mut counts = [0; 2];
+            counts[long] = wanted[long].min((limit as Real * factor) as usize);
+            counts[short] = wanted[short].min(limit * limit / counts[long]);
+            counts
+        } else {
+            sparse_grid_axes(wanted, limit)
+        }
     });
     let parameters_u = sample_direction(
         spans_u,
@@ -411,7 +429,8 @@ mod tests {
         let mut uv = [(0.125, 0.25), (0.375, 0.25), (0.375, 0.75), (0.125, 0.75)]
             .map(|(u, v)| Point2::try_new(u, v).unwrap())
             .to_vec();
-        append_trimmed_surface_grid_parameters(&mut uv, &[4], &surface, [1, 1], Some(16)).unwrap();
+        append_trimmed_surface_grid_parameters(&mut uv, &[4], &surface, [1, 1], Some(16), false)
+            .unwrap();
         assert_eq!(&uv[4..], &[Point2::try_new(0.25, 0.5).unwrap()]);
     }
 }

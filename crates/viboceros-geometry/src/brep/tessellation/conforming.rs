@@ -413,6 +413,7 @@ impl Brep {
                 &face.surface,
                 sampling.grid(index),
                 sampling.axis_limit,
+                sampling.display_edge_samples.is_some() && frames.len() == 1 && !self.is_solid(),
             )?;
             let triangles = if retain_parameters && sampling.display_edge_samples.is_none() {
                 creases::triangulate(&mut parameters, &lengths, &face.surface, index)?

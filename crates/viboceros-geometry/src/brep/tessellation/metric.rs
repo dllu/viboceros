@@ -19,7 +19,10 @@ pub(super) fn triangulate(
     trim_region::triangulate(parameters, lengths, &[])
 }
 
-fn aspect(surface: &NurbsSurface, boundary: &[Point2]) -> Result<[Real; 2], GeometryError> {
+pub(super) fn aspect(
+    surface: &NurbsSurface,
+    boundary: &[Point2],
+) -> Result<[Real; 2], GeometryError> {
     let span = sampling::parameter_bounds(boundary);
     let middle = span.map(|[lo, hi]| lo.midpoint(hi));
     let mut lengths = [0.; 2];
