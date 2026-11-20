@@ -5,8 +5,13 @@
 17 completed commands were captured on Rhino **8.32.26160.13001** using an
 owned private Xvfb display and settings scheme. The
 [provenance record](maelstrom-fit-points-provenance.json) hashes the bounded
-recipes, helper and unmodified native observations. These are command and
-geometry witnesses; interactive FitPoints is not yet implemented in Viboceros.
+recipes, helper and unmodified native observations.
+
+In Viboceros, choose `FitPoints` at the Maelstrom center prompt. Select points
+or visible grips and press Enter. `SelID` accepts a point object's ID.
+Three or more preselected point targets fit immediately. The circle previews
+as fitting points are picked. After accepting it, the radius and angle getters
+use its frame and the original deformation targets.
 
 ## Definition points and target selection
 
@@ -64,7 +69,21 @@ command result.
 
 ## Verification and remaining work
 
+Headless app tests exercise viewport picks, preview, cancellation, numeric
+placement and command-end selection, Undo and Redo for all 17 retained cases.
+The fitted center and radius match within `1e-7`. The sampled deformation
+matches six cases within `2e-5`. The opposite normal reverses the coil in
+the other eleven cases, with witness distances up to about 19.799 model units.
+Preview and commit share the local fitted orientation.
+
+Private Rhino probes also show that pressing Enter with fewer than three
+fitting points ends the command without a placement. With collinear or
+coincident points, Rhino advances with a zero first radius and accepts an
+identity deformation. The app covers this case, including repeated Copy
+placements in one Undo entry.
+
 ```sh
+cargo test --release -p viboceros app::tests::maelstrom::fit_points
 cargo test --release -p viboceros-geometry maelstrom_fit_points
 python3 -m unittest tools.rhino_oracle.test_maelstrom_fit_points
 tools/rhino_oracle/run_headless.sh exec python3 -m tools.rhino_oracle rhino \
@@ -77,7 +96,5 @@ Live probes require one iteration, an empty owned document, a private settings
 scheme and their own Xvfb display. The worker restores the construction plane
 and removes its owned objects. No proprietary source was inspected.
 
-Native fitted-plane orientation, the retained near-collinear convergence gap,
-interactive point selection, degeneracy/cancellation behavior and broader
-numeric inputs still need work. These sampled workflows do not prove full
-Rhino compatibility.
+Native signed plane orientation, the near-collinear convergence gap and
+broader numerical coverage remain open.

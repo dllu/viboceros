@@ -2,6 +2,8 @@ use super::*;
 use serde_json::Value;
 use viboceros_command::maelstrom::{MaelstromOptions, MaelstromRadius};
 
+mod fit_points;
+
 fn type_value(app: &mut VibocerosApp, value: &Value) {
     app.command_input = if let Some(p) = value.as_array() {
         format!("w{},{},{}", p[0], p[1], p[2])

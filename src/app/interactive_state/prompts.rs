@@ -773,7 +773,7 @@ impl InteractiveCommand {
                 ..
             } => match (center, initial, target) {
                 (None, _, _) => {
-                    "Maelstrom: pick the center; Vertical, 2Point, 3Point (Esc to cancel)"
+                    "Maelstrom: pick the center or choose Vertical, 2Point, 3Point, or FitPoints (Esc cancels)"
                 }
                 (Some(_), None, _) => {
                     "Maelstrom: enter or pick the first radius; Diameter, Orientation, Circumference, Area; Enter accepts the remembered radius"

@@ -315,6 +315,42 @@ impl CommandRegistry {
     pub fn remember_maelstrom_copy_option(&self, copy: bool) {
         self.copy_preferences.complete("Maelstrom", copy);
     }
+
+    /// Accept one FitPoints placement and release its temporary definition
+    /// picks during history replay.
+    pub fn execute_maelstrom_fit_placement(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+        group: &mut viboceros_document::HistoryGroup,
+        fit_picks: &MaelstromFitPicks,
+    ) -> Result<String, CommandError> {
+        let command = MaelstromCommand(
+            self.maelstrom_preferences.clone(),
+            self.copy_preferences.clone(),
+        );
+        let arguments = input.split_whitespace().skip(1).collect::<Vec<_>>();
+        command.history_policy().configure(group);
+        document.begin_group_transaction(group)?;
+        match command.run_with_fit_picks(document, &arguments, context, Some(fit_picks)) {
+            Ok(message) => {
+                document.commit_group_transaction(group)?;
+                document.clear_temporary_object_selection();
+                Ok(message)
+            }
+            Err(error) => {
+                document.rollback_transaction()?;
+                Err(error)
+            }
+        }
+    }
+}
+
+#[derive(Debug, Default)]
+pub struct MaelstromFitPicks {
+    pub objects: Vec<ObjectId>,
+    pub grips: Vec<viboceros_document::ControlPointId>,
 }
 pub(super) struct MaelstromCommand(
     pub(super) std::sync::Arc<MaelstromPreferences>,
@@ -339,6 +375,24 @@ impl Command for MaelstromCommand {
         arguments: &[&str],
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        self.run_with_fit_picks(document, arguments, context, None)
+    }
+}
+
+impl MaelstromFitPicks {
+    pub fn has_temporary_picks(&self) -> bool {
+        !self.objects.is_empty() || !self.grips.is_empty()
+    }
+}
+
+impl MaelstromCommand {
+    fn run_with_fit_picks(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+        fit_picks: Option<&MaelstromFitPicks>,
+    ) -> Result<String, CommandError> {
         let (arguments, sources) = transform_arguments(document, arguments, USAGE)?;
         let (positional, options) =
             MaelstromOptions::from_arguments(&arguments, MaelstromOptions::default())?;
@@ -351,7 +405,8 @@ impl Command for MaelstromCommand {
         let initial = size(MaelstromRadius::parse(positional[n])?);
         let frame = circle_frame(center, initial, context)?;
         let first_radius = initial.radius(frame)?;
-        if first_radius <= SDK_ZERO {
+        let degenerate_fit = first_radius == 0. && fit_picks.is_some();
+        if !degenerate_fit && first_radius <= SDK_ZERO {
             return Err(GeometryError::Degenerate {
                 context: "maelstrom first radius",
             }
@@ -359,7 +414,9 @@ impl Command for MaelstromCommand {
         }
         // Getter choices are application preferences, independent of model
         // rollback. They save after the first Circle radius is accepted.
-        self.0.radius.set(first_radius);
+        if !degenerate_fit {
+            self.0.radius.set(first_radius);
+        }
         self.1.complete("Maelstrom", options.copy);
         let target = size(MaelstromRadius::parse(positional[n + 1])?);
         let angle = positional[n + 2];
@@ -369,6 +426,14 @@ impl Command for MaelstromCommand {
             coil_angle(frame, point)?
         } else {
             parse_finite_real(angle)?
+        };
+        let (initial, target, degrees) = if degenerate_fit {
+            // A zero-radius native FitPoints result accepts placement as an
+            // identity morph. Keep numeric placement validation and history.
+            target.target_radius(frame)?;
+            (MaelstromRadius::Number(1.), MaelstromRadius::Number(1.), 0.)
+        } else {
+            (initial, target, degrees)
         };
         let staged = deformed_geometries(
             document,
@@ -383,6 +448,11 @@ impl Command for MaelstromCommand {
         if sources.release_on_replay {
             document.release_command_selection_on_history_replay(sources.ids.iter().copied())?;
         }
+        if let Some(picks) = fit_picks {
+            document.release_command_selection_on_history_replay(picks.objects.iter().copied())?;
+            document
+                .release_control_point_selection_on_history_replay(picks.grips.iter().copied())?;
+        }
         let count = staged.len();
         if options.copy {
             document.copy_object_geometries_with_groups(staged, CopyGroupPolicy::Preserve)?;
@@ -393,8 +463,18 @@ impl Command for MaelstromCommand {
                 ReplacementHistory::EveryReplacement,
             )?;
             document.move_objects_to_end_in_order(sources.ids.iter().copied())?;
+            if let Some(picks) = fit_picks
+                && !picks.has_temporary_picks()
+                && !sources.postselected
+            {
+                document
+                    .release_transform_selection_on_history_replay(sources.ids.iter().copied())?;
+            }
             if sources.postselected {
                 document.clear_selection();
+                if fit_picks.is_some() {
+                    document.clear_control_point_selection();
+                }
             }
         }
 

@@ -196,6 +196,9 @@ impl PendingObjectCommand {
         if self.description.command == "FilletCorners" {
             return "Select curves to fillet; Enter sets the radius, Esc cancels";
         }
+        if self.description.command == maelstrom_prompt::FIT_POINTS_PROMPT {
+            return "Select at least three points or grips for the first circle. Enter fits, Esc cancels";
+        }
         if self.description.command == "Ribbon" && self.phase == ObjectPromptPhase::Selecting {
             return "Select a curve to ribbon, choose SubCrv, or edit Ribbon options";
         }
@@ -1308,6 +1311,9 @@ impl VibocerosApp {
     }
 
     pub(super) fn try_continue_object_prompt(&mut self, input: &str) -> bool {
+        if self.continue_maelstrom_fit(input) {
+            return true;
+        }
         if self.sweep_two_rails.is_some() {
             return self.continue_sweep_two_rails(input);
         }
@@ -2232,6 +2238,9 @@ impl VibocerosApp {
         self.rebuild_preview = None;
         self.weight_prompt = None;
         if let Some(pending) = self.object_prompt.take() {
+            if pending.description.command == maelstrom_prompt::FIT_POINTS_PROMPT {
+                self.finish_maelstrom_session();
+            }
             if matches!(pending.phase, ObjectPromptPhase::RibbonValue(getter) if getter.takes_point())
             {
                 self.active_command = None;

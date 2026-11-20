@@ -1,17 +1,24 @@
 //! Maelstrom source selection, Circle radii and repeated coil-angle placements.
 use super::*;
 use viboceros_command::circle_input::{CircleDefinition, CircleInput, CircleSizeMode};
-use viboceros_command::maelstrom::{MaelstromRadius, circle_frame, coil_angle, point_morph};
+use viboceros_command::maelstrom::{
+    MaelstromFitPicks, MaelstromRadius, circle_frame, coil_angle, point_morph,
+};
 use viboceros_geometry::GeometryError;
+
+mod fit_points;
+pub(super) use fit_points::PROMPT_NAME as FIT_POINTS_PROMPT;
 
 pub(super) struct MaelstromSession {
     sources: Vec<ObjectId>,
     postselected: bool,
     option: Option<&'static str>,
     group: viboceros_document::HistoryGroup,
-    placed: bool,
+    placed: Option<viboceros_command::maelstrom::MaelstromOptions>,
     context: Option<viboceros_command::CommandContext>,
     circle_getter: Option<CircleInput>,
+    fit_input: Option<fit_points::Input>,
+    fit_picks: Option<MaelstromFitPicks>,
     preview_cursor: Option<crate::viewport::MaelstromCursor>,
     preview_cache: std::cell::RefCell<crate::viewport::MaelstromPreviewCache>,
 }
@@ -148,12 +155,14 @@ impl VibocerosApp {
             postselected,
             option: None,
             group,
-            placed: false,
+            placed: None,
             context: None,
             circle_getter: self.commands.maelstrom_uses_diameter().then(|| {
                 CircleInput::new(self.viewports[self.active_viewport].construction_plane())
                     .with_size_mode(CircleSizeMode::Diameter)
             }),
+            fit_input: None,
+            fit_picks: None,
             preview_cursor: None,
             preview_cache: Default::default(),
         });
@@ -161,7 +170,18 @@ impl VibocerosApp {
     }
 
     pub(super) fn finish_maelstrom_session(&mut self) -> bool {
-        self.maelstrom_session.take().is_some_and(|s| s.placed)
+        let Some(session) = self.maelstrom_session.take() else {
+            return false;
+        };
+        if session.fit_input.is_some()
+            || session.fit_picks.as_ref().is_some_and(|picks| {
+                picks.has_temporary_picks() && session.placed.is_none_or(|placement| placement.copy)
+            })
+        {
+            self.document.clear_selection();
+            self.document.clear_control_point_selection();
+        }
+        session.placed.is_some()
     }
 
     pub(super) fn try_continue_maelstrom(&mut self, input: &str) -> bool {
@@ -181,6 +201,13 @@ impl VibocerosApp {
         if word.eq_ignore_ascii_case("Cancel") {
             self.cancel_interactive_command(true);
             return true;
+        }
+        if center.is_none()
+            && initial.is_none()
+            && session.circle_getter.is_none_or(CircleInput::at_start)
+            && word.eq_ignore_ascii_case("FitPoints")
+        {
+            return self.begin_maelstrom_fit(options);
         }
         if initial.is_none() {
             let (option, value) = input
@@ -453,7 +480,18 @@ impl VibocerosApp {
                 construction_plane: self.viewports[self.active_viewport].construction_plane(),
             });
         // Both getters use the command adapter's measured Circle/radius policy.
-        if let Err(e) = point_morph(center, initial.unwrap_or(radius), radius, 0., context) {
+        let validation_radius = match initial {
+            Some(MaelstromRadius::Number(0.))
+                if self
+                    .maelstrom_session
+                    .as_ref()
+                    .is_some_and(|s| s.fit_picks.is_some()) =>
+            {
+                MaelstromRadius::Number(1.)
+            }
+            _ => initial.unwrap_or(radius),
+        };
+        if let Err(e) = point_morph(center, validation_radius, radius, 0., context) {
             self.push_log(format!("Error: {e}"));
             return false;
         }
@@ -519,14 +557,25 @@ impl VibocerosApp {
         );
         self.push_log(format!("> {input}"));
         let session = self.maelstrom_session.as_mut().unwrap();
-        match self.commands.execute_in_history_group(
-            &mut self.document,
-            &input,
-            context,
-            &mut session.group,
-        ) {
+        let result = if let Some(picks) = &session.fit_picks {
+            self.commands.execute_maelstrom_fit_placement(
+                &mut self.document,
+                &input,
+                context,
+                &mut session.group,
+                picks,
+            )
+        } else {
+            self.commands.execute_in_history_group(
+                &mut self.document,
+                &input,
+                context,
+                &mut session.group,
+            )
+        };
+        match result {
             Ok(message) => {
-                session.placed = true;
+                session.placed = Some(options);
                 session.preview_cursor = None;
                 self.push_log(message);
                 if options.copy {

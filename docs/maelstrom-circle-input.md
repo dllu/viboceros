@@ -60,7 +60,8 @@ input tokens are retained as `resolved_inputs`.
 
 The [FitPoints workflows](maelstrom-fit-points.md) now retain 17 completed
 native commands, point selection/history behavior and 250 deformation maps.
-Interactive integration still needs a compatible fitted-plane orientation.
+The interactive getter replays their selection and history. Eleven sampled
+deformations still differ because the solver chooses the opposite normal.
 
 Tangent, AroundCurve, transparent measurement commands, ProjectOsnap
 behavior on actual snapped picks and native guide pixels for these construction

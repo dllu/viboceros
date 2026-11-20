@@ -1111,7 +1111,7 @@ impl VibocerosApp {
             })
             .map(|s| s.input);
         let solid_axial_fit = model_input_active
-            .then(|| self.solid_axial_fit_preview())
+            .then(|| self.solid_axial_fit_preview().or_else(|| self.maelstrom_fit_preview()))
             .flatten();
         let tapered_extrusion = self
             .tapered_extrusion_session

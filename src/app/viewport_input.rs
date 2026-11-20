@@ -1,6 +1,39 @@
 //! Viewport actions dispatched to drafting and selection handlers.
 use super::*;
 
+fn prompt_selects_grips(prompt: &object_selection::PendingObjectCommand) -> bool {
+    matches!(
+        prompt.description.command,
+        "Align"
+            | "Circle FitPoints"
+            | maelstrom_prompt::FIT_POINTS_PROMPT
+            | "Cone FitPoints"
+            | "Cylinder FitPoints"
+            | "Tube FitPoints"
+            | "TruncatedCone FitPoints"
+            | "MeshCone FitPoints"
+            | "MeshCylinder FitPoints"
+            | "MeshTruncatedCone FitPoints"
+            | "SubDCylinder FitPoints"
+            | "SubDCone FitPoints"
+            | "SubDTruncatedCone FitPoints"
+            | "SubDTorus FitPoints"
+            | "MeshTorus FitPoints"
+            | "Torus FitPoints"
+            | "SubDSphere FitPoints"
+            | "PlaneThroughPt"
+            | "LineThroughPt"
+            | "Sphere FitPoints"
+            | "MeshSphere FitPoints"
+            | "Smooth"
+            | "HidePt"
+            | "ExtractPt"
+            | "Weight"
+    ) || (prompt.description.workflow
+        == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
+        && transform_sources::allows_grips(prompt.description.command))
+}
+
 impl VibocerosApp {
     pub(super) fn handle_viewport_action(&mut self, mut output: ViewportOutput) -> bool {
         if let Some(pick) = output.sweep_slash_point.filter(|pick| pick.accept) {
@@ -244,37 +277,7 @@ impl VibocerosApp {
             return true;
         }
         if let Some(selection) = output.control_point_selection.take() {
-            let fit_prompt = self.object_prompt.as_ref().is_some_and(|prompt| {
-                matches!(
-                    prompt.description.command,
-                    "Align"
-                        | "Circle FitPoints"
-                        | "Cone FitPoints"
-                        | "Cylinder FitPoints"
-                        | "Tube FitPoints"
-                        | "TruncatedCone FitPoints"
-                        | "MeshCone FitPoints"
-                        | "MeshCylinder FitPoints"
-                        | "MeshTruncatedCone FitPoints"
-                        | "SubDCylinder FitPoints"
-                        | "SubDCone FitPoints"
-                        | "SubDTruncatedCone FitPoints"
-                        | "SubDTorus FitPoints"
-                        | "MeshTorus FitPoints"
-                        | "Torus FitPoints"
-                        | "SubDSphere FitPoints"
-                        | "PlaneThroughPt"
-                        | "LineThroughPt"
-                        | "Sphere FitPoints"
-                        | "MeshSphere FitPoints"
-                        | "Smooth"
-                        | "HidePt"
-                        | "ExtractPt"
-                        | "Weight"
-                ) || (prompt.description.workflow
-                    == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
-                    && transform_sources::allows_grips(prompt.description.command))
-            });
+            let fit_prompt = self.object_prompt.as_ref().is_some_and(prompt_selects_grips);
             let mode = if fit_prompt && selection.mode == SelectionMode::Replace {
                 SelectionMode::Add
             } else {
@@ -534,36 +537,8 @@ impl VibocerosApp {
             && self.set_view_prompt.is_none()
             && (self.component_preselection_available()
                 || self.object_prompt.as_ref().is_some_and(|prompt| {
-                    (matches!(
-                        prompt.description.command,
-                        "Align"
-                            | "Circle FitPoints"
-                            | "Cone FitPoints"
-                            | "Cylinder FitPoints"
-                            | "Tube FitPoints"
-                            | "TruncatedCone FitPoints"
-                            | "MeshCone FitPoints"
-                            | "MeshCylinder FitPoints"
-                            | "MeshTruncatedCone FitPoints"
-                            | "SubDCylinder FitPoints"
-                            | "SubDCone FitPoints"
-                            | "SubDTruncatedCone FitPoints"
-                            | "SubDTorus FitPoints"
-                            | "MeshTorus FitPoints"
-                            | "Torus FitPoints"
-                            | "SubDSphere FitPoints"
-                            | "PlaneThroughPt"
-                            | "LineThroughPt"
-                            | "Sphere FitPoints"
-                            | "MeshSphere FitPoints"
-                            | "Smooth"
-                            | "HidePt"
-                            | "ExtractPt"
-                            | "Weight"
-                    ) || (prompt.description.workflow
-                        == viboceros_command::ObjectSelectionWorkflow::PointInputAfterSelection
-                        && transform_sources::allows_grips(prompt.description.command)))
-                        && prompt.phase == object_selection::ObjectPromptPhase::Selecting
+                    prompt.phase == object_selection::ObjectPromptPhase::Selecting
+                        && prompt_selects_grips(prompt)
                 }))
     }
 }

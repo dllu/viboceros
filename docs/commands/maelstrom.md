@@ -93,9 +93,17 @@ turn at zero degrees. Explicit numeric angles retain the supplied number.
 [Live previews](../maelstrom-preview.md) show both black circle guides and
 cached deformation wires. The [first-circle getter](../maelstrom-circle-input.md)
 supports Radius/Diameter, Circumference, Area, Vertical, Orientation, 2Point,
-3Point and three-point Radius construction. Radius/Diameter is remembered and
-also controls numeric second-size input; Circumference and Area are temporary
-conversions. Pending Circle definitions create no model object.
+3Point, three-point Radius construction, and FitPoints. The remembered
+Radius/Diameter mode controls numeric second-size input. Circumference and
+Area are temporary conversions. Pending Circle definitions create no model
+object.
+
+Choose `FitPoints` at the center prompt. Three or more preselected point
+targets supply the fit immediately. Otherwise, select fitting points or
+visible grips and press Enter. The fitted circle previews as you select and
+sets the plane for the second radius and coil angle. Current signed deformation
+matches six of the 17 retained Rhino cases. The fitted normal is reversed
+in the other eleven. See [FitPoints verification](../maelstrom-fit-points.md).
 
 ## Retained verification
 

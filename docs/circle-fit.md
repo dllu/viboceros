@@ -86,8 +86,9 @@ This is a fitting foundation, and **full native parity remains incomplete**.
 Native fitted normals can flip with the input data, and seams depend on the
 resulting plane basis. Solver bases are not yet a compatible substitute for
 those conventions. [Complete grip editing and selection behavior](control-points.md)
-and Maelstrom's FitPoints input remain incomplete; Circle's point and grip input
-paths still have the native parameterization limitations.
+and native parameterization of the fitted circles remain incomplete.
+[Maelstrom's FitPoints input](maelstrom-fit-points.md) now uses the fitter.
+The fitted normal still differs from Rhino in some cases.
 
 The diagnostic with a `1e-6` departure from collinearity retains a roughly
 `2.35e-6` difference in both center and radius. It remains an explicit failing
