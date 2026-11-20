@@ -322,6 +322,14 @@ class PythonApiTests(unittest.TestCase):
         )
         self.assertEqual(struct.unpack(">II", scaled.read_bytes()[16:24]), size)
         self.assertNotEqual(scaled.read_bytes(), edges.read_bytes())
+        multisampled = model.screenshot(
+            self.folder / "antialiased.png", camera=camera, show_edges=False,
+            size=size, msaa_samples=4,
+        ).read_bytes()
+        self.assertEqual(struct.unpack(">II", multisampled[16:24]), size)
+        self.assertNotEqual(multisampled, clean.read_bytes())
+        with self.assertRaisesRegex(SessionError, "MSAA samples must be 1 or 4"):
+            model.screenshot(self.folder / "invalid-msaa.png", size=size, msaa_samples=2)
         with self.assertRaisesRegex(SessionError, "marker scale must be finite and positive"):
             model.screenshot(self.folder / "invalid-scale.png", size=size, marker_scale=0.)
         diffuse = model.screenshot(

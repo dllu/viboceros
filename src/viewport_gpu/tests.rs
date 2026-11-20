@@ -65,6 +65,13 @@ fn chunked_upload_renders_every_primitive_and_survives_display_switches() {
     let first = scene(triangle.clone(), vec![line], vec![point], 0, 0);
     let expected = renderer.render(&first);
     assert!(expected.iter().any(|p| p[3] > 0));
+    let multisampled = renderer.capture(&first, [SIZE; 2], [0; 4], 4).unwrap();
+    let fractional_alpha = multisampled
+        .chunks_exact(4)
+        .filter(|p| p[3] > 0 && p[3] < 255)
+        .count();
+    assert!(fractional_alpha > expected.iter().filter(|p| p[3] > 0 && p[3] < 255).count());
+    assert_eq!(renderer.render(&first), expected);
     assert_eq!(renderer.render_at(4, &first), expected);
     let uploaded = renderer.preparations();
     let mut camera = ViewportScene {

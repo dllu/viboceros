@@ -17,6 +17,8 @@ pub(crate) struct OffscreenRenderer {
     device: wgpu::Device,
     queue: wgpu::Queue,
     renderer: ViewportRenderer,
+    multisampled_renderer: Option<ViewportRenderer>,
+    supports_multisampling: bool,
     format: wgpu::TextureFormat,
     // Serialize test contexts until all graphics resources have been dropped.
     #[cfg(test)]
@@ -35,6 +37,12 @@ impl OffscreenRenderer {
             compatible_surface: None,
             ..Default::default()
         }))?;
+        let flags = |format| adapter.get_texture_format_features(format).flags;
+        let supports_multisampling = flags(format).contains(
+            wgpu::TextureFormatFeatureFlags::MULTISAMPLE_X4
+                | wgpu::TextureFormatFeatureFlags::MULTISAMPLE_RESOLVE,
+        ) && flags(DEPTH_FORMAT)
+            .contains(wgpu::TextureFormatFeatureFlags::MULTISAMPLE_X4);
         let mut descriptor = wgpu::DeviceDescriptor::default();
         if let Some(limit) = limit {
             descriptor.required_limits.max_buffer_size = limit;
@@ -45,6 +53,8 @@ impl OffscreenRenderer {
             device,
             queue,
             renderer,
+            multisampled_renderer: None,
+            supports_multisampling,
             format,
             #[cfg(test)]
             serial: None,
@@ -56,6 +66,7 @@ impl OffscreenRenderer {
         scene: &ViewportScene,
         size: [u32; 2],
         background: [u8; 4],
+        sample_count: u32,
     ) -> Result<Vec<u8>, RenderError> {
         let [r, g, b, a] = background.map(|channel| f64::from(channel) / 255.0);
         let clear = wgpu::Color {
@@ -64,7 +75,7 @@ impl OffscreenRenderer {
             b: b * a,
             a,
         };
-        let mut rgba = self.read_pixels(0, scene, size, clear)?;
+        let mut rgba = self.read_pixels(0, scene, size, clear, sample_count)?;
         if a < 1.0 {
             // The viewport compositor stores premultiplied color. PNG uses straight alpha.
             for pixel in rgba.chunks_exact_mut(4) {
@@ -85,7 +96,14 @@ impl OffscreenRenderer {
         scene: &ViewportScene,
         [width, height]: [u32; 2],
         background: wgpu::Color,
+        sample_count: u32,
     ) -> Result<Vec<u8>, RenderError> {
+        if !matches!(sample_count, 1 | 4) {
+            return Err("capture MSAA samples must be 1 or 4".into());
+        }
+        if sample_count == 4 && !self.supports_multisampling {
+            return Err("the capture GPU does not support 4× MSAA for the viewport".into());
+        }
         let limits = self.device.limits();
         if width == 0 || height == 0 || width.max(height) > limits.max_texture_dimension_2d {
             return Err(format!(
@@ -124,7 +142,14 @@ impl OffscreenRenderer {
             mapped_at_creation: false,
         });
         let mut encoder = self.device.create_command_encoder(&Default::default());
-        self.renderer.prepare_image(
+        let renderer = if sample_count == 4 {
+            self.multisampled_renderer.get_or_insert_with(|| {
+                ViewportRenderer::with_sample_count(&self.device, self.format, sample_count)
+            })
+        } else {
+            &mut self.renderer
+        };
+        renderer.prepare_image(
             index,
             scene,
             [width, height],
@@ -148,8 +173,8 @@ impl OffscreenRenderer {
                     ..Default::default()
                 })
                 .forget_lifetime();
-            if let Some(image) = &self.renderer.viewports[index].image {
-                self.renderer.composite.paint(image, &mut pass);
+            if let Some(image) = &renderer.viewports[index].image {
+                renderer.composite.paint(image, &mut pass);
             }
         }
         encoder.copy_texture_to_buffer(
@@ -205,7 +230,7 @@ impl OffscreenRenderer {
 
     pub(crate) fn render_at(&mut self, index: usize, scene: &ViewportScene) -> Vec<[u8; 4]> {
         assert_eq!(scene.uniform.viewport_size, [SIZE as f32; 2]);
-        self.read_pixels(index, scene, [SIZE; 2], wgpu::Color::TRANSPARENT)
+        self.read_pixels(index, scene, [SIZE; 2], wgpu::Color::TRANSPARENT, 1)
             .expect("render offscreen test pixels")
             .chunks_exact(4)
             .map(|pixel| pixel.try_into().unwrap())
