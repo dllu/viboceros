@@ -124,5 +124,5 @@ pub(in crate::sweep::profile_miters) fn sew<E: From<GeometryError>>(
     let combined = Brep::try_combine(parts, tolerance)?;
     Ok(combined
         .try_join_edge_pairs(&pairs, tolerance.absolute(), tolerance)?
-        .partition_sweep_extensions(tolerance))
+        .partition_sweep_miter_faces(tolerance))
 }

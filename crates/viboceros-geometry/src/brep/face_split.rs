@@ -71,32 +71,51 @@ impl Brep {
     /// adjacent faces through the usual knot-line partitioner. U is distance
     /// on these straight extrusion surfaces. Keep a valid unsplit face if
     /// its trim incidences cannot be resolved at model tolerance.
-    pub(crate) fn partition_sweep_extensions(mut self, tolerance: Tolerance) -> Self {
+    pub(crate) fn partition_sweep_extensions(self, tolerance: Tolerance) -> Self {
+        self.partition_sweep_faces(false, tolerance)
+    }
+
+    /// Retain profile creases on sewn, trimmed miter supports. Splitting after
+    /// sewing propagates each subdivision through the shared miter edge.
+    pub(crate) fn partition_sweep_miter_faces(self, tolerance: Tolerance) -> Self {
+        self.partition_sweep_faces(true, tolerance)
+    }
+
+    fn partition_sweep_faces(mut self, section_creases: bool, tolerance: Tolerance) -> Self {
         let mut budget = Budget(MAX_WORK);
         let mut index = 0;
         while let Some(face) = self.faces.get(index) {
             let surface = &face.surface;
             let domain = surface.domain_u();
-            let mut partition = None;
-            for knots in surface.knots_u().chunk_by(|a, b| a == b) {
-                let cut = knots[0];
-                if knots.len() == surface.degree_u() && *domain.start() < cut && cut < *domain.end()
-                {
-                    partition = self
-                        .partition_face_with_budget(
-                            index,
-                            SurfaceKnotDirection::U,
-                            cut,
-                            tolerance,
-                            &mut budget,
-                            tolerance.absolute() * 0.125,
-                        )
-                        .ok()
-                        .flatten();
-                    if partition.is_some() {
-                        break;
-                    }
-                }
+            let split = |direction, cut, budget: &mut Budget| {
+                let snap_limit = if direction == SurfaceKnotDirection::U {
+                    tolerance.absolute() * 0.125
+                } else {
+                    0.
+                };
+                self.partition_face_with_budget(
+                    index, direction, cut, tolerance, budget, snap_limit,
+                )
+                .ok()
+                .flatten()
+            };
+            let mut partition = surface
+                .knots_u()
+                .chunk_by(|a, b| a == b)
+                .filter(|knots| {
+                    knots.len() == surface.degree_u()
+                        && domain.start() < &knots[0]
+                        && &knots[0] < domain.end()
+                })
+                .find_map(|knots| split(SurfaceKnotDirection::U, knots[0], &mut budget));
+            if partition.is_none()
+                && section_creases
+                && charge_kink_search(surface, &mut budget).is_ok()
+                && let Ok([_, cuts]) = surface.sampled_kink_parameters(tolerance.angular())
+            {
+                partition = cuts
+                    .into_iter()
+                    .find_map(|cut| split(SurfaceKnotDirection::V, cut, &mut budget));
             }
             if let Some(next) = partition {
                 self = next;

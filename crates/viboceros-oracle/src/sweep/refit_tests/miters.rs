@@ -29,6 +29,52 @@ fn sweep1_section_refits_mixed_profile_miters_keep_native_charts_and_rims() {
     });
 }
 
+#[test]
+fn sweep1_shared_miter_keeps_both_native_crease_bands() {
+    let (input, observed, _) = captures!("sweep1_shared_miter_crease", ());
+    let query: ProbeRequest = serde_json::from_str(input).unwrap();
+    let observation: Value = serde_json::from_str(observed).unwrap();
+    let tolerance = Tolerance::try_new(LIMIT, 1e-12, 1e-6).unwrap();
+    let mut compared = 0;
+    let mut maximum: Real = 0.;
+    for (op, record) in query
+        .operations
+        .into_iter()
+        .zip(observation["results"].as_array().unwrap())
+    {
+        let Operation::Sweep1 { id, fixture } = op else {
+            panic!("Sweep1 fixture expected");
+        };
+        assert_eq!(record["id"], id);
+        let (value, _) = run(&fixture, 1, tolerance).unwrap();
+        let actual = sorted_faces(&value);
+        let native = sorted_faces(&record["value"]);
+        assert_eq!(actual.len(), 4, "{id}");
+        assert_eq!(native.len(), 4, "{id}");
+        for (i, (actual, native)) in actual.iter().zip(&native).enumerate() {
+            // Trimmed faces retain extended supports. Compare each complete
+            // patch between its natural end and the common corner.
+            let u = if i < 2 { 0. ..=5. } else { 5. ..=10. };
+            let actual = actual.try_trimmed_u(u.clone()).unwrap();
+            let native = native
+                .try_trimmed_u(u.clone())
+                .unwrap()
+                .try_reparameterized(u, actual.domain_v())
+                .unwrap();
+            rim_bound(&actual, &native, &id);
+            let limit = 2e-5;
+            let bound = actual
+                .parameter_surface_deviation_bound(&native, limit)
+                .unwrap()
+                .unwrap_or_else(|| panic!("{id}: natural patch correspondence exceeds {limit}"));
+            maximum = maximum.max(bound);
+        }
+        compared += 1;
+    }
+    assert_eq!(compared, 4);
+    println!("{compared} captures; maximum natural patch bound {maximum:.3e}");
+}
+
 fn compare_miters(
     single: bool,
     count: usize,

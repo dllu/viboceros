@@ -23,6 +23,11 @@ compatibility remains unfinished.
 The separate [Global blending comparison](global-blending.md) now retains 18
 complete definitions, passing controls, and certified multi-profile gap witnesses.
 
+The [shared miter captures](../../tools/rhino_oracle/fixtures/sweep1_shared_miter_crease.json)
+cover two pairs of creased profiles whose lateral offsets cancel at the rail
+corner. Both miter settings produce four faces. The comparison checks the
+complete support patches between the natural rail ends and the shared corner.
+
 ## Native regressions
 
 Independent native tests cover straight local/global blends, one- and two-profile

@@ -96,7 +96,8 @@ Use `UntrimmedMiters=Yes` to infer corner sections between varying profiles on
 straight rail segments. Local blending uses the neighboring profiles. Global
 blending is available when two profiles bracket the corners on an open sweep.
 In trimmed mode, Sweep1 extends the adjoining surfaces and cuts them along
-a complete shared intersection. If the intersection cannot be used, the
+a complete shared intersection. Profile creases split the sewn faces and
+their shared miter edges. If the intersection cannot be used, the
 preview retains the extended pieces. Accepting the preview adds the pieces
 as separate BReps in one undo step.
 
@@ -128,5 +129,5 @@ the certified spatial gap, historical oracle comparisons, and performance limits
 together. Closed-rail holonomy, curved rail miters, Global blending on
 polygonal rails with three or more profiles or an authored corner, trim
 intersections that cannot be represented as a complete transverse cut, and branch and seam
-choices remain unfinished. If an extension cut cannot be resolved at model tolerance, the
+choices remain unfinished. If a face split cannot be resolved at model tolerance, the
 sweep retains its valid trimmed face without that partition.
